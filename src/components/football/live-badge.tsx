@@ -3,27 +3,45 @@
 import { cn } from "@/lib/utils";
 import { toBn } from "@/lib/format";
 
-export function LiveBadge({ minute, period, compact = false }: { minute?: number | null; period?: string | null; compact?: boolean }) {
-  const label = period === "HT" ? "হাফ-টাইম" : period === "FT" ? "শেষ" : minute != null ? `${toBn(minute)}′` : "লাইভ";
+/**
+ * Broadcast-style LIVE chip — red square dot + minute in Oswald caps.
+ */
+export function LiveBadge({
+  minute,
+  period,
+  compact = false,
+  size = "md",
+}: {
+  minute?: number | null;
+  period?: string | null;
+  compact?: boolean;
+  size?: "sm" | "md";
+}) {
+  const label =
+    period === "HT" ? "হাফ-টাইম" : period === "FT" ? "শেষ" : minute != null ? `${toBn(minute)}′` : "লাইভ";
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full bg-fhb-red/15 px-2 py-0.5 font-display text-[11px] font-semibold text-fhb-red ring-1 ring-fhb-red/40",
+        "inline-flex items-center gap-1.5 rounded-sm border border-fhb-red/40 bg-fhb-red/10 font-display font-bold uppercase text-fhb-red",
+        size === "sm" ? "px-1.5 py-0.5 text-[10px] tracking-wider" : "px-2 py-0.5 text-[11px] tracking-wider",
         compact && "px-1.5"
       )}
     >
-      <span className="live-dot inline-block h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+      <span className="live-dot inline-block h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />
       {period === "HT" || period === "FT" ? label : `লাইভ ${label}`}
     </span>
   );
 }
 
+/**
+ * Form guide squares — W/D/L with Bengali letters.
+ */
 export function FormDots({ form }: { form: string | null | undefined }) {
   if (!form) return null;
-  const colors: Record<string, string> = {
+  const styles: Record<string, string> = {
     W: "bg-primary text-primary-foreground",
-    D: "bg-muted-foreground/40 text-foreground",
-    L: "bg-fhb-red/80 text-white",
+    D: "bg-muted text-muted-foreground ring-1 ring-inset ring-border",
+    L: "bg-fhb-red/90 text-white",
   };
   const labels: Record<string, string> = { W: "জ", D: "ড", L: "হ" };
   return (
@@ -31,7 +49,10 @@ export function FormDots({ form }: { form: string | null | undefined }) {
       {form.split("").map((c, i) => (
         <span
           key={i}
-          className={cn("flex h-5 w-5 items-center justify-center rounded text-[9px] font-bold", colors[c] ?? colors.D)}
+          className={cn(
+            "flex h-[18px] w-[18px] items-center justify-center rounded-[4px] text-[9px] font-bold leading-none",
+            styles[c] ?? styles.D
+          )}
           title={{ W: "জয়", D: "ড্র", L: "হার" }[c] ?? ""}
         >
           {labels[c] ?? "ড"}

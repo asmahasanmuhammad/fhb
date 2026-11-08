@@ -97,12 +97,12 @@ export default function Page() {
       <main id="main" className={`flex-1 ${isFullscreenView ? "" : "pb-16 lg:pb-0"}`} aria-live="polite">
         {authLoading && !user ? (
           <div className="flex min-h-[60vh] items-center justify-center">
-            <div className="flex flex-col items-center gap-3">
-              <span className="relative flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-emerald-700 font-display text-xl font-bold text-primary-foreground shadow-xl">
+            <div className="flex flex-col items-center gap-4">
+              <span className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary font-display text-xl font-bold text-primary-foreground">
                 F<span className="text-fhb-red">H</span>
-                <span className="absolute -inset-1.5 animate-ping rounded-2xl border-2 border-primary/30" aria-hidden />
+                <span className="absolute -inset-1.5 animate-ping rounded-2xl border border-primary/30" aria-hidden />
               </span>
-              <p className="animate-pulse text-xs text-muted-foreground">FHB লোড হচ্ছে...</p>
+              <p className="animate-pulse text-xs font-medium text-muted-foreground">FHB লোড হচ্ছে…</p>
             </div>
           </div>
         ) : (

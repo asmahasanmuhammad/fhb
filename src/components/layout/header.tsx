@@ -20,7 +20,8 @@ import { toBn } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
   Trophy, Calendar, Newspaper, Users, Video, Shield, LayoutDashboard, LogOut, User2,
-  Crown, Upload, Wallet, Menu, X, Radio, ChevronRight, Flame, Zap,
+  Crown, Upload, Wallet, Menu, X, ChevronRight, Flame, Radio, Facebook, Youtube,
+  Twitter, Instagram, Zap,
 } from "lucide-react";
 
 const NAV_ITEMS: Array<{ label: string; view: View; icon: React.ReactNode }> = [
@@ -42,6 +43,22 @@ const MOBILE_NAV: Array<{ label: string; view: View; icon: React.ReactNode }> = 
   { label: "প্রোফাইল", view: { name: "profile" }, icon: <User2 className="h-5 w-5" aria-hidden /> },
 ];
 
+export function LogoMark({ size = 9 }: { size?: number }) {
+  return (
+    <span
+      className={cn(
+        "relative flex shrink-0 items-center justify-center rounded-lg bg-primary font-display font-bold text-primary-foreground",
+        size === 9 ? "h-9 w-9 text-[15px]" : "h-10 w-10 text-base"
+      )}
+      style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.25)" }}
+      aria-hidden
+    >
+      FH
+      <span className="absolute inset-x-0 bottom-0 h-[5px] rounded-b-lg bg-fhb-red" />
+    </span>
+  );
+}
+
 export function Header() {
   const { view, navigate, user, logout } = useAppStore();
   const live = useLiveScores();
@@ -49,6 +66,7 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const isActive = (v: View) => view.name === v.name;
+  const liveCount = live.matches.length;
 
   const handleLogout = async () => {
     await logout();
@@ -57,38 +75,73 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/60 bg-background/85 backdrop-blur-xl">
-      {/* Live ticker strip */}
-      {live.matches.length > 0 && (
-        <div className="relative flex h-8 items-center overflow-hidden border-b border-fhb-red/25 bg-fhb-red/10">
-          <span className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-fhb-red px-2.5 font-display text-[10px] font-bold uppercase tracking-widest text-white">
-            <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
-            লাইভ
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/90 backdrop-blur-xl">
+      {/* Utility bar */}
+      <div className="hidden border-b border-border/60 bg-card/60 lg:block">
+        <div className="mx-auto flex h-8 max-w-7xl items-center justify-between px-6 text-[10px] font-medium text-muted-foreground">
+          <p className="flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-[2px] bg-primary" aria-hidden />
+            বাংলাদেশের ফুটবল নেটওয়ার্ক · ঢাকা
+          </p>
+          <div className="flex items-center gap-1">
+            {[
+              { label: "Facebook", icon: <Facebook className="h-3.5 w-3.5" /> },
+              { label: "YouTube", icon: <Youtube className="h-3.5 w-3.5" /> },
+              { label: "X (Twitter)", icon: <Twitter className="h-3.5 w-3.5" /> },
+              { label: "Instagram", icon: <Instagram className="h-3.5 w-3.5" /> },
+            ].map((s) => (
+              <button
+                key={s.label}
+                className="flex h-6 w-6 items-center justify-center rounded-md transition-colors hover:bg-accent hover:text-primary"
+                aria-label={`FHB ${s.label}`}
+              >
+                {s.icon}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Live ticker strip — broadcast lower third */}
+      {liveCount > 0 && (
+        <div className="relative flex h-8 items-center overflow-hidden border-b border-border/60 bg-card">
+          <span className="z-10 flex h-full shrink-0 items-center gap-1.5 rounded-none bg-fhb-red px-3 font-display text-[10px] font-bold uppercase tracking-widest text-white">
+            <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-white" aria-hidden />
+            লাইভ {toBn(liveCount)}
           </span>
-          <div className="marquee-track flex whitespace-nowrap">
+          <div className="relative flex-1 overflow-hidden">
+            <div className="marquee-track flex whitespace-nowrap">
             {[0, 1].map((dup) => (
               <div key={dup} className="flex" aria-hidden={dup === 1}>
                 {live.matches.map((m) => (
                   <button
                     key={`${dup}-${m.id}`}
                     onClick={() => navigate({ name: "match-detail", id: m.id })}
-                    className="mx-4 flex items-center gap-2 font-display text-[11px] font-semibold tracking-wide text-foreground/90 hover:text-fhb-red"
+                    className="mx-4 flex items-center gap-2 font-display text-[11px] font-semibold tracking-wide text-foreground/85 transition-colors hover:text-primary"
                   >
                     <span>{m.homeTeam.name}</span>
-                    <span className="rounded bg-fhb-red/20 px-1.5 text-fhb-red">
+                    <span className="tabular rounded-sm bg-fhb-red/15 px-1.5 py-0.5 font-bold text-fhb-red">
                       {toBn(m.homeScore)} - {toBn(m.awayScore)}
                     </span>
                     <span>{m.awayTeam.name}</span>
-                    <span className="text-muted-foreground">({m.period === "HT" ? "HT" : `${toBn(m.minute)}′`})</span>
-                    <span className="text-muted-foreground/50">•</span>
+                    <span className="text-muted-foreground">
+                      ({m.period === "HT" ? "HT" : `${toBn(m.minute)}′`})
+                    </span>
+                    <span className="ml-3 h-1 w-1 rounded-full bg-primary/60" aria-hidden />
                   </button>
                 ))}
               </div>
             ))}
+            </div>
+            <span
+              className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-card to-transparent"
+              aria-hidden
+            />
           </div>
         </div>
       )}
 
+      {/* Main bar */}
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:h-16 sm:px-6">
         {/* Logo */}
         <Link
@@ -97,42 +150,65 @@ export function Header() {
             e.preventDefault();
             navigate({ name: "home" });
           }}
-          className="flex shrink-0 items-center gap-2"
+          className="flex shrink-0 items-center gap-2.5"
           aria-label="Football Hub Bangladesh হোমপেজ"
         >
-          <span className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-emerald-700 font-display text-base font-bold text-primary-foreground shadow-lg shadow-primary/25 sm:h-10 sm:w-10">
-            F<span className="text-fhb-red">H</span>
-          </span>
+          <LogoMark />
           <span className="hidden flex-col leading-none sm:flex">
-            <span className="font-display text-base font-bold tracking-wider">
+            <span className="font-display text-[15px] font-bold tracking-[0.08em] text-foreground">
               FOOTBALL HUB <span className="text-fhb-red">BD</span>
             </span>
-            <span className="text-[10px] font-medium text-muted-foreground">ফুটবলের ডিজিটাল ঠিকানা</span>
+            <span className="mt-0.5 text-[10px] font-medium text-muted-foreground">বাংলাদেশের ফুটবল নেটওয়ার্ক</span>
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-0.5 lg:flex" aria-label="প্রধান মেনু">
+        {/* Desktop nav — text tabs with underline */}
+        <nav className="hidden h-full items-center lg:flex" aria-label="প্রধান মেনু">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.label}
               onClick={() => navigate(item.view)}
               className={cn(
-                "flex items-center gap-1.5 rounded-lg px-2.5 py-2 text-xs font-semibold transition-colors",
-                isActive(item.view) ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                "relative flex h-full items-center px-3 text-[13px] font-semibold transition-colors",
+                isActive(item.view)
+                  ? "text-primary shadow-[inset_0_-2px_0_0_var(--primary)]"
+                  : "text-muted-foreground hover:text-foreground"
               )}
+              aria-current={isActive(item.view) ? "page" : undefined}
             >
-              {item.icon}
               {item.label}
             </button>
           ))}
         </nav>
 
+        {/* Right cluster */}
         <div className="flex items-center gap-2">
+          {liveCount > 0 && (
+            <button
+              onClick={() => navigate({ name: "scores" })}
+              className="hidden items-center gap-1.5 rounded-md border border-fhb-red/40 bg-fhb-red/10 px-2.5 py-1.5 font-display text-[11px] font-bold uppercase tracking-wider text-fhb-red transition-colors hover:bg-fhb-red/20 sm:flex"
+              aria-label={`এই মুহূর্তে ${toBn(liveCount)} টি ম্যাচ লাইভ — স্কোর দেখুন`}
+            >
+              <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />
+              লাইভ {toBn(liveCount)}
+            </button>
+          )}
+
+          <button
+            onClick={() => navigate({ name: "premium" })}
+            className="hidden items-center gap-1.5 rounded-md border border-fhb-gold/40 bg-fhb-gold/10 px-2.5 py-1.5 text-[11px] font-bold text-fhb-gold transition-colors hover:bg-fhb-gold/20 sm:flex"
+          >
+            <Crown className="h-3.5 w-3.5" aria-hidden />
+            প্রিমিয়াম
+          </button>
+
           {user ? (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-full border bg-card p-1 pr-2.5 transition-colors hover:border-primary/50" aria-label="অ্যাকাউন্ট মেনু">
+                <button
+                  className="flex items-center gap-2 rounded-full border border-border bg-card p-1 pr-2.5 transition-colors hover:border-primary/50"
+                  aria-label="অ্যাকাউন্ট মেনু"
+                >
                   <Avatar className="h-7 w-7 border">
                     <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
                     <AvatarFallback className="bg-primary/15 text-[11px] font-bold text-primary">{user.name.slice(0, 2)}</AvatarFallback>
@@ -144,7 +220,7 @@ export function Header() {
                 <DropdownMenuLabel className="text-xs text-muted-foreground">
                   {user.email}
                   {user.isPremium && (
-                    <span className="ml-1.5 inline-flex items-center gap-1 rounded-full bg-fhb-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-fhb-gold">
+                    <span className="ml-1.5 inline-flex items-center gap-1 rounded-sm bg-fhb-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-fhb-gold">
                       <Crown className="h-3 w-3" aria-hidden /> প্রিমিয়াম
                     </span>
                   )}
@@ -202,7 +278,7 @@ export function Header() {
 
       {/* Mobile dropdown nav */}
       {mobileOpen && (
-        <nav className="border-t bg-background px-4 py-3 lg:hidden" aria-label="মোবাইল মেনু">
+        <nav className="border-t border-border bg-background px-4 py-3 lg:hidden" aria-label="মোবাইল মেনু">
           <div className="grid grid-cols-2 gap-1.5 sm:grid-cols-4">
             {NAV_ITEMS.map((item) => (
               <button
@@ -212,8 +288,10 @@ export function Header() {
                   setMobileOpen(false);
                 }}
                 className={cn(
-                  "flex items-center gap-2 rounded-lg border px-3 py-2.5 text-xs font-semibold transition-colors",
-                  isActive(item.view) ? "border-primary/50 bg-primary/15 text-primary" : "border-border bg-card text-foreground hover:bg-accent"
+                  "flex items-center gap-2 rounded-md border px-3 py-2.5 text-xs font-semibold transition-colors",
+                  isActive(item.view)
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border bg-card text-foreground hover:bg-accent"
                 )}
               >
                 {item.icon}
@@ -225,7 +303,7 @@ export function Header() {
                 navigate({ name: "premium" });
                 setMobileOpen(false);
               }}
-              className="flex items-center gap-2 rounded-lg border border-fhb-gold/40 bg-fhb-gold/10 px-3 py-2.5 text-xs font-semibold text-fhb-gold"
+              className="flex items-center gap-2 rounded-md border border-fhb-gold/40 bg-fhb-gold/10 px-3 py-2.5 text-xs font-semibold text-fhb-gold"
             >
               <Crown className="h-4 w-4" aria-hidden /> প্রিমিয়াম
             </button>
@@ -243,10 +321,10 @@ export function BottomNav() {
   const { view, navigate, user } = useAppStore();
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden"
       aria-label="মোবাইল নেভিগেশন"
     >
-      <div className="mx-auto grid max-w-lg grid-cols-5">
+      <div className="mx-auto grid max-w-lg">
         {MOBILE_NAV.map((item) => {
           const active =
             view.name === item.view.name ||
@@ -257,15 +335,19 @@ export function BottomNav() {
               key={item.label}
               onClick={() => navigate(item.view)}
               className={cn(
-                "tap-target flex flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-semibold transition-colors",
+                "tap-target relative flex flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-semibold transition-colors",
                 active ? "text-primary" : "text-muted-foreground"
               )}
               aria-current={active ? "page" : undefined}
             >
-              <span className={cn("relative", active && "drop-shadow-[0_0_6px_var(--primary)]")}>{item.icon}</span>
+              <span
+                aria-hidden
+                className={cn("absolute inset-x-4 top-0 h-[2px] rounded-full", active ? "bg-primary" : "bg-transparent")}
+              />
+              <span>{item.icon}</span>
               {item.label}
               {item.label === "প্রোফাইল" && user?.isPremium && (
-                <span className="absolute right-3 top-1 h-1.5 w-1.5 rounded-full bg-fhb-gold" aria-label="প্রিমিয়াম" />
+                <span className="absolute right-4 top-1.5 h-1.5 w-1.5 rounded-full bg-fhb-gold" aria-label="প্রিমিয়াম" />
               )}
             </button>
           );

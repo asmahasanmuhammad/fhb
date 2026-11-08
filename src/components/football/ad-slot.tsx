@@ -6,10 +6,10 @@ import Image from "next/image";
 import { useAppStore } from "@/store/app-store";
 import type { AdSlotData } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { Megaphone } from "lucide-react";
+import { Megaphone, ArrowUpRight } from "lucide-react";
 
 /**
- * Google AdSense-ready ad slot.
+ * Google AdSense-ready ad slot — native, clearly labelled, professional.
  * - Premium members get an ad-free experience (core monetization benefit).
  * - Demo mode renders a house creative from `imageHint`.
  * - If an admin saves a real AdSense snippet in the dashboard, it renders here.
@@ -57,8 +57,8 @@ export function AdSlot({ placement, className }: { placement: string; className?
   return (
     <div
       className={cn(
-        "relative overflow-hidden rounded-xl border border-dashed border-muted-foreground/30 bg-muted/30",
-        isBanner && "flex h-[90px] items-center justify-center",
+        "relative overflow-hidden rounded-lg border border-border bg-muted/30",
+        isBanner && "flex h-[90px] items-stretch",
         isSidebar && "h-[280px]",
         placement === "IN_FEED" && "h-[120px]",
         className
@@ -66,25 +66,35 @@ export function AdSlot({ placement, className }: { placement: string; className?
       role="complementary"
       aria-label="বিজ্ঞাপন"
     >
-      <span className="absolute left-2 top-2 z-10 rounded bg-background/80 px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
-        বিজ্ঞাপন • AdSense
+      <span className="absolute left-2 top-2 z-10 rounded-sm bg-background/85 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
+        বিজ্ঞাপন · Ad
       </span>
       <button
         onClick={trackClick}
-        className="group relative flex h-full w-full items-center justify-center"
+        className="group relative flex h-full w-full items-center"
         aria-label={`${ad.name} — বিজ্ঞাপনে ক্লিক করুন`}
       >
         {ad.imageHint ? (
           <Image src={ad.imageHint} alt={ad.name} fill sizes="728px" className="object-cover opacity-90" unoptimized />
         ) : (
-          <Megaphone className="h-6 w-6 text-muted-foreground/40" aria-hidden />
+          <span className="flex h-full w-full items-center justify-center" aria-hidden>
+            <Megaphone className="h-6 w-6 text-muted-foreground/40" />
+          </span>
         )}
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/55 p-2 text-center transition-colors group-hover:bg-background/40">
-          <p className="font-display text-xs font-semibold tracking-wide text-foreground/80 sm:text-sm">
-            আপনার ব্র্যান্ড এখানে শাইন করুক
-          </p>
-          <p className="text-[10px] text-muted-foreground">Google AdSense • {ad.placement}</p>
-        </div>
+        <span
+          className={cn(
+            "absolute inset-0 flex flex-col items-center justify-center bg-background/60 p-2 text-center transition-colors group-hover:bg-background/40",
+            isSidebar && "bg-background/70"
+          )}
+        >
+          <span className="flex items-center gap-1.5 font-display text-xs font-bold tracking-wide text-foreground/90 sm:text-sm">
+            {ad.name}
+          </span>
+          <span className="mt-0.5 flex items-center gap-1 text-[10px] text-muted-foreground">
+            Google AdSense · {ad.placement}
+            <ArrowUpRight className="h-3 w-3 text-primary" aria-hidden />
+          </span>
+        </span>
       </button>
     </div>
   );

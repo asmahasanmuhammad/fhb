@@ -70,14 +70,18 @@ export function LikeButton({
         aria-label={liked ? "অপছন্দ করুন" : "পছন্দ করুন"}
         aria-pressed={liked}
       >
-        <Heart
+        <span
           className={cn(
-            "h-8 w-8 drop-shadow-lg transition-all active:scale-125",
-            liked ? "fill-fhb-red text-fhb-red" : "fill-black/30 text-white"
+            "flex h-11 w-11 items-center justify-center rounded-full bg-black/45 backdrop-blur transition-all active:scale-90",
+            liked && "bg-fhb-red/90"
           )}
-          aria-hidden
-        />
-        <span className="font-display text-xs font-semibold drop-shadow">{bnCompact(count)}</span>
+        >
+          <Heart
+            className={cn("h-5 w-5 drop-shadow-lg transition-all", liked ? "fill-white text-white" : "fill-white/25 text-white")}
+            aria-hidden
+          />
+        </span>
+        <span className="tabular font-display text-xs font-semibold drop-shadow">{bnCompact(count)}</span>
       </button>
     );
   }
@@ -87,7 +91,7 @@ export function LikeButton({
       variant={variant === "inline" ? "ghost" : "outline"}
       size="sm"
       onClick={handleClick}
-      className={cn("gap-1.5", liked && "text-fhb-red")}
+      className={cn("gap-1.5", liked && "border-fhb-red/40 text-fhb-red hover:text-fhb-red")}
       aria-pressed={liked}
       aria-label={liked ? "অপছন্দ করুন" : "পছন্দ করুন"}
     >

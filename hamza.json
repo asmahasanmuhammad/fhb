@@ -1,0 +1,30 @@
+{
+  "success": true,
+  "query": "Bangladesh football fans celebrating flag face paint",
+  "count": 3,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3e1356df6a1e.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "1600px",
+      "original_height": "1600px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/adeac1d0f507.jpg",
+      "caption": "",
+      "source": "Amazon.com",
+      "original_width": "1600px",
+      "original_height": "1600px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/bb89366c4a1a.jpg",
+      "caption": "",
+      "source": "Etsy",
+      "original_width": "1402px",
+      "original_height": "1122px"
+    }
+  ]
+}

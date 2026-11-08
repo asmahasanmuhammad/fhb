@@ -23,7 +23,7 @@ function rint(min: number, max: number): number {
 // ---------- image assets (OSS-hosted, reachable) ----------
 const IMG = {
   stadium: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b1f722726072.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c80743607c26.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c310648b1512.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/41e83b0ccac0.jpg",
   ],
@@ -38,12 +38,12 @@ const IMG = {
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/33a032ecdab7.jpg",
   ],
   celebrate: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/640db6ee0583.jpeg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2c2982ffcc12.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/985750c52694.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/eb1564b3d3b6.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b5d6b6551d9a.jpg",
   ],
   coach: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4d385721ff8e.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/04d047e7e1e7.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/33791d63308c.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e01e4ff2a39a.jpg",
   ],
@@ -53,22 +53,22 @@ const IMG = {
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c693b80c1d84.jpg",
   ],
   fans: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/bf8288a20516.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c1bddff4b074.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/38d104f20d12.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b13bac242184.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3dbea23a5446.jpg",
   ],
   goalkeeper: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/477ff7362772.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e43e193fc340.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c9c992f0b9dd.jpeg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b8531c920837.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3c2bdf743c17.jpg",
   ],
   training: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/dd7609d0ae27.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/9214036085bb.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ebd8c3ae6793.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8c14149ceb3a.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/717e476fc3d9.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/68731a25f344.jpg",
   ],
   trophy: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2cea8dbe5b20.jpg",
+    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/946e49a08e5d.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c0f2649feab.jpg",
     "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6d7074e06eea.jpg",
   ],

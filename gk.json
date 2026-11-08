@@ -1,0 +1,30 @@
+{
+  "success": true,
+  "query": "goalkeeper diving save football match action",
+  "count": 3,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c9c992f0b9dd.jpeg",
+      "caption": "",
+      "source": "Pexels",
+      "original_width": "1260px",
+      "original_height": "709px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4691742ce621.jpg",
+      "caption": "",
+      "source": "Dreamstime",
+      "original_width": "1600px",
+      "original_height": "963px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/525d52e0d3e5.jpg",
+      "caption": "",
+      "source": "VectorStock",
+      "original_width": "1000px",
+      "original_height": "830px"
+    }
+  ]
+}

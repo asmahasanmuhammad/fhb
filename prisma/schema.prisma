@@ -1,0 +1,338 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ============ USERS & AUTH ============
+
+model User {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  username       String    @unique
+  name           String
+  passwordHash   String
+  avatarUrl      String?
+  bio            String?
+  role           String    @default("USER") // USER | CREATOR | ADMIN
+  isPremium      Boolean   @default(false)
+  premiumUntil   DateTime?
+  followerCount  Int       @default(0)
+  followingCount Int       @default(0)
+  earningsTotal  Float     @default(0)
+  isBanned       Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  sessions       Session[]
+  articles       NewsArticle[]
+  videos         Video[]
+  posts          Post[]
+  comments       Comment[]
+  likes          Like[]
+  following      Follow[]  @relation("follower")
+  followers      Follow[]  @relation("following")
+  earnings       Earning[]
+  payouts        PayoutRequest[]
+  subscriptions  Subscription[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+// ============ FOOTBALL DATA ============
+
+model Team {
+  id          String  @id @default(cuid())
+  name        String
+  shortName   String
+  initials    String
+  city        String
+  stadium     String
+  founded     Int
+  color       String  @default("#10B981") // primary hex for badge
+  color2      String  @default("#064E3B")
+  description String?
+  logoUrl     String?
+
+  players     Player[]
+  homeMatches Match[] @relation("homeTeam")
+  awayMatches Match[] @relation("awayTeam")
+  standings   Standing[]
+}
+
+model Player {
+  id              String  @id @default(cuid())
+  name            String
+  teamId          String?
+  team            Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  position        String  // GK | DF | MF | FW
+  nationality     String  @default("বাংলাদেশ")
+  jerseyNumber    Int?
+  birthYear       Int?
+  heightCm        Int?
+  goals           Int     @default(0)
+  assists         Int     @default(0)
+  appearances     Int     @default(0)
+  cleanSheets     Int     @default(0)
+  rating          Float   @default(6.5)
+  isNationalTeam  Boolean @default(false)
+  photoUrl        String?
+  bio             String?
+
+  @@index([teamId])
+  @@index([position])
+}
+
+model Competition {
+  id          String  @id @default(cuid())
+  name        String
+  shortName   String
+  type        String  // LEAGUE | CUP | INTERNATIONAL
+  season      String  @default("2025-26")
+  country     String  @default("বাংলাদেশ")
+  description String?
+  logoUrl     String?
+  accentColor String  @default("#10B981")
+
+  matches   Match[]
+  standings Standing[]
+}
+
+model Match {
+  id            String    @id @default(cuid())
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  homeTeamId    String
+  homeTeam      Team      @relation("homeTeam", fields: [homeTeamId], references: [id])
+  awayTeamId    String
+  awayTeam      Team      @relation("awayTeam", fields: [awayTeamId], references: [id])
+  homeScore     Int?
+  awayScore     Int?
+  status        String    @default("SCHEDULED") // SCHEDULED | LIVE | FINISHED
+  minute        Int?
+  period        String?   // 1H | HT | 2H | FT
+  kickoff       DateTime
+  venue         String?
+  matchday      Int?
+  round         String?
+  featured      Boolean   @default(false)
+  updatedAt     DateTime  @updatedAt
+
+  events        MatchEvent[]
+
+  @@index([status])
+  @@index([kickoff])
+  @@index([competitionId])
+}
+
+model MatchEvent {
+  id         String  @id @default(cuid())
+  matchId    String
+  match      Match   @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  minute     Int
+  type       String  // GOAL | YELLOW | RED | SUB | HT | FT | PENALTY
+  teamId     String?
+  teamSide   String? // home | away
+  playerName String?
+  detail     String?
+  createdAt  DateTime @default(now())
+
+  @@index([matchId])
+}
+
+model Standing {
+  id            String   @id @default(cuid())
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  teamId        String
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  position      Int
+  played        Int      @default(0)
+  won           Int      @default(0)
+  drawn         Int      @default(0)
+  lost          Int      @default(0)
+  goalsFor      Int      @default(0)
+  goalsAgainst  Int      @default(0)
+  points        Int      @default(0)
+  form          String?  // "WWDLW"
+
+  @@unique([competitionId, teamId])
+}
+
+// ============ NEWS ============
+
+model NewsArticle {
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  excerpt      String
+  content      String   // markdown
+  category     String   @default("BPL") // BPL | NATIONAL | TRANSFER | INTERNATIONAL | OPINION
+  coverUrl     String?
+  authorId     String
+  author       User     @relation(fields: [authorId], references: [id])
+  status       String   @default("PUBLISHED") // DRAFT | PUBLISHED
+  featured     Boolean  @default(false)
+  views        Int      @default(0)
+  likeCount    Int      @default(0)
+  commentCount Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([category, status])
+  @@index([createdAt])
+}
+
+// ============ SHORT VIDEOS ============
+
+model Video {
+  id           String   @id @default(cuid())
+  creatorId    String
+  creator      User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  title        String
+  description  String?
+  videoUrl     String
+  thumbnailUrl String?
+  tags         String?  // comma separated
+  views        Int      @default(0)
+  likeCount    Int      @default(0)
+  commentCount Int      @default(0)
+  monetized    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  earnings     Earning[]
+
+  @@index([createdAt])
+}
+
+// ============ COMMUNITY ============
+
+model Post {
+  id           String   @id @default(cuid())
+  authorId     String
+  author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  content      String
+  matchTag     String?  // e.g. team support badge
+  likeCount    Int      @default(0)
+  commentCount Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model Comment {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType String   // NEWS | VIDEO | POST
+  targetId   String
+  content    String
+  likeCount  Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@index([targetType, targetId])
+}
+
+model Like {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetType String   // NEWS | VIDEO | POST | COMMENT
+  targetId   String
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, targetType, targetId])
+  @@index([targetType, targetId])
+}
+
+model Follow {
+  id           String @id @default(cuid())
+  followerId   String
+  follower     User   @relation("follower", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId  String
+  following    User   @relation("following", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+
+  @@unique([followerId, followingId])
+}
+
+// ============ MONETIZATION ============
+
+model MembershipPlan {
+  id        String  @id @default(cuid())
+  code      String  @unique // FREE | PRO | LEGEND
+  name      String
+  price     Float   // BDT / month
+  period    String  @default("month")
+  features  String  // JSON array string
+  popular   Boolean @default(false)
+  sortOrder Int     @default(0)
+}
+
+model Subscription {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planCode  String
+  amount    Float
+  status    String   @default("ACTIVE") // ACTIVE | CANCELLED | EXPIRED
+  startedAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([userId])
+}
+
+model Earning {
+  id        String   @id @default(cuid())
+  creatorId String
+  creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  videoId   String?
+  video     Video?   @relation(fields: [videoId], references: [id], onDelete: SetNull)
+  amount    Float
+  source    String   // AD_REVENUE | TIPS | BONUS | PAYOUT
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([creatorId])
+}
+
+model PayoutRequest {
+  id        String   @id @default(cuid())
+  creatorId String
+  creator   User     @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  amount    Float
+  method    String   // BKASH | NAGAD | BANK
+  account   String
+  status    String   @default("PENDING") // PENDING | APPROVED | PAID | REJECTED
+  createdAt DateTime @default(now())
+
+  @@index([creatorId])
+}
+
+// ============ ADVERTISING ============
+
+model AdSlot {
+  id          String  @id @default(cuid())
+  name        String
+  placement   String  // HEADER_BANNER | SIDEBAR | IN_FEED | VIDEO_PREROLL | MOBILE_BANNER
+  provider    String  @default("ADSENSE")
+  adCode      String? // AdSense / custom HTML snippet
+  imageHint   String? // demo creative image url
+  linkUrl     String?
+  active      Boolean @default(true)
+  impressions Int     @default(0)
+  clicks      Int     @default(0)
+  updatedAt   DateTime @updatedAt
+}

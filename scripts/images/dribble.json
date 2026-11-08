@@ -1,0 +1,33 @@
+🚀 Initializing Z-AI SDK...
+🔎 Searching images: "soccer player dribbling the ball in stadium"
+✅ Got 3 images
+{
+  "success": true,
+  "query": "soccer player dribbling the ball in stadium",
+  "count": 3,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/83c3219a4b39.jpg",
+      "caption": "",
+      "source": "Daily News",
+      "original_width": "2000px",
+      "original_height": "1333px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ddab4fb90a30.jpg",
+      "caption": "",
+      "source": "The Lafayette",
+      "original_width": "1200px",
+      "original_height": "800px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c693b80c1d84.jpg",
+      "caption": "",
+      "source": "Nike",
+      "original_width": "900px",
+      "original_height": "1200px"
+    }
+  ]
+}

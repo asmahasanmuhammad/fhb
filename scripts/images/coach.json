@@ -1,0 +1,33 @@
+🚀 Initializing Z-AI SDK...
+🔎 Searching images: "football coach tactics board team talk"
+✅ Got 3 images
+{
+  "success": true,
+  "query": "football coach tactics board team talk",
+  "count": 3,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/4d385721ff8e.jpg",
+      "caption": "",
+      "source": "Alamy",
+      "original_width": "1300px",
+      "original_height": "956px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/33791d63308c.jpg",
+      "caption": "",
+      "source": "Reddit",
+      "original_width": "1883px",
+      "original_height": "975px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e01e4ff2a39a.jpg",
+      "caption": "",
+      "source": "Vanta Sports",
+      "original_width": "1600px",
+      "original_height": "900px"
+    }
+  ]
+}

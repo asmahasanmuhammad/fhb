@@ -1,0 +1,33 @@
+🚀 Initializing Z-AI SDK...
+🔎 Searching images: "soccer player kicking ball action shot during match"
+✅ Got 3 images
+{
+  "success": true,
+  "query": "soccer player kicking ball action shot during match",
+  "count": 3,
+  "ranked": false,
+  "captioned_count": 0,
+  "results": [
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ce3c35abf03c.jpeg",
+      "caption": "",
+      "source": "Pexels",
+      "original_width": "1260px",
+      "original_height": "709px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/91cb72ce8290.jpg",
+      "caption": "",
+      "source": "Wallpapers.com",
+      "original_width": "1800px",
+      "original_height": "1801px"
+    },
+    {
+      "original_url": "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/47ce3d922168.jpg",
+      "caption": "",
+      "source": "Sports Illustrated",
+      "original_width": "1200px",
+      "original_height": "1200px"
+    }
+  ]
+}

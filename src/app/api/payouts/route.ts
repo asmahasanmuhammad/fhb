@@ -1,0 +1,38 @@
+import { NextRequest } from "next/server";
+import { z } from "zod";
+import { db } from "@/lib/db";
+import { ok, fail, handleError } from "@/lib/api";
+import { requireCreatorOrAdmin } from "@/lib/auth";
+
+const schema = z.object({
+  amount: z.number().min(500, "সর্বনিম্ন উত্তোলন ৫০০ টাকা"),
+  method: z.enum(["BKASH", "NAGAD", "BANK"]),
+  account: z.string().trim().min(5, "অ্যাকাউন্ট নম্বর দিন").max(40),
+});
+
+export async function POST(req: NextRequest) {
+  try {
+    const user = await requireCreatorOrAdmin();
+    const body = await req.json().catch(() => null);
+    const parsed = schema.safeParse(body);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
+
+    // check balance
+    const [earnings, payouts] = await Promise.all([
+      db.earning.findMany({ where: { creatorId: user.id, source: { not: "PAYOUT" } } }),
+      db.payoutRequest.findMany({ where: { creatorId: user.id, status: { in: ["PENDING", "PAID", "APPROVED"] } } }),
+    ]);
+    const total = earnings.reduce((s, e) => s + e.amount, 0);
+    const held = payouts.reduce((s, p) => s + p.amount, 0);
+    if (parsed.data.amount > total - held) {
+      return fail("পর্যাপ্ত ব্যালেন্স নেই", 422);
+    }
+
+    const payout = await db.payoutRequest.create({
+      data: { creatorId: user.id, ...parsed.data, status: "PENDING" },
+    });
+    return ok({ payout });
+  } catch (e) {
+    return handleError(e);
+  }
+}

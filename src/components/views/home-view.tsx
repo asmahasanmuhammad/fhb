@@ -1,24 +1,23 @@
 "use client";
 
+import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Image from "next/image";
 import { useAppStore } from "@/store/app-store";
 import { useLiveScores } from "@/components/providers/live-score-provider";
 import { useReveal } from "@/hooks/use-reveal";
 import type { Match, NewsArticle, Standing, Video, TeamRef } from "@/lib/types";
-import { MatchCard } from "@/components/football/match-card";
+import { MatchCard, MatchRow } from "@/components/football/match-card";
 import { StandingsTable } from "@/components/football/standings-table";
 import { NewsCard } from "@/components/football/news-card";
 import { AdSlot } from "@/components/football/ad-slot";
 import { SectionHeader } from "@/components/football/section-header";
-import { TeamBadge } from "@/components/football/team-badge";
-import { LiveBadge } from "@/components/football/live-badge";
+import { TeamCrest } from "@/components/football/team-badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
-import { formatKickoff, fmtNum, fmtCompact } from "@/lib/format";
+import { formatKickoff, fmtNum, fmtCompact, timeAgo } from "@/lib/format";
 import {
-  Zap, Newspaper, Video as VideoIcon, Radio, Flame, Play, MapPin,
-  CalendarDays, ChevronRight, Trophy, Users, Crown, Goal, ArrowRight, Tv,
+  Zap, Newspaper, Video as VideoIcon, Flame, Play, ChevronRight,
+  Trophy, Users, Crown, Goal, Tv, Clock, CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -26,6 +25,7 @@ export function HomeView() {
   const navigate = useAppStore((s) => s.navigate);
   const live = useLiveScores();
   useReveal();
+  const [dayOffset, setDayOffset] = useState(0); // -1 yesterday, 0 today, 1 tomorrow
 
   const { data: matchesData, isLoading: matchesLoading } = useQuery<{ matches: Match[] }>({
     queryKey: ["matches", "home"],
@@ -37,7 +37,7 @@ export function HomeView() {
   const { data: newsData } = useQuery<{ articles: NewsArticle[] }>({
     queryKey: ["news", "home"],
     queryFn: async () => {
-      const res = await fetch("/api/news?limit=7");
+      const res = await fetch("/api/news?limit=8");
       return res.json().then((j) => j.data);
     },
   });
@@ -63,369 +63,362 @@ export function HomeView() {
     .filter((m) => m.status === "FINISHED")
     .sort((a, b) => +new Date(b.kickoff) - +new Date(a.kickoff))
     .slice(0, 4);
-  const heroMatch = matches.find((m) => m.featured && m.status === "SCHEDULED") ?? upcoming[0] ?? liveNow[0];
+  const heroMatch =
+    matches.find((m) => m.featured && m.status === "SCHEDULED") ??
+    (liveNow.length > 0 ? liveNow[0] : undefined) ??
+    upcoming[0];
+
+  // day-filtered match list for the scores strip
+  const dayMatches = useMemo(() => {
+    const base = new Date();
+    base.setHours(0, 0, 0, 0);
+    const target = base.getTime() + dayOffset * 864e5;
+    return matches
+      .filter((m) => {
+        const d = new Date(m.kickoff);
+        d.setHours(0, 0, 0, 0);
+        return d.getTime() === target;
+      })
+      .sort((a, b) => +new Date(a.kickoff) - +new Date(b.kickoff))
+      .slice(0, 8);
+  }, [matches, dayOffset]);
+
   const articles = newsData?.articles ?? [];
-  const featured = articles.find((a) => a.featured) ?? articles[0];
-  const restNews = articles.filter((a) => a.id !== featured?.id).slice(0, 4);
+  const leadStory = articles.find((a) => a.featured) ?? articles[0];
+  const secondaryNews = articles.filter((a) => a.id !== leadStory?.id).slice(0, 5);
+  const mostRead = [...articles].sort((a, b) => b.views - a.views).slice(0, 5);
   const standings = standingsData?.standings ?? [];
   const videos = videosData?.videos ?? [];
-  const heroLive = heroMatch ? live.matches.find((m) => m.id === heroMatch.id) : undefined;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-4 pb-14 pt-5 sm:px-6 sm:pt-7">
-      {/* ═══════════ MATCHDAY HERO — cinematic billboard ═══════════ */}
-      <section
-        className="noise stadium-panel pitch-pattern reveal relative overflow-hidden rounded-3xl border border-border/70 p-6 sm:p-8 lg:p-10"
-        aria-label="Featured section"
-      >
-        {/* Floodlight glow */}
-        <span className="floodlight pointer-events-none absolute inset-0" aria-hidden />
+    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+      {/* ═══════════ HERO — featured match + lead story ═══════════ */}
+      <section className="grid gap-4 lg:grid-cols-12" aria-label="Featured">
+        {heroMatch && (
+          <div className="reveal lg:col-span-5">
+            <MatchCard match={heroMatch} className="h-full" />
+          </div>
+        )}
+        {leadStory && (
+          <div className="reveal lg:col-span-7">
+            <NewsCard article={leadStory} size="lg" className="h-full min-h-[320px]" />
+          </div>
+        )}
+      </section>
 
-        <div className="relative grid items-center gap-10 lg:grid-cols-[1.04fr_0.96fr]">
-          {/* Editorial block */}
-          <div>
-            <span className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-3.5 py-1.5 text-[11px] font-bold text-primary backdrop-blur-sm">
-              <span className="live-dot h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-              Bangladesh's Football Network
-            </span>
-            <h1 className="display-hero mt-5 text-[2rem] leading-[1.12] text-foreground sm:text-[2.6rem] lg:text-[3rem]">
-              Live scores. News. Shorts.
-              <span className="mt-1 block bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                All on one platform.
+      {/* ═══════════ MATCHDAY — date rail + dense rows + side rail ═══════════ */}
+      <section className="reveal mt-8 grid gap-6 lg:grid-cols-12" aria-label="Matchday scores">
+        <div className="lg:col-span-8">
+          <SectionHeader
+            title="Matchday Scores"
+            kicker="live scores"
+            accent={liveNow.length > 0 ? "red" : "primary"}
+            icon={<Zap className="h-3.5 w-3.5" aria-hidden />}
+            actionLabel="All Matches"
+            actionView={{ name: "scores" }}
+          />
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
+            {/* Date rail */}
+            <div className="flex items-center gap-1 border-b border-border bg-muted/30 px-3 py-2">
+              {[
+                { label: "Yesterday", offset: -1 },
+                { label: "Today", offset: 0 },
+                { label: "Tomorrow", offset: 1 },
+              ].map((d) => (
+                <button
+                  key={d.label}
+                  onClick={() => setDayOffset(d.offset)}
+                  className={cn(
+                    "rounded-md px-3 py-1.5 text-[11.5px] font-semibold transition-colors",
+                    dayOffset === d.offset
+                      ? "bg-elevated text-foreground"
+                      : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+                  )}
+                  aria-pressed={dayOffset === d.offset}
+                >
+                  {d.label}
+                </button>
+              ))}
+              <span className="ml-auto hidden items-center gap-1.5 text-[10.5px] text-muted-foreground sm:flex">
+                {liveNow.length > 0 ? (
+                  <>
+                    <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+                    {fmtNum(liveNow.length)} live right now
+                  </>
+                ) : (
+                  "All times BST (UTC+6)"
+                )}
               </span>
-            </h1>
-            <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-              From the BFL to the Champions League — every goal, every transfer, every moment
-              from home and abroad. Join the community, share your takes and earn as a creator.
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+            </div>
+            {/* Rows */}
+            {matchesLoading ? (
+              <div className="space-y-2 p-4">
+                {[1, 2, 3].map((i) => (
+                  <Skeleton key={i} className="h-14 rounded-lg" />
+                ))}
+              </div>
+            ) : dayMatches.length > 0 ? (
+              <div className="divide-y divide-border/60">
+                {dayMatches.map((m) => (
+                  <MatchRow key={m.id} match={m} showCompetition />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
+                <p className="text-sm font-semibold text-foreground">No matches scheduled</p>
+                <p className="text-xs text-muted-foreground">
+                  {dayOffset === -1 ? "Yesterday" : dayOffset === 1 ? "Tomorrow" : "Today"} has no fixtures in the calendar.
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Side rail — live now + next up */}
+        <div className="space-y-4 lg:col-span-4">
+          {liveNow.length > 0 && (
+            <div className="overflow-hidden rounded-xl border border-fhb-red/30 bg-card">
+              <p className="flex items-center gap-2 border-b border-border bg-fhb-red/[0.07] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-fhb-red">
+                <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+                Live Now — {fmtNum(liveNow.length)}
+              </p>
+              <div className="divide-y divide-border/60">
+                {liveNow.slice(0, 3).map((m) => (
+                  <MatchRow key={m.id} match={m} showCompetition={false} />
+                ))}
+              </div>
               <button
                 onClick={() => navigate({ name: "scores" })}
-                className="sheen group flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground shadow-[0_14px_34px_-12px_var(--primary)] transition-transform hover:scale-[1.03] active:scale-95"
+                className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
               >
-                <Zap className="h-4 w-4" aria-hidden />
-                View Live Scores
-              </button>
-              <button
-                onClick={() => navigate({ name: "shorts" })}
-                className="flex h-12 items-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/50 hover:text-primary active:scale-95"
-              >
-                <VideoIcon className="h-4 w-4" aria-hidden />
-                Watch Shorts
+                All live matches <ChevronRight className="h-3 w-3" aria-hidden />
               </button>
             </div>
-
-            {/* Stat strip */}
-            <dl className="mt-9 grid max-w-lg grid-cols-3 overflow-hidden rounded-2xl border border-border/70 bg-card/40 backdrop-blur-sm">
-              {[
-                { v: fmtNum(matches.length), l: "Matches Tracked" },
-                { v: fmtCompact(articles.reduce((s, a) => s + a.views, 0)), l: "News Reads" },
-                { v: fmtCompact(videos.reduce((s, v) => s + v.views, 0)), l: "Shorts Views" },
-              ].map((s, i) => (
-                <div key={s.l} className={cn("relative px-4 py-4 text-center", i > 0 && "before:absolute before:inset-y-3 before:left-0 before:w-px before:bg-border/80")}>
-                  <dd className="tabular font-display text-2xl font-bold leading-none text-foreground sm:text-[1.7rem]">{s.v}</dd>
-                  <dt className="mt-1.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground">{s.l}</dt>
-                </div>
-              ))}
-            </dl>
-          </div>
-
-          {/* Featured match — broadcast card */}
-          {heroMatch && (
-            <button
-              onClick={() => navigate({ name: "match-detail", id: heroMatch.id })}
-              className="card-lift edge-lit group relative w-full overflow-hidden rounded-2xl border border-border/80 bg-card/80 text-left backdrop-blur-md"
-              aria-label={`Featured match: ${heroMatch.homeTeam.name} vs ${heroMatch.awayTeam.name}`}
-            >
-              {/* Comp strip */}
-              <div className="flex items-center justify-between gap-2 border-b border-border/70 bg-muted/40 px-5 py-3">
-                <span className="flex min-w-0 items-center gap-2 text-xs font-bold text-foreground">
-                  <span
-                    className="h-2 w-2 rounded-[3px]"
-                    style={{ backgroundColor: heroMatch.competition.accentColor ?? "var(--primary)" }}
-                    aria-hidden
-                  />
-                  <span className="truncate">{heroMatch.competition.name}</span>
-                  {heroMatch.round && (
-                    <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground">
-                      {heroMatch.round}
-                    </span>
-                  )}
-                </span>
-                {heroMatch.status === "LIVE" || heroLive ? (
-                  <LiveBadge minute={heroLive?.minute ?? heroMatch.minute} period={heroLive?.period ?? heroMatch.period} size="sm" />
-                ) : (
-                  <span className="shrink-0 rounded-md border border-primary/35 bg-primary/10 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-primary">
-                    {heroMatch.competition.shortName}
-                  </span>
-                )}
-              </div>
-
-              {/* Teams + score */}
-              <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-8 sm:gap-5 sm:py-10">
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <TeamBadge team={heroMatch.homeTeam} size="hero" />
-                  <p className="line-clamp-2 text-[13px] font-bold leading-tight sm:text-sm">{heroMatch.homeTeam.name}</p>
-                </div>
-                <div className="px-1 text-center">
-                  {heroMatch.status === "SCHEDULED" ? (
-                    <>
-                      <p className="tabular font-display text-4xl font-bold leading-none sm:text-5xl">
-                        {formatKickoff(heroMatch.kickoff).time}
-                      </p>
-                      <p className="mt-3 inline-block rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                        {formatKickoff(heroMatch.kickoff).relative}
-                      </p>
-                    </>
-                  ) : (
-                    <>
-                      <p className="tabular font-display text-5xl font-bold leading-none text-fhb-red sm:text-6xl">
-                        {fmtNum(heroLive?.homeScore ?? heroMatch.homeScore ?? 0)}
-                        <span className="mx-2 text-muted-foreground/30">-</span>
-                        {fmtNum(heroLive?.awayScore ?? heroMatch.awayScore ?? 0)}
-                      </p>
-                      <p className="mt-3">
-                        <LiveBadge minute={heroLive?.minute ?? heroMatch.minute} period={heroLive?.period ?? heroMatch.period} size="sm" />
-                      </p>
-                    </>
-                  )}
-                </div>
-                <div className="flex flex-col items-center gap-3 text-center">
-                  <TeamBadge team={heroMatch.awayTeam} size="hero" />
-                  <p className="line-clamp-2 text-[13px] font-bold leading-tight sm:text-sm">{heroMatch.awayTeam.name}</p>
-                </div>
-              </div>
-
-              {/* Meta footer */}
-              <div className="flex items-center justify-between gap-2 border-t border-border/70 bg-muted/30 px-5 py-3 text-[11px] text-muted-foreground">
-                <span className="flex min-w-0 items-center gap-1.5">
-                  <MapPin className="h-3.5 w-3.5 shrink-0 text-primary/80" aria-hidden />
-                  <span className="truncate">{heroMatch.venue ?? heroMatch.competition.name}</span>
-                </span>
-                <span className="flex shrink-0 items-center gap-1.5">
-                  <CalendarDays className="h-3.5 w-3.5 text-primary/80" aria-hidden />
-                  {formatKickoff(heroMatch.kickoff).date}
-                  <span className="flex items-center gap-0.5 font-bold text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    Match Centre <ChevronRight className="h-3 w-3" aria-hidden />
-                  </span>
-                </span>
-              </div>
-            </button>
           )}
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
+            <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
+              <CalendarDays className="h-3.5 w-3.5 text-primary" aria-hidden />
+              Next Up
+            </p>
+            <div className="divide-y divide-border/60">
+              {upcoming.slice(0, 4).map((m) => (
+                <MatchRow key={m.id} match={m} showCompetition />
+              ))}
+            </div>
+            <button
+              onClick={() => navigate({ name: "scores" })}
+              className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
+            >
+              Full fixture list <ChevronRight className="h-3 w-3" aria-hidden />
+            </button>
+          </div>
+          <AdSlot placement="SIDEBAR" />
         </div>
       </section>
 
       {/* Header banner ad */}
-      <div className="reveal mt-6">
+      <div className="reveal mt-8">
         <AdSlot placement="HEADER_BANNER" />
       </div>
 
-      {/* ═══════════ LIVE NOW ═══════════ */}
-      {liveNow.length > 0 && (
-        <section className="reveal mt-12" aria-label="Live matches">
-          <SectionHeader title="Live Now" accent="red" kicker="live now" icon={<Radio className="h-4 w-4" aria-hidden />} actionLabel="All Scores" actionView={{ name: "scores" }} />
-          <div className={cn("grid grid-cols-1 gap-4", liveNow.length > 1 && "sm:grid-cols-2")}>
-            {liveNow.map((m) => (
-              <MatchCard key={m.id} match={m} />
+      {/* ═══════════ NEWS — editorial grid + most read ═══════════ */}
+      <section className="reveal mt-8" aria-label="Latest news">
+        <SectionHeader
+          title="Football News & Transfers"
+          kicker="latest stories"
+          icon={<Newspaper className="h-3.5 w-3.5" aria-hidden />}
+          actionLabel="All News"
+          actionView={{ name: "news" }}
+        />
+        <div className="grid gap-6 lg:grid-cols-12">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-2">
+            {secondaryNews.slice(0, 4).map((a) => (
+              <NewsCard key={a.id} article={a} />
             ))}
           </div>
-        </section>
-      )}
-
-      {/* ═══════════ FIXTURES & RESULTS ═══════════ */}
-      <section className="reveal mt-12" aria-label="Fixtures & results">
-        <SectionHeader title="Match Centre" kicker="fixtures & results" icon={<Zap className="h-4 w-4" aria-hidden />} actionLabel="All Matches" actionView={{ name: "scores" }} />
-        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-          <div className="edge-lit min-w-0 rounded-2xl border border-border bg-card/50 p-4 sm:p-5">
-            <p className="mb-4 flex items-center gap-2.5 border-b border-border/70 pb-4 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/12 text-primary">
-                <CalendarDays className="h-3.5 w-3.5" aria-hidden />
-              </span>
-              Upcoming
-            </p>
-            <div className="space-y-3.5">
-              {matchesLoading
-                ? [1, 2].map((i) => <Skeleton key={i} className="h-28 rounded-xl" />)
-                : upcoming.map((m) => <MatchCard key={m.id} match={m} showCompetition />)}
+          {/* Most read rail */}
+          <aside className="lg:col-span-4">
+            <div className="overflow-hidden rounded-xl border border-border bg-card">
+              <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
+                <Flame className="h-3.5 w-3.5 text-fhb-red" aria-hidden />
+                Most Read
+              </p>
+              <div className="divide-y divide-border/50">
+                {mostRead.map((a, i) => (
+                  <button
+                    key={a.id}
+                    onClick={() => navigate({ name: "news-detail", id: a.id })}
+                    className="group flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
+                  >
+                    <span
+                      className={cn(
+                        "tabular font-display text-xl font-bold leading-none",
+                        i === 0 ? "text-primary" : "text-muted-foreground/60"
+                      )}
+                    >
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 text-[12.5px] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+                        {a.title}
+                      </span>
+                      <span className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground">
+                        <Clock className="h-2.5 w-2.5" aria-hidden /> {timeAgo(a.createdAt)} · {fmtCompact(a.views)} reads
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-          <div className="edge-lit min-w-0 rounded-2xl border border-border bg-card/50 p-4 sm:p-5">
-            <p className="mb-4 flex items-center gap-2.5 border-b border-border/70 pb-4 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-gold/12 text-fhb-gold">
-                <Trophy className="h-3.5 w-3.5" aria-hidden />
-              </span>
-              Latest Results
-            </p>
-            <div className="space-y-3.5">
-              {matchesLoading
-                ? [1, 2].map((i) => <Skeleton key={i} className="h-28 rounded-xl" />)
-                : recent.map((m) => <MatchCard key={m.id} match={m} showCompetition />)}
+            <div className="mt-4">
+              <AdSlot placement="IN_FEED" />
             </div>
-          </div>
+          </aside>
         </div>
       </section>
 
-      {/* ═══════════ LIVE TV PROMO ═══════════ */}
-      <section className="reveal mt-12" aria-label="Live TV">
-        <button
-          onClick={() => navigate({ name: "live-tv" })}
-          className="noise stadium-panel card-lift group relative flex w-full flex-col gap-5 overflow-hidden rounded-2xl border border-border p-5 text-left sm:flex-row sm:items-center sm:p-6"
-        >
-          <span className="pitch-pattern absolute inset-0" aria-hidden />
-          <span className="relative flex h-13 w-13 h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl bg-fhb-red/15 text-fhb-red">
-            <Tv className="h-6 w-6" aria-hidden />
-          </span>
-          <span className="relative min-w-0 flex-1">
-            <span className="flex items-center gap-2">
-              <span className="text-base font-bold text-foreground sm:text-lg">Live TV — 13 channels, multi-server streaming</span>
-              <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-label="Live" />
-            </span>
-            <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
-              Watch BFL nights, European matchdays and 24/7 football channels — switch servers instantly,
-              never miss kick-off.
-            </span>
-          </span>
-          <span className="relative flex h-11 shrink-0 items-center gap-2 self-start rounded-full bg-fhb-red px-5 text-xs font-bold text-white transition-transform group-hover:scale-[1.04] sm:self-center">
-            <Play className="h-3.5 w-3.5 fill-white" aria-hidden />
-            Watch now
-          </span>
-        </button>
-      </section>
-
-      {/* ═══════════ NEWS — editorial magazine grid ═══════════ */}
-      <section className="reveal mt-14" aria-label="Latest news">
-        <SectionHeader title="Football News & Transfers" kicker="latest stories" icon={<Newspaper className="h-4 w-4" aria-hidden />} actionLabel="All News" actionView={{ name: "news" }} />
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {featured && (
-            <div className="reveal sm:col-span-2 lg:h-[440px]">
-              <NewsCard article={featured} size="lg" className="h-full min-h-[300px]" />
-            </div>
-          )}
-          {restNews[0] && (
-            <div className="reveal">
-              <NewsCard article={restNews[0]} />
-            </div>
-          )}
-          {restNews.slice(1, 4).map((a) => (
-            <div key={a.id} className="reveal">
-              <NewsCard article={a} />
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ═══════════ TRENDING SHORTS ═══════════ */}
-      <section className="reveal mt-14" aria-label="Trending shorts">
-        <SectionHeader title="Trending Shorts" accent="gold" kicker="fan originals" icon={<Flame className="h-4 w-4" aria-hidden />} actionLabel="All Shorts" actionView={{ name: "shorts" }} />
-        <div className="no-scrollbar relative -mx-4 overflow-x-auto px-4 pb-1.5 sm:mx-0 sm:px-0">
-          <div className="flex gap-4">
-            {videos.slice(0, 8).map((v, i) => (
-              <button
-                key={v.id}
-                onClick={() => navigate({ name: "shorts" })}
-                className="card-lift group relative h-64 w-40 shrink-0 overflow-hidden rounded-2xl border border-border sm:h-72 sm:w-44"
-                aria-label={`Watch shorts: ${v.title}`}
-              >
-                {v.thumbnailUrl && (
-                  <Image
-                    src={v.thumbnailUrl}
-                    alt={v.title}
-                    fill
-                    sizes="176px"
-                    className="img-zoom object-cover"
-                    unoptimized
-                  />
-                )}
-                {/* Rank chip */}
-                <span
-                  className={cn(
-                    "tabular absolute left-2.5 top-2.5 rounded-lg px-2 py-1 font-display text-[11px] font-bold backdrop-blur-md",
-                    i === 0 ? "bg-fhb-gold/90 text-black" : "bg-black/60 text-white"
-                  )}
-                >
-                  #{fmtNum(i + 1)}
-                </span>
-                {/* Play button */}
-                <span
-                  className="absolute left-1/2 top-1/2 flex h-12 w-12 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/40 text-white opacity-0 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
-                  aria-hidden
-                >
-                  <Play className="h-5 w-5 fill-white" />
-                </span>
-                <div className="photo-scrim absolute inset-0" aria-hidden />
-                <div className="absolute inset-x-3 bottom-3 text-left">
-                  <p className="line-clamp-2 text-xs font-semibold leading-snug text-white">{v.title}</p>
-                  <p className="mt-1.5 flex items-center gap-1.5 text-[10px] text-white/70">
-                    <Play className="h-2.5 w-2.5 fill-white/70" aria-hidden /> {fmtCompact(v.views)} views
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-          <span className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background to-transparent" aria-hidden />
-        </div>
-      </section>
-
-      {/* ═══════════ STANDINGS + SIDEBAR ═══════════ */}
-      <section className="reveal mt-14 grid gap-6 lg:grid-cols-3" aria-label="League table">
-        <div className="lg:col-span-2">
-          <SectionHeader title="BFL Points Table" kicker="bangladesh football league" icon={<Trophy className="h-4 w-4" aria-hidden />} actionLabel="Full Table" actionView={{ name: "standings" }} />
+      {/* ═══════════ STANDINGS + TOP SCORERS ═══════════ */}
+      <section className="reveal mt-8 grid gap-6 lg:grid-cols-12" aria-label="League table">
+        <div className="lg:col-span-8">
+          <SectionHeader
+            title="BFL Points Table"
+            kicker="bangladesh football league"
+            icon={<Trophy className="h-3.5 w-3.5" aria-hidden />}
+            actionLabel="Full Table"
+            actionView={{ name: "standings" }}
+          />
           <StandingsTable standings={standings} compact limit={6} />
         </div>
-        <div className="space-y-5">
-          <AdSlot placement="SIDEBAR" />
+        <div className="space-y-4 lg:col-span-4">
           <TopScorersMini />
         </div>
       </section>
 
-      {/* ═══════════ PREMIUM BANNER — cinematic gold ═══════════ */}
-      <section className="reveal mt-14" aria-label="Premium membership">
+      {/* ═══════════ TRENDING SHORTS ═══════════ */}
+      {videos.length > 0 && (
+        <section className="reveal mt-8" aria-label="Trending shorts">
+          <SectionHeader
+            title="Trending Shorts"
+            accent="gold"
+            kicker="fan originals"
+            icon={<Flame className="h-3.5 w-3.5" aria-hidden />}
+            actionLabel="All Shorts"
+            actionView={{ name: "shorts" }}
+          />
+          <div className="no-scrollbar relative -mx-4 overflow-x-auto px-4 pb-1.5 sm:mx-0 sm:px-0">
+            <div className="flex gap-3.5">
+              {videos.slice(0, 8).map((v, i) => (
+                <button
+                  key={v.id}
+                  onClick={() => navigate({ name: "shorts" })}
+                  className="group relative h-60 w-40 shrink-0 overflow-hidden rounded-xl border border-border bg-card sm:h-64 sm:w-44"
+                  aria-label={`Watch shorts: ${v.title}`}
+                >
+                  {v.thumbnailUrl && (
+                    <Image
+                      src={v.thumbnailUrl}
+                      alt={v.title}
+                      fill
+                      sizes="176px"
+                      loading="eager"
+                      className="img-zoom object-cover"
+                      unoptimized
+                    />
+                  )}
+                  <span
+                    className={cn(
+                      "tabular absolute left-2.5 top-2.5 rounded-md px-2 py-1 font-display text-[11px] font-bold backdrop-blur-md",
+                      i === 0 ? "bg-fhb-gold/90 text-black" : "bg-black/60 text-white"
+                    )}
+                  >
+                    #{i + 1}
+                  </span>
+                  <span
+                    className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white opacity-0 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
+                    aria-hidden
+                  >
+                    <Play className="h-5 w-5 fill-white" />
+                  </span>
+                  <div className="photo-scrim absolute inset-0" aria-hidden />
+                  <div className="absolute inset-x-3 bottom-3 text-left">
+                    <p className="line-clamp-2 text-xs font-semibold leading-snug text-white">{v.title}</p>
+                    <p className="mt-1 flex items-center gap-1.5 text-[10px] text-white/70">
+                      <Play className="h-2.5 w-2.5 fill-white/70" aria-hidden /> {fmtCompact(v.views)} views
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+            <span className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background to-transparent" aria-hidden />
+          </div>
+        </section>
+      )}
+
+      {/* ═══════════ LIVE TV + PREMIUM band ═══════════ */}
+      <section className="reveal mt-8 grid gap-4 lg:grid-cols-2" aria-label="Live TV and premium">
+        <button
+          onClick={() => navigate({ name: "live-tv" })}
+          className="stadium-panel pitch-pattern card-lift group relative flex flex-col gap-4 overflow-hidden rounded-xl border border-border p-5 text-left sm:flex-row sm:items-center"
+        >
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fhb-red/15 text-fhb-red">
+            <Tv className="h-6 w-6" aria-hidden />
+          </span>
+          <span className="relative min-w-0 flex-1">
+            <span className="flex items-center gap-2">
+              <span className="text-[15px] font-bold text-foreground sm:text-base">Live TV — 13 channels</span>
+              <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-label="Live" />
+            </span>
+            <span className="mt-1 block text-[12.5px] leading-relaxed text-muted-foreground">
+              BFL nights, European matchdays and 24/7 football channels — multi-server streaming.
+            </span>
+          </span>
+          <span className="flex h-10 shrink-0 items-center gap-2 self-start rounded-lg bg-fhb-red px-4 text-xs font-bold text-white transition-transform group-hover:scale-[1.03] sm:self-center">
+            <Play className="h-3.5 w-3.5 fill-white" aria-hidden />
+            Watch now
+          </span>
+        </button>
+
         <button
           onClick={() => navigate({ name: "premium" })}
-          className="noise gold-panel group relative flex w-full flex-col gap-6 overflow-hidden rounded-3xl border border-fhb-gold/25 p-6 text-left sm:flex-row sm:items-center sm:p-8"
+          className="gold-panel card-lift group relative flex flex-col gap-4 overflow-hidden rounded-xl border border-fhb-gold/25 p-5 text-left sm:flex-row sm:items-center"
         >
-          <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-fhb-gold/30 bg-fhb-gold/15 text-fhb-gold">
-            <Crown className="h-7 w-7" aria-hidden />
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-fhb-gold/25 bg-fhb-gold/15 text-fhb-gold">
+            <Crown className="h-6 w-6" aria-hidden />
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="eyebrow text-[10px] text-fhb-gold">FHB Premium</p>
-            <h3 className="mt-1.5 text-xl font-bold leading-tight text-foreground sm:text-2xl">
-              An ad-free experience, <span className="gold-text">exclusive</span> transfer news and HD highlights
-            </h3>
-            <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-              Starting at just Tk 99/month — with even bigger earning opportunities for creators.
-            </p>
-          </div>
-          <span className="sheen flex h-12 shrink-0 items-center gap-2 self-start rounded-full bg-fhb-gold px-6 text-sm font-bold text-black transition-transform group-hover:scale-[1.04] sm:self-center">
+          <span className="relative min-w-0 flex-1">
+            <span className="eyebrow text-[10px] text-fhb-gold">FHB Premium</span>
+            <span className="mt-0.5 block text-[15px] font-bold leading-snug text-foreground sm:text-base">
+              Ad-free football, from <span className="gold-text">Tk 99/month</span>
+            </span>
+            <span className="mt-1 block text-[12.5px] leading-relaxed text-muted-foreground">
+              Exclusive transfer news, HD highlights and bigger creator earnings.
+            </span>
+          </span>
+          <span className="flex h-10 shrink-0 items-center gap-2 self-start rounded-lg bg-fhb-gold px-4 text-xs font-bold text-black transition-transform group-hover:scale-[1.03] sm:self-center">
             Upgrade
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
+            <ChevronRight className="h-3.5 w-3.5" aria-hidden />
           </span>
         </button>
       </section>
 
       {/* ═══════════ COMMUNITY CTA ═══════════ */}
-      <section className="reveal mt-6" aria-label="Fan community">
+      <section className="reveal mt-4" aria-label="Fan community">
         <button
           onClick={() => navigate({ name: "community" })}
-          className="card-lift group relative flex w-full items-center gap-5 overflow-hidden rounded-2xl border border-border bg-card p-5 text-left sm:p-6"
+          className="card-lift group relative flex w-full items-center gap-4 overflow-hidden rounded-xl border border-border bg-card p-5 text-left"
         >
-          <span className="flex h-13 w-13 h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
             <Users className="h-6 w-6" aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-base font-bold text-foreground sm:text-lg">Fan Community</span>
-            <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
-              A home for Bangladesh's football fans — share your takes and join the discussion on every matchday.
+            <span className="block text-[15px] font-bold text-foreground">Join the Fan Community</span>
+            <span className="mt-1 block text-[12.5px] leading-relaxed text-muted-foreground">
+              Share your takes, react to every matchday and connect with fans across Bangladesh.
             </span>
           </span>
           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1.5 group-hover:text-primary" aria-hidden />
         </button>
       </section>
-
-      {/* In-feed ad */}
-      <div className="reveal mt-8">
-        <AdSlot placement="IN_FEED" />
-      </div>
     </div>
   );
 }
@@ -442,9 +435,9 @@ function TopScorersMini() {
   const navigate = useAppStore((s) => s.navigate);
   if (scorers.length === 0) return null;
   return (
-    <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
-      <p className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-3.5 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">
-        <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-gold/15 text-fhb-gold">
+    <div className="overflow-hidden rounded-xl border border-border bg-card">
+      <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
+        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-fhb-gold/15 text-fhb-gold">
           <Goal className="h-3.5 w-3.5" aria-hidden />
         </span>
         Top Scorers
@@ -454,19 +447,19 @@ function TopScorersMini() {
           <button
             key={p.id}
             onClick={() => navigate({ name: "player-detail", id: p.id })}
-            className="group flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-accent/50"
+            className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
           >
             <span
               className={
-                "tabular flex h-7 w-7 shrink-0 items-center justify-center rounded-lg font-display text-[11px] font-bold " +
+                "tabular flex h-6 w-6 shrink-0 items-center justify-center rounded-md font-display text-[11px] font-bold " +
                 (i === 0 ? "bg-fhb-gold/20 text-fhb-gold" : i < 3 ? "bg-primary/12 text-primary" : "bg-muted text-muted-foreground")
               }
             >
-              {fmtNum(i + 1)}
+              {i + 1}
             </span>
-            {p.team && <TeamBadge team={p.team} size="xs" />}
-            <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-foreground group-hover:text-primary">{p.name}</span>
-            <span className="tabular shrink-0 rounded-md bg-primary/10 px-2 py-0.5 font-display text-sm font-bold text-primary">
+            {p.team && <TeamCrest team={p.team} size="xs" />}
+            <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-foreground group-hover:text-primary">{p.name}</span>
+            <span className="tabular shrink-0 rounded-md bg-primary/10 px-2 py-0.5 font-display text-[13px] font-bold text-primary">
               {fmtNum(p.goals)}
             </span>
           </button>
@@ -474,7 +467,7 @@ function TopScorersMini() {
       </div>
       <button
         onClick={() => navigate({ name: "standings" })}
-        className="flex w-full items-center justify-center gap-1 border-t border-border py-3 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
+        className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
       >
         Full list <ChevronRight className="h-3 w-3" aria-hidden />
       </button>

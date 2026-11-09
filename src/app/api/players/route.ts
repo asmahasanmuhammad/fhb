@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     const players = await db.player.findMany({
       where,
-      include: { team: { select: { id: true, name: true, initials: true, color: true, color2: true } } },
+      include: { team: { select: { id: true, name: true, initials: true, color: true, color2: true, logoUrl: true } } },
       orderBy,
       take: 120,
     });

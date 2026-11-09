@@ -5,7 +5,8 @@ import { useEffect } from "react";
 /**
  * Scroll-reveal: observes every `.reveal` element and adds `.is-visible`
  * as it enters the viewport. A MutationObserver catches elements that
- * mount later (e.g. after data loads) so nothing gets stuck hidden.
+ * mount later (e.g. after data loads), and a safety timeout force-shows
+ * everything after 1s so no section can ever get stuck hidden.
  * Mount once per view at the top level.
  */
 export function useReveal() {
@@ -19,7 +20,7 @@ export function useReveal() {
           }
         }
       },
-      { rootMargin: "0px 0px -6% 0px", threshold: 0.06 }
+      { rootMargin: "0px 0px -4% 0px", threshold: 0.04 }
     );
 
     const observeAll = () => {
@@ -35,13 +36,20 @@ export function useReveal() {
 
     observeAll();
 
-    // Catch elements mounted later (async data, tab switches)
     const mo = new MutationObserver(() => observeAll());
     mo.observe(document.body, { childList: true, subtree: true });
+
+    // Safety net — nothing stays hidden longer than 1s
+    const safety = window.setTimeout(() => {
+      document
+        .querySelectorAll<HTMLElement>(".reveal:not(.is-visible)")
+        .forEach((el) => el.classList.add("is-visible"));
+    }, 1000);
 
     return () => {
       io.disconnect();
       mo.disconnect();
+      window.clearTimeout(safety);
     };
   }, []);
 }

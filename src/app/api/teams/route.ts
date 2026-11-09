@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const search = req.nextUrl.searchParams.get("q")?.trim();
     let teams = await db.team.findMany({
       where: search
-        ? { OR: [{ name: { contains: search } }, { shortName: { contains: search, mode: "insensitive" } }, { city: { contains: search } }] }
+        ? { OR: [{ name: { contains: search } }, { shortName: { contains: search } }, { city: { contains: search } }] }
         : undefined,
       include: {
         _count: { select: { players: true } },

@@ -9,8 +9,8 @@ export async function GET() {
     await requireAdmin();
     const matches = await db.match.findMany({
       include: {
-        homeTeam: { select: { id: true, name: true, initials: true, color: true } },
-        awayTeam: { select: { id: true, name: true, initials: true, color: true } },
+        homeTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
+        awayTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
         competition: { select: { id: true, name: true, shortName: true } },
       },
       orderBy: { kickoff: "desc" },

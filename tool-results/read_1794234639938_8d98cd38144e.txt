@@ -1,0 +1,791 @@
+     1→     1→"use client";
+     2→     2→
+     3→     3→import { useEffect, useState } from "react";
+     4→     4→import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+     5→     5→import { useAppStore } from "@/store/app-store";
+     6→     6→import { useReveal } from "@/hooks/use-reveal";
+     7→     7→import { fmtNum, timeAgo, fmtCompact, formatMoney, fmtLocale } from "@/lib/format";
+     8→     8→import { Button } from "@/components/ui/button";
+     9→     9→import { Badge } from "@/components/ui/badge";
+    10→    10→import { Skeleton } from "@/components/ui/skeleton";
+    11→    11→import { useToast } from "@/hooks/use-toast";
+    12→    12→import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+    13→    13→import {
+    14→    14→  Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter,
+    15→    15→} from "@/components/ui/dialog";
+    16→    16→import { PageHeader } from "@/components/football/section-header";
+    17→    17→import {
+    18→    18→  LayoutDashboard, Newspaper, Zap, Users, Megaphone, Wallet, Plus, Pencil, Trash2,
+    19→    19→  TrendingUp, Eye, Video, MessageSquare, Crown, Ban, RotateCcw, CircleDot,
+    20→    20→  ShieldCheck, Info, Star, Clapperboard, CheckCircle2, XCircle,
+    21→    21→} from "lucide-react";
+    22→    22→import { cn } from "@/lib/utils";
+    23→    23→
+    24→    24→type AdminStats = {
+    25→    25→  stats: {
+    26→    26→    totalUsers: number; creators: number; premiumUsers: number; totalArticles: number;
+    27→    27→    totalVideos: number; totalPosts: number; totalComments: number; totalMatches: number;
+    28→    28→    liveMatches: number; newsViews: number; videoViews: number; adRevenue: number; membershipRevenue: number;
+    29→    29→  };
+    30→    30→  recentUsers: Array<{ id: string; name: string; username: string; role: string; isPremium: boolean; createdAt: string }>;
+    31→    31→  recentArticles: Array<{ id: string; title: string; category: string; views: number; status: string; createdAt: string }>;
+    32→    32→  ads: Array<{ id: string; name: string; placement: string; active: boolean; impressions: number; clicks: number; adCode: string | null; headline?: string | null; brandColor?: string | null; brandInitials?: string | null }>;
+    33→    33→};
+    34→    34→
+    35→    35→export function AdminView() {
+    36→    36→  const { user } = useAppStore();
+    37→    37→  useReveal();
+    38→    38→
+    39→    39→  const { data, isLoading } = useQuery<AdminStats>({
+    40→    40→    queryKey: ["admin", "stats"],
+    41→    41→    queryFn: async () => {
+    42→    42→      const res = await fetch("/api/admin/stats");
+    43→    43→      const json = await res.json();
+    44→    44→      if (!json.success) throw new Error(json.error);
+    45→    45→      return json.data;
+    46→    46→    },
+    47→    47→    retry: false,
+    48→    48→    refetchInterval: 30_000,
+    49→    49→  });
+    50→    50→
+    51→    51→  if (user && user.role !== "ADMIN") {
+    52→    52→    return (
+    53→    53→      <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-3 px-4 text-center">
+    54→    54→        <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-fhb-red/15">
+    55→    55→          <Ban className="h-7 w-7 text-fhb-red" aria-hidden />
+    56→    56→        </span>
+    57→    57→        <p className="text-sm font-bold text-foreground">Access Denied</p>
+    58→    58→        <p className="text-xs leading-relaxed text-muted-foreground">
+    59→    59→          This page is for admins only. To preview the demo, log in with <b>admin@fhb.com.bd / Admin@2025</b>.
+    60→    60→        </p>
+    61→    61→      </div>
+    62→    62→    );
+    63→    63→  }
+    64→    64→
+    65→    65→  if (isLoading || !data) {
+    66→    66→    return (
+    67→    67→      <div className="mx-auto max-w-6xl space-y-4 px-4 pt-6">
+    68→    68→        <Skeleton className="h-24 rounded-xl" />
+    69→    69→        <Skeleton className="h-96 rounded-lg" />
+    70→    70→      </div>
+    71→    71→    );
+    72→    72→  }
+    73→    73→
+    74→    74→  const s = data.stats;
+    75→    75→
+    76→    76→  const kpis = [
+    77→    77→    { label: "Total Users", value: fmtLocale(s.totalUsers), icon: <Users className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
+    78→    78→    { label: "Premium Members", value: fmtLocale(s.premiumUsers), icon: <Crown className="h-4 w-4" aria-hidden />, chip: "bg-fhb-gold/15 text-fhb-gold" },
+    79→    79→    { label: "News Articles", value: fmtLocale(s.totalArticles), icon: <Newspaper className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
+    80→    80→    { label: "Shorts Videos", value: fmtLocale(s.totalVideos), icon: <Video className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
+    81→    81→    { label: "Live Matches", value: fmtLocale(s.liveMatches), icon: <CircleDot className="h-4 w-4" aria-hidden />, chip: "bg-fhb-red/15 text-fhb-red" },
+    82→    82→    { label: "Monetization Revenue", value: formatMoney(s.adRevenue + s.membershipRevenue), icon: <TrendingUp className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
+    83→    83→  ];
+    84→    84→
+    85→    85→  return (
+    86→    86→    <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-6 sm:px-6">
+    87→    87→      <PageHeader
+    88→    88→        title="Admin Dashboard"
+    89→    89→        subtitle="The complete control center of Football Hub Bangladesh"
+    90→    90→        icon={<LayoutDashboard className="h-5 w-5" aria-hidden />}
+    91→    91→      >
+    92→    92→        <span className="flex items-center gap-1.5 rounded-full border border-fhb-red/40 bg-fhb-red/10 px-3 py-1.5 text-[10px] font-bold text-fhb-red">
+    93→    93→          <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Admin
+    94→    94→        </span>
+    95→    95→      </PageHeader>
+    96→    96→
+    97→    97→      {/* KPI grid */}
+    98→    98→      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+    99→    99→        {kpis.map((c) => (
+   100→   100→          <div key={c.label} className="edge-lit card-lift rounded-2xl border border-border bg-card p-4">
+   101→   101→            <div className="flex items-center gap-2.5">
+   102→   102→              <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg", c.chip)}>{c.icon}</span>
+   103→   103→              <span className="text-[10px] font-bold leading-tight text-muted-foreground">{c.label}</span>
+   104→   104→            </div>
+   105→   105→            <p className="tabular mt-2 font-display text-lg font-bold text-foreground sm:text-xl">{c.value}</p>
+   106→   106→          </div>
+   107→   107→        ))}
+   108→   108→      </div>
+   109→   109→
+   110→   110→      {/* Secondary stats */}
+   111→   111→      <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
+   112→   112→        {[
+   113→   113→          { label: "News Views", value: fmtCompact(s.newsViews), icon: <Eye className="h-3.5 w-3.5" aria-hidden /> },
+   114→   114→          { label: "Video Views", value: fmtCompact(s.videoViews), icon: <Clapperboard className="h-3.5 w-3.5" aria-hidden /> },
+   115→   115→          { label: "Comments", value: fmtLocale(s.totalComments), icon: <MessageSquare className="h-3.5 w-3.5" aria-hidden /> },
+   116→   116→          { label: "Matches", value: fmtLocale(s.totalMatches), icon: <Zap className="h-3.5 w-3.5" aria-hidden /> },
+   117→   117→        ].map((c) => (
+   118→   118→          <div key={c.label} className="flex items-center gap-2.5 rounded-xl border border-border bg-card/60 px-3.5 py-3">
+   119→   119→            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
+   120→   120→              {c.icon}
+   121→   121→            </span>
+   122→   122→            <div className="min-w-0">
+   123→   123→              <p className="tabular font-display text-base font-bold text-foreground">{c.value}</p>
+   124→   124→              <p className="text-[10px] text-muted-foreground">{c.label}</p>
+   125→   125→            </div>
+   126→   126→          </div>
+   127→   127→        ))}
+   128→   128→      </div>
+   129→   129→
+   130→   130→      {/* Management tabs */}
+   131→   131→      <Tabs defaultValue="news" className="mt-9">
+   132→   132→        <TabsList className="grid h-auto w-full grid-cols-2 gap-1.5 rounded-2xl border border-border bg-muted/40 p-1.5 sm:grid-cols-5">
+   133→   133→          <TabsTrigger value="news" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
+   134→   134→            <Newspaper className="h-3.5 w-3.5" aria-hidden /> News
+   135→   135→          </TabsTrigger>
+   136→   136→          <TabsTrigger value="matches" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
+   137→   137→            <Zap className="h-3.5 w-3.5" aria-hidden /> Matches
+   138→   138→          </TabsTrigger>
+   139→   139→          <TabsTrigger value="users" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
+   140→   140→            <Users className="h-3.5 w-3.5" aria-hidden /> Users
+   141→   141→          </TabsTrigger>
+   142→   142→          <TabsTrigger value="ads" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
+   143→   143→            <Megaphone className="h-3.5 w-3.5" aria-hidden /> Ads
+   144→   144→          </TabsTrigger>
+   145→   145→          <TabsTrigger value="payouts" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
+   146→   146→            <Wallet className="h-3.5 w-3.5" aria-hidden /> Payouts
+   147→   147→          </TabsTrigger>
+   148→   148→        </TabsList>
+   149→   149→
+   150→   150→        <TabsContent value="news" className="mt-4"><NewsManager /></TabsContent>
+   151→   151→        <TabsContent value="matches" className="mt-4"><MatchManager /></TabsContent>
+   152→   152→        <TabsContent value="users" className="mt-4"><UserManager /></TabsContent>
+   153→   153→        <TabsContent value="ads" className="mt-4"><AdManager ads={data.ads} /></TabsContent>
+   154→   154→        <TabsContent value="payouts" className="mt-4"><PayoutManager /></TabsContent>
+   155→   155→      </Tabs>
+   156→   156→    </div>
+   157→   157→  );
+   158→   158→}
+   159→   159→
+   160→   160→/* ============ NEWS MANAGEMENT ============ */
+   161→   161→type Article = {
+   162→   162→  id: string; title: string; excerpt: string; content: string; category: string;
+   163→   163→  coverUrl: string | null; status: string; featured: boolean; views: number; createdAt: string;
+   164→   164→  author: { name: string };
+   165→   165→};
+   166→   166→
+   167→   167→function NewsManager() {
+   168→   168→  const { toast } = useToast();
+   169→   169→  const queryClient = useQueryClient();
+   170→   170→  const [dialogOpen, setDialogOpen] = useState(false);
+   171→   171→  const [editing, setEditing] = useState<Article | null>(null);
+   172→   172→  const [form, setForm] = useState({ title: "", excerpt: "", content: "", category: "BFL", coverUrl: "", featured: false, status: "PUBLISHED" });
+   173→   173→
+   174→   174→  const { data, isLoading } = useQuery<{ articles: Article[] }>({
+   175→   175→    queryKey: ["admin", "news"],
+   176→   176→    queryFn: async () => {
+   177→   177→      const res = await fetch("/api/admin/news");
+   178→   178→      return res.json().then((j) => j.data);
+   179→   179→    },
+   180→   180→  });
+   181→   181→
+   182→   182→  const save = useMutation({
+   183→   183→    mutationFn: async () => {
+   184→   184→      const isEdit = !!editing;
+   185→   185→      const res = await fetch("/api/admin/news", {
+   186→   186→        method: isEdit ? "PUT" : "POST",
+   187→   187→        headers: { "Content-Type": "application/json" },
+   188→   188→        body: JSON.stringify(isEdit ? { id: editing!.id, ...form } : form),
+   189→   189→      });
+   190→   190→      const json = await res.json();
+   191→   191→      if (!json.success) throw new Error(json.error);
+   192→   192→      return json;
+   193→   193→    },
+   194→   194→    onSuccess: () => {
+   195→   195→      toast({ title: editing ? "Article updated" : "Article published" });
+   196→   196→      setDialogOpen(false);
+   197→   197→      setEditing(null);
+   198→   198→      queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
+   199→   199→      queryClient.invalidateQueries({ queryKey: ["news"] });
+   200→   200→    },
+   201→   201→    onError: (e: Error) => toast({ title: "Save failed", description: e.message, variant: "destructive" }),
+   202→   202→  });
+   203→   203→
+   204→   204→  const del = useMutation({
+   205→   205→    mutationFn: async (id: string) => {
+   206→   206→      const res = await fetch(`/api/admin/news?id=${id}`, { method: "DELETE" });
+   207→   207→      const json = await res.json();
+   208→   208→      if (!json.success) throw new Error(json.error);
+   209→   209→      return json;
+   210→   210→    },
+   211→   211→    onSuccess: () => {
+   212→   212→      toast({ title: "Article deleted" });
+   213→   213→      queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
+   214→   214→      queryClient.invalidateQueries({ queryKey: ["news"] });
+   215→   215→    },
+   216→   216→    onError: (e: Error) => toast({ title: "Delete failed", description: e.message, variant: "destructive" }),
+   217→   217→  });
+   218→   218→
+   219→   219→  const openNew = () => {
+   220→   220→    setEditing(null);
+   221→   221→    setForm({ title: "", excerpt: "", content: "", category: "BFL", coverUrl: "", featured: false, status: "PUBLISHED" });
+   222→   222→    setDialogOpen(true);
+   223→   223→  };
+   224→   224→
+   225→   225→  const openEdit = (a: Article) => {
+   226→   226→    setEditing(a);
+   227→   227→    setForm({ title: a.title, excerpt: a.excerpt, content: a.content, category: a.category, coverUrl: a.coverUrl ?? "", featured: a.featured, status: a.status });
+   228→   228→    setDialogOpen(true);
+   229→   229→  };
+   230→   230→
+   231→   231→  const articles = data?.articles ?? [];
+   232→   232→  const inputCls = "w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20";
+   233→   233→
+   234→   234→  return (
+   235→   235→    <div>
+   236→   236→      <div className="mb-3 flex items-center justify-between">
+   237→   237→        <p className="flex items-center gap-2 text-xs text-muted-foreground">
+   238→   238→          <Newspaper className="h-3.5 w-3.5 text-primary" aria-hidden />
+   239→   239→          {fmtNum(articles.length)} articles total
+   240→   240→        </p>
+   241→   241→        <Button size="sm" onClick={openNew} className="gap-1.5 rounded-md bg-primary font-bold">
+   242→   242→          <Plus className="h-4 w-4" aria-hidden /> New Article
+   243→   243→        </Button>
+   244→   244→      </div>
+   245→   245→
+   246→   246→      {isLoading ? (
+   247→   247→        [1, 2, 3].map((i) => <Skeleton key={i} className="mb-2 h-16 rounded-lg" />)
+   248→   248→      ) : (
+   249→   249→        <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
+   250→   250→          <div className="divide-y divide-border/50">
+   251→   251→            {articles.map((a) => (
+   252→   252→              <div key={a.id} className="flex flex-wrap items-center gap-3 p-3 transition-colors hover:bg-accent/30">
+   253→   253→                <div className="min-w-0 flex-1">
+   254→   254→                  <p className="truncate text-sm font-semibold text-foreground">{a.title}</p>
+   255→   255→                  <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[10px] text-muted-foreground">
+   256→   256→                    <Badge variant="secondary" className="h-4 rounded-sm px-1.5 text-[9px]">{a.category}</Badge>
+   257→   257→                    <span className={a.status === "PUBLISHED" ? "font-bold text-primary" : "font-bold text-fhb-gold"}>
+   258→   258→                      {a.status === "PUBLISHED" ? "Published" : "Draft"}
+   259→   259→                    </span>
+   260→   260→                    <span className="flex items-center gap-0.5">
+   261→   261→                      <Eye className="h-2.5 w-2.5" aria-hidden />
+   262→   262→                      {fmtCompact(a.views)}
+   263→   263→                    </span>
+   264→   264→                    <span>{timeAgo(a.createdAt)}</span>
+   265→   265→                    {a.featured && <Star className="h-3 w-3 fill-fhb-gold text-fhb-gold" aria-label="Featured" />}
+   266→   266→                  </p>
+   267→   267→                </div>
+   268→   268→                <div className="flex items-center gap-1">
+   269→   269→                  <Button variant="ghost" size="sm" onClick={() => openEdit(a)} aria-label="Edit" className="h-8 w-8 p-0">
+   270→   270→                    <Pencil className="h-3.5 w-3.5" aria-hidden />
+   271→   271→                  </Button>
+   272→   272→                  <Button
+   273→   273→                    variant="ghost"
+   274→   274→                    size="sm"
+   275→   275→                    onClick={() => del.mutate(a.id)}
+   276→   276→                    className="h-8 w-8 p-0 text-fhb-red hover:text-fhb-red"
+   277→   277→                    aria-label="Delete"
+   278→   278→                  >
+   279→   279→                    <Trash2 className="h-3.5 w-3.5" aria-hidden />
+   280→   280→                  </Button>
+   281→   281→                </div>
+   282→   282→              </div>
+   283→   283→            ))}
+   284→   284→          </div>
+   285→   285→        </div>
+   286→   286→      )}
+   287→   287→
+   288→   288→      {/* Editor dialog */}
+   289→   289→      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+   290→   290→        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-xl">
+   291→   291→          <DialogHeader>
+   292→   292→            <DialogTitle className="font-display">{editing ? "Edit Article" : "Write New Article"}</DialogTitle>
+   293→   293→          </DialogHeader>
+   294→   294→          <div className="space-y-3.5">
+   295→   295→            <div>
+   296→   296→              <label className="mb-1 block text-[11px] font-bold text-foreground">Headline *</label>
+   297→   297→              <input
+   298→   298→                value={form.title}
+   299→   299→                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
+   300→   300→                className={inputCls}
+   301→   301→                aria-label="Headline"
+   302→   302→              />
+   303→   303→            </div>
+   304→   304→            <div>
+   305→   305→              <label className="mb-1 block text-[11px] font-bold text-foreground">Excerpt *</label>
+   306→   306→              <textarea
+   307→   307→                value={form.excerpt}
+   308→   308→                onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
+   309→   309→                rows={2}
+   310→   310→                className={cn(inputCls, "resize-none")}
+   311→   311→                aria-label="Excerpt"
+   312→   312→              />
+   313→   313→            </div>
+   314→   314→            <div>
+   315→   315→              <label className="mb-1 block text-[11px] font-bold text-foreground">Body (Markdown supported) *</label>
+   316→   316→              <textarea
+   317→   317→                value={form.content}
+   318→   318→                onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
+   319→   319→                rows={8}
+   320→   320→                className={cn(inputCls, "resize-y")}
+   321→   321→                aria-label="Article body"
+   322→   322→              />
+   323→   323→            </div>
+   324→   324→            <div className="grid grid-cols-2 gap-3">
+   325→   325→              <div>
+   326→   326→                <label className="mb-1 block text-[11px] font-bold text-foreground">Category</label>
+   327→   327→                <select
+   328→   328→                  value={form.category}
+   329→   329→                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
+   330→   330→                  className={inputCls}
+   331→   331→                  aria-label="Category"
+   332→   332→                >
+   333→   333→                  {["BFL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"].map((c) => (
+   334→   334→                    <option key={c} value={c}>{c}</option>
+   335→   335→                  ))}
+   336→   336→                </select>
+   337→   337→              </div>
+   338→   338→              <div>
+   339→   339→                <label className="mb-1 block text-[11px] font-bold text-foreground">Status</label>
+   340→   340→                <select
+   341→   341→                  value={form.status}
+   342→   342→                  onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
+   343→   343→                  className={inputCls}
+   344→   344→                  aria-label="Status"
+   345→   345→                >
+   346→   346→                  <option value="PUBLISHED">Published</option>
+   347→   347→                  <option value="DRAFT">Draft</option>
+   348→   348→                </select>
+   349→   349→              </div>
+   350→   350→            </div>
+   351→   351→            <div>
+   352→   352→              <label className="mb-1 block text-[11px] font-bold text-foreground">Cover Image URL</label>
+   353→   353→              <input
+   354→   354→                value={form.coverUrl}
+   355→   355→                onChange={(e) => setForm((f) => ({ ...f, coverUrl: e.target.value }))}
+   356→   356→                placeholder="https://..."
+   357→   357→                className={inputCls}
+   358→   358→                aria-label="Cover image URL"
+   359→   359→              />
+   360→   360→            </div>
+   361→   361→            <label className="flex items-center gap-2 text-xs font-semibold text-foreground">
+   362→   362→              <input
+   363→   363→                type="checkbox"
+   364→   364→                checked={form.featured}
+   365→   365→                onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
+   366→   366→                className="h-4 w-4 accent-[var(--primary)]"
+   367→   367→              />
+   368→   368→              Feature on homepage
+   369→   369→              <Star className="h-3.5 w-3.5 text-fhb-gold" aria-hidden />
+   370→   370→            </label>
+   371→   371→          </div>
+   372→   372→          <DialogFooter>
+   373→   373→            <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-md">
+   374→   374→              Cancel
+   375→   375→            </Button>
+   376→   376→            <Button
+   377→   377→              onClick={() => save.mutate()}
+   378→   378→              disabled={save.isPending || !form.title.trim() || !form.content.trim()}
+   379→   379→              className="rounded-md bg-primary font-bold"
+   380→   380→            >
+   381→   381→              {save.isPending ? "Saving..." : "Publish"}
+   382→   382→            </Button>
+   383→   383→          </DialogFooter>
+   384→   384→        </DialogContent>
+   385→   385→      </Dialog>
+   386→   386→    </div>
+   387→   387→  );
+   388→   388→}
+   389→   389→
+   390→   390→/* ============ MATCH MANAGER ============ */
+   391→   391→type AdminMatch = {
+   392→   392→  id: string; status: string; homeScore: number | null; awayScore: number | null; kickoff: string; round: string | null; venue: string | null;
+   393→   393→  homeTeam: { id: string; name: string; initials: string; color: string };
+   394→   394→  awayTeam: { id: string; name: string; initials: string; color: string };
+   395→   395→  competition: { id: string; name: string; shortName: string };
+   396→   396→};
+   397→   397→
+   398→   398→function MatchManager() {
+   399→   399→  const { toast } = useToast();
+   400→   400→  const queryClient = useQueryClient();
+   401→   401→
+   402→   402→  const { data, isLoading } = useQuery<{ matches: AdminMatch[] }>({
+   403→   403→    queryKey: ["admin", "matches"],
+   404→   404→    queryFn: async () => {
+   405→   405→      const res = await fetch("/api/admin/matches");
+   406→   406→      return res.json().then((j) => j.data);
+   407→   407→    },
+   408→   408→  });
+   409→   409→
+   410→   410→  const update = useMutation({
+   411→   411→    mutationFn: async (payload: Record<string, unknown>) => {
+   412→   412→      const res = await fetch("/api/admin/matches", {
+   413→   413→        method: "PUT",
+   414→   414→        headers: { "Content-Type": "application/json" },
+   415→   415→        body: JSON.stringify(payload),
+   416→   416→      });
+   417→   417→      const json = await res.json();
+   418→   418→      if (!json.success) throw new Error(json.error);
+   419→   419→      return json;
+   420→   420→    },
+   421→   421→    onSuccess: (_d, payload) => {
+   422→   422→      const msg =
+   423→   423→        payload.status === "LIVE"
+   424→   424→          ? "Match is now live! The live simulation service will pick it up within 15 seconds."
+   425→   425→          : "Match updated";
+   426→   426→      toast({ title: msg });
+   427→   427→      queryClient.invalidateQueries({ queryKey: ["admin", "matches"] });
+   428→   428→      queryClient.invalidateQueries({ queryKey: ["matches"] });
+   429→   429→    },
+   430→   430→    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
+   431→   431→  });
+   432→   432→
+   433→   433→  const matches = data?.matches ?? [];
+   434→   434→  const sorted = [...matches].sort((a, b) => {
+   435→   435→    const rank = (s: string) => (s === "LIVE" ? 0 : s === "SCHEDULED" ? 1 : 2);
+   436→   436→    return rank(a.status) - rank(b.status) || +new Date(b.kickoff) - +new Date(a.kickoff);
+   437→   437→  });
+   438→   438→
+   439→   439→  return (
+   440→   440→    <div>
+   441→   441→      <p className="mb-3 flex items-start gap-2.5 rounded-xl border border-fhb-red/25 bg-fhb-red/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground">
+   442→   442→        <Info className="mt-0.5 h-4 w-4 shrink-0 text-fhb-red" aria-hidden />
+   443→   443→        <span>
+   444→   444→          <b className="text-foreground">Live test tip:</b> set any upcoming match's status to <b className="text-fhb-red">&ldquo;Live&rdquo;</b> — the WebSocket simulation service will automatically start updating minutes and scores.
+   445→   445→        </span>
+   446→   446→      </p>
+   447→   447→      {isLoading ? (
+   448→   448→        [1, 2, 3].map((i) => <Skeleton key={i} className="mb-2 h-16 rounded-lg" />)
+   449→   449→      ) : (
+   450→   450→        <div className="fhb-scroll max-h-[560px] space-y-2 overflow-y-auto pr-1">
+   451→   451→          {sorted.map((m) => (
+   452→   452→            <div key={m.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
+   453→   453→              <div className="min-w-0 flex-1">
+   454→   454→                <p className="truncate text-sm font-semibold text-foreground">
+   455→   455→                  {m.homeTeam.name} <span className="text-muted-foreground">vs</span> {m.awayTeam.name}
+   456→   456→                </p>
+   457→   457→                <p className="tabular text-[10px] text-muted-foreground">
+   458→   458→                  {m.competition.shortName} · {new Date(m.kickoff).toLocaleDateString("en-US")} ·{" "}
+   459→   459→                  {m.homeScore ?? "-"}:{m.awayScore ?? "-"}
+   460→   460→                </p>
+   461→   461→              </div>
+   462→   462→              <div className="flex items-center gap-1.5">
+   463→   463→                {(["SCHEDULED", "LIVE", "FINISHED"] as const).map((st) => (
+   464→   464→                  <button
+   465→   465→                    key={st}
+   466→   466→                    onClick={() => update.mutate({ id: m.id, status: st })}
+   467→   467→                    disabled={m.status === st || update.isPending}
+   468→   468→                    className={cn(
+   469→   469→                      "rounded-md border px-2.5 py-1.5 text-[10px] font-bold transition-colors disabled:opacity-40",
+   470→   470→                      m.status === st
+   471→   471→                        ? st === "LIVE"
+   472→   472→                          ? "border-fhb-red/50 bg-fhb-red/15 text-fhb-red"
+   473→   473→                          : "border-primary/50 bg-primary/15 text-primary"
+   474→   474→                        : "border-border text-muted-foreground hover:text-foreground"
+   475→   475→                    )}
+   476→   476→                  >
+   477→   477→                    {st === "LIVE" ? "Live" : st === "SCHEDULED" ? "Upcoming" : "Finished"}
+   478→   478→                  </button>
+   479→   479→                ))}
+   480→   480→              </div>
+   481→   481→            </div>
+   482→   482→          ))}
+   483→   483→        </div>
+   484→   484→      )}
+   485→   485→    </div>
+   486→   486→  );
+   487→   487→}
+   488→   488→
+   489→   489→/* ============ USER MANAGER ============ */
+   490→   490→type AdminUser = {
+   491→   491→  id: string; name: string; username: string; email: string; role: string; isPremium: boolean;
+   492→   492→  isBanned: boolean; followerCount: number; createdAt: string;
+   493→   493→  _count: { posts: number; videos: number; comments: number };
+   494→   494→};
+   495→   495→
+   496→   496→function UserManager() {
+   497→   497→  const { toast } = useToast();
+   498→   498→  const queryClient = useQueryClient();
+   499→   499→  const { data, isLoading } = useQuery<{ users: AdminUser[] }>({
+   500→   500→    queryKey: ["admin", "users"],
+   501→   501→    queryFn: async () => {
+   502→   502→      const res = await fetch("/api/admin/users");
+   503→   503→      return res.json().then((j) => j.data);
+   504→   504→    },
+   505→   505→  });
+   506→   506→
+   507→   507→  const update = useMutation({
+   508→   508→    mutationFn: async (payload: { id: string; role?: string; isBanned?: boolean }) => {
+   509→   509→      const res = await fetch("/api/admin/users", {
+   510→   510→        method: "PUT",
+   511→   511→        headers: { "Content-Type": "application/json" },
+   512→   512→        body: JSON.stringify(payload),
+   513→   513→      });
+   514→   514→      const json = await res.json();
+   515→   515→      if (!json.success) throw new Error(json.error);
+   516→   516→      return json;
+   517→   517→    },
+   518→   518→    onSuccess: () => {
+   519→   519→      toast({ title: "User updated" });
+   520→   520→      queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
+   521→   521→    },
+   522→   522→    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
+   523→   523→  });
+   524→   524→
+   525→   525→  const users = data?.users ?? [];
+   526→   526→
+   527→   527→  return (
+   528→   528→    <div>
+   529→   529→      {isLoading ? (
+   530→   530→        [1, 2, 3].map((i) => <Skeleton key={i} className="mb-2 h-16 rounded-lg" />)
+   531→   531→      ) : (
+   532→   532→        <div className="fhb-scroll max-h-[560px] space-y-2 overflow-y-auto pr-1">
+   533→   533→          {users.map((u) => (
+   534→   534→            <div key={u.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
+   535→   535→              <div className="min-w-0 flex-1">
+   536→   536→                <p className="flex flex-wrap items-center gap-1.5 truncate text-sm font-semibold text-foreground">
+   537→   537→                  {u.name}
+   538→   538→                  <span className="text-[10px] text-muted-foreground">@{u.username}</span>
+   539→   539→                  {u.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="Premium" />}
+   540→   540→                  {u.isBanned && (
+   541→   541→                    <Badge className="h-4 rounded-sm bg-fhb-red px-1.5 text-[9px] hover:bg-fhb-red">Ban</Badge>
+   542→   542→                  )}
+   543→   543→                </p>
+   544→   544→                <p className="tabular text-[10px] text-muted-foreground">
+   545→   545→                  {u.email} · {fmtLocale(u.followerCount)} followers · {fmtLocale(u._count.comments)} comments
+   546→   546→                </p>
+   547→   547→              </div>
+   548→   548→              <div className="flex flex-wrap items-center gap-1.5">
+   549→   549→                {(["USER", "CREATOR", "ADMIN"] as const).map((r) => (
+   550→   550→                  <button
+   551→   551→                    key={r}
+   552→   552→                    onClick={() => update.mutate({ id: u.id, role: r })}
+   553→   553→                    disabled={u.role === r || update.isPending}
+   554→   554→                    className={cn(
+   555→   555→                      "rounded-md border px-2 py-1 text-[10px] font-bold transition-colors disabled:opacity-40",
+   556→   556→                      u.role === r
+   557→   557→                        ? "border-primary/50 bg-primary/15 text-primary"
+   558→   558→                        : "border-border text-muted-foreground hover:text-foreground"
+   559→   559→                    )}
+   560→   560→                  >
+   561→   561→                    {r === "USER" ? "Fan" : r === "CREATOR" ? "Creator" : "Admin"}
+   562→   562→                  </button>
+   563→   563→                ))}
+   564→   564→                <Button
+   565→   565→                  variant="ghost"
+   566→   566→                  size="sm"
+   567→   567→                  onClick={() => update.mutate({ id: u.id, isBanned: !u.isBanned })}
+   568→   568→                  className={cn("h-8 w-8 p-0", u.isBanned ? "text-primary hover:text-primary" : "text-fhb-red hover:text-fhb-red")}
+   569→   569→                  aria-label={u.isBanned ? "Unban" : "Ban"}
+   570→   570→                >
+   571→   571→                  {u.isBanned ? <RotateCcw className="h-3.5 w-3.5" aria-hidden /> : <Ban className="h-3.5 w-3.5" aria-hidden />}
+   572→   572→                </Button>
+   573→   573→              </div>
+   574→   574→            </div>
+   575→   575→          ))}
+   576→   576→        </div>
+   577→   577→      )}
+   578→   578→    </div>
+   579→   579→  );
+   580→   580→}
+   581→   581→
+   582→   582→/* ============ AD MANAGER ============ */
+   583→   583→function AdManager({ ads }: { ads: AdminStats["ads"] }) {
+   584→   584→  const { toast } = useToast();
+   585→   585→  const queryClient = useQueryClient();
+   586→   586→  const [editing, setEditing] = useState<{ id: string; code: string } | null>(null);
+   587→   587→
+   588→   588→  const update = useMutation({
+   589→   589→    mutationFn: async (payload: { id: string; active?: boolean; adCode?: string }) => {
+   590→   590→      const res = await fetch("/api/admin/ads", {
+   591→   591→        method: "PUT",
+   592→   592→        headers: { "Content-Type": "application/json" },
+   593→   593→        body: JSON.stringify(payload),
+   594→   594→      });
+   595→   595→      const json = await res.json();
+   596→   596→      if (!json.success) throw new Error(json.error);
+   597→   597→      return json;
+   598→   598→    },
+   599→   599→    onSuccess: () => {
+   600→   600→      toast({ title: "Ad settings updated" });
+   601→   601→      setEditing(null);
+   602→   602→      queryClient.invalidateQueries({ queryKey: ["admin", "stats"] });
+   603→   603→      queryClient.invalidateQueries({ queryKey: ["ads"] });
+   604→   604→    },
+   605→   605→    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
+   606→   606→  });
+   607→   607→
+   608→   608→  return (
+   609→   609→    <div>
+   610→   610→      <p className="mb-3 flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground">
+   611→   611→        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+   612→   612→        <span>
+   613→   613→          Paste your Google AdSense code (ca-pub-...) here and real ads will serve across the site in matching placements. Premium
+   614→   614→          members never see ads — the core premium benefit.
+   615→   615→        </span>
+   616→   616→      </p>
+   617→   617→      <div className="space-y-2">
+   618→   618→        {ads.map((ad) => (
+   619→   619→          <div key={ad.id} className="edge-lit rounded-2xl border border-border bg-card p-4">
+   620→   620→            <div className="flex flex-wrap items-center justify-between gap-2">
+   621→   621→              <div className="flex min-w-0 items-center gap-3">
+   622→   622→                <span
+   623→   623→                  aria-hidden
+   624→   624→                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[13px] font-bold text-white"
+   625→   625→                  style={{ backgroundColor: ad.brandColor || "#1E9E50" }}
+   626→   626→                >
+   627→   627→                  {(ad.brandInitials || ad.name.slice(0, 2)).trim()}
+   628→   628→                </span>
+   629→   629→                <div className="min-w-0">
+   630→   630→                  <p className="truncate text-sm font-semibold text-foreground">{ad.name}</p>
+   631→   631→                  <p className="tabular text-[10px] text-muted-foreground">
+   632→   632→                    {ad.placement} · {fmtCompact(ad.impressions)} impressions · {fmtCompact(ad.clicks)} clicks · CTR{" "}
+   633→   633→                    {fmtNum(ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0")}%
+   634→   634→                  </p>
+   635→   635→                  {ad.headline && (
+   636→   636→                    <p className="mt-1 truncate text-[11px] italic text-muted-foreground/80">“{ad.headline}”</p>
+   637→   637→                  )}
+   638→   638→                </div>
+   639→   639→              </div>
+   640→   640→              <div className="flex items-center gap-2">
+   641→   641→                <Button variant="outline" size="sm" onClick={() => setEditing({ id: ad.id, code: ad.adCode ?? "" })} className="rounded-md">
+   642→   642→                  Edit Code
+   643→   643→                </Button>
+   644→   644→                <button
+   645→   645→                  onClick={() => update.mutate({ id: ad.id, active: !ad.active })}
+   646→   646→                  disabled={update.isPending}
+   647→   647→                  className={cn(
+   648→   648→                    "relative h-6 w-11 rounded-full transition-colors",
+   649→   649→                    ad.active ? "bg-primary" : "bg-muted"
+   650→   650→                  )}
+   651→   651→                  role="switch"
+   652→   652→                  aria-checked={ad.active}
+   653→   653→                  aria-label={`${ad.name} ${ad.active ? "Disable" : "Enable"}`}
+   654→   654→                >
+   655→   655→                  <span
+   656→   656→                    className={cn(
+   657→   657→                      "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-all",
+   658→   658→                      ad.active ? "left-[22px]" : "left-0.5"
+   659→   659→                    )}
+   660→   660→                  />
+   661→   661→                </button>
+   662→   662→              </div>
+   663→   663→            </div>
+   664→   664→            {editing?.id === ad.id && (
+   665→   665→              <div className="mt-3 space-y-2 border-t border-border pt-3">
+   666→   666→                <textarea
+   667→   667→                  value={editing.code}
+   668→   668→                  onChange={(e) => setEditing((ed) => (ed ? { ...ed, code: e.target.value } : ed))}
+   669→   669→                  rows={4}
+   670→   670→                  placeholder='<ins class="adsbygoogle" ...></ins>'
+   671→   671→                  className="w-full resize-y rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-[11px] outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
+   672→   672→                  aria-label="AdSense code"
+   673→   673→                />
+   674→   674→                <div className="flex gap-2">
+   675→   675→                  <Button size="sm" onClick={() => update.mutate({ id: ad.id, adCode: editing.code })} className="rounded-md bg-primary font-bold">
+   676→   676→                    Save
+   677→   677→                  </Button>
+   678→   678→                  <Button size="sm" variant="outline" onClick={() => setEditing(null)} className="rounded-md">
+   679→   679→                    Cancel
+   680→   680→                  </Button>
+   681→   681→                </div>
+   682→   682→              </div>
+   683→   683→            )}
+   684→   684→          </div>
+   685→   685→        ))}
+   686→   686→      </div>
+   687→   687→    </div>
+   688→   688→  );
+   689→   689→}
+   690→   690→
+   691→   691→/* ============ PAYOUT MANAGER ============ */
+   692→   692→type Payout = { id: string; amount: number; method: string; account: string; status: string; createdAt: string; creator: { name: string; username: string } };
+   693→   693→
+   694→   694→function PayoutManager() {
+   695→   695→  const { toast } = useToast();
+   696→   696→  const queryClient = useQueryClient();
+   697→   697→  const { data, isLoading } = useQuery<{ payouts: Payout[] }>({
+   698→   698→    queryKey: ["admin", "payouts"],
+   699→   699→    queryFn: async () => {
+   700→   700→      const res = await fetch("/api/admin/payouts");
+   701→   701→      return res.json().then((j) => j.data);
+   702→   702→    },
+   703→   703→  });
+   704→   704→
+   705→   705→  const update = useMutation({
+   706→   706→    mutationFn: async (payload: { id: string; status: string }) => {
+   707→   707→      const res = await fetch("/api/admin/payouts", {
+   708→   708→        method: "PUT",
+   709→   709→        headers: { "Content-Type": "application/json" },
+   710→   710→        body: JSON.stringify(payload),
+   711→   711→      });
+   712→   712→      const json = await res.json();
+   713→   713→      if (!json.success) throw new Error(json.error);
+   714→   714→      return json;
+   715→   715→    },
+   716→   716→    onSuccess: () => {
+   717→   717→      toast({ title: "Payout status updated" });
+   718→   718→      queryClient.invalidateQueries({ queryKey: ["admin", "payouts"] });
+   719→   719→      queryClient.invalidateQueries({ queryKey: ["earnings"] });
+   720→   720→    },
+   721→   721→    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
+   722→   722→  });
+   723→   723→
+   724→   724→  const payouts = data?.payouts ?? [];
+   725→   725→  const STATUS_UI: Record<string, { label: string; cls: string }> = {
+   726→   726→    PENDING: { label: "Pending", cls: "bg-fhb-gold/15 text-fhb-gold" },
+   727→   727→    APPROVED: { label: "Approved", cls: "bg-primary/15 text-primary" },
+   728→   728→    PAID: { label: "Paid", cls: "bg-primary/15 text-primary" },
+   729→   729→    REJECTED: { label: "Rejected", cls: "bg-fhb-red/15 text-fhb-red" },
+   730→   730→  };
+   731→   731→
+   732→   732→  return (
+   733→   733→    <div>
+   734→   734→      {isLoading ? (
+   735→   735→        [1, 2].map((i) => <Skeleton key={i} className="mb-2 h-16 rounded-lg" />)
+   736→   736→      ) : payouts.length === 0 ? (
+   737→   737→        <p className="edge-lit rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">
+   738→   738→          No withdrawal requests.
+   739→   739→        </p>
+   740→   740→      ) : (
+   741→   741→        <div className="space-y-2">
+   742→   742→          {payouts.map((p) => (
+   743→   743→            <div key={p.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/25">
+   744→   744→              <div className="min-w-0 flex-1">
+   745→   745→                <p className="text-sm font-semibold text-foreground">
+   746→   746→                  {p.creator.name} <span className="text-[10px] text-muted-foreground">@{p.creator.username}</span>
+   747→   747→                </p>
+   748→   748→                <p className="tabular text-[10px] text-muted-foreground">
+   749→   749→                  {formatMoney(p.amount)} · {p.method === "BKASH" ? "bKash" : p.method === "NAGAD" ? "Nagad" : "Bank"} · {p.account} · {timeAgo(p.createdAt)}
+   750→   750→                </p>
+   751→   751→              </div>
+   752→   752→              <span className={cn("rounded-sm px-2.5 py-1 text-[10px] font-bold", STATUS_UI[p.status]?.cls)}>
+   753→   753→                {STATUS_UI[p.status]?.label ?? p.status}
+   754→   754→              </span>
+   755→   755→              {p.status === "PENDING" && (
+   756→   756→                <div className="flex gap-1.5">
+   757→   757→                  <Button
+   758→   758→                    size="sm"
+   759→   759→                    variant="outline"
+   760→   760→                    onClick={() => update.mutate({ id: p.id, status: "APPROVED" })}
+   761→   761→                    className="gap-1 rounded-md text-[11px]"
+   762→   762→                  >
+   763→   763→                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" aria-hidden /> Approve
+   764→   764→                  </Button>
+   765→   765→                  <Button
+   766→   766→                    size="sm"
+   767→   767→                    variant="destructive"
+   768→   768→                    onClick={() => update.mutate({ id: p.id, status: "REJECTED" })}
+   769→   769→                    className="gap-1 rounded-md text-[11px]"
+   770→   770→                  >
+   771→   771→                    <XCircle className="h-3.5 w-3.5" aria-hidden /> Reject
+   772→   772→                  </Button>
+   773→   773→                </div>
+   774→   774→              )}
+   775→   775→              {p.status === "APPROVED" && (
+   776→   776→                <Button
+   777→   777→                  size="sm"
+   778→   778→                  onClick={() => update.mutate({ id: p.id, status: "PAID" })}
+   779→   779→                  className="gap-1 rounded-md bg-primary text-[11px] font-bold"
+   780→   780→                >
+   781→   781→                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Mark Paid
+   782→   782→                </Button>
+   783→   783→              )}
+   784→   784→            </div>
+   785→   785→          ))}
+   786→   786→        </div>
+   787→   787→      )}
+   788→   788→    </div>
+   789→   789→  );
+   790→   790→}
+   791→   791→

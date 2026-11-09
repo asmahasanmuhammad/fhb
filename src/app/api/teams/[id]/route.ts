@@ -14,8 +14,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const matches = await db.match.findMany({
       where: { OR: [{ homeTeamId: id }, { awayTeamId: id }] },
       include: {
-        homeTeam: { select: { id: true, name: true, initials: true, color: true } },
-        awayTeam: { select: { id: true, name: true, initials: true, color: true } },
+        homeTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
+        awayTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
         competition: { select: { id: true, name: true, shortName: true, accentColor: true } },
       },
       orderBy: { kickoff: "desc" },

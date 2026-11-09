@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { fmtNum } from "@/lib/format";
 
 /**
- * Broadcast LIVE chip — red square dot + minute, Oswald caps.
+ * Broadcast LIVE chip — pulsing red dot + minute.
  */
 export function LiveBadge({
   minute,
@@ -34,7 +34,7 @@ export function LiveBadge({
 }
 
 /**
- * Form guide squares — W/D/L with Bengali letters.
+ * Form guide squares — W/D/L.
  */
 export function FormDots({ form }: { form: string | null | undefined }) {
   if (!form) return null;

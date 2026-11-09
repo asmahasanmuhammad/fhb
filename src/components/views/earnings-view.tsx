@@ -4,17 +4,17 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
 import { useReveal } from "@/hooks/use-reveal";
-import { formatMoney, fmtNum, timeAgo, fmtCompact } from "@/lib/format";
+import { formatMoney, fmtNum, fmtCompact, timeAgo } from "@/lib/format";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { PageHeader } from "@/components/football/section-header";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import {
-  Wallet, TrendingUp, Eye, Download, Banknote, Clock, CheckCircle2,
-  AlertCircle, Coins, Heart, Gift, Radio, PlayCircle, BadgeCheck,
+  Wallet, TrendingUp, Banknote, AlertCircle, Coins, Heart, Gift, PlayCircle,
+  BadgeCheck, Megaphone, Crown, Info, CalendarDays, Clapperboard,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type EarningsData = {
@@ -25,13 +25,76 @@ type EarningsData = {
   monthly: Array<{ month: string; amount: number }>;
 };
 
-const STATUS_META: Record<string, { label: string; cls: string }> = {
-  PENDING: { label: "Pending", cls: "bg-fhb-gold/15 text-fhb-gold" },
-  APPROVED: { label: "Approved", cls: "bg-primary/15 text-primary" },
-  PAID: { label: "Paid", cls: "bg-primary/15 text-primary" },
-  REJECTED: { label: "Rejected", cls: "bg-fhb-red/15 text-fhb-red" },
+/* ── Presentation helpers ─────────────────────────────────── */
+
+const PAYOUT_STATUS: Record<string, { label: string; cls: string }> = {
+  PENDING: { label: "Pending", cls: "border-border bg-muted text-muted-foreground" },
+  APPROVED: { label: "Approved", cls: "border-primary/25 bg-primary/12 text-primary" },
+  PAID: { label: "Paid", cls: "border-primary/25 bg-primary/12 text-primary" },
+  REJECTED: { label: "Rejected", cls: "border-fhb-red/25 bg-fhb-red/12 text-fhb-red" },
 };
 
+const SOURCE_META: Record<string, { label: string; Icon: LucideIcon; cls: string }> = {
+  AD_REVENUE: { label: "Ad revenue", Icon: TrendingUp, cls: "bg-primary/12 text-primary" },
+  PREMIUM: { label: "Premium watch time", Icon: Crown, cls: "bg-fhb-gold/12 text-fhb-gold" },
+  TIPS: { label: "Fan tips", Icon: Heart, cls: "bg-fhb-red/12 text-fhb-red" },
+  BONUS: { label: "Bonus", Icon: Gift, cls: "bg-fhb-gold/12 text-fhb-gold" },
+};
+
+const METHOD_LABEL: Record<string, string> = { BKASH: "bKash", NAGAD: "Nagad", BANK: "Bank" };
+
+const inputCls =
+  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-2 focus:ring-primary/15";
+
+/** Consistent 11px uppercase card header with hairline rule. */
+function CardHead({ label, right }: { label: string; right?: React.ReactNode }) {
+  return (
+    <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
+      <h3 className="eyebrow text-muted-foreground">{label}</h3>
+      {right != null && <div className="min-w-0 text-right">{right}</div>}
+    </div>
+  );
+}
+
+function StatusChip({ status }: { status: string }) {
+  const meta = PAYOUT_STATUS[status];
+  return (
+    <span
+      className={cn(
+        "inline-flex shrink-0 items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold",
+        meta?.cls ?? "border-border bg-muted text-muted-foreground"
+      )}
+    >
+      {meta?.label ?? status}
+    </span>
+  );
+}
+
+/** Edge-lit stat tile — small icon, 11px label, big tabular value. */
+function StatTile({
+  label, value, sub, icon, iconCls,
+}: {
+  label: string; value: string; sub?: React.ReactNode; icon: React.ReactNode; iconCls: string;
+}) {
+  return (
+    <div className="edge-lit card-lift rounded-xl border border-border bg-card p-4">
+      <div className="flex items-center gap-2">
+        <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md", iconCls)}>
+          <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
+        </span>
+        <p className="eyebrow truncate text-muted-foreground">{label}</p>
+      </div>
+      <p className="tabular mt-3 font-display text-[1.4rem] font-bold leading-none tracking-[-0.01em] text-foreground">
+        {value}
+      </p>
+      {sub != null && <p className="mt-2 truncate text-[11px] text-muted-foreground">{sub}</p>}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   EarningsView — Stripe-class creator monetization dashboard
+   ═══════════════════════════════════════════════════════════════════ */
 export function EarningsView() {
   const { user } = useAppStore();
   const { toast } = useToast();
@@ -72,12 +135,13 @@ export function EarningsView() {
   if (user && user.role !== "CREATOR" && user.role !== "ADMIN") {
     return (
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-3 px-4 text-center">
-        <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-fhb-gold/15">
-          <AlertCircle className="h-7 w-7 text-fhb-gold" aria-hidden />
+        <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-fhb-gold/25 bg-fhb-gold/10">
+          <AlertCircle className="h-6 w-6 text-fhb-gold" aria-hidden />
         </span>
-        <p className="text-sm font-bold text-foreground">Creator Dashboard</p>
+        <p className="font-display text-base font-bold text-foreground">Creator dashboard</p>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          This page is for content creators. To preview the demo, log in with <b>creator@fhb.com.bd / Creator@2025</b>.
+          This area is reserved for content creators. To preview the demo, log in with{" "}
+          <b className="text-foreground">creator@fhb.com.bd / Creator@2025</b>.
         </p>
       </div>
     );
@@ -85,227 +149,398 @@ export function EarningsView() {
 
   if (isLoading || !data) {
     return (
-      <div className="mx-auto max-w-5xl space-y-4 px-4 pt-6">
-        <Skeleton className="h-32 rounded-2xl" />
-        <Skeleton className="h-72 rounded-2xl" />
+      <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+        <Skeleton className="h-16 rounded-xl" />
+        <div className="mt-8 grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} className="h-[104px] rounded-xl" />
+          ))}
+        </div>
+        <div className="mt-8 grid gap-6 lg:grid-cols-12">
+          <div className="space-y-6 lg:col-span-8">
+            <Skeleton className="h-72 rounded-xl" />
+            <Skeleton className="h-64 rounded-xl" />
+          </div>
+          <div className="space-y-6 lg:col-span-4">
+            <Skeleton className="h-80 rounded-xl" />
+            <Skeleton className="h-64 rounded-xl" />
+          </div>
+        </div>
       </div>
     );
   }
 
   const { stats, monthly, earnings, videos, payoutRequests } = data;
 
-  const sourceMeta = (source: string) => {
-    switch (source) {
-      case "TIPS":
-        return { icon: <Heart className="h-4 w-4" aria-hidden />, cls: "bg-fhb-red/15 text-fhb-red" };
-      case "BONUS":
-        return { icon: <Gift className="h-4 w-4" aria-hidden />, cls: "bg-fhb-gold/15 text-fhb-gold" };
-      default:
-        return { icon: <TrendingUp className="h-4 w-4" aria-hidden />, cls: "bg-primary/15 text-primary" };
-    }
-  };
+  /* Derived figures — all from existing API data */
+  const thisMonth = monthly[monthly.length - 1]?.amount ?? 0;
+  const monthlyTotal = monthly.reduce((s, m) => s + m.amount, 0);
+  const maxMonthly = Math.max(...monthly.map((m) => m.amount), 1);
+
+  const revenueByVideo = new Map<string, number>();
+  for (const e of earnings) {
+    if (e.video) revenueByVideo.set(e.video.id, (revenueByVideo.get(e.video.id) ?? 0) + e.amount);
+  }
+  const rankedVideos = [...videos].sort(
+    (a, b) => (revenueByVideo.get(b.id) ?? 0) - (revenueByVideo.get(a.id) ?? 0) || b.views - a.views
+  );
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 pb-12 pt-6 sm:px-6">
+    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       <PageHeader
-        title="Earnings Dashboard"
-        kicker="creator monetization"
-        subtitle="A complete breakdown of view revenue, tips and bonuses"
+        title="Creator earnings"
+        kicker="monetization"
+        subtitle="Ad revenue, premium watch time, tips and payouts across your shorts"
         icon={<Wallet className="h-5 w-5" aria-hidden />}
       />
 
-      {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
-        {[
-          { label: "Total Earnings", value: formatMoney(stats.total), icon: <Coins className="h-4 w-4" aria-hidden />, chipCls: "bg-fhb-gold/15 text-fhb-gold", valueCls: "text-fhb-gold" },
-          { label: "Withdrawable Balance", value: formatMoney(stats.balance), icon: <Banknote className="h-4 w-4" aria-hidden />, chipCls: "bg-primary/15 text-primary", valueCls: "text-primary" },
-          { label: "Total Views", value: fmtCompact(stats.totalViews), icon: <Eye className="h-4 w-4" aria-hidden />, chipCls: "bg-muted text-muted-foreground", valueCls: "text-foreground" },
-          { label: "RPM (per 1,000 views)", value: `Tk ${fmtNum(stats.rpm.toFixed(1))}`, icon: <TrendingUp className="h-4 w-4" aria-hidden />, chipCls: "bg-fhb-red/15 text-fhb-red", valueCls: "text-fhb-red" },
-        ].map((s) => (
-          <div key={s.label} className="edge-lit card-lift rounded-2xl border border-border bg-card p-4.5 p-4 sm:p-5">
-            <div className="flex items-center gap-2.5">
-              <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg", s.chipCls)}>{s.icon}</span>
-              <span className="text-[10px] font-bold text-muted-foreground">{s.label}</span>
-            </div>
-            <p className={cn("tabular mt-3 font-display text-xl font-bold sm:text-2xl", s.valueCls)}>{s.value}</p>
-          </div>
-        ))}
+      {/* ── Stat tiles ── */}
+      <div className="reveal grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatTile
+          label="Total earnings"
+          value={formatMoney(stats.total)}
+          sub="Lifetime, all sources"
+          icon={<Coins aria-hidden />}
+          iconCls="bg-fhb-gold/12 text-fhb-gold"
+        />
+        <StatTile
+          label="This month"
+          value={formatMoney(thisMonth)}
+          sub="Current calendar month"
+          icon={<CalendarDays aria-hidden />}
+          iconCls="bg-primary/12 text-primary"
+        />
+        <StatTile
+          label="Available balance"
+          value={formatMoney(stats.balance)}
+          sub="Ready to withdraw"
+          icon={<Banknote aria-hidden />}
+          iconCls="bg-primary/12 text-primary"
+        />
+        <StatTile
+          label="Monetized videos"
+          value={`${fmtNum(stats.monetizedCount)} of ${fmtNum(videos.length)}`}
+          sub="Shorts in the program"
+          icon={<Clapperboard aria-hidden />}
+          iconCls="bg-muted text-muted-foreground"
+        />
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
-        {/* Monthly chart + transactions */}
-        <div className="edge-lit rounded-2xl border border-border bg-card p-5 lg:col-span-2">
-          <h2 className="mb-5 flex items-center gap-2.5 font-display-bn text-base font-bold text-foreground">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 text-primary">
-              <TrendingUp className="h-4 w-4" aria-hidden />
-            </span>
-            Monthly Earnings (Tk)
-          </h2>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthly} margin={{ top: 4, right: 4, left: -14, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.07)" vertical={false} />
-                <XAxis dataKey="month" tick={{ fontSize: 11, fill: "rgba(255,255,255,0.55)" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 10, fill: "rgba(255,255,255,0.55)" }} axisLine={false} tickLine={false} />
-                <Tooltip
-                  cursor={{ fill: "rgba(255,255,255,0.05)" }}
-                  contentStyle={{ background: "#0f1512", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 10, fontSize: 12 }}
-                  formatter={(v: number) => [`Tk ${v.toLocaleString("en-US")}`, "Earnings"]}
-                />
-                <Bar dataKey="amount" fill="var(--primary)" radius={[4, 4, 0, 0]} maxBarSize={38} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+      <div className="mt-8 grid gap-6 lg:grid-cols-12">
+        {/* ═══ Main column ═══ */}
+        <div className="space-y-6 lg:col-span-8">
+          {/* ── Earnings performance ── */}
+          <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card">
+            <CardHead
+              label="Earnings by month"
+              right={
+                <span className="tabular text-[11px] font-semibold text-muted-foreground">
+                  6-month total <span className="font-bold text-foreground">{formatMoney(monthlyTotal)}</span>
+                </span>
+              }
+            />
+            <div className="p-4 sm:p-5">
+              <div className="flex h-44 gap-2 sm:gap-3" role="img" aria-label="Monthly earnings for the last six months">
+                {monthly.map((m) => {
+                  const h = (m.amount / maxMonthly) * 100;
+                  return (
+                    <div key={m.month} className="group relative flex h-full min-w-0 flex-1 flex-col">
+                      <div className="relative flex flex-1 items-end border-b border-border/70">
+                        <span className="tabular pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-elevated px-2 py-1 text-[10px] font-bold text-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                          {formatMoney(m.amount)}
+                        </span>
+                        <div
+                          className="w-full rounded-t-[3px] bg-primary/55 transition-colors group-hover:bg-primary"
+                          style={{ height: `${Math.max(h, m.amount > 0 ? 3 : 1)}%` }}
+                        />
+                      </div>
+                      <span className="mt-2 text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                        {m.month}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
 
-          {/* Recent earnings */}
-          <h3 className="mb-4 mt-8 flex items-center gap-2.5 border-t border-border pt-6 font-display-bn text-base font-bold text-foreground">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 text-primary">
-              <Radio className="h-4 w-4" aria-hidden />
-            </span>
-            Recent Transactions
-          </h3>
-          <div className="fhb-scroll max-h-64 space-y-2.5 overflow-y-auto pr-1">
-            {earnings.map((e) => {
-              const meta = sourceMeta(e.source);
-              return (
-                <div key={e.id} className="flex items-center gap-3 rounded-xl border border-border bg-background/50 p-3 transition-colors hover:border-primary/25">
-                  <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", meta.cls)} aria-hidden>
-                    {meta.icon}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-xs font-semibold text-foreground">{e.note ?? "Earnings"}</p>
-                    <p className="text-[10px] text-muted-foreground">{timeAgo(e.createdAt)}</p>
-                  </div>
-                  <p className="tabular shrink-0 font-display text-sm font-bold text-primary">+{formatMoney(e.amount)}</p>
+              {/* Secondary metrics — hairline strip */}
+              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-border/70 pt-4 sm:grid-cols-4">
+                <div>
+                  <p className="eyebrow text-muted-foreground/80">Total views</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                    {fmtCompact(stats.totalViews)}
+                  </p>
                 </div>
-              );
-            })}
-          </div>
+                <div>
+                  <p className="eyebrow text-muted-foreground/80">Avg. RPM</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                    Tk {stats.rpm.toFixed(1)}
+                  </p>
+                </div>
+                <div>
+                  <p className="eyebrow text-muted-foreground/80">Paid out</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                    {formatMoney(stats.paidOut)}
+                  </p>
+                </div>
+                <div>
+                  <p className="eyebrow text-muted-foreground/80">Pending</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                    {formatMoney(stats.pending)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* ── Revenue by video ── */}
+          <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card">
+            <CardHead
+              label="Revenue by video"
+              right={<span className="text-[11px] font-semibold text-muted-foreground">{fmtNum(videos.length)} shorts</span>}
+            />
+            {videos.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 px-5 py-12 text-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                  <PlayCircle className="h-5 w-5" aria-hidden />
+                </span>
+                <p className="text-sm font-semibold text-foreground">No shorts yet</p>
+                <p className="text-xs text-muted-foreground">Upload and monetize shorts to start earning.</p>
+              </div>
+            ) : (
+              <>
+                <div className="hidden gap-3 border-b border-border/70 bg-white/[0.02] px-5 py-2 sm:grid sm:grid-cols-[72px_minmax(0,1fr)_72px_96px_88px]">
+                  <span />
+                  <span className="eyebrow text-muted-foreground/70">Video</span>
+                  <span className="eyebrow text-right text-muted-foreground/70">Views</span>
+                  <span className="eyebrow text-muted-foreground/70">Status</span>
+                  <span className="eyebrow text-right text-muted-foreground/70">Revenue</span>
+                </div>
+                <div className="divide-y divide-border/60">
+                  {rankedVideos.map((v) => {
+                    const revenue = revenueByVideo.get(v.id) ?? 0;
+                    return (
+                      <div
+                        key={v.id}
+                        className="grid grid-cols-[72px_minmax(0,1fr)_auto] items-center gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.03] sm:grid-cols-[72px_minmax(0,1fr)_72px_96px_88px] sm:px-5"
+                      >
+                        <div className="relative h-10 w-[72px] shrink-0 overflow-hidden rounded-md border border-border bg-elevated">
+                          {v.thumbnailUrl ? (
+                            <Image src={v.thumbnailUrl} alt={v.title} fill sizes="72px" className="object-cover" unoptimized />
+                          ) : (
+                            <PlayCircle className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 text-muted-foreground/60" aria-hidden />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-[13px] font-semibold leading-tight text-foreground">{v.title}</p>
+                          <p className="tabular mt-1 text-[11px] text-muted-foreground">
+                            <span className="sm:hidden">{fmtCompact(v.views)} views · </span>
+                            {fmtCompact(v.likeCount)} likes
+                          </p>
+                        </div>
+                        <span className="tabular hidden self-center text-right text-[12px] font-semibold text-foreground sm:block">
+                          {fmtCompact(v.views)}
+                        </span>
+                        <span
+                          className={cn(
+                            "hidden shrink-0 items-center gap-1 self-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold sm:inline-flex",
+                            v.monetized
+                              ? "border-primary/25 bg-primary/12 text-primary"
+                              : "border-border bg-muted text-muted-foreground"
+                          )}
+                        >
+                          {v.monetized && <BadgeCheck className="h-3 w-3" aria-hidden />}
+                          {v.monetized ? "On" : "Off"}
+                        </span>
+                        <p className="tabular justify-self-end text-right font-display text-[13px] font-bold text-foreground">
+                          {revenue > 0 ? (
+                            formatMoney(revenue)
+                          ) : (
+                            <span className="font-medium text-muted-foreground/60">—</span>
+                          )}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </section>
         </div>
 
-        {/* Right column */}
-        <div className="space-y-5">
-          {/* Payout form */}
-          <div className="edge-lit rounded-2xl border border-border bg-card p-5">
-            <h2 className="mb-5 flex items-center gap-2.5 font-display-bn text-base font-bold text-foreground">
-              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 text-primary">
-                <Download className="h-4 w-4" aria-hidden />
-              </span>
-              Withdrawal Request
-            </h2>
-            <div className="space-y-3.5">
+        {/* ═══ Side rail ═══ */}
+        <div className="space-y-6 lg:col-span-4">
+          {/* ── Payouts ── */}
+          <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card">
+            <CardHead
+              label="Withdraw funds"
+              right={<span className="tabular text-[11px] font-bold text-primary">{formatMoney(stats.balance)} available</span>}
+            />
+            <div className="space-y-4 p-4 sm:p-5">
               <div>
-                <label htmlFor="amount" className="mb-1 block text-[11px] font-bold text-foreground">
-                  Amount (Tk) — minimum 500
-                </label>
-                <input
-                  id="amount"
-                  type="number"
-                  min={500}
-                  max={Math.floor(stats.balance)}
-                  value={payoutForm.amount}
-                  onChange={(e) => setPayoutForm((f) => ({ ...f, amount: parseInt(e.target.value || "500", 10) }))}
-                  className="h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
-                />
-                <p className="mt-1 text-[10px] text-muted-foreground">Balance: {formatMoney(stats.balance)}</p>
-              </div>
-              <div>
-                <label htmlFor="method" className="mb-1 block text-[11px] font-bold text-foreground">
-                  Method
-                </label>
-                <div className="grid grid-cols-3 gap-1.5">
+                <p className="eyebrow mb-1.5 text-muted-foreground">Payout method</p>
+                <div className="grid grid-cols-3 gap-1.5" role="radiogroup" aria-label="Payout method">
                   {(["BKASH", "NAGAD", "BANK"] as const).map((m) => (
                     <button
                       key={m}
+                      type="button"
+                      role="radio"
+                      aria-checked={payoutForm.method === m}
                       onClick={() => setPayoutForm((f) => ({ ...f, method: m }))}
                       className={cn(
-                        "rounded-xl border py-2.5 text-[11px] font-bold transition-all active:scale-95",
+                        "h-10 rounded-lg border text-xs font-bold transition-colors",
                         payoutForm.method === m
-                          ? "border-primary/50 bg-primary/15 text-primary"
-                          : "border-border text-muted-foreground hover:text-foreground"
+                          ? "border-primary/50 bg-primary/12 text-primary"
+                          : "border-border bg-background text-muted-foreground hover:text-foreground"
                       )}
                     >
-                      {m === "BKASH" ? "bKash" : m === "NAGAD" ? "Nagad" : "Bank"}
+                      {METHOD_LABEL[m]}
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <label htmlFor="account" className="mb-1 block text-[11px] font-bold text-foreground">
-                  Account Number
+                <label htmlFor="payout-amount" className="eyebrow mb-1.5 block text-muted-foreground">
+                  Amount (Tk)
                 </label>
                 <input
-                  id="account"
+                  id="payout-amount"
+                  type="number"
+                  min={500}
+                  max={Math.floor(stats.balance)}
+                  value={payoutForm.amount}
+                  onChange={(e) => setPayoutForm((f) => ({ ...f, amount: parseInt(e.target.value || "500", 10) }))}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label htmlFor="payout-account" className="eyebrow mb-1.5 block text-muted-foreground">
+                  Account number
+                </label>
+                <input
+                  id="payout-account"
                   value={payoutForm.account}
                   onChange={(e) => setPayoutForm((f) => ({ ...f, account: e.target.value }))}
                   placeholder="01XXXXXXXXX"
-                  className="h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
+                  className={inputCls}
                 />
               </div>
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Minimum withdrawal Tk 500 · processed within 2–3 business days.
+              </p>
               <Button
                 onClick={() => payoutMutation.mutate()}
                 disabled={payoutMutation.isPending || stats.balance < 500 || !payoutForm.account.trim()}
-                className="sheen w-full rounded-xl bg-primary font-bold"
+                className="sheen w-full rounded-lg bg-primary font-bold"
               >
-                {payoutMutation.isPending ? "Submitting..." : "Submit Request"}
+                {payoutMutation.isPending ? "Submitting…" : "Request withdrawal"}
               </Button>
             </div>
 
-            {/* Payout history */}
             {payoutRequests.length > 0 && (
-              <div className="mt-4 space-y-2 border-t border-border pt-4">
-                {payoutRequests.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between gap-2 rounded-xl bg-muted/40 px-3.5 py-2.5 text-[11px]">
-                    <span className="flex items-center gap-1.5">
-                      {p.status === "PENDING" ? (
-                        <Clock className="h-3 w-3 text-fhb-gold" aria-hidden />
-                      ) : (
-                        <CheckCircle2 className="h-3 w-3 text-primary" aria-hidden />
-                      )}
-                      {formatMoney(p.amount)} · {p.method === "BKASH" ? "bKash" : p.method}
-                    </span>
-                    <span className={cn("rounded-md px-2 py-0.5 font-bold", STATUS_META[p.status]?.cls ?? "")}>
-                      {STATUS_META[p.status]?.label}
-                    </span>
-                  </div>
-                ))}
+              <div className="border-t border-border/70">
+                <p className="eyebrow px-4 pb-1 pt-3.5 text-muted-foreground sm:px-5">Payout history</p>
+                <div className="mt-1 divide-y divide-border/60">
+                  {payoutRequests.map((p) => (
+                    <div key={p.id} className="flex items-center gap-3 px-4 py-2.5 sm:px-5">
+                      <div className="min-w-0 flex-1">
+                        <p className="tabular text-[12px] font-semibold text-foreground">
+                          {formatMoney(p.amount)}
+                          <span className="font-medium text-muted-foreground"> · {METHOD_LABEL[p.method] ?? p.method}</span>
+                        </p>
+                        <p className="tabular mt-0.5 truncate text-[11px] text-muted-foreground">
+                          {p.account} · {timeAgo(p.createdAt)}
+                        </p>
+                      </div>
+                      <StatusChip status={p.status} />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-          </div>
+          </section>
 
-          {/* Monetized videos */}
-          <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
-            <h2 className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-3.5 font-display-bn text-[13px] font-bold text-foreground">
-              <PlayCircle className="h-4 w-4 text-primary" aria-hidden /> Your Shorts ({fmtNum(videos.length)})
-            </h2>
+          {/* ── Recent activity ── */}
+          <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card">
+            <CardHead
+              label="Recent activity"
+              right={<span className="text-[11px] font-semibold text-muted-foreground">Last {fmtNum(earnings.length)}</span>}
+            />
+            {earnings.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 px-5 py-10 text-center">
+                <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+                  <TrendingUp className="h-5 w-5" aria-hidden />
+                </span>
+                <p className="text-sm font-semibold text-foreground">No transactions yet</p>
+                <p className="text-xs text-muted-foreground">Earnings will appear here as your shorts rack up views.</p>
+              </div>
+            ) : (
+              <div className="fhb-scroll max-h-[400px] divide-y divide-border/60 overflow-y-auto">
+                {earnings.map((e) => {
+                  const meta = SOURCE_META[e.source] ?? SOURCE_META.AD_REVENUE;
+                  const Icon = meta.Icon;
+                  return (
+                    <div key={e.id} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.03] sm:px-5">
+                      <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg", meta.cls)} aria-hidden>
+                        <Icon className="h-4 w-4" />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[12.5px] font-semibold leading-tight text-foreground">
+                          {e.note ?? meta.label}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground">
+                          {meta.label} · {timeAgo(e.createdAt)}
+                        </p>
+                      </div>
+                      <p className="tabular shrink-0 text-[13px] font-bold text-primary">+{formatMoney(e.amount)}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          {/* ── How you earn ── */}
+          <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card">
+            <CardHead label="How you earn" />
             <div className="divide-y divide-border/60">
-              {videos.slice(0, 5).map((v) => (
-                <div key={v.id} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40">
-                  <div className="relative h-11 w-16 shrink-0 overflow-hidden rounded-lg border border-border">
-                    {v.thumbnailUrl && (
-                      <Image src={v.thumbnailUrl} alt={v.title} fill sizes="64px" className="object-cover" unoptimized />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[11px] font-semibold text-foreground">{v.title}</p>
-                    <p className="tabular text-[10px] text-muted-foreground">
-                      {fmtCompact(v.views)} views
-                      {v.monetized && <span className="text-primary"> · Monetized</span>}
-                    </p>
-                  </div>
-                  <span
-                    className={cn(
-                      "flex shrink-0 items-center gap-1 rounded-md px-2 py-0.5 text-[9px] font-bold",
-                      v.monetized ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
-                    )}
-                  >
-                    {v.monetized && <BadgeCheck className="h-2.5 w-2.5" aria-hidden />}
-                    {v.monetized ? "On" : "Off"}
+              {[
+                {
+                  Icon: Megaphone,
+                  title: "Ad revenue share",
+                  desc: "A share of the AdSense revenue from ads served on your monetized shorts.",
+                  cls: "bg-primary/12 text-primary",
+                },
+                {
+                  Icon: Crown,
+                  title: "Premium watch time",
+                  desc: "Watch time from Premium members is paid out of the membership revenue pool.",
+                  cls: "bg-fhb-gold/12 text-fhb-gold",
+                },
+                {
+                  Icon: Heart,
+                  title: "Fan tips",
+                  desc: "Supporters can tip you directly while watching your shorts.",
+                  cls: "bg-fhb-red/12 text-fhb-red",
+                },
+              ].map((r) => (
+                <div key={r.title} className="flex items-start gap-3 px-4 py-3 sm:px-5">
+                  <span className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-lg", r.cls)} aria-hidden>
+                    <r.Icon className="h-4 w-4" />
                   </span>
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-semibold text-foreground">{r.title}</p>
+                    <p className="mt-0.5 text-[11.5px] leading-relaxed text-muted-foreground">{r.desc}</p>
+                  </div>
                 </div>
               ))}
             </div>
-          </div>
+            <div className="flex items-start gap-2 border-t border-border/70 bg-white/[0.02] px-4 py-3 sm:px-5">
+              <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/80" aria-hidden />
+              <p className="text-[11px] leading-relaxed text-muted-foreground">
+                Withdrawals start at Tk 500 via bKash, Nagad or bank transfer and are settled within 2–3 business days.
+              </p>
+            </div>
+          </section>
         </div>
       </div>
     </div>

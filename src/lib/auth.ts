@@ -41,7 +41,7 @@ export async function getSessionUser(): Promise<SafeUser | null> {
     const cookieStore = await cookies();
     const token = cookieStore.get(SESSION_COOKIE)?.value;
     if (!token) return null;
-    const session: Session | null = await db.session.findUnique({
+    const session: (Session & { user: User }) | null = await db.session.findUnique({
       where: { token },
       include: { user: true },
     });

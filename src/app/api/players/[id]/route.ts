@@ -15,7 +15,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       ? await db.player.findMany({
           where: { teamId: player.teamId, id: { not: player.id }, position: player.position },
           take: 4,
-          include: { team: { select: { id: true, name: true, initials: true, color: true } } },
+          include: { team: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } } },
         })
       : [];
 

@@ -22,9 +22,14 @@ export async function GET(req: NextRequest) {
     const matches = await db.match.findMany({
       where,
       include: {
-        homeTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true } },
-        awayTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true } },
+        homeTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true, logoUrl: true } },
+        awayTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true, logoUrl: true } },
         competition: { select: { id: true, name: true, shortName: true, type: true, accentColor: true } },
+        events: {
+          where: { type: "GOAL" },
+          select: { id: true, minute: true, type: true, teamSide: true, playerName: true, detail: true },
+          orderBy: { minute: "asc" },
+        },
       },
       orderBy: [{ kickoff: status === "SCHEDULED" ? "asc" : "desc" }],
       take: limit,

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Oswald } from "next/font/google";
+import { Inter, Archivo } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -11,10 +11,10 @@ const inter = Inter({
   weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const oswald = Oswald({
-  variable: "--font-oswald",
+const archivo = Archivo({
+  variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0D1412",
+  themeColor: "#101214",
   width: "device-width",
   initialScale: 1,
 };
@@ -53,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${oswald.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${archivo.variable} antialiased bg-background text-foreground`}
       >
         <QueryProvider>
           <LiveScoreProvider>{children}</LiveScoreProvider>

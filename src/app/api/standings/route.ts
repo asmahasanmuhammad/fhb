@@ -5,17 +5,17 @@ import { ok, handleError } from "@/lib/api";
 export async function GET(req: NextRequest) {
   try {
     const competitionId = req.nextUrl.searchParams.get("competitionId");
-    let compId = competitionId;
+    let compId: string | null = competitionId;
     if (!compId) {
       const bfl = await db.competition.findFirst({ where: { shortName: "BFL" } });
-      compId = bfl?.id;
+      compId = bfl?.id ?? null;
     }
     if (!compId) return ok({ standings: [], topScorers: [] });
 
     const [standings, competition] = await Promise.all([
       db.standing.findMany({
         where: { competitionId: compId },
-        include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true } } },
+        include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true, logoUrl: true } } },
         orderBy: { position: "asc" },
       }),
       db.competition.findUnique({ where: { id: compId } }),
@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
       take: 10,
       select: {
         id: true, name: true, goals: true, assists: true, position: true,
-        team: { select: { id: true, name: true, initials: true, color: true } },
+        team: { select: { id: true, name: true, initials: true, color: true, color2: true, logoUrl: true } },
       },
     });
 

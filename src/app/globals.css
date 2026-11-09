@@ -7,7 +7,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-body);
-  --font-display: var(--font-oswald);
+  --font-display: var(--font-display);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,86 +49,86 @@
 }
 
 :root {
-  --radius: 0.75rem;
-  /* Light theme: clean editorial white + pitch green */
-  --background: oklch(0.975 0.004 140);
-  --foreground: oklch(0.2 0.03 155);
+  --radius: 0.5rem;
+  /* Light theme (secondary — site is dark-first) */
+  --background: oklch(0.975 0.003 250);
+  --foreground: oklch(0.21 0.01 250);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.2 0.03 155);
+  --card-foreground: oklch(0.21 0.01 250);
   --elevated: oklch(1 0 0);
-  --elevated-foreground: oklch(0.2 0.03 155);
+  --elevated-foreground: oklch(0.21 0.01 250);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.2 0.03 155);
-  --primary: oklch(0.52 0.13 155);
-  --primary-foreground: oklch(0.985 0.01 140);
-  --secondary: oklch(0.955 0.012 150);
-  --secondary-foreground: oklch(0.3 0.04 155);
-  --muted: oklch(0.95 0.008 148);
-  --muted-foreground: oklch(0.47 0.03 150);
-  --accent: oklch(0.94 0.02 150);
-  --accent-foreground: oklch(0.3 0.05 155);
+  --popover-foreground: oklch(0.21 0.01 250);
+  --primary: oklch(0.55 0.13 152);
+  --primary-foreground: oklch(0.985 0.005 150);
+  --secondary: oklch(0.955 0.005 250);
+  --secondary-foreground: oklch(0.3 0.01 250);
+  --muted: oklch(0.95 0.005 250);
+  --muted-foreground: oklch(0.47 0.015 250);
+  --accent: oklch(0.94 0.006 250);
+  --accent-foreground: oklch(0.3 0.01 250);
   --destructive: oklch(0.55 0.22 27);
-  --border: oklch(0.9 0.012 150);
-  --input: oklch(0.9 0.012 150);
-  --ring: oklch(0.52 0.13 155);
-  --chart-1: oklch(0.55 0.14 155);
+  --border: oklch(0.89 0.005 250);
+  --input: oklch(0.89 0.005 250);
+  --ring: oklch(0.55 0.13 152);
+  --chart-1: oklch(0.55 0.13 152);
   --chart-2: oklch(0.6 0.2 25);
   --chart-3: oklch(0.72 0.14 85);
-  --chart-4: oklch(0.5 0.01 155);
+  --chart-4: oklch(0.5 0.01 250);
   --chart-5: oklch(0.68 0.12 85);
-  --sidebar: oklch(0.975 0.004 140);
-  --sidebar-foreground: oklch(0.2 0.03 155);
-  --sidebar-primary: oklch(0.52 0.13 155);
-  --sidebar-primary-foreground: oklch(0.985 0.01 140);
-  --sidebar-accent: oklch(0.94 0.02 150);
-  --sidebar-accent-foreground: oklch(0.3 0.05 155);
-  --sidebar-border: oklch(0.9 0.012 150);
-  --sidebar-ring: oklch(0.52 0.13 155);
+  --sidebar: oklch(0.975 0.003 250);
+  --sidebar-foreground: oklch(0.21 0.01 250);
+  --sidebar-primary: oklch(0.55 0.13 152);
+  --sidebar-primary-foreground: oklch(0.985 0.005 150);
+  --sidebar-accent: oklch(0.94 0.006 250);
+  --sidebar-accent-foreground: oklch(0.3 0.01 250);
+  --sidebar-border: oklch(0.89 0.005 250);
+  --sidebar-ring: oklch(0.55 0.13 152);
   --fhb-red: oklch(0.56 0.23 27);
   --fhb-gold: oklch(0.75 0.14 85);
-  --fhb-green: oklch(0.52 0.13 155);
+  --fhb-green: oklch(0.55 0.13 152);
 }
 
 .dark {
-  /* ═══ FHB PRIME — Stadium Night ═══
-     Deep broadcast black-green base, layered surfaces,
-     floodlight lime-green accent, Bangladesh red, premium gold. */
-  --background: oklch(0.117 0.012 168);
-  --foreground: oklch(0.96 0.006 140);
-  --card: oklch(0.152 0.014 168);
-  --card-foreground: oklch(0.96 0.006 140);
-  --elevated: oklch(0.192 0.016 168);
-  --elevated-foreground: oklch(0.96 0.006 140);
-  --popover: oklch(0.18 0.015 168);
-  --popover-foreground: oklch(0.96 0.006 140);
-  --primary: oklch(0.84 0.185 148);
-  --primary-foreground: oklch(0.14 0.04 155);
-  --secondary: oklch(0.21 0.016 168);
-  --secondary-foreground: oklch(0.96 0.006 140);
-  --muted: oklch(0.2 0.015 168);
-  --muted-foreground: oklch(0.66 0.02 152);
-  --accent: oklch(0.225 0.02 166);
-  --accent-foreground: oklch(0.96 0.006 140);
-  --destructive: oklch(0.64 0.24 25);
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 13%);
-  --ring: oklch(0.84 0.185 148);
-  --chart-1: oklch(0.84 0.185 148);
-  --chart-2: oklch(0.64 0.24 25);
-  --chart-3: oklch(0.82 0.13 85);
-  --chart-4: oklch(0.55 0.01 168);
-  --chart-5: oklch(0.68 0.1 85);
-  --sidebar: oklch(0.14 0.013 168);
-  --sidebar-foreground: oklch(0.96 0.006 140);
-  --sidebar-primary: oklch(0.84 0.185 148);
-  --sidebar-primary-foreground: oklch(0.14 0.04 155);
-  --sidebar-accent: oklch(0.225 0.02 166);
-  --sidebar-accent-foreground: oklch(0.96 0.006 140);
-  --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: oklch(0.84 0.185 148);
-  --fhb-red: oklch(0.65 0.24 25);
-  --fhb-gold: oklch(0.83 0.125 88);
-  --fhb-green: oklch(0.84 0.185 148);
+  /* ═══ FHB 2.0 — Broadcast Editorial ═══
+     True charcoal base (no green cast), layered neutral surfaces,
+     one disciplined green accent, semantic red/gold only. */
+  --background: oklch(0.145 0.005 255);
+  --foreground: oklch(0.955 0.004 250);
+  --card: oklch(0.175 0.005 255);
+  --card-foreground: oklch(0.955 0.004 250);
+  --elevated: oklch(0.21 0.006 255);
+  --elevated-foreground: oklch(0.955 0.004 250);
+  --popover: oklch(0.195 0.006 255);
+  --popover-foreground: oklch(0.955 0.004 250);
+  --primary: oklch(0.735 0.155 152);
+  --primary-foreground: oklch(0.16 0.04 152);
+  --secondary: oklch(0.225 0.006 255);
+  --secondary-foreground: oklch(0.955 0.004 250);
+  --muted: oklch(0.215 0.006 255);
+  --muted-foreground: oklch(0.652 0.012 250);
+  --accent: oklch(0.235 0.007 255);
+  --accent-foreground: oklch(0.955 0.004 250);
+  --destructive: oklch(0.62 0.23 25);
+  --border: oklch(1 0 0 / 8.5%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: oklch(0.735 0.155 152);
+  --chart-1: oklch(0.735 0.155 152);
+  --chart-2: oklch(0.62 0.23 25);
+  --chart-3: oklch(0.8 0.125 88);
+  --chart-4: oklch(0.6 0.01 250);
+  --chart-5: oklch(0.72 0.1 85);
+  --sidebar: oklch(0.165 0.005 255);
+  --sidebar-foreground: oklch(0.955 0.004 250);
+  --sidebar-primary: oklch(0.735 0.155 152);
+  --sidebar-primary-foreground: oklch(0.16 0.04 152);
+  --sidebar-accent: oklch(0.235 0.007 255);
+  --sidebar-accent-foreground: oklch(0.955 0.004 250);
+  --sidebar-border: oklch(1 0 0 / 8.5%);
+  --sidebar-ring: oklch(0.735 0.155 152);
+  --fhb-red: oklch(0.63 0.235 26);
+  --fhb-gold: oklch(0.8 0.125 88);
+  --fhb-green: oklch(0.735 0.155 152);
 }
 
 @layer base {
@@ -142,45 +142,49 @@
     @apply bg-background text-foreground;
     font-family: var(--font-body), system-ui, sans-serif;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4 {
     text-wrap: balance;
   }
   ::selection {
-    background: color-mix(in oklab, var(--primary) 45%, transparent);
+    background: color-mix(in oklab, var(--primary) 40%, transparent);
     color: #fff;
   }
 }
 
-/* ═══════════════ FHB PRIME design system ═══════════════ */
+/* ═══════════════ FHB 2.0 — Broadcast Editorial ═══════════════ */
 
+/* Display font — Archivo (sporty grotesque, tight tracking) */
 .font-display {
-  font-family: var(--font-oswald), var(--font-body), sans-serif;
-  letter-spacing: 0.015em;
+  font-family: var(--font-display), var(--font-body), sans-serif;
 }
 
-/* Strong display headings — Oswald with Inter fallback */
-.font-display-bn {
-  font-family: var(--font-oswald), var(--font-body), sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.01em;
+/* Headline defaults: tight, confident */
+.display-hero {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
 }
 
-/* Tabular numerals for scores & stats */
+/* Tabular numerals for scores, tables, stats */
 .tabular {
   font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
 }
 
 /* ── Surfaces ─────────────────────────────── */
 
-/* Frosted broadcast glass */
+/* Frosted header bar */
 .glass {
-  background: color-mix(in oklab, var(--card) 72%, transparent);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  background: color-mix(in oklab, var(--background) 82%, transparent);
+  backdrop-filter: blur(16px) saturate(1.3);
+  -webkit-backdrop-filter: blur(16px) saturate(1.3);
 }
 
-/* Top hairline highlight — the "premium edge" on dark cards */
+/* Top hairline highlight on dark surfaces */
 .edge-lit {
   position: relative;
 }
@@ -189,95 +193,73 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    oklch(1 0 0 / 22%),
-    transparent
-  );
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 16%), transparent);
   pointer-events: none;
 }
 
-/* Cinematic panel: layered stadium gradient */
+/* Cinematic panel — restrained, for hero only */
 .stadium-panel {
   background:
-    radial-gradient(120% 140% at 85% -10%, oklch(0.84 0.185 148 / 13%), transparent 55%),
-    radial-gradient(90% 120% at 0% 110%, oklch(0.65 0.24 25 / 10%), transparent 52%),
-    linear-gradient(160deg, oklch(0.19 0.02 168), oklch(0.13 0.014 168) 58%);
+    radial-gradient(110% 130% at 88% -8%, oklch(0.735 0.155 152 / 10%), transparent 52%),
+    linear-gradient(165deg, oklch(0.21 0.008 255), oklch(0.155 0.006 255) 60%);
 }
 
-/* Gold cinematic panel (premium banners) */
+/* Gold panel — premium surfaces only */
 .gold-panel {
   background:
-    radial-gradient(110% 150% at 88% -12%, oklch(0.83 0.125 88 / 22%), transparent 55%),
-    radial-gradient(80% 110% at 0% 115%, oklch(0.6 0.16 55 / 16%), transparent 55%),
-    linear-gradient(160deg, oklch(0.21 0.025 80), oklch(0.14 0.02 85) 60%);
+    radial-gradient(110% 140% at 88% -10%, oklch(0.8 0.125 88 / 14%), transparent 55%),
+    linear-gradient(165deg, oklch(0.215 0.018 88), oklch(0.16 0.012 85) 62%);
 }
 
-/* Pitch mow stripes — finer, more broadcast */
+/* Fine pitch mow stripes */
 .pitch-pattern {
   background-image: repeating-linear-gradient(
     115deg,
-    oklch(1 0 0 / 2.2%) 0px,
-    oklch(1 0 0 / 2.2%) 2px,
+    oklch(1 0 0 / 1.6%) 0px,
+    oklch(1 0 0 / 1.6%) 2px,
     transparent 2px,
-    transparent 16px
+    transparent 14px
   );
 }
 
-/* Stadium floodlight glow from top */
-.floodlight {
-  background:
-    radial-gradient(60% 90% at 18% 0%, oklch(0.84 0.185 148 / 9%), transparent 60%),
-    radial-gradient(50% 80% at 82% 0%, oklch(0.84 0.185 148 / 7%), transparent 60%);
-}
-
-/* Film-grain noise overlay */
+/* Film-grain noise overlay — hero imagery only */
 .noise::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.4;
   mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.34'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
 }
 
 /* Cinematic photo scrim (bottom-up) */
 .photo-scrim {
   background: linear-gradient(
     180deg,
-    oklch(0.12 0.012 168 / 0) 34%,
-    oklch(0.12 0.012 168 / 0.55) 62%,
-    oklch(0.11 0.012 168 / 0.92) 100%
+    oklch(0.14 0.005 255 / 0) 22%,
+    oklch(0.14 0.005 255 / 0.62) 58%,
+    oklch(0.13 0.005 255 / 0.96) 100%
   );
 }
 
 /* ── Typography helpers ────────────────────── */
 
-/* Huge broadcast headline */
-.display-hero {
+/* Micro kicker label — restrained uppercase */
+.eyebrow {
   font-family: var(--font-body), sans-serif;
-  font-weight: 700;
-  line-height: 1.08;
-  letter-spacing: -0.015em;
-  text-wrap: balance;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 650;
+  font-size: 0.6875rem;
 }
 
-/* Gold shimmer text */
+/* Gold shimmer text — premium accents only */
 .gold-text {
-  background: linear-gradient(100deg, oklch(0.88 0.1 88), oklch(0.75 0.14 75) 45%, oklch(0.9 0.08 95));
+  background: linear-gradient(100deg, oklch(0.86 0.09 90), oklch(0.78 0.13 78) 45%, oklch(0.88 0.07 96));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-/* Uppercase micro label */
-.eyebrow {
-  font-family: var(--font-oswald), sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  font-weight: 600;
 }
 
 /* ── Scrollbars ───────────────────────────── */
@@ -298,22 +280,22 @@
   background: transparent;
 }
 .fhb-scroll::-webkit-scrollbar-thumb {
-  background: oklch(1 0 0 / 14%);
+  background: oklch(1 0 0 / 13%);
   border-radius: 999px;
 }
 .fhb-scroll::-webkit-scrollbar-thumb:hover {
-  background: oklch(1 0 0 / 26%);
+  background: oklch(1 0 0 / 24%);
 }
 
 /* ── Motion & interaction ─────────────────── */
 
 /* Ad creative rotation fade */
 @keyframes ad-fade {
-  from { opacity: 0; transform: translateY(4px); }
+  from { opacity: 0; transform: translateY(3px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .ad-creative {
-  animation: ad-fade 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ad-fade 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* LIVE pulse */
@@ -322,7 +304,7 @@
   50% { opacity: 0.45; transform: scale(0.78); }
 }
 .live-dot {
-  animation: live-pulse 1.15s ease-in-out infinite;
+  animation: live-pulse 1.3s ease-in-out infinite;
 }
 
 /* Score ticker marquee */
@@ -337,28 +319,24 @@
   animation-play-state: paused;
 }
 
-/* Card hover — lift + edge light (no colored shadows) */
+/* Row/card hover — quiet, no bounce */
 .card-lift {
-  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-lift:hover {
-  transform: translateY(-3px);
-  border-color: color-mix(in oklab, var(--primary) 32%, transparent);
-  box-shadow:
-    0 1px 0 0 oklch(1 0 0 / 6%) inset,
-    0 18px 40px -18px oklch(0 0 0 / 65%),
-    0 4px 12px -6px oklch(0.84 0.185 148 / 8%);
+  border-color: color-mix(in oklab, var(--primary) 26%, transparent);
+  background-color: color-mix(in oklab, var(--card) 92%, var(--primary) 3%);
 }
 
 /* Image zoom on hover */
 .img-zoom {
-  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
 }
 .group:hover .img-zoom {
-  transform: scale(1.06);
+  transform: scale(1.045);
 }
 
-/* Button sheen sweep */
+/* Button sheen sweep — primary CTAs only */
 .sheen {
   position: relative;
   overflow: hidden;
@@ -367,7 +345,7 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 38%, oklch(1 0 0 / 22%) 50%, transparent 62%);
+  background: linear-gradient(105deg, transparent 38%, oklch(1 0 0 / 18%) 50%, transparent 62%);
   transform: translateX(-120%);
   transition: transform 0.7s ease;
   pointer-events: none;
@@ -376,11 +354,11 @@
   transform: translateX(120%);
 }
 
-/* Scroll reveal */
+/* Scroll reveal — conservative */
 .reveal {
   opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(14px);
+  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
 .reveal.is-visible {
@@ -395,17 +373,11 @@
 
 /* Staggered mobile menu items */
 @keyframes menu-in {
-  from { opacity: 0; transform: translateY(14px); }
+  from { opacity: 0; transform: translateY(10px); }
   to { opacity: 1; transform: translateY(0); }
 }
 .menu-item {
-  animation: menu-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-/* Header live-minute blink */
-@keyframes ticker-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
+  animation: menu-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* ── Shorts feed ──────────────────────────── */
@@ -433,7 +405,7 @@
 .rule-dash {
   background-image: repeating-linear-gradient(
     90deg,
-    oklch(1 0 0 / 12%) 0 6px,
+    oklch(1 0 0 / 10%) 0 6px,
     transparent 6px 12px
   );
   height: 1px;

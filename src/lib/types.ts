@@ -24,6 +24,7 @@ export type TeamRef = {
   color: string;
   color2?: string;
   city?: string;
+  logoUrl?: string | null;
 };
 
 export type CompetitionRef = {
@@ -49,6 +50,7 @@ export type Match = {
   homeTeam: TeamRef;
   awayTeam: TeamRef;
   competition: CompetitionRef;
+  events?: MatchEvent[];
 };
 
 export type MatchEvent = {

@@ -1,0 +1,717 @@
+     1→"use client";
+     2→
+     3→/**
+     4→ * FHB Live TV — multi-server HLS streaming hub.
+     5→ *
+     6→ * Channel grid + player with Server 1/2/3 source switching, exactly like a
+     7→ * broadcast-grade streaming portal. Demo streams are legal, publicly
+     8→ * available HLS feeds (Red Bull TV, DW, France 24, TRT World, NASA TV and
+     9→ * standard test streams). The architecture accepts any m3u8 URL — plug in
+    10→ * licensed feeds at deployment.
+    11→ */
+    12→
+    13→import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+    14→import type Hls from "hls.js";
+    15→import { useReveal } from "@/hooks/use-reveal";
+    16→import { AdSlot } from "@/components/football/ad-slot";
+    17→import { PageHeader } from "@/components/football/section-header";
+    18→import { Input } from "@/components/ui/input";
+    19→import { Button } from "@/components/ui/button";
+    20→import { cn } from "@/lib/utils";
+    21→import { fmtNum } from "@/lib/format";
+    22→import {
+    23→  Tv, Radio, Play, Pause, Volume2, VolumeX, Maximize, Server, Link2,
+    24→  Signal, ShieldCheck, Users, ChevronRight, RefreshCw, AlertTriangle, X,
+    25→} from "lucide-react";
+    26→
+    27→type Server = { label: string; url: string; note?: string };
+    28→
+    29→type Channel = {
+    30→  id: string;
+    31→  name: string;
+    32→  monogram: string;
+    33→  color: string;
+    34→  category: "sports" | "football" | "news" | "bangladesh";
+    35→  tagline: string;
+    36→  nowPlaying: string;
+    37→  next: string;
+    38→  viewers: number;
+    39→  demo: boolean;
+    40→  servers: Server[];
+    41→};
+    42→
+    43→const DEMO_TAG = {
+    44→  redbull: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_928.m3u8",
+    45→  bunny: "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
+    46→  tos: "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8",
+    47→  sintel: "https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8",
+    48→  bipbop: "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8",
+    49→  dw: "https://dwamdstream102.akamaized.net/hls/live/2015525/dwstream102/index.m3u8",
+    50→  f24: "https://static.france24.com/live/F24_EN_LO_HLS/live_web.m3u8",
+    51→  aje: "https://live-hls-web-aje.getaj.net/AJE/index.m3u8",
+    52→  trt: "https://tv-trtworld.live.trt.com.tr/master_720.m3u8",
+    53→  nasa: "https://ntv1.akamaized.net/hls/live/2014075/NASA-NTV1-HLS/master.m3u8",
+    54→};
+    55→
+    56→const CHANNELS: Channel[] = [
+    57→  {
+    58→    id: "tsports",
+    59→    name: "T Sports HD",
+    60→    monogram: "TS",
+    61→    color: "#E2106E",
+    62→    category: "bangladesh",
+    63→    tagline: "Bangladesh's first sports channel",
+    64→    nowPlaying: "Live BFL: Dhaka Derby — Mohammedan vs Abahani",
+    65→    next: "Federation Cup Semi-Final Preview",
+    66→    viewers: 218430,
+    67→    demo: true,
+    68→    servers: [
+    69→      { label: "Server 1", url: DEMO_TAG.bunny, note: "Primary · auto" },
+    70→      { label: "Server 2", url: DEMO_TAG.tos },
+    71→      { label: "Server 3", url: DEMO_TAG.sintel },
+    72→    ],
+    73→  },
+    74→  {
+    75→    id: "gtv",
+    76→    name: "Gtv Sports",
+    77→    monogram: "GT",
+    78→    color: "#0E6E45",
+    79→    category: "bangladesh",
+    80→    tagline: "Home of the national team",
+    81→    nowPlaying: "SAFF Championship Magazine Show",
+    82→    next: "Bangladesh vs India — Semi-Final Build-up",
+    83→    viewers: 164210,
+    84→    demo: true,
+    85→    servers: [
+    86→      { label: "Server 1", url: DEMO_TAG.tos, note: "Primary · auto" },
+    87→      { label: "Server 2", url: DEMO_TAG.bunny },
+    88→      { label: "Server 3", url: DEMO_TAG.bipbop },
+    89→    ],
+    90→  },
+    91→  {
+    92→    id: "btsports",
+    93→    name: "BTV World",
+    94→    monogram: "BT",
+    95→    color: "#B01B2E",
+    96→    category: "bangladesh",
+    97→    tagline: "National broadcaster",
+    98→    nowPlaying: "Sports Bulletin — BFL Round 9",
+    99→    next: "Documentary: Road to the World Cup",
+   100→    viewers: 87650,
+   101→    demo: true,
+   102→    servers: [
+   103→      { label: "Server 1", url: DEMO_TAG.sintel },
+   104→      { label: "Server 2", url: DEMO_TAG.bunny },
+   105→    ],
+   106→  },
+   107→  {
+   108→    id: "redbull",
+   109→    name: "Red Bull TV",
+   110→    monogram: "RB",
+   111→    color: "#1A1A2E",
+   112→    category: "sports",
+   113→    tagline: "Action sports & football originals",
+   114→    nowPlaying: "FC Bayern Documentary Series",
+   115→    next: "Urban Freestyle Finals — Live",
+   116→    viewers: 94210,
+   117→    demo: false,
+   118→    servers: [
+   119→      { label: "Server 1", url: DEMO_TAG.redbull, note: "Free-to-air" },
+   120→      { label: "Server 2", url: DEMO_TAG.bunny },
+   121→    ],
+   122→  },
+   123→  {
+   124→    id: "eplarena",
+   125→    name: "Premier Arena HD",
+   126→    monogram: "PA",
+   127→    color: "#3D195B",
+   128→    category: "football",
+   129→    tagline: "English football, around the clock",
+   130→    nowPlaying: "Matchday Live: Arsenal vs Chelsea Build-up",
+   131→    next: "Classic Match: Der Klassiker 2013",
+   132→    viewers: 141980,
+   133→    demo: true,
+   134→    servers: [
+   135→      { label: "Server 1", url: DEMO_TAG.bunny, note: "Primary · auto" },
+   136→      { label: "Server 2", url: DEMO_TAG.sintel },
+   137→      { label: "Server 3", url: DEMO_TAG.tos },
+   138→    ],
+   139→  },
+   140→  {
+   141→    id: "laliga",
+   142→    name: "LaLiga Xtra",
+   143→    monogram: "LX",
+   144→    color: "#E5322D",
+   145→    category: "football",
+   146→    tagline: "Spanish football highlights channel",
+   147→    nowPlaying: "El Clásico Rewind: Real Madrid 2-1 Barcelona",
+   148→    next: "LaLiga Weekly — Matchday 13 Preview",
+   149→    viewers: 120430,
+   150→    demo: true,
+   151→    servers: [
+   152→      { label: "Server 1", url: DEMO_TAG.tos },
+   153→      { label: "Server 2", url: DEMO_TAG.bunny },
+   154→      { label: "Server 3", url: DEMO_TAG.bipbop },
+   155→    ],
+   156→  },
+   157→  {
+   158→    id: "seriehub",
+   159→    name: "Calcio Hub",
+   160→    monogram: "CH",
+   161→    color: "#0B1560",
+   162→    category: "football",
+   163→    tagline: "Serie A & the Italian game",
+   164→    nowPlaying: "Lazio's Unbeaten Run — Analysis Special",
+   165→    next: "Derby della Capitale Countdown",
+   166→    viewers: 74320,
+   167→    demo: true,
+   168→    servers: [
+   169→      { label: "Server 1", url: DEMO_TAG.sintel },
+   170→      { label: "Server 2", url: DEMO_TAG.tos },
+   171→    ],
+   172→  },
+   173→  {
+   174→    id: "ucltv",
+   175→    name: "UCL Tonight",
+   176→    monogram: "UC",
+   177→    color: "#0A1172",
+   178→    category: "football",
+   179→    tagline: "Champions League nights",
+   180→    nowPlaying: "Matchday 5 Draw Analysis",
+   181→    next: "Classic Final: Real Madrid vs Bayern",
+   182→    viewers: 98450,
+   183→    demo: true,
+   184→    servers: [
+   185→      { label: "Server 1", url: DEMO_TAG.bipbop },
+   186→      { label: "Server 2", url: DEMO_TAG.bunny },
+   187→    ],
+   188→  },
+   189→  {
+   190→    id: "dw",
+   191→    name: "DW English",
+   192→    monogram: "DW",
+   193→    color: "#0B3B75",
+   194→    category: "news",
+   195→    tagline: "German international broadcaster",
+   196→    nowPlaying: "The Day — News & Analysis",
+   197→    next: "Kick off! — Bundesliga Report",
+   198→    viewers: 45320,
+   199→    demo: false,
+   200→    servers: [{ label: "Server 1", url: DEMO_TAG.dw, note: "Free-to-air" }],
+   201→  },
+   202→  {
+   203→    id: "f24",
+   204→    name: "France 24 English",
+   205→    monogram: "F24",
+   206→    color: "#123A6D",
+   207→    category: "news",
+   208→    tagline: "International news, live from Paris",
+   209→    nowPlaying: "Live News Bulletin",
+   210→    next: "Sports Week",
+   211→    viewers: 38210,
+   212→    demo: false,
+   213→    servers: [{ label: "Server 1", url: DEMO_TAG.f24, note: "Free-to-air" }],
+   214→  },
+   215→  {
+   216→    id: "aje",
+   217→    name: "Al Jazeera English",
+   218→    monogram: "AJ",
+   219→    color: "#FAA61A",
+   220→    category: "news",
+   221→    tagline: "Global news & current affairs",
+   222→    nowPlaying: "Newshour — Live from Doha",
+   223→    next: "Inside Story: Asian Football Rising",
+   224→    viewers: 51940,
+   225→    demo: false,
+   226→    servers: [{ label: "Server 1", url: DEMO_TAG.aje, note: "Free-to-air" }],
+   227→  },
+   228→  {
+   229→    id: "trtw",
+   230→    name: "TRT World",
+   231→    monogram: "TR",
+   232→    color: "#0A1E3C",
+   233→    category: "news",
+   234→    tagline: "News from Istanbul",
+   235→    nowPlaying: "Across the Globe — Live",
+   236→    next: "SportsNation",
+   237→    viewers: 29870,
+   238→    demo: false,
+   239→    servers: [{ label: "Server 1", url: DEMO_TAG.trt, note: "Free-to-air" }],
+   240→  },
+   241→  {
+   242→    id: "nasa",
+   243→    name: "NASA TV",
+   244→    monogram: "NA",
+   245→    color: "#1B2A49",
+   246→    category: "sports",
+   247→    tagline: "Science & exploration, live",
+   248→    nowPlaying: "International Space Station Live",
+   249→    next: "Mission Update",
+   250→    viewers: 18450,
+   251→    demo: false,
+   252→    servers: [{ label: "Server 1", url: DEMO_TAG.nasa, note: "Free-to-air" }],
+   253→  },
+   254→];
+   255→
+   256→const CATEGORIES = [
+   257→  { key: "all", label: "All Channels" },
+   258→  { key: "bangladesh", label: "Bangladesh" },
+   259→  { key: "football", label: "Football" },
+   260→  { key: "sports", label: "Sports" },
+   261→  { key: "news", label: "News" },
+   262→] as const;
+   263→
+   264→export function LiveTvView() {
+   265→  useReveal();
+   266→  const [category, setCategory] = useState<string>("all");
+   267→  const [active, setActive] = useState<Channel>(CHANNELS[0]);
+   268→  const [serverIdx, setServerIdx] = useState(0);
+   269→  const [playing, setPlaying] = useState(false);
+   270→  const [muted, setMuted] = useState(true);
+   271→  const [loading, setLoading] = useState(false);
+   272→  const [error, setError] = useState<string | null>(null);
+   273→  const [showCustom, setShowCustom] = useState(false);
+   274→  const [customUrl, setCustomUrl] = useState("");
+   275→  const [customName, setCustomName] = useState("");
+   276→  const videoRef = useRef<HTMLVideoElement>(null);
+   277→  const hlsRef = useRef<Hls | null>(null);
+   278→
+   279→  const filtered = useMemo(
+   280→    () => (category === "all" ? CHANNELS : CHANNELS.filter((c) => c.category === category)),
+   281→    [category]
+   282→  );
+   283→
+   284→  const src = active.servers[Math.min(serverIdx, active.servers.length - 1)].url;
+   285→
+   286→  const destroyHls = useCallback(() => {
+   287→    if (hlsRef.current) {
+   288→      hlsRef.current.destroy();
+   289→      hlsRef.current = null;
+   290→    }
+   291→  }, []);
+   292→
+   293→  const loadStream = useCallback(
+   294→    async (url: string) => {
+   295→      const video = videoRef.current;
+   296→      if (!video) return;
+   297→      destroyHls();
+   298→      setError(null);
+   299→      setLoading(true);
+   300→      try {
+   301→        if (video.canPlayType("application/vnd.apple.mpegurl") && url.includes(".m3u8") && !url.includes("test-streams")) {
+   302→          // Native HLS (Safari / iOS)
+   303→          video.src = url;
+   304→        } else {
+   305→          const HlsCtor = (await import("hls.js")).default;
+   306→          if (HlsCtor.isSupported()) {
+   307→            const hls = new HlsCtor({ enableWorker: true, lowLatencyMode: false, backBufferLength: 90 });
+   308→            hlsRef.current = hls;
+   309→            hls.loadSource(url);
+   310→            hls.attachMedia(video);
+   311→            hls.on(HlsCtor.Events.ERROR, (_e, data) => {
+   312→              if (data.fatal) {
+   313→                setLoading(false);
+   314→                setError("This stream is currently unavailable. Try another server or channel.");
+   315→                destroyHls();
+   316→              }
+   317→            });
+   318→          } else {
+   319→            video.src = url;
+   320→          }
+   321→        }
+   322→        video.muted = muted;
+   323→        await video.play().catch(() => {
+   324→          /* autoplay may need a manual click */
+   325→        });
+   326→        setPlaying(!video.paused);
+   327→      } finally {
+   328→        setLoading(false);
+   329→      }
+   330→    },
+   331→    [destroyHls, muted]
+   332→  );
+   333→
+   334→  // Load stream when channel or server changes (only if user has started playback)
+   335→  useEffect(() => {
+   336→    if (playing || error) void loadStream(src);
+   337→  }, [src]);
+   338→
+   339→  useEffect(() => () => destroyHls(), [destroyHls]);
+   340→
+   341→  const startPlayback = (ch: Channel, idx = 0) => {
+   342→    setActive(ch);
+   343→    setServerIdx(idx);
+   344→    setPlaying(true);
+   345→    setError(null);
+   346→    // stream loads via the src-change effect
+   347→  };
+   348→
+   349→  const togglePlay = async () => {
+   350→    const video = videoRef.current;
+   351→    if (!video) return;
+   352→    if (!playing && !hlsRef.current && !video.src) {
+   353→      await loadStream(src);
+   354→      return;
+   355→    }
+   356→    if (video.paused) {
+   357→      await video.play().catch(() => {});
+   358→      setPlaying(true);
+   359→    } else {
+   360→      video.pause();
+   361→      setPlaying(false);
+   362→    }
+   363→  };
+   364→
+   365→  const toggleMute = () => {
+   366→    const video = videoRef.current;
+   367→    if (!video) return;
+   368→    video.muted = !video.muted;
+   369→    setMuted(video.muted);
+   370→  };
+   371→
+   372→  const goFullscreen = () => {
+   373→    const el = videoRef.current?.parentElement;
+   374→    if (el?.requestFullscreen) void el.requestFullscreen();
+   375→  };
+   376→
+   377→  const playCustom = () => {
+   378→    const url = customUrl.trim();
+   379→    if (!/^https?:\/\/.+/i.test(url)) return;
+   380→    const ch: Channel = {
+   381→      id: "custom",
+   382→      name: customName.trim() || "Custom Stream",
+   383→      monogram: "CS",
+   384→      color: "#006A4E",
+   385→      category: "sports",
+   386→      tagline: "User-provided source",
+   387→      nowPlaying: "External stream",
+   388→      next: "—",
+   389→      viewers: 1,
+   390→      demo: false,
+   391→      servers: [{ label: "Custom", url, note: "User source" }],
+   392→    };
+   393→    setShowCustom(false);
+   394→    startPlayback(ch, 0);
+   395→  };
+   396→
+   397→  return (
+   398→    <div className="mx-auto w-full max-w-7xl px-4 pb-14 pt-6 sm:px-6">
+   399→      <PageHeader
+   400→        title="Live TV"
+   401→        kicker="multi-server streaming"
+   402→        subtitle="Sports and football channels streamed from multiple servers — switch sources instantly, never miss kick-off"
+   403→        icon={<Tv className="h-5 w-5" aria-hidden />}
+   404→      >
+   405→        <span className="flex items-center gap-1.5 rounded-full border border-fhb-red/45 bg-fhb-red/10 px-3 py-1.5 text-[10px] font-bold text-fhb-red">
+   406→          <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />
+   407→          {fmtNum(CHANNELS.length)} channels online
+   408→        </span>
+   409→      </PageHeader>
+   410→
+   411→      {/* Billboard ad */}
+   412→      <div className="reveal mt-6">
+   413→        <AdSlot placement="HEADER_BANNER" />
+   414→      </div>
+   415→
+   416→      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+   417→        {/* ═══ Player ═══ */}
+   418→        <section className="min-w-0 lg:col-span-2" aria-label="Live stream player">
+   419→          <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
+   420→            {/* Video area */}
+   421→            <div className="relative aspect-video w-full bg-black">
+   422→              <video
+   423→                ref={videoRef}
+   424→                className="h-full w-full max-w-full object-contain"
+   425→                playsInline
+   426→                controls={false}
+   427→                onError={() => {
+   428→                  if (playing) setError("This stream is currently unavailable. Try another server or channel.");
+   429→                }}
+   430→                aria-label={`Live stream: ${active.name}`}
+   431→              />
+   432→              {/* Idle state */}
+   433→              {!playing && !error && (
+   434→                <button
+   435→                  onClick={() => void loadStream(src)}
+   436→                  className="group absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-b from-black/60 via-black/40 to-black/70"
+   437→                  aria-label={`Play ${active.name}`}
+   438→                >
+   439→                  <span className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-white/25 bg-black/50 backdrop-blur-md transition-transform duration-300 group-hover:scale-110">
+   440→                    <Play className="ml-1 h-9 w-9 fill-white text-white" />
+   441→                  </span>
+   442→                  <span className="text-center">
+   443→                    <span className="block font-display text-lg font-bold tracking-wide text-white">
+   444→                      {active.name}
+   445→                    </span>
+   446→                    <span className="mt-1 block text-xs text-white/70">
+   447→                      {active.nowPlaying} · tap to start the stream
+   448→                    </span>
+   449→                  </span>
+   450→                </button>
+   451→              )}
+   452→              {/* Loading */}
+   453→              {loading && (
+   454→                <span className="absolute inset-0 flex items-center justify-center bg-black/50">
+   455→                  <RefreshCw className="h-10 w-10 animate-spin text-white/85" aria-hidden />
+   456→                </span>
+   457→              )}
+   458→              {/* Error */}
+   459→              {error && (
+   460→                <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/80 px-6 text-center">
+   461→                  <AlertTriangle className="h-10 w-10 text-fhb-gold" aria-hidden />
+   462→                  <p className="max-w-sm text-sm font-semibold text-white">{error}</p>
+   463→                  <div className="flex gap-2">
+   464→                    <Button size="sm" onClick={() => void loadStream(src)} className="rounded-full bg-primary text-primary-foreground">
+   465→                      <RefreshCw className="mr-1.5 h-3.5 w-3.5" aria-hidden /> Retry
+   466→                    </Button>
+   467→                    {active.servers.length > 1 && (
+   468→                      <Button
+   469→                        size="sm"
+   470→                        variant="outline"
+   471→                        onClick={() => {
+   472→                          setServerIdx((i) => (i + 1) % active.servers.length);
+   473→                        }}
+   474→                        className="rounded-full border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+   475→                      >
+   476→                        Try next server
+   477→                      </Button>
+   478→                    )}
+   479→                  </div>
+   480→                </div>
+   481→              )}
+   482→              {/* Top overlay: channel chip */}
+   483→              {playing && (
+   484→                <span className="absolute left-3 top-3 flex items-center gap-2 rounded-full bg-black/55 px-3 py-1.5 backdrop-blur-md">
+   485→                  <span
+   486→                    className="flex h-6 w-6 items-center justify-center rounded-md font-display text-[10px] font-bold text-white"
+   487→                    style={{ backgroundColor: active.color }}
+   488→                    aria-hidden
+   489→                  >
+   490→                    {active.monogram}
+   491→                  </span>
+   492→                  <span className="text-xs font-bold text-white">{active.name}</span>
+   493→                  <span className="flex items-center gap-1 rounded-sm bg-fhb-red px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-white">
+   494→                    <span className="live-dot h-1 w-1 rounded-full bg-white" aria-hidden /> Live
+   495→                  </span>
+   496→                </span>
+   497→              )}
+   498→              {/* Controls */}
+   499→              <div className="absolute inset-x-0 bottom-0 flex items-center gap-1.5 bg-gradient-to-t from-black/85 to-transparent px-3 pb-3 pt-8">
+   500→                <button
+   501→                  onClick={() => void togglePlay()}
+   502→                  className="tap-target flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors hover:bg-white/30"
+   503→                  aria-label={playing ? "Pause" : "Play"}
+   504→                >
+   505→                  {playing ? <Pause className="h-[18px] w-[18px]" aria-hidden /> : <Play className="ml-0.5 h-[18px] w-[18px] fill-white" aria-hidden />}
+   506→                </button>
+   507→                <button
+   508→                  onClick={toggleMute}
+   509→                  className="tap-target flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors hover:bg-white/30"
+   510→                  aria-label={muted ? "Unmute" : "Mute"}
+   511→                >
+   512→                  {muted ? <VolumeX className="h-[18px] w-[18px]" aria-hidden /> : <Volume2 className="h-[18px] w-[18px]" aria-hidden />}
+   513→                </button>
+   514→                <div className="ml-1 min-w-0 flex-1">
+   515→                  <p className="truncate text-[11px] font-semibold text-white/90">{active.nowPlaying}</p>
+   516→                  <p className="truncate text-[10px] text-white/60">
+   517→                    {active.servers[Math.min(serverIdx, active.servers.length - 1)].label} · HD 1080p
+   518→                    {active.demo ? " · demo feed" : " · free-to-air"}
+   519→                  </p>
+   520→                </div>
+   521→                <button
+   522→                  onClick={goFullscreen}
+   523→                  className="tap-target flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-white backdrop-blur-md transition-colors hover:bg-white/30"
+   524→                  aria-label="Fullscreen"
+   525→                >
+   526→                  <Maximize className="h-[18px] w-[18px]" aria-hidden />
+   527→                </button>
+   528→              </div>
+   529→            </div>
+   530→
+   531→            {/* Info bar + servers */}
+   532→            <div className="border-t border-border bg-muted/30 p-4 sm:p-5">
+   533→              <div className="flex flex-wrap items-start justify-between gap-3">
+   534→                <div className="min-w-0">
+   535→                  <h2 className="flex items-center gap-2 text-base font-bold text-foreground">
+   536→                    {active.name}
+   537→                    <span className="rounded-md bg-primary/12 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-primary">
+   538→                      {active.category === "bangladesh" ? "Bangladesh" : active.category}
+   539→                    </span>
+   540→                  </h2>
+   541→                  <p className="mt-0.5 text-xs text-muted-foreground">{active.tagline}</p>
+   542→                </div>
+   543→                <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+   544→                  <span className="flex items-center gap-1.5">
+   545→                    <Users className="h-3.5 w-3.5 text-primary/80" aria-hidden />
+   546→                    {fmtNum(active.viewers)} watching
+   547→                  </span>
+   548→                  <span className="flex items-center gap-1.5">
+   549→                    <Signal className="h-3.5 w-3.5 text-primary/80" aria-hidden /> HD
+   550→                  </span>
+   551→                </div>
+   552→              </div>
+   553→
+   554→              {/* EPG */}
+   555→              <div className="mt-4 grid gap-2 sm:grid-cols-2">
+   556→                <div className="rounded-xl border border-border bg-card px-3.5 py-2.5">
+   557→                  <p className="text-[9px] font-bold uppercase tracking-widest text-fhb-red">Now playing</p>
+   558→                  <p className="mt-1 text-[13px] font-semibold text-foreground">{active.nowPlaying}</p>
+   559→                </div>
+   560→                <div className="rounded-xl border border-border bg-card px-3.5 py-2.5">
+   561→                  <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground">Up next</p>
+   562→                  <p className="mt-1 text-[13px] font-semibold text-foreground/80">{active.next}</p>
+   563→                </div>
+   564→              </div>
+   565→
+   566→              {/* Server switcher */}
+   567→              <div className="mt-4 flex flex-wrap items-center gap-2">
+   568→                <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+   569→                  <Server className="h-3.5 w-3.5 text-primary/80" aria-hidden /> Servers
+   570→                </span>
+   571→                {active.servers.map((s, i) => (
+   572→                  <button
+   573→                    key={s.label}
+   574→                    onClick={() => {
+   575→                      setServerIdx(i);
+   576→                      setPlaying(true);
+   577→                    }}
+   578→                    className={cn(
+   579→                      "flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 text-[11px] font-bold transition-all active:scale-95",
+   580→                      i === serverIdx
+   581→                        ? "border-primary/50 bg-primary/15 text-primary"
+   582→                        : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
+   583→                    )}
+   584→                    aria-pressed={i === serverIdx}
+   585→                  >
+   586→                    {s.label}
+   587→                    {s.note && <span className="text-[9px] font-medium opacity-70">· {s.note}</span>}
+   588→                  </button>
+   589→                ))}
+   590→              </div>
+   591→            </div>
+   592→          </div>
+   593→
+   594→          {/* Custom stream box */}
+   595→          <div className="edge-lit mt-5 rounded-2xl border border-dashed border-border bg-card/60 p-4 sm:p-5">
+   596→            <button
+   597→              onClick={() => setShowCustom((v) => !v)}
+   598→              className="flex w-full items-center gap-3 text-left"
+   599→              aria-expanded={showCustom}
+   600→            >
+   601→              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
+   602→                <Link2 className="h-5 w-5" aria-hidden />
+   603→              </span>
+   604→              <span className="min-w-0 flex-1">
+   605→                <span className="block text-sm font-bold text-foreground">Play any stream URL</span>
+   606→                <span className="mt-0.5 block text-xs text-muted-foreground">
+   607→                  Connect external servers or licensed feeds — paste any .m3u8 link
+   608→                </span>
+   609→              </span>
+   610→              <ChevronRight className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", showCustom && "rotate-90")} aria-hidden />
+   611→            </button>
+   612→            {showCustom && (
+   613→              <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_180px_auto]">
+   614→                <Input
+   615→                  value={customUrl}
+   616→                  onChange={(e) => setCustomUrl(e.target.value)}
+   617→                  placeholder="https://your-server.com/stream/index.m3u8"
+   618→                  className="h-11 rounded-xl bg-card text-sm"
+   619→                  aria-label="Stream URL"
+   620→                />
+   621→                <Input
+   622→                  value={customName}
+   623→                  onChange={(e) => setCustomName(e.target.value)}
+   624→                  placeholder="Channel name (optional)"
+   625→                  className="h-11 rounded-xl bg-card text-sm"
+   626→                  aria-label="Channel name"
+   627→                />
+   628→                <Button onClick={playCustom} className="h-11 rounded-xl bg-primary px-5 text-xs font-bold text-primary-foreground">
+   629→                  <Play className="mr-1.5 h-3.5 w-3.5 fill-current" aria-hidden /> Play
+   630→                </Button>
+   631→              </div>
+   632→            )}
+   633→          </div>
+   634→
+   635→          {/* Legal note */}
+   636→          <p className="mt-4 flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
+   637→            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden />
+   638→            Demo preview: channels marked &ldquo;demo feed&rdquo; play public sample streams. At
+   639→            deployment, licensed broadcast URLs can be plugged into each server slot — the player,
+   640→            server switching and multi-bitrate HLS engine are production-ready.
+   641→          </p>
+   642→        </section>
+   643→
+   644→        {/* ═══ Channel grid sidebar ═══ */}
+   645→        <aside className="min-w-0" aria-label="Channel list">
+   646→          <div className="sticky top-24 space-y-4">
+   647→            <AdSlot placement="SIDEBAR" className="w-full" />
+   648→            <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
+   649→              <p className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-3.5 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">
+   650→                <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-red/12 text-fhb-red">
+   651→                  <Radio className="h-3.5 w-3.5" aria-hidden />
+   652→                </span>
+   653→                Channel Guide
+   654→              </p>
+   655→              {/* Category chips */}
+   656→              <div className="no-scrollbar flex gap-1.5 overflow-x-auto border-b border-border px-3 py-2.5">
+   657→                {CATEGORIES.map((c) => (
+   658→                  <button
+   659→                    key={c.key}
+   660→                    onClick={() => setCategory(c.key)}
+   661→                    className={cn(
+   662→                      "shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-bold transition-all active:scale-95",
+   663→                      category === c.key
+   664→                        ? "border-primary/50 bg-primary/15 text-primary"
+   665→                        : "border-border bg-card text-muted-foreground hover:text-foreground"
+   666→                    )}
+   667→                  >
+   668→                    {c.label}
+   669→                  </button>
+   670→                ))}
+   671→              </div>
+   672→              <div className="max-h-[560px] divide-y divide-border/50 overflow-y-auto">
+   673→                {filtered.map((ch) => (
+   674→                  <button
+   675→                    key={ch.id}
+   676→                    onClick={() => startPlayback(ch, 0)}
+   677→                    className={cn(
+   678→                      "group flex w-full items-center gap-3 px-3.5 py-3 text-left transition-colors hover:bg-accent/50",
+   679→                      active.id === ch.id && "bg-primary/10"
+   680→                    )}
+   681→                    aria-current={active.id === ch.id ? "true" : undefined}
+   682→                  >
+   683→                    <span
+   684→                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl font-display text-xs font-bold text-white shadow-[inset_0_0_0_1.5px_rgba(255,255,255,0.25),inset_0_-2px_4px_rgba(0,0,0,0.3)]"
+   685→                      style={{ backgroundColor: ch.color }}
+   686→                      aria-hidden
+   687→                    >
+   688→                      {ch.monogram}
+   689→                    </span>
+   690→                    <span className="min-w-0 flex-1">
+   691→                      <span className="flex items-center gap-1.5">
+   692→                        <span className="truncate text-[13px] font-bold text-foreground group-hover:text-primary">
+   693→                          {ch.name}
+   694→                        </span>
+   695→                        <span className="live-dot h-1.5 w-1.5 shrink-0 rounded-[2px] bg-fhb-red" aria-label="Live" />
+   696→                      </span>
+   697→                      <span className="mt-0.5 block truncate text-[11px] text-muted-foreground">{ch.nowPlaying}</span>
+   698→                    </span>
+   699→                    <Play className="h-4 w-4 shrink-0 fill-muted-foreground/40 text-muted-foreground/40 transition-colors group-hover:fill-primary group-hover:text-primary" aria-hidden />
+   700→                  </button>
+   701→                ))}
+   702→              </div>
+   703→            </div>
+   704→            {/* Rectangle ad */}
+   705→            <AdSlot placement="MOBILE_BANNER" className="w-full" />
+   706→          </div>
+   707→        </aside>
+   708→      </div>
+   709→
+   710→      {/* Bottom in-feed ad */}
+   711→      <div className="reveal mt-10">
+   712→        <AdSlot placement="IN_FEED" />
+   713→      </div>
+   714→    </div>
+   715→  );
+   716→}
+   717→

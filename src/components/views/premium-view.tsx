@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import type { MembershipPlan } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
@@ -9,9 +9,38 @@ import { formatMoney } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
-import { PageHeader } from "@/components/football/section-header";
-import { Crown, Check, ShieldCheck, Zap, Sparkles, CreditCard, HelpCircle, BadgeCheck } from "lucide-react";
+import {
+  Crown, Check, X, ShieldCheck, Zap, Sparkles, CreditCard, HelpCircle,
+  BadgeCheck, ChevronDown, CalendarClock, RefreshCw,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
+
+/* ════════════════════════════════════════════════════════════════
+   PremiumView — membership & monetization page
+   Gold-accent hero, plan comparison, payment strip, FAQ accordion.
+   No ad slots here — this page sells the ad-free experience.
+   ════════════════════════════════════════════════════════════════ */
+
+const PAYMENT_METHODS = ["bKash", "Nagad", "Rocket", "Visa", "Mastercard"];
+
+const FAQ_ITEMS: Array<[string, string]> = [
+  [
+    "Does Premium remove all ads?",
+    "Yes. Premium members never see header, in-feed, sidebar or mobile banner ads anywhere on FHB — the slots are removed entirely, not just hidden.",
+  ],
+  [
+    "How do creators earn money?",
+    "Creators earn a share of ad revenue from shorts views plus fan tips. Every taka is tracked in the earnings dashboard and can be withdrawn to bKash.",
+  ],
+  [
+    "Can I cancel anytime?",
+    "Yes. Switch back to the free plan from this page whenever you like — you keep premium benefits until the end of the current period.",
+  ],
+  [
+    "Which payment methods are supported?",
+    "bKash, Nagad, Rocket and Visa or Mastercard through the SSLCommerz gateway. In this demo, subscriptions activate instantly without a real charge.",
+  ],
+];
 
 export function PremiumView() {
   const navigate = useAppStore((s) => s.navigate);
@@ -20,6 +49,7 @@ export function PremiumView() {
   const { toast } = useToast();
   useReveal();
   const [busy, setBusy] = useState<string | null>(null);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const { data, isLoading } = useQuery<{ plans: MembershipPlan[] }>({
     queryKey: ["membership"],
@@ -49,102 +79,202 @@ export function PremiumView() {
 
   const plans = data?.plans ?? [];
 
-  const planMeta: Record<string, { icon: React.ReactNode; desc: string; accent: string }> = {
-    FREE: { icon: <Zap className="h-5 w-5" aria-hidden />, desc: "The starter experience for everyone", accent: "text-muted-foreground" },
-    PRO: { icon: <Crown className="h-5 w-5" aria-hidden />, desc: "For the true football devotees", accent: "text-fhb-gold" },
-    LEGEND: { icon: <Sparkles className="h-5 w-5" aria-hidden />, desc: "The ultimate fan experience", accent: "text-fhb-red" },
+  /** Cheapest paid plan — the honest "from" price, straight from the API. */
+  const minPaidPrice = useMemo(() => {
+    const paid = plans.filter((p) => p.price > 0);
+    return paid.length ? Math.min(...paid.map((p) => p.price)) : null;
+  }, [plans]);
+
+  /** Features the free tier lacks — pulled from the Pro plan, shown with X marks. */
+  const freeMissing = useMemo(() => {
+    const pro = plans.find((p) => p.code === "PRO");
+    if (!pro) return [];
+    try {
+      const features: string[] = JSON.parse(pro.features || "[]");
+      return features.slice(0, 2);
+    } catch {
+      return [];
+    }
+  }, [plans]);
+
+  const planMeta: Record<string, { icon: React.ReactNode; desc: string }> = {
+    FREE: { icon: <Zap className="h-4.5 w-4.5 h-[18px] w-[18px]" aria-hidden />, desc: "The starter experience for every fan" },
+    PRO: { icon: <Crown className="h-[18px] w-[18px]" aria-hidden />, desc: "For the true football devotees" },
+    LEGEND: { icon: <Sparkles className="h-[18px] w-[18px]" aria-hidden />, desc: "The ultimate fan experience" },
   };
 
+  const scrollToPlans = () => {
+    document.getElementById("plans")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const expiryLine = user?.premiumUntil
+    ? new Date(user.premiumUntil).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })
+    : null;
+
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 pb-14 pt-6 sm:px-6">
-      {/* ═══ Cinematic premium hero ═══ */}
-      <div className="noise gold-panel relative overflow-hidden rounded-3xl border border-fhb-gold/25 p-7 text-center sm:p-10">
+    <div className="mx-auto w-full max-w-[1080px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+      {/* ═══ Gold hero band ═══ */}
+      <section className="noise gold-panel reveal relative overflow-hidden rounded-xl border border-fhb-gold/25 px-6 py-9 sm:px-10 sm:py-12">
         <span
           aria-hidden
-          className="pointer-events-none absolute -left-10 -top-14 select-none font-display text-[10rem] font-bold leading-none text-fhb-gold/[0.06] sm:text-[15rem]"
+          className="pointer-events-none absolute -right-6 -top-10 select-none font-display text-[8rem] font-bold leading-none tracking-tight text-fhb-gold/[0.05] sm:text-[12rem]"
         >
           PRO
         </span>
-        <div className="relative mx-auto max-w-2xl">
-          <span className="inline-flex items-center gap-2 rounded-full border border-fhb-gold/40 bg-fhb-gold/10 px-4 py-1.5 text-[11px] font-bold text-fhb-gold">
+        <div className="relative max-w-[62ch]">
+          <p className="eyebrow flex items-center gap-2 text-fhb-gold">
             <Crown className="h-3.5 w-3.5" aria-hidden />
-            FHB Premium Membership
-          </span>
-          <h1 className="display-hero mt-4 text-3xl text-foreground sm:text-[2.75rem]">
-            For the love of football — <span className="gold-text">deeper than ever</span>
-          </h1>
-          <p className="mx-auto mt-3.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            An ad-free experience, exclusive transfer news, HD highlights and bigger earning opportunities for creators.
+            Premium membership
           </p>
-          {user?.isPremium && (
-            <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary">
-              <ShieldCheck className="h-4 w-4" aria-hidden /> You are an active premium member
-            </span>
-          )}
+          <h1 className="display-hero mt-3 text-[1.9rem] text-foreground sm:text-[2.6rem]">
+            FHB <span className="gold-text">Premium</span>
+          </h1>
+          <p className="mt-3.5 max-w-[52ch] text-sm leading-relaxed text-muted-foreground">
+            An ad-free experience, HD highlights, transfer news 48 hours early and bigger earning opportunities for
+            creators — one membership for the whole platform.
+          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-5 gap-y-2.5">
+            {minPaidPrice != null && (
+              <span className="flex items-baseline gap-1.5">
+                <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">From</span>
+                <span className="tabular font-display text-2xl font-bold text-fhb-gold">{formatMoney(minPaidPrice)}</span>
+                <span className="text-xs text-muted-foreground">/month</span>
+              </span>
+            )}
+            <span className="hidden h-4 w-px bg-border sm:block" aria-hidden />
+            <span className="text-xs font-medium text-muted-foreground">Cancel anytime · bKash, Nagad and cards</span>
+          </div>
+          <div className="mt-6">
+            {user?.isPremium ? (
+              <span className="inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3.5 py-2 text-xs font-bold text-primary">
+                <ShieldCheck className="h-4 w-4" aria-hidden />
+                You are an active premium member
+              </span>
+            ) : (
+              <Button
+                onClick={scrollToPlans}
+                className="sheen h-11 gap-2 bg-fhb-gold px-6 text-sm font-bold text-black hover:bg-fhb-gold/90"
+              >
+                <Crown className="h-4 w-4" aria-hidden />
+                See membership plans
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
+      </section>
 
+      {/* ═══ Current membership status ═══ */}
+      {user?.isPremium && (
+        <section className="reveal edge-lit mt-6 rounded-xl border border-fhb-gold/30 bg-card p-5 sm:p-6" aria-label="Membership status">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-fhb-gold/30 bg-fhb-gold/12 text-fhb-gold">
+                <Crown className="h-5 w-5" aria-hidden />
+              </span>
+              <div className="min-w-0">
+                <p className="flex flex-wrap items-center gap-2 font-display text-base font-bold text-foreground">
+                  Premium is active
+                  <span className="rounded bg-fhb-gold/15 px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.08em] text-fhb-gold">
+                    Ad-free
+                  </span>
+                </p>
+                <p className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <CalendarClock className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                  {expiryLine ? `Valid until ${expiryLine}` : "Valid for the current period"}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2.5">
+              <Button variant="outline" size="sm" onClick={scrollToPlans} className="gap-1.5 font-semibold">
+                <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Change plan
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setBusy("FREE");
+                  subscribe.mutate("FREE");
+                }}
+                disabled={subscribe.isPending && busy === "FREE"}
+                className="font-semibold text-muted-foreground hover:text-foreground"
+              >
+                {subscribe.isPending && busy === "FREE" ? "Processing..." : "Cancel membership"}
+              </Button>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ═══ Plan cards ═══ */}
       {isLoading ? (
-        <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-3">
-          {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-[420px] rounded-3xl" />
+        <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3" aria-hidden>
+          {[0, 1, 2].map((i) => (
+            <Skeleton key={i} className="h-[430px] rounded-xl" />
           ))}
         </div>
       ) : (
-        <div className="mt-8 grid items-start gap-6 md:grid-cols-3">
+        <div id="plans" className="mt-8 grid gap-5 md:grid-cols-3">
           {plans.map((plan) => {
-            const features: string[] = JSON.parse(plan.features || "[]");
+            let features: string[] = [];
+            try {
+              features = JSON.parse(plan.features || "[]");
+            } catch {
+              features = [];
+            }
             const meta = planMeta[plan.code] ?? planMeta.FREE;
             const isCurrent = user?.isPremium && plan.code !== "FREE";
+            const isFree = plan.price === 0;
             return (
               <div
                 key={plan.id}
                 className={cn(
-                  "card-lift relative overflow-hidden rounded-3xl border p-6 sm:p-7",
-                  plan.popular
-                    ? "gold-panel border-fhb-gold/45 shadow-[0_30px_70px_-30px_rgba(0,0,0,0.8)] md:-translate-y-3 md:scale-[1.02]"
-                    : "edge-lit border-border bg-card"
+                  "reveal card-lift flex h-full flex-col rounded-xl border p-5 sm:p-6",
+                  plan.popular ? "gold-panel border-fhb-gold/45" : "edge-lit border-border bg-card"
                 )}
               >
-                {plan.popular && (
-                  <span className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-fhb-gold/60 via-fhb-gold to-fhb-gold/60" aria-hidden />
-                )}
-                <div className="flex items-start justify-between">
-                  <span
-                    className={cn(
-                      "flex h-12 w-12 items-center justify-center rounded-2xl",
-                      plan.popular ? "border border-fhb-gold/30 bg-fhb-gold/15" : "bg-muted"
-                    )}
-                  >
-                    <span className={meta.accent}>{meta.icon}</span>
-                  </span>
-                  {plan.popular && (
-                    <span className="flex items-center gap-1 rounded-full bg-fhb-gold/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-fhb-gold">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-display text-lg font-bold text-foreground">{plan.name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{meta.desc}</p>
+                  </div>
+                  {plan.popular ? (
+                    <span className="flex shrink-0 items-center gap-1 rounded-md bg-fhb-gold/15 px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.1em] text-fhb-gold">
                       <Sparkles className="h-3 w-3" aria-hidden /> Most Popular
+                    </span>
+                  ) : (
+                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", plan.popular ? "bg-fhb-gold/15" : "bg-muted text-muted-foreground")}>
+                      {meta.icon}
                     </span>
                   )}
                 </div>
-                <h3 className="font-display-bn mt-5 text-xl font-bold text-foreground sm:text-2xl">{plan.name}</h3>
-                <p className="mt-1 text-xs text-muted-foreground">{meta.desc}</p>
-                <div className="mt-6 flex items-baseline gap-1.5 border-b border-border/70 pb-6">
-                  <span className="tabular font-display text-4xl font-bold text-foreground sm:text-[2.75rem]">
-                    {plan.price === 0 ? "Free" : formatMoney(plan.price)}
+
+                <div className="mt-5 flex items-baseline gap-1.5 border-b border-border/70 pb-5">
+                  <span className="tabular font-display text-[2.1rem] font-bold leading-none text-foreground sm:text-4xl">
+                    {isFree ? "Free" : formatMoney(plan.price)}
                   </span>
-                  {plan.price > 0 && <span className="text-xs text-muted-foreground">/{plan.period}</span>}
+                  {!isFree && <span className="text-xs font-medium text-muted-foreground">/{plan.period}</span>}
                 </div>
 
-                <ul className="mt-6 space-y-3">
+                <ul className="mt-5 flex-1 space-y-2.5">
                   {features.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-xs">
                       <span
                         className={cn(
-                          "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full",
+                          "mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded",
                           plan.popular ? "bg-fhb-gold/20 text-fhb-gold" : "bg-primary/15 text-primary"
                         )}
                       >
                         <Check className="h-3 w-3" aria-hidden />
                       </span>
                       <span className="leading-relaxed text-foreground/85">{f}</span>
+                    </li>
+                  ))}
+                  {isFree && freeMissing.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-xs">
+                      <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded bg-muted text-muted-foreground/70">
+                        <X className="h-3 w-3" aria-hidden />
+                      </span>
+                      <span className="leading-relaxed text-muted-foreground/70 line-through decoration-border">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -161,15 +291,16 @@ export function PremiumView() {
                   disabled={subscribe.isPending && busy === plan.code}
                   variant={plan.popular ? "default" : "outline"}
                   className={cn(
-                    "mt-7 w-full rounded-xl py-3 text-sm font-bold",
-                    plan.popular && "sheen bg-fhb-gold text-black shadow-[0_14px_34px_-12px_var(--fhb-gold)] hover:bg-fhb-gold/90",
-                    plan.code === "LEGEND" && !plan.popular && "border-fhb-red/40 text-fhb-red hover:bg-fhb-red/10 hover:text-fhb-red"
+                    "mt-6 w-full py-3 text-sm font-bold",
+                    plan.popular && "sheen bg-fhb-gold text-black hover:bg-fhb-gold/90"
                   )}
                 >
                   {subscribe.isPending && busy === plan.code
                     ? "Processing..."
-                    : plan.price === 0
-                      ? "Start Free"
+                    : isFree
+                      ? user?.isPremium
+                        ? "Switch to Free"
+                        : "Start Free"
                       : isCurrent
                         ? "Active"
                         : `Get ${plan.name}`}
@@ -180,54 +311,75 @@ export function PremiumView() {
         </div>
       )}
 
-      {/* Payment + FAQ */}
-      <div className="mt-10 grid gap-5 md:grid-cols-2">
-        <div className="edge-lit rounded-2xl border border-border bg-card p-6">
-          <h3 className="flex items-center gap-2.5 font-display-bn text-base font-bold text-foreground">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary">
-              <CreditCard className="h-4.5 w-4.5 h-[18px] w-[18px]" aria-hidden />
+      {/* ═══ Payment methods strip ═══ */}
+      <section className="reveal edge-lit mt-8 rounded-xl border border-border bg-card p-5 sm:p-6" aria-label="Payment methods">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-4">
+          <div className="flex min-w-0 items-center gap-3.5">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-primary">
+              <CreditCard className="h-[18px] w-[18px]" aria-hidden />
             </span>
-            Payment Methods
-          </h3>
-          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-            In demo mode subscriptions activate instantly. In production, bKash, Nagad, Rocket and card payments are
-            ready for (SSLCommerz) integration —{" "}
-            just wire up gateway callbacks on the <code className="rounded-sm bg-muted px-1.5 py-0.5 text-[10px]">/api/membership</code>
-            endpoint.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {["bKash", "Nagad", "Rocket", "Visa", "Mastercard"].map((p) => (
-              <span key={p} className="rounded-md border border-border bg-muted/50 px-3 py-1.5 text-[11px] font-bold text-muted-foreground">
+            <div className="min-w-0">
+              <h2 className="font-display text-base font-bold text-foreground">Pay your way</h2>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                Local mobile finance and international cards, secured by SSLCommerz.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {PAYMENT_METHODS.map((p) => (
+              <span
+                key={p}
+                className="rounded-md border border-border bg-elevated px-3 py-1.5 text-[11px] font-bold text-foreground/80"
+              >
                 {p}
               </span>
             ))}
           </div>
-          <p className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
-            <BadgeCheck className="h-3.5 w-3.5 text-primary" aria-hidden />
-            SSLCommerz secure payment gateway supported
+          <p className="flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground sm:ml-auto">
+            <BadgeCheck className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
+            Demo mode — subscriptions activate instantly
           </p>
         </div>
-        <div className="edge-lit rounded-2xl border border-border bg-card p-6">
-          <h3 className="flex items-center gap-2.5 font-display-bn text-base font-bold text-foreground">
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary">
-              <HelpCircle className="h-[18px] w-[18px]" aria-hidden />
-            </span>
-            Frequently Asked Questions
-          </h3>
-          <div className="mt-4 space-y-3">
-            {[
-              ["Do ads go away with Premium?", "Yes! Premium members get a completely ad-free experience."],
-              ["How do creators earn?", "Ad revenue share from shorts views + fan tips — everything is tracked in the earnings dashboard."],
-              ["Can I cancel anytime?", "Yes, you can return to the free plan anytime from your profile."],
-            ].map(([q, a]) => (
-              <div key={q} className="rounded-xl border border-border bg-background/50 p-4">
-                <p className="text-xs font-bold text-foreground">{q}</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{a}</p>
-              </div>
-            ))}
+      </section>
+
+      {/* ═══ FAQ accordion ═══ */}
+      <section className="reveal mt-8" aria-label="Frequently asked questions">
+        <div className="mb-4 flex items-end justify-between gap-4">
+          <div>
+            <p className="eyebrow mb-1.5 text-primary">Good to know</p>
+            <h2 className="font-display text-[1.35rem] font-bold tracking-[-0.01em] text-foreground sm:text-[1.55rem]">
+              Frequently asked questions
+            </h2>
           </div>
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+            <HelpCircle className="h-4 w-4" aria-hidden />
+          </span>
         </div>
-      </div>
+        <div className="h-px w-full bg-border/70" aria-hidden />
+        <div className="divide-y divide-border/60 overflow-hidden rounded-xl border border-border bg-card">
+          {FAQ_ITEMS.map(([q, a], i) => {
+            const open = openFaq === i;
+            return (
+              <div key={q}>
+                <button
+                  onClick={() => setOpenFaq(open ? null : i)}
+                  aria-expanded={open}
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors hover:bg-white/[0.03]"
+                >
+                  <span className={cn("text-sm font-bold", open ? "text-primary" : "text-foreground")}>{q}</span>
+                  <ChevronDown
+                    className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200", open && "rotate-180 text-primary")}
+                    aria-hidden
+                  />
+                </button>
+                {open && (
+                  <p className="px-5 pb-4 text-xs leading-relaxed text-muted-foreground">{a}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </section>
     </div>
   );
 }

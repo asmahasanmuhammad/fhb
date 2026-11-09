@@ -12,15 +12,15 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       competition.type === "LEAGUE"
         ? db.standing.findMany({
             where: { competitionId: id },
-            include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true } } },
+            include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true, logoUrl: true } } },
             orderBy: { position: "asc" },
           })
         : Promise.resolve([]),
       db.match.findMany({
         where: { competitionId: id },
         include: {
-          homeTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true } },
-          awayTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true } },
+          homeTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, logoUrl: true } },
+          awayTeam: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, logoUrl: true } },
         },
         orderBy: { kickoff: "desc" },
         take: 40,

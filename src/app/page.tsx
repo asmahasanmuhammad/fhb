@@ -103,7 +103,7 @@ export default function Page() {
             <div className="flex flex-col items-center gap-4">
               <span className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary font-display text-xl font-bold text-primary-foreground">
                 F<span className="text-fhb-red">H</span>
-                <span className="absolute -inset-1.5 animate-ping rounded-2xl border border-primary/30" aria-hidden />
+                <span className="absolute -inset-1.5 animate-ping rounded-[14px] border border-primary/30" aria-hidden />
               </span>
               <p className="animate-pulse text-xs font-medium text-muted-foreground">Loading FHB…</p>
             </div>

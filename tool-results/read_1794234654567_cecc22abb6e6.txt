@@ -1,0 +1,977 @@
+     1→"use client";
+     2→
+     3→import { useEffect, useMemo, useState } from "react";
+     4→import { useQuery } from "@tanstack/react-query";
+     5→import { useAppStore } from "@/store/app-store";
+     6→import { useLiveScores } from "@/components/providers/live-score-provider";
+     7→import { useReveal } from "@/hooks/use-reveal";
+     8→import type { Match, MatchDetail } from "@/lib/types";
+     9→import { MatchRow } from "@/components/football/match-card";
+    10→import { TeamCrest } from "@/components/football/team-badge";
+    11→import { LiveBadge } from "@/components/football/live-badge";
+    12→import { AdSlot } from "@/components/football/ad-slot";
+    13→import { PageHeader, SectionHeader } from "@/components/football/section-header";
+    14→import { Skeleton } from "@/components/ui/skeleton";
+    15→import { cn } from "@/lib/utils";
+    16→import { formatKickoff, fmtNum } from "@/lib/format";
+    17→import {
+    18→  Activity, ArrowLeft, ArrowLeftRight, CalendarDays, CalendarX, ChevronRight, Clock,
+    19→  FileText, Flag, Goal, ListOrdered, MapPin, Table2, Timer, Trophy, Tv, Zap,
+    20→} from "lucide-react";
+    21→
+    22→/* ════════════════════════════════════════════════════════════════
+    23→   ScoresView — FotMob-style match centre
+    24→   Date rail + status tabs, competition-grouped dense rows, side rail.
+    25→   ════════════════════════════════════════════════════════════════ */
+    26→
+    27→type Tab = "all" | "live" | "upcoming" | "finished";
+    28→
+    29→const DAY_MS = 86_400_000;
+    30→const DOW_SHORT = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    31→/** How far back/forward the date rail scans for fixture days (matches the API window). */
+    32→const RAIL_SPAN_DAYS = 30;
+    33→/** Right-rail quick links, resolved against competitions present in the data. */
+    34→const TOP_COMPETITIONS = ["EPL", "UCL", "LaLiga", "Serie A", "Bundesliga", "BFL"];
+    35→const STATUS_TABS: Tab[] = ["all", "live", "upcoming", "finished"];
+    36→const TAB_LABELS: Record<Tab, string> = {
+    37→  all: "All",
+    38→  live: "Live",
+    39→  upcoming: "Upcoming",
+    40→  finished: "Finished",
+    41→};
+    42→
+    43→export function ScoresView() {
+    44→  const [userTab, setUserTab] = useState<Tab | null>(null);
+    45→  const [dayOffset, setDayOffset] = useState(0); // 0 = today
+    46→  const live = useLiveScores();
+    47→  const liveConnected = live.connected;
+    48→  const navigate = useAppStore((s) => s.navigate);
+    49→  useReveal();
+    50→
+    51→  // Track the site header height so the sub-nav sticks exactly below it —
+    52→  // the header grows with the live ticker row and the desktop league rail.
+    53→  const [headerH, setHeaderH] = useState<number | null>(null);
+    54→  useEffect(() => {
+    55→    const header = document.querySelector("header");
+    56→    if (!header) return;
+    57→    const update = () => setHeaderH(Math.round(header.getBoundingClientRect().height));
+    58→    update();
+    59→    const ro = new ResizeObserver(update);
+    60→    ro.observe(header);
+    61→    return () => ro.disconnect();
+    62→  }, []);
+    63→
+    64→  const { data, isLoading } = useQuery<{ matches: Match[] }>({
+    65→    queryKey: ["matches", "scores"],
+    66→    queryFn: async () => {
+    67→      const res = await fetch("/api/matches?status=ALL&days=60&limit=150");
+    68→      return res.json().then((j) => j.data);
+    69→    },
+    70→    refetchInterval: 60_000, // fallback refresh for socket-less situations
+    71→  });
+    72→
+    73→  /** Fetched matches with any socket live-state merged in. */
+    74→  const matches = useMemo(() => {
+    75→    const all = data?.matches ?? [];
+    76→    const liveIds = new Set(live.matches.map((m) => m.id));
+    77→    return all.map((m) => (liveIds.has(m.id) ? { ...m, status: "LIVE" as const } : m));
+    78→  }, [data, live.matches]);
+    79→
+    80→  const liveMatches = useMemo(() => matches.filter((m) => m.status === "LIVE"), [matches]);
+    81→  const liveCount = liveMatches.length;
+    82→
+    83→  // Smart default tab: land on "live" only when matches are actually live
+    84→  const tab: Tab = userTab ?? (liveCount > 0 ? "live" : "all");
+    85→
+    86→  /** Date rail chips — Yesterday/Today/Tomorrow anchors plus every day with
+    87→   *  fixtures inside the fetched window, so no match is unreachable. */
+    88→  const dayChips = useMemo(() => {
+    89→    const base = new Date();
+    90→    base.setHours(0, 0, 0, 0);
+    91→    const counts = new Map<number, number>();
+    92→    for (const m of matches) {
+    93→      const d = new Date(m.kickoff);
+    94→      d.setHours(0, 0, 0, 0);
+    95→      const key = Math.round((d.getTime() - base.getTime()) / DAY_MS);
+    96→      counts.set(key, (counts.get(key) ?? 0) + 1);
+    97→    }
+    98→    const chips: Array<{ offset: number; count: number; label: string; fullLabel: string }> = [];
+    99→    const push = (offset: number) => {
+   100→      const d = new Date(base.getTime() + offset * DAY_MS);
+   101→      chips.push({
+   102→        offset,
+   103→        count: counts.get(offset) ?? 0,
+   104→        label:
+   105→          offset === -1
+   106→            ? "Yesterday"
+   107→            : offset === 0
+   108→              ? "Today"
+   109→              : offset === 1
+   110→                ? "Tomorrow"
+   111→                : `${DOW_SHORT[d.getDay()]} ${d.getDate()}`,
+   112→        fullLabel: formatKickoff(d.toISOString()).date,
+   113→      });
+   114→    };
+   115→    // Past fixture days, then the three anchors, then upcoming fixture days
+   116→    for (let o = -RAIL_SPAN_DAYS; o <= -2; o++) if ((counts.get(o) ?? 0) > 0) push(o);
+   117→    for (const o of [-1, 0, 1]) push(o);
+   118→    for (let o = 2; o <= RAIL_SPAN_DAYS; o++) if ((counts.get(o) ?? 0) > 0) push(o);
+   119→    return chips;
+   120→  }, [matches]);
+   121→
+   122→  const selectedDay = dayChips.find((c) => c.offset === dayOffset) ?? dayChips.find((c) => c.offset === 0) ?? dayChips[0];
+   123→
+   124→  /** Matches on the selected day (live state already merged). */
+   125→  const dayMatches = useMemo(() => {
+   126→    const base = new Date();
+   127→    base.setHours(0, 0, 0, 0);
+   128→    const target = base.getTime() + dayOffset * DAY_MS;
+   129→    return matches.filter((m) => {
+   130→      const d = new Date(m.kickoff);
+   131→      d.setHours(0, 0, 0, 0);
+   132→      return d.getTime() === target;
+   133→    });
+   134→  }, [matches, dayOffset]);
+   135→
+   136→  /** Rows for the active tab. Live is global — live play is always "now". */
+   137→  const pool = useMemo(() => {
+   138→    if (tab === "live") return liveMatches;
+   139→    if (tab === "upcoming") return dayMatches.filter((m) => m.status === "SCHEDULED");
+   140→    if (tab === "finished") return dayMatches.filter((m) => m.status === "FINISHED");
+   141→    return dayMatches;
+   142→  }, [tab, liveMatches, dayMatches]);
+   143→
+   144→  /** Group by competition; live competitions float to the top. */
+   145→  const grouped = useMemo(() => {
+   146→    const byComp = new Map<string, { comp: Match["competition"]; list: Match[] }>();
+   147→    for (const m of pool) {
+   148→      const g = byComp.get(m.competition.id) ?? { comp: m.competition, list: [] };
+   149→      g.list.push(m);
+   150→      byComp.set(m.competition.id, g);
+   151→    }
+   152→    const rank = (m: Match) => (m.status === "LIVE" ? 0 : m.status === "SCHEDULED" ? 1 : 2);
+   153→    const groups = [...byComp.values()];
+   154→    for (const g of groups) {
+   155→      g.list.sort((a, b) => {
+   156→        const r = rank(a) - rank(b);
+   157→        if (r !== 0) return r;
+   158→        const ka = +new Date(a.kickoff);
+   159→        const kb = +new Date(b.kickoff);
+   160→        return rank(a) === 2 ? kb - ka : ka - kb; // finished: newest first, others: earliest first
+   161→      });
+   162→    }
+   163→    groups.sort((a, b) => {
+   164→      const aLive = a.list.some((m) => m.status === "LIVE") ? 0 : 1;
+   165→      const bLive = b.list.some((m) => m.status === "LIVE") ? 0 : 1;
+   166→      if (aLive !== bLive) return aLive - bLive;
+   167→      return +new Date(a.list[0].kickoff) - +new Date(b.list[0].kickoff);
+   168→    });
+   169→    return groups;
+   170→  }, [pool]);
+   171→
+   172→  /** Right-rail quick list, resolved from competitions present in the data. */
+   173→  const topCompetitions = useMemo(() => {
+   174→    const byShort = new Map<string, Match["competition"]>();
+   175→    for (const m of matches) byShort.set(m.competition.shortName, m.competition);
+   176→    return TOP_COMPETITIONS.map((s) => byShort.get(s)).filter((c): c is Match["competition"] => Boolean(c));
+   177→  }, [matches]);
+   178→
+   179→  const counts: Record<Tab, number> = {
+   180→    all: dayMatches.length,
+   181→    live: liveCount,
+   182→    upcoming: dayMatches.filter((m) => m.status === "SCHEDULED").length,
+   183→    finished: dayMatches.filter((m) => m.status === "FINISHED").length,
+   184→  };
+   185→
+   186→  const todayLine = formatKickoff(new Date().toISOString()).date;
+   187→
+   188→  const emptyCopy =
+   189→    tab === "live"
+   190→      ? { title: "No live matches right now", hint: "Scores move to Live the moment a match kicks off." }
+   191→      : tab === "upcoming"
+   192→        ? { title: "No upcoming fixtures", hint: `Nothing is scheduled on ${selectedDay.label}. Try another date.` }
+   193→        : tab === "finished"
+   194→          ? { title: "No results yet", hint: `No matches have finished on ${selectedDay.label}.` }
+   195→          : { title: `No matches on ${selectedDay.label}`, hint: "Pick another date from the rail above." };
+   196→
+   197→  return (
+   198→    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+   199→      <PageHeader
+   200→        title="Live Scores"
+   201→        kicker="match centre"
+   202→        subtitle={`${todayLine} ${new Date().getFullYear()} — every fixture, live minute and final score`}
+   203→        icon={<Zap className="h-5 w-5" aria-hidden />}
+   204→      >
+   205→        <span
+   206→          className={cn(
+   207→            "flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[10.5px] font-bold",
+   208→            liveConnected
+   209→              ? "border-primary/35 bg-primary/10 text-primary"
+   210→              : "border-border bg-muted text-muted-foreground"
+   211→          )}
+   212→        >
+   213→          <span
+   214→            className={cn("h-1.5 w-1.5 rounded-[2px]", liveConnected ? "live-dot bg-primary" : "bg-muted-foreground")}
+   215→            aria-hidden
+   216→          />
+   217→          {liveConnected ? "Real-time connected" : "Offline mode"}
+   218→        </span>
+   219→      </PageHeader>
+   220→
+   221→      {/* ── Sticky sub-nav: date rail + status tabs ─────────────── */}
+   222→      <div
+   223→        className="glass sticky top-14 z-30 -mx-4 border-b border-border sm:-mx-6 sm:top-[60px] lg:top-[99px]"
+   224→        style={headerH != null ? { top: `${headerH}px` } : undefined}
+   225→      >
+   226→        <div className="flex flex-col gap-2 px-4 py-2.5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+   227→          {/* Date rail */}
+   228→          <div
+   229→            className="no-scrollbar -mx-1 flex items-center gap-1 overflow-x-auto px-1"
+   230→            role="group"
+   231→            aria-label="Match date"
+   232→          >
+   233→            {dayChips.map((chip) => (
+   234→              <button
+   235→                key={chip.offset}
+   236→                onClick={() => setDayOffset(chip.offset)}
+   237→                aria-pressed={dayOffset === chip.offset}
+   238→                title={chip.fullLabel}
+   239→                className={cn(
+   240→                  "flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] font-semibold transition-colors",
+   241→                  dayOffset === chip.offset
+   242→                    ? "bg-elevated text-foreground"
+   243→                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+   244→                )}
+   245→              >
+   246→                {chip.label}
+   247→                {chip.count > 0 && (
+   248→                  <span
+   249→                    className={cn(
+   250→                      "tabular rounded px-1 text-[9.5px] font-bold leading-[1.5]",
+   251→                      dayOffset === chip.offset ? "bg-white/[0.09]" : "bg-white/[0.05] text-muted-foreground"
+   252→                    )}
+   253→                  >
+   254→                    {fmtNum(chip.count)}
+   255→                  </span>
+   256→                )}
+   257→                {chip.offset === 0 && liveCount > 0 && (
+   258→                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+   259→                )}
+   260→              </button>
+   261→            ))}
+   262→          </div>
+   263→
+   264→          {/* Status filter tabs */}
+   265→          <div
+   266→            className="no-scrollbar flex shrink-0 items-center gap-0.5 self-start overflow-x-auto rounded-lg border border-border bg-muted/40 p-1 lg:self-auto"
+   267→            role="tablist"
+   268→            aria-label="Match status filter"
+   269→          >
+   270→            {STATUS_TABS.map((key) => (
+   271→              <button
+   272→                key={key}
+   273→                role="tab"
+   274→                aria-selected={tab === key}
+   275→                onClick={() => setUserTab(key)}
+   276→                className={cn(
+   277→                  "flex shrink-0 items-center justify-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11.5px] font-bold transition-colors sm:px-3",
+   278→                  tab === key ? "bg-elevated text-foreground" : "text-muted-foreground hover:text-foreground"
+   279→                )}
+   280→              >
+   281→                {key === "live" && liveCount > 0 && (
+   282→                  <span
+   283→                    className={cn("h-1.5 w-1.5 shrink-0 rounded-[2px] bg-fhb-red", tab !== "live" && "live-dot")}
+   284→                    aria-hidden
+   285→                  />
+   286→                )}
+   287→                {TAB_LABELS[key]}
+   288→                <span
+   289→                  className={cn(
+   290→                    "tabular rounded px-1 text-[9.5px] font-bold leading-[1.5]",
+   291→                    tab === key ? "bg-white/[0.09]" : "bg-white/[0.05] text-muted-foreground"
+   292→                  )}
+   293→                >
+   294→                  {fmtNum(counts[key])}
+   295→                </span>
+   296→              </button>
+   297→            ))}
+   298→          </div>
+   299→        </div>
+   300→      </div>
+   301→
+   302→      {/* ── Match list + side rail ──────────────────────────────── */}
+   303→      <div className="mt-6 grid gap-6 lg:grid-cols-12">
+   304→        <div className="min-w-0 lg:col-span-8">
+   305→          {isLoading ? (
+   306→            <div className="space-y-4" aria-hidden>
+   307→              {[0, 1].map((i) => (
+   308→                <div key={i} className="overflow-hidden rounded-xl border border-border bg-card">
+   309→                  <div className="border-b border-border bg-muted/40 px-3.5 py-3">
+   310→                    <Skeleton className="h-4 w-44 rounded-md" />
+   311→                  </div>
+   312→                  <div className="divide-y divide-border/60">
+   313→                    {[0, 1, 2].map((j) => (
+   314→                      <div key={j} className="flex items-center gap-3 px-4 py-3">
+   315→                        <Skeleton className="h-9 w-10 rounded-md" />
+   316→                        <div className="flex-1 space-y-2">
+   317→                          <Skeleton className="h-3.5 w-2/3 rounded-md" />
+   318→                          <Skeleton className="h-3.5 w-1/2 rounded-md" />
+   319→                        </div>
+   320→                      </div>
+   321→                    ))}
+   322→                  </div>
+   323→                </div>
+   324→              ))}
+   325→            </div>
+   326→          ) : grouped.length === 0 ? (
+   327→            <div className="reveal flex flex-col items-center justify-center gap-2.5 rounded-xl border border-border bg-card px-6 py-14 text-center">
+   328→              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+   329→                {tab === "live" ? (
+   330→                  <Activity className="h-5 w-5" aria-hidden />
+   331→                ) : (
+   332→                  <CalendarX className="h-5 w-5" aria-hidden />
+   333→                )}
+   334→              </span>
+   335→              <p className="text-sm font-semibold text-foreground">{emptyCopy.title}</p>
+   336→              <p className="max-w-[36ch] text-xs leading-relaxed text-muted-foreground">{emptyCopy.hint}</p>
+   337→            </div>
+   338→          ) : (
+   339→            <div className="space-y-4">
+   340→              {grouped.map((g) => {
+   341→                const first = g.list[0];
+   342→                const round = first.round ?? (first.matchday ? `Matchday ${fmtNum(first.matchday)}` : null);
+   343→                const hasLive = g.list.some((m) => m.status === "LIVE");
+   344→                return (
+   345→                  <section
+   346→                    key={g.comp.id}
+   347→                    className="reveal overflow-hidden rounded-xl border border-border bg-card"
+   348→                    aria-label={g.comp.name}
+   349→                  >
+   350→                    {/* Competition group header */}
+   351→                    <button
+   352→                      onClick={() => navigate({ name: "competition-detail", id: g.comp.id })}
+   353→                      className="group flex w-full items-center gap-2.5 border-b border-border bg-muted/40 px-3.5 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+   354→                      aria-label={`View competition: ${g.comp.name}`}
+   355→                    >
+   356→                      <span
+   357→                        className="h-2 w-2 shrink-0 rounded-[3px]"
+   358→                        style={{ backgroundColor: g.comp.accentColor ?? "var(--primary)" }}
+   359→                        aria-hidden
+   360→                      />
+   361→                      <span className="min-w-0 truncate text-[12.5px] font-bold text-foreground" title={g.comp.name}>
+   362→                        {g.comp.name}
+   363→                      </span>
+   364→                      {round && (
+   365→                        <span className="hidden min-w-0 truncate text-[11px] font-medium text-muted-foreground md:inline">
+   366→                          · {round}
+   367→                        </span>
+   368→                      )}
+   369→                      {hasLive && (
+   370→                        <span className="flex shrink-0 items-center gap-1 rounded bg-fhb-red/12 px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.08em] text-fhb-red">
+   371→                          <span className="live-dot h-1 w-1 rounded-full bg-fhb-red" aria-hidden />
+   372→                          Live
+   373→                        </span>
+   374→                      )}
+   375→                      <span className="tabular ml-auto shrink-0 text-[10.5px] font-semibold text-muted-foreground">
+   376→                        {fmtNum(g.list.length)} {g.list.length === 1 ? "match" : "matches"}
+   377→                      </span>
+   378→                      <ChevronRight
+   379→                        className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+   380→                        aria-hidden
+   381→                      />
+   382→                    </button>
+   383→                    {/* Dense match rows */}
+   384→                    <div className="divide-y divide-border/60">
+   385→                      {g.list.map((m) => (
+   386→                        <MatchRow key={m.id} match={m} showCompetition={false} />
+   387→                      ))}
+   388→                    </div>
+   389→                  </section>
+   390→                );
+   391→              })}
+   392→            </div>
+   393→          )}
+   394→
+   395→          {/* In-feed ad after the match list */}
+   396→          <div className="reveal mt-6">
+   397→            <AdSlot placement="IN_FEED" />
+   398→          </div>
+   399→        </div>
+   400→
+   401→        {/* ── Side rail ─────────────────────────────────────────── */}
+   402→        <aside className="min-w-0 space-y-4 lg:col-span-4" aria-label="Scores side rail">
+   403→          {liveCount > 0 && (
+   404→            <div className="reveal overflow-hidden rounded-xl border border-fhb-red/30 bg-card">
+   405→              <p className="flex items-center gap-2 border-b border-border bg-fhb-red/[0.07] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-fhb-red">
+   406→                <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+   407→                Live Now — {fmtNum(liveCount)}
+   408→              </p>
+   409→              <div className="divide-y divide-border/60">
+   410→                {liveMatches.slice(0, 4).map((m) => (
+   411→                  <MatchRow key={m.id} match={m} showCompetition />
+   412→                ))}
+   413→              </div>
+   414→              <button
+   415→                onClick={() => setUserTab("live")}
+   416→                className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
+   417→              >
+   418→                All live matches <ChevronRight className="h-3 w-3" aria-hidden />
+   419→              </button>
+   420→            </div>
+   421→          )}
+   422→
+   423→          <div className="reveal">
+   424→            <AdSlot placement="SIDEBAR" />
+   425→          </div>
+   426→
+   427→          {isLoading ? (
+   428→            <Skeleton className="h-[236px] rounded-xl" />
+   429→          ) : (
+   430→            topCompetitions.length > 0 && (
+   431→              <div className="reveal overflow-hidden rounded-xl border border-border bg-card">
+   432→                <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
+   433→                  <Trophy className="h-3.5 w-3.5 text-primary" aria-hidden />
+   434→                  Top Competitions
+   435→                </p>
+   436→                <div className="grid grid-cols-2 gap-2 p-3">
+   437→                  {topCompetitions.map((c) => (
+   438→                    <button
+   439→                      key={c.id}
+   440→                      onClick={() => navigate({ name: "competition-detail", id: c.id })}
+   441→                      title={c.name}
+   442→                      className="group flex items-center gap-2 rounded-lg border border-border bg-elevated/50 px-2.5 py-2 text-left transition-colors hover:border-primary/40"
+   443→                    >
+   444→                      <span
+   445→                        className="h-2 w-2 shrink-0 rounded-[3px]"
+   446→                        style={{ backgroundColor: c.accentColor ?? "var(--primary)" }}
+   447→                        aria-hidden
+   448→                      />
+   449→                      <span className="min-w-0 truncate text-[11.5px] font-bold text-foreground/90 transition-colors group-hover:text-primary">
+   450→                        {c.shortName}
+   451→                      </span>
+   452→                    </button>
+   453→                  ))}
+   454→                </div>
+   455→              </div>
+   456→            )
+   457→          )}
+   458→        </aside>
+   459→      </div>
+   460→    </div>
+   461→  );
+   462→}
+   463→
+   464→/* ════════════════════════════════════════════════════════════════
+   465→   MatchDetailView — broadcast match centre
+   466→   Scoreboard hero, event timeline, match info, countdown for fixtures.
+   467→   ════════════════════════════════════════════════════════════════ */
+   468→
+   469→export function MatchDetailView({ matchId }: { matchId: string }) {
+   470→  const back = useAppStore((s) => s.back);
+   471→  const navigate = useAppStore((s) => s.navigate);
+   472→  const live = useLiveScores();
+   473→  const liveData = live.matches.find((m) => m.id === matchId);
+   474→  useReveal();
+   475→
+   476→  const { data, isLoading } = useQuery<{ match: MatchDetail }>({
+   477→    queryKey: ["match", matchId],
+   478→    queryFn: async () => {
+   479→      const res = await fetch(`/api/matches/${matchId}`);
+   480→      return res.json().then((j) => j.data);
+   481→    },
+   482→    refetchInterval: liveData ? 15_000 : false,
+   483→  });
+   484→
+   485→  const isScheduled = !liveData && data?.match?.status === "SCHEDULED";
+   486→
+   487→  // Ticking clock for the kick-off countdown (client only)
+   488→  const [nowMs, setNowMs] = useState<number | null>(null);
+   489→  useEffect(() => {
+   490→    if (!isScheduled) return;
+   491→    const tick = () => setNowMs(Date.now());
+   492→    const raf = requestAnimationFrame(tick); // first paint, without a 1s "--" flash
+   493→    const t = setInterval(tick, 1000);
+   494→    return () => {
+   495→      cancelAnimationFrame(raf);
+   496→      clearInterval(t);
+   497→    };
+   498→  }, [isScheduled]);
+   499→
+   500→  if (isLoading || !data?.match) {
+   501→    return (
+   502→      <div className="mx-auto w-full max-w-4xl px-4 pt-5 sm:px-6 sm:pt-6">
+   503→        <Skeleton className="h-10 w-10 rounded-lg" />
+   504→        <Skeleton className="mt-5 h-[268px] rounded-xl" />
+   505→        <Skeleton className="mt-6 h-56 rounded-xl" />
+   506→      </div>
+   507→    );
+   508→  }
+   509→
+   510→  const m = data.match;
+   511→  const homeScore = liveData ? liveData.homeScore : m.homeScore;
+   512→  const awayScore = liveData ? liveData.awayScore : m.awayScore;
+   513→  const minute = liveData ? liveData.minute : m.minute;
+   514→  const period = liveData ? liveData.period : m.period;
+   515→  const status = liveData ? "LIVE" : m.status;
+   516→  const events = m.events ?? [];
+   517→  const ko = formatKickoff(m.kickoff);
+   518→  const homeWon = status === "FINISHED" && (homeScore ?? 0) > (awayScore ?? 0);
+   519→  const awayWon = status === "FINISHED" && (awayScore ?? 0) > (homeScore ?? 0);
+   520→  const roundLabel = m.round ?? (m.matchday ? `Matchday ${fmtNum(m.matchday)}` : null);
+   521→
+   522→  const msLeft = nowMs !== null ? +new Date(m.kickoff) - nowMs : null;
+   523→  const countdown =
+   524→    msLeft !== null && msLeft > 0
+   525→      ? {
+   526→          d: Math.floor(msLeft / DAY_MS),
+   527→          h: Math.floor((msLeft % DAY_MS) / 3_600_000),
+   528→          m: Math.floor((msLeft % 3_600_000) / 60_000),
+   529→          s: Math.floor((msLeft % 60_000) / 1000),
+   530→        }
+   531→      : null;
+   532→
+   533→  const infoRows = [
+   534→    { label: "Competition", value: m.competition.name },
+   535→    { label: "Round", value: roundLabel ?? "—" },
+   536→    { label: "Venue", value: m.venue ?? "To be confirmed" },
+   537→    { label: "Date", value: ko.date },
+   538→    { label: "Kick-off", value: `${ko.time} (local time)` },
+   539→    {
+   540→      label: "Status",
+   541→      value:
+   542→        status === "LIVE"
+   543→          ? period === "HT"
+   544→            ? "Half-Time"
+   545→            : `In play — ${fmtNum(minute ?? 0)}′`
+   546→          : status === "FINISHED"
+   547→            ? "Full-Time"
+   548→            : "Scheduled",
+   549→    },
+   550→  ];
+   551→
+   552→  return (
+   553→    <div className="mx-auto w-full max-w-4xl px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+   554→      {/* ── Top bar: back + page title ─────────────────────────── */}
+   555→      <div className="mb-5 flex items-center gap-3.5">
+   556→        <button
+   557→          onClick={back}
+   558→          className="tap-target flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
+   559→          aria-label="Go back"
+   560→        >
+   561→          <ArrowLeft className="h-4 w-4" aria-hidden />
+   562→        </button>
+   563→        <div className="min-w-0">
+   564→          <p className="eyebrow text-primary">Match Centre</p>
+   565→          <h1 className="truncate font-display text-sm font-bold tracking-[-0.01em] text-foreground sm:text-base">
+   566→            {m.homeTeam.name} vs {m.awayTeam.name}
+   567→          </h1>
+   568→        </div>
+   569→      </div>
+   570→
+   571→      {/* ── Scoreboard hero — broadcast panel ──────────────────── */}
+   572→      <section
+   573→        className="reveal noise stadium-panel pitch-pattern edge-lit overflow-hidden rounded-xl border border-border/70"
+   574→        aria-label="Scoreboard"
+   575→      >
+   576→        {/* Competition strip */}
+   577→        <div className="relative flex items-center justify-between gap-2 border-b border-border/60 bg-black/20 px-4 py-2.5 sm:px-6">
+   578→          <span className="flex min-w-0 items-center gap-2 text-xs font-semibold text-foreground/90">
+   579→            <span
+   580→              className="h-2 w-2 shrink-0 rounded-[3px]"
+   581→              style={{ backgroundColor: m.competition.accentColor ?? "var(--primary)" }}
+   582→              aria-hidden
+   583→            />
+   584→            <span className="truncate">{m.competition.name}</span>
+   585→            {roundLabel && (
+   586→              <span className="hidden shrink-0 text-muted-foreground sm:inline">· {roundLabel}</span>
+   587→            )}
+   588→          </span>
+   589→          {status === "FINISHED" && (
+   590→            <span className="shrink-0 rounded bg-muted px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+   591→              Full-Time
+   592→            </span>
+   593→          )}
+   594→          {status === "SCHEDULED" && (
+   595→            <span className="shrink-0 rounded border border-primary/35 bg-primary/10 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
+   596→              {ko.relative === ko.date ? ko.date.split(",")[1]?.trim() : ko.relative}
+   597→            </span>
+   598→          )}
+   599→        </div>
+   600→
+   601→        {/* Teams + score */}
+   602→        <div className="relative grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-8 sm:gap-6 sm:px-8 sm:py-10">
+   603→          <TeamHeroBlock team={m.homeTeam} dimmed={awayWon} onClick={() => navigate({ name: "team-detail", id: m.homeTeam.id })} />
+   604→          <div className="shrink-0 px-1 text-center">
+   605→            {status === "SCHEDULED" ? (
+   606→              <>
+   607→                <p className="tabular font-display text-[2.5rem] font-bold leading-none text-foreground sm:text-5xl">
+   608→                  {ko.time}
+   609→                </p>
+   610→                <p className="mt-3 text-xs text-muted-foreground">{ko.date}</p>
+   611→              </>
+   612→            ) : (
+   613→              <>
+   614→                <p className="tabular font-display text-5xl font-bold leading-none text-foreground sm:text-[4.25rem]">
+   615→                  {fmtNum(homeScore ?? 0)}
+   616→                  <span className="mx-2 text-muted-foreground/35 sm:mx-3">–</span>
+   617→                  {fmtNum(awayScore ?? 0)}
+   618→                </p>
+   619→                {status === "LIVE" && (
+   620→                  <p className="mt-3.5">
+   621→                    <LiveBadge minute={minute} period={period} />
+   622→                  </p>
+   623→                )}
+   624→              </>
+   625→            )}
+   626→          </div>
+   627→          <TeamHeroBlock team={m.awayTeam} dimmed={homeWon} onClick={() => navigate({ name: "team-detail", id: m.awayTeam.id })} />
+   628→        </div>
+   629→
+   630→        {/* Meta strip */}
+   631→        <div className="relative grid grid-cols-3 divide-x divide-border/60 border-t border-border/60 bg-black/20">
+   632→          {[
+   633→            { icon: <MapPin className="h-3.5 w-3.5" aria-hidden />, label: "Venue", value: m.venue ?? "To be confirmed" },
+   634→            { icon: <CalendarDays className="h-3.5 w-3.5" aria-hidden />, label: "Date", value: ko.date },
+   635→            { icon: <Clock className="h-3.5 w-3.5" aria-hidden />, label: "Kick-off", value: ko.time },
+   636→          ].map((meta) => (
+   637→            <div key={meta.label} className="px-2 py-3.5 text-center">
+   638→              <p className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+   639→                {meta.icon}
+   640→                {meta.label}
+   641→              </p>
+   642→              <p className="mt-1 truncate text-[11.5px] font-medium text-foreground" title={meta.value}>
+   643→                {meta.value}
+   644→              </p>
+   645→            </div>
+   646→          ))}
+   647→        </div>
+   648→      </section>
+   649→
+   650→      {/* ── Timeline (live + finished) OR countdown + watch (scheduled) ── */}
+   651→      {status === "SCHEDULED" ? (
+   652→        <>
+   653→          <section className="reveal mt-6" aria-label="Kick-off countdown">
+   654→            <div className="overflow-hidden rounded-xl border border-border bg-card">
+   655→              <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
+   656→                <Timer className="h-3.5 w-3.5 text-primary" aria-hidden />
+   657→                Countdown to kick-off
+   658→              </p>
+   659→              {countdown ? (
+   660→                <div className="grid grid-cols-4 divide-x divide-border/60">
+   661→                  {(
+   662→                    [
+   663→                      ["Days", countdown.d],
+   664→                      ["Hours", countdown.h],
+   665→                      ["Mins", countdown.m],
+   666→                      ["Secs", countdown.s],
+   667→                    ] as const
+   668→                  ).map(([label, value]) => (
+   669→                    <div key={label} className="px-1 py-5 text-center sm:py-6">
+   670→                      <p className="tabular font-display text-[1.75rem] font-bold leading-none text-foreground sm:text-3xl">
+   671→                        {String(value).padStart(2, "0")}
+   672→                      </p>
+   673→                      <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+   674→                        {label}
+   675→                      </p>
+   676→                    </div>
+   677→                  ))}
+   678→                </div>
+   679→              ) : nowMs === null ? (
+   680→                <div className="grid grid-cols-4 divide-x divide-border/60" aria-hidden>
+   681→                  {["Days", "Hours", "Mins", "Secs"].map((label) => (
+   682→                    <div key={label} className="px-1 py-5 text-center sm:py-6">
+   683→                      <p className="tabular font-display text-[1.75rem] font-bold leading-none text-muted-foreground/50 sm:text-3xl">
+   684→                        --
+   685→                      </p>
+   686→                      <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+   687→                        {label}
+   688→                      </p>
+   689→                    </div>
+   690→                  ))}
+   691→                </div>
+   692→              ) : (
+   693→                <p className="px-4 py-6 text-center text-sm font-semibold text-foreground">
+   694→                  Kick-off imminent — teams are out on the pitch
+   695→                </p>
+   696→              )}
+   697→            </div>
+   698→          </section>
+   699→
+   700→          <section className="reveal mt-4" aria-label="Where to watch">
+   701→            <div className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
+   702→              <div className="flex min-w-0 items-center gap-3">
+   703→                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-primary">
+   704→                  <Tv className="h-4 w-4" aria-hidden />
+   705→                </span>
+   706→                <div className="min-w-0">
+   707→                  <p className="text-[13px] font-semibold text-foreground">Where to watch</p>
+   708→                  <p className="truncate text-[11.5px] text-muted-foreground">
+   709→                    Live coverage on FHB Live TV, free for registered members
+   710→                  </p>
+   711→                </div>
+   712→              </div>
+   713→              <button
+   714→                onClick={() => navigate({ name: "live-tv" })}
+   715→                className="sheen flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-[11.5px] font-bold text-primary-foreground transition-opacity hover:opacity-90"
+   716→              >
+   717→                Open Live TV
+   718→                <ChevronRight className="h-3 w-3" aria-hidden />
+   719→              </button>
+   720→            </div>
+   721→          </section>
+   722→        </>
+   723→      ) : (
+   724→        <section className="reveal mt-6" aria-label="Match events">
+   725→          <SectionHeader
+   726→            title="Match Timeline"
+   727→            kicker="key events"
+   728→            accent={status === "LIVE" ? "red" : "primary"}
+   729→            icon={<ListOrdered className="h-3.5 w-3.5" aria-hidden />}
+   730→          />
+   731→          {status === "LIVE" && (
+   732→            <p className="-mt-1 mb-3 flex items-center gap-2 text-[11px] font-semibold text-fhb-red">
+   733→              <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+   734→              Updating live — goals and cards appear here in real time
+   735→            </p>
+   736→          )}
+   737→          {events.length === 0 ? (
+   738→            <div className="flex flex-col items-center justify-center gap-2.5 rounded-xl border border-border bg-card px-6 py-12 text-center">
+   739→              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+   740→                <Timer className="h-5 w-5" aria-hidden />
+   741→              </span>
+   742→              <p className="text-sm font-semibold text-foreground">
+   743→                {status === "LIVE" ? "No events yet" : "No events recorded"}
+   744→              </p>
+   745→              <p className="max-w-[36ch] text-xs leading-relaxed text-muted-foreground">
+   746→                {status === "LIVE"
+   747→                  ? "Goals, cards and substitutions will appear here as they happen."
+   748→                  : "This match has no recorded events."}
+   749→              </p>
+   750→            </div>
+   751→          ) : (
+   752→            <div className="relative overflow-hidden rounded-xl border border-border bg-card">
+   753→              {/* Centre spine */}
+   754→              <span
+   755→                className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border/70 sm:block"
+   756→                aria-hidden
+   757→              />
+   758→              {events
+   759→                .slice()
+   760→                .sort((a, b) => b.minute - a.minute)
+   761→                .map((e) => {
+   762→                  const isHome = e.teamSide === "home";
+   763→                  const isAway = e.teamSide === "away";
+   764→
+   765→                  // Period markers (HT / FT) — centred bands on the spine
+   766→                  if (!isHome && !isAway) {
+   767→                    return (
+   768→                      <div
+   769→                        key={e.id}
+   770→                        className="relative border-b border-border/50 bg-muted/30 px-4 py-2.5 last:border-0 sm:px-6"
+   771→                      >
+   772→                        <span className="relative z-[1] mx-auto flex w-fit items-center gap-2 rounded-full border border-border bg-elevated px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+   773→                          {eventIcon(e.type, "h-3.5 w-3.5")}
+   774→                          {eventLabel(e.type)} · {fmtNum(e.minute)}′
+   775→                        </span>
+   776→                      </div>
+   777→                    );
+   778→                  }
+   779→
+   780→                  const side = isHome ? m.homeTeam : m.awayTeam;
+   781→                  const name = e.playerName && e.playerName !== "—" ? e.playerName : null;
+   782→                  const main = name ?? e.detail ?? eventLabel(e.type);
+   783→                  const sub = name ? `${eventLabel(e.type)} · ${side.name}` : side.name;
+   784→                  const content = (
+   785→                    <>
+   786→                      <p className="truncate text-[13px] font-semibold text-foreground">{main}</p>
+   787→                      <p className="truncate text-[10.5px] text-muted-foreground">{sub}</p>
+   788→                    </>
+   789→                  );
+   790→                  const icon = (
+   791→                    <span
+   792→                      className={cn(
+   793→                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
+   794→                        eventTint(e.type)
+   795→                      )}
+   796→                    >
+   797→                      {eventIcon(e.type)}
+   798→                    </span>
+   799→                  );
+   800→
+   801→                  return (
+   802→                    <div
+   803→                      key={e.id}
+   804→                      className="relative flex items-center gap-3 border-b border-border/50 px-4 py-3 last:border-0 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6"
+   805→                    >
+   806→                      {/* Home column — right-aligned */}
+   807→                      <div
+   808→                        className={cn(
+   809→                          "flex min-w-0 flex-1 items-center gap-3 sm:justify-end",
+   810→                          !isHome && "sm:invisible"
+   811→                        )}
+   812→                      >
+   813→                        <div className="min-w-0 sm:text-right">{content}</div>
+   814→                        <span className="hidden sm:flex">{icon}</span>
+   815→                      </div>
+   816→
+   817→                      {/* Minute bubble */}
+   818→                      <span className="tabular relative z-[1] order-first flex h-8 min-w-[3.5rem] shrink-0 items-center justify-center rounded-full border border-border bg-elevated px-2 font-display text-[11.5px] font-bold text-foreground/85 sm:order-none sm:mx-auto">
+   819→                        {fmtNum(e.minute)}′
+   820→                      </span>
+   821→
+   822→                      {/* Away column — left-aligned */}
+   823→                      <div className={cn("hidden min-w-0 sm:flex sm:items-center sm:gap-3", !isAway && "sm:invisible")}>
+   824→                        {icon}
+   825→                        <div className="min-w-0">{content}</div>
+   826→                      </div>
+   827→                    </div>
+   828→                  );
+   829→                })}
+   830→            </div>
+   831→          )}
+   832→        </section>
+   833→      )}
+   834→
+   835→      {/* ── Match info ─────────────────────────────────────────── */}
+   836→      <section className="reveal mt-6" aria-label="Match information">
+   837→        <SectionHeader
+   838→          title="Match Info"
+   839→          kicker="match details"
+   840→          icon={<MapPin className="h-3.5 w-3.5" aria-hidden />}
+   841→        />
+   842→        <div className="overflow-hidden rounded-xl border border-border bg-card">
+   843→          <dl className="divide-y divide-border/60">
+   844→            {infoRows.map((row) => (
+   845→              <div
+   846→                key={row.label}
+   847→                className="grid grid-cols-[96px_1fr] items-baseline gap-3 px-4 py-3 sm:grid-cols-[140px_1fr]"
+   848→              >
+   849→                <dt className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+   850→                  {row.label}
+   851→                </dt>
+   852→                <dd className="min-w-0 truncate text-[13px] font-medium text-foreground" title={row.value}>
+   853→                  {row.value}
+   854→                </dd>
+   855→              </div>
+   856→            ))}
+   857→          </dl>
+   858→        </div>
+   859→      </section>
+   860→
+   861→      {/* ── In-feed ad ─────────────────────────────────────────── */}
+   862→      <div className="reveal mt-8">
+   863→        <AdSlot placement="IN_FEED" />
+   864→      </div>
+   865→
+   866→      {/* ── Back navigation + compact CTA row ──────────────────── */}
+   867→      <div className="reveal mt-8 flex flex-col gap-3 border-t border-border pt-6 sm:flex-row sm:items-center sm:justify-between">
+   868→        <button
+   869→          onClick={back}
+   870→          className="flex h-10 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-xs font-bold text-foreground transition-colors hover:border-primary/40 hover:text-primary"
+   871→        >
+   872→          <ArrowLeft className="h-3.5 w-3.5" aria-hidden />
+   873→          Go back
+   874→        </button>
+   875→        <div className="flex items-center gap-2">
+   876→          <button
+   877→            onClick={() => navigate({ name: "standings" })}
+   878→            className="flex h-10 flex-1 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 text-xs font-bold text-foreground transition-colors hover:border-primary/40 hover:text-primary sm:flex-none"
+   879→          >
+   880→            <Table2 className="h-3.5 w-3.5" aria-hidden />
+   881→            Standings
+   882→          </button>
+   883→          <button
+   884→            onClick={() => navigate({ name: "live-tv" })}
+   885→            className="sheen flex h-10 flex-1 items-center justify-center gap-2 rounded-lg bg-primary px-4 text-xs font-bold text-primary-foreground transition-opacity hover:opacity-90 sm:flex-none"
+   886→          >
+   887→            <Tv className="h-3.5 w-3.5" aria-hidden />
+   888→            Watch on Live TV
+   889→          </button>
+   890→        </div>
+   891→      </div>
+   892→    </div>
+   893→  );
+   894→}
+   895→
+   896→/* ── Helpers ────────────────────────────────────────────────────── */
+   897→
+   898→/** Team block inside the scoreboard hero — crest + name, links to team page. */
+   899→function TeamHeroBlock({
+   900→  team,
+   901→  dimmed,
+   902→  onClick,
+   903→}: {
+   904→  team: Match["homeTeam"];
+   905→  dimmed: boolean;
+   906→  onClick: () => void;
+   907→}) {
+   908→  return (
+   909→    <button
+   910→      onClick={onClick}
+   911→      className="group flex min-w-0 flex-col items-center gap-3 text-center sm:gap-4"
+   912→      aria-label={`View team: ${team.name}`}
+   913→    >
+   914→      <TeamCrest team={team} size="match" className="transition-transform duration-300 group-hover:scale-[1.04]" />
+   915→      <span
+   916→        className={cn(
+   917→          "line-clamp-2 max-w-[8.5rem] text-[13px] font-bold leading-tight transition-colors group-hover:text-primary sm:max-w-[11rem] sm:text-base",
+   918→          dimmed && "text-muted-foreground"
+   919→        )}
+   920→      >
+   921→        {team.name}
+   922→      </span>
+   923→    </button>
+   924→  );
+   925→}
+   926→
+   927→function eventIcon(type: string, className?: string) {
+   928→  switch (type) {
+   929→    case "GOAL":
+   930→      return <Goal className={cn("h-4 w-4", className)} aria-hidden />;
+   931→    case "YELLOW":
+   932→      return <span className="h-3.5 w-2.5 rounded-[2px] bg-yellow-400/90" aria-label="Yellow card" />;
+   933→    case "RED":
+   934→      return <span className="h-3.5 w-2.5 rounded-[2px] bg-fhb-red" aria-label="Red card" />;
+   935→    case "SUB":
+   936→      return <ArrowLeftRight className={cn("h-4 w-4", className)} aria-hidden />;
+   937→    case "HT":
+   938→      return <Timer className={cn("h-4 w-4", className)} aria-hidden />;
+   939→    case "FT":
+   940→      return <Flag className={cn("h-4 w-4", className)} aria-hidden />;
+   941→    default:
+   942→      return <FileText className={cn("h-4 w-4", className)} aria-hidden />;
+   943→  }
+   944→}
+   945→
+   946→function eventLabel(type: string) {
+   947→  switch (type) {
+   948→    case "GOAL":
+   949→      return "Goal";
+   950→    case "YELLOW":
+   951→      return "Yellow Card";
+   952→    case "RED":
+   953→      return "Red Card";
+   954→    case "SUB":
+   955→      return "Substitution";
+   956→    case "HT":
+   957→      return "Half-Time";
+   958→    case "FT":
+   959→      return "Full-Time";
+   960→    default:
+   961→      return "Event";
+   962→  }
+   963→}
+   964→
+   965→function eventTint(type: string) {
+   966→  switch (type) {
+   967→    case "GOAL":
+   968→      return "bg-primary/15 text-primary";
+   969→    case "RED":
+   970→      return "bg-fhb-red/15 text-fhb-red";
+   971→    case "YELLOW":
+   972→      return "bg-yellow-400/15 text-yellow-300";
+   973→    default:
+   974→      return "bg-muted text-muted-foreground";
+   975→  }
+   976→}
+   977→

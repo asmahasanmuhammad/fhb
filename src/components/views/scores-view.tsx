@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
 import { useLiveScores } from "@/components/providers/live-score-provider";
+import { useReveal } from "@/hooks/use-reveal";
 import type { Match } from "@/lib/types";
 import { MatchCard } from "@/components/football/match-card";
 import { TeamBadge } from "@/components/football/team-badge";
@@ -18,9 +19,10 @@ import { Zap, MapPin, CalendarDays, Clock, Goal, Flag, ArrowLeftRight, Timer, Fi
 type Tab = "live" | "upcoming" | "finished";
 
 export function ScoresView() {
-  const [tab, setTab] = useState<Tab>("live");
+  const [userTab, setUserTab] = useState<Tab | null>(null);
   const live = useLiveScores();
   const liveConnected = live.connected;
+  useReveal();
 
   const { data, isLoading } = useQuery<{ matches: Match[] }>({
     queryKey: ["matches", "scores"],
@@ -36,6 +38,10 @@ export function ScoresView() {
     const liveIds = new Set(live.matches.map((m) => m.id));
     return all.map((m) => (liveIds.has(m.id) ? { ...m, status: "LIVE" as const } : m));
   }, [data, live.matches]);
+
+  const liveCount = matches.filter((m) => m.status === "LIVE").length;
+  // Smart default tab: land on "live" only when matches are actually live
+  const tab: Tab = userTab ?? (matches.length > 0 && liveCount === 0 ? "upcoming" : "live");
 
   const grouped = useMemo(() => {
     const filterFn =
@@ -60,23 +66,26 @@ export function ScoresView() {
   }, [matches, tab]);
 
   const counts = {
-    live: matches.filter((m) => m.status === "LIVE").length,
+    live: liveCount,
     upcoming: matches.filter((m) => m.status === "SCHEDULED").length,
     finished: matches.filter((m) => m.status === "FINISHED").length,
   };
 
+  const selectTab = (t: Tab) => setUserTab(t);
+
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-6 sm:px-6">
+    <div className="mx-auto w-full max-w-4xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
         title="লাইভ স্কোর ও ফিক্সচার"
+        kicker="match centre"
         subtitle="রিয়েল-টাইম আপডেট, কিক-অফ থেকে ফাইনাল হুইসেল পর্যন্ত"
         icon={<Zap className="h-5 w-5" aria-hidden />}
       >
         <span
           className={cn(
-            "flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[10px] font-bold",
+            "flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[10px] font-bold",
             liveConnected
-              ? "border-primary/30 bg-primary/10 text-primary"
+              ? "border-primary/35 bg-primary/10 text-primary"
               : "border-border bg-muted text-muted-foreground"
           )}
         >
@@ -85,28 +94,33 @@ export function ScoresView() {
         </span>
       </PageHeader>
 
-      {/* Segmented tabs */}
-      <div className="mb-6 flex rounded-lg border border-border bg-muted/40 p-1" role="tablist" aria-label="ম্যাচ ফিল্টার">
+      {/* Segmented tabs — broadcast switcher */}
+      <div className="mb-7 grid grid-cols-3 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5" role="tablist" aria-label="ম্যাচ ফিল্টার">
         {(
           [
-            ["live", "লাইভ", counts.live],
-            ["upcoming", "আসছে", counts.upcoming],
-            ["finished", "ফলাফল", counts.finished],
+            ["live", "লাইভ", counts.live, "bg-fhb-red text-white"],
+            ["upcoming", "আসছে", counts.upcoming, "bg-primary text-primary-foreground"],
+            ["finished", "ফলাফল", counts.finished, "bg-elevated text-foreground"],
           ] as const
-        ).map(([key, label, count]) => (
+        ).map(([key, label, count, activeCls]) => (
           <button
             key={key}
             role="tab"
             aria-selected={tab === key}
-            onClick={() => setTab(key)}
+            onClick={() => selectTab(key)}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-xs font-bold transition-all",
-              tab === key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              "flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-all duration-200 active:scale-[0.97]",
+              tab === key ? cn(activeCls, "shadow-[0_8px_20px_-10px_rgba(0,0,0,0.6)]") : "text-muted-foreground hover:text-foreground"
             )}
           >
-            {key === "live" && <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />}
+            {key === "live" && tab !== "live" && <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />}
             {label}
-            <span className="tabular rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
+            <span
+              className={cn(
+                "tabular rounded-md px-1.5 py-0.5 text-[10px] font-bold",
+                tab === key ? "bg-black/20" : "bg-muted"
+              )}
+            >
               {toBn(count)}
             </span>
           </button>
@@ -114,13 +128,16 @@ export function ScoresView() {
       </div>
 
       {isLoading ? (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} className="h-28 rounded-lg" />
+            <Skeleton key={i} className="h-28 rounded-xl" />
           ))}
         </div>
       ) : grouped.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card p-10 text-center">
+        <div className="edge-lit rounded-2xl border border-border bg-card p-12 text-center">
+          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+            <Zap className="h-6 w-6" aria-hidden />
+          </span>
           <p className="text-sm text-muted-foreground">
             {tab === "live"
               ? "এই মুহূর্তে কোনো ম্যাচ লাইভ নেই। ফিক্সচার দেখুন!"
@@ -130,16 +147,26 @@ export function ScoresView() {
           </p>
         </div>
       ) : (
-        <div className="space-y-8">
+        <div className="space-y-9">
           {grouped.map(([compName, list]) => (
-            <section key={compName} aria-label={compName}>
-              <h2 className="mb-3 flex items-center gap-2.5 border-l-[3px] border-primary pl-3 font-display text-sm font-bold tracking-wide text-foreground">
-                {compName}
-                <span className="tabular rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
-                  {toBn(list.length)}
+            <section key={compName} className="reveal" aria-label={compName}>
+              <h2 className="mb-4 flex items-center gap-3">
+                <span className="flex h-8 items-center gap-2.5 rounded-full border border-border bg-card pl-1.5 pr-4">
+                  <span
+                    className="flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold text-white"
+                    style={{ backgroundColor: list[0].competition.accentColor ?? "var(--primary)" }}
+                    aria-hidden
+                  >
+                    {list[0].competition.shortName?.slice(0, 2)}
+                  </span>
+                  <span className="text-[13px] font-bold text-foreground">{compName}</span>
+                  <span className="tabular rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
+                    {toBn(list.length)}
+                  </span>
                 </span>
+                <span className="h-px flex-1 bg-border" aria-hidden />
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-3.5">
                 {list.map((m) => (
                   <MatchCard key={m.id} match={m} showCompetition={false} />
                 ))}
@@ -149,7 +176,7 @@ export function ScoresView() {
         </div>
       )}
 
-      <div className="mt-8">
+      <div className="reveal mt-10">
         <AdSlot placement="IN_FEED" />
       </div>
     </div>
@@ -157,8 +184,8 @@ export function ScoresView() {
 }
 
 export function MatchDetailView({ matchId }: { matchId: string }) {
-  const navigate = useAppStore((s) => s.navigate);
   const back = useAppStore((s) => s.back);
+  const navigate = useAppStore((s) => s.navigate);
   const live = useLiveScores();
   const liveData = live.matches.find((m) => m.id === matchId);
 
@@ -174,9 +201,9 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
   if (isLoading || !data?.match) {
     return (
       <div className="mx-auto max-w-3xl space-y-4 px-4 pt-6">
-        <Skeleton className="h-10 w-10 rounded-lg" />
-        <Skeleton className="h-44 rounded-xl" />
-        <Skeleton className="h-64 rounded-lg" />
+        <Skeleton className="h-10 w-10 rounded-xl" />
+        <Skeleton className="h-48 rounded-2xl" />
+        <Skeleton className="h-64 rounded-2xl" />
       </div>
     );
   }
@@ -189,6 +216,8 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
   const status = liveData ? "LIVE" : m.status;
   const events = m.events ?? [];
   const ko = formatKickoff(m.kickoff);
+  const homeWon = status === "FINISHED" && (homeScore ?? 0) > (awayScore ?? 0);
+  const awayWon = status === "FINISHED" && (awayScore ?? 0) > (homeScore ?? 0);
 
   const eventIcon = (type: string, className?: string) => {
     switch (type) {
@@ -213,22 +242,22 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
     type === "GOAL" ? "গোল" : type === "YELLOW" ? "হলুদ কার্ড" : type === "RED" ? "লাল কার্ড" : type === "SUB" ? "বদলি" : type === "HT" ? "হাফ-টাইম" : type === "FT" ? "সম্পন্ন" : "ইভেন্ট";
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 pb-12 pt-5 sm:px-6">
+    <div className="mx-auto w-full max-w-3xl px-4 pb-14 pt-5 sm:px-6">
       <button
         onClick={back}
-        className="mb-4 flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+        className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
         aria-label="ফিরে যান"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
       </button>
 
-      {/* ===== Scoreboard ===== */}
-      <div className="pitch-pattern overflow-hidden rounded-xl border border-border bg-card">
+      {/* ═══ Scoreboard — cinematic broadcast panel ═══ */}
+      <div className="noise stadium-panel pitch-pattern edge-lit relative overflow-hidden rounded-3xl border border-border/70">
         {/* Comp strip */}
-        <div className="flex items-center justify-between gap-2 border-b border-border bg-muted/40 px-4 py-2.5 sm:px-6">
-          <span className="flex min-w-0 items-center gap-2 text-xs font-bold text-foreground">
+        <div className="flex items-center justify-between gap-2 border-b border-border/60 bg-black/20 px-5 py-3 backdrop-blur-sm sm:px-7">
+          <span className="flex min-w-0 items-center gap-2.5 text-xs font-bold text-foreground">
             <span
-              className="h-2 w-2 rounded-[2px]"
+              className="h-2 w-2 rounded-[3px]"
               style={{ backgroundColor: m.competition.accentColor ?? "var(--primary)" }}
               aria-hidden
             />
@@ -239,58 +268,68 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
           </span>
           {status === "LIVE" && <LiveBadge minute={minute} period={period} />}
           {status === "FINISHED" && (
-            <span className="rounded-sm bg-muted px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <span className="rounded-md bg-muted px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               সম্পন্ন
             </span>
           )}
           {status === "SCHEDULED" && (
-            <span className="rounded-sm border border-primary/30 bg-primary/10 px-2 py-0.5 font-display text-[10px] font-bold text-primary">
+            <span className="rounded-md border border-primary/35 bg-primary/10 px-2 py-0.5 font-display text-[10px] font-bold uppercase text-primary">
               {ko.relative}
             </span>
           )}
         </div>
 
         {/* Teams + score */}
-        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-8 sm:gap-6 sm:px-6 sm:py-10">
-          <div className="flex flex-col items-center gap-3 text-center">
-            <TeamBadge team={m.homeTeam} size="xl" />
-            <p className="max-w-[10rem] text-sm font-bold leading-tight sm:text-base">{m.homeTeam.name}</p>
-          </div>
+        <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-9 sm:gap-6 sm:px-7 sm:py-12">
+          <button
+            onClick={() => navigate({ name: "team-detail", id: m.homeTeam.id })}
+            className="group flex flex-col items-center gap-3.5 text-center"
+          >
+            <TeamBadge team={m.homeTeam} size="hero" className="transition-transform group-hover:scale-105" />
+            <p className={cn("max-w-[10rem] text-sm font-bold leading-tight transition-colors group-hover:text-primary sm:text-base", !homeWon && awayWon && "text-muted-foreground")}>
+              {m.homeTeam.name}
+            </p>
+          </button>
           <div className="shrink-0 px-2 text-center">
             {status === "SCHEDULED" ? (
               <>
                 <p className="tabular font-display text-4xl font-bold leading-none sm:text-5xl">{ko.time}</p>
-                <p className="mt-2 text-xs text-muted-foreground">{ko.date}</p>
+                <p className="mt-2.5 text-xs text-muted-foreground">{ko.date}</p>
               </>
             ) : (
               <>
-                <p className="tabular font-display text-5xl font-bold leading-none text-foreground sm:text-[4rem]">
+                <p className="tabular font-display text-5xl font-bold leading-none text-foreground sm:text-[4.5rem]">
                   {toBn(homeScore ?? 0)}
-                  <span className="mx-2 text-muted-foreground/40 sm:mx-3">-</span>
+                  <span className="mx-2 text-muted-foreground/35 sm:mx-3">-</span>
                   {toBn(awayScore ?? 0)}
                 </p>
                 {status === "LIVE" && (
-                  <p className="mt-3">
+                  <p className="mt-3.5">
                     <LiveBadge minute={minute} period={period} />
                   </p>
                 )}
               </>
             )}
           </div>
-          <div className="flex flex-col items-center gap-3 text-center">
-            <TeamBadge team={m.awayTeam} size="xl" />
-            <p className="max-w-[10rem] text-sm font-bold leading-tight sm:text-base">{m.awayTeam.name}</p>
-          </div>
+          <button
+            onClick={() => navigate({ name: "team-detail", id: m.awayTeam.id })}
+            className="group flex flex-col items-center gap-3.5 text-center"
+          >
+            <TeamBadge team={m.awayTeam} size="hero" className="transition-transform group-hover:scale-105" />
+            <p className={cn("max-w-[10rem] text-sm font-bold leading-tight transition-colors group-hover:text-primary sm:text-base", !awayWon && homeWon && "text-muted-foreground")}>
+              {m.awayTeam.name}
+            </p>
+          </button>
         </div>
 
         {/* Meta strip */}
-        <div className="grid grid-cols-3 divide-x divide-border border-t border-border bg-muted/30 text-center">
+        <div className="grid grid-cols-3 divide-x divide-border/60 border-t border-border/60 bg-black/20 text-center backdrop-blur-sm">
           {[
             { icon: <MapPin className="h-3.5 w-3.5" aria-hidden />, label: "ভেন্যু", value: m.venue ?? "—" },
             { icon: <CalendarDays className="h-3.5 w-3.5" aria-hidden />, label: "তারিখ", value: ko.date },
             { icon: <Clock className="h-3.5 w-3.5" aria-hidden />, label: "কিক-অফ", value: ko.time },
           ].map((meta) => (
-            <div key={meta.label} className="px-2 py-3">
+            <div key={meta.label} className="px-2 py-3.5">
               <p className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                 {meta.icon}
                 {meta.label}
@@ -303,62 +342,108 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
         </div>
       </div>
 
-      {/* ===== Events timeline ===== */}
-      <section className="mt-8" aria-label="ম্যাচ ইভেন্ট">
-        <h2 className="mb-3 flex items-center gap-2.5 border-l-[3px] border-primary pl-3 font-display text-sm font-bold tracking-wide text-foreground">
-          ম্যাচ ইভেন্ট
-        </h2>
+      {/* ═══ Events timeline — SofaScore-style two-sided feed ═══ */}
+      <section className="mt-9" aria-label="ম্যাচ ইভেন্ট">
+        <div className="mb-5 flex items-center gap-3">
+          <h2 className="font-display-bn text-lg font-bold text-foreground">ম্যাচ ইভেন্ট</h2>
+          <span className="h-px flex-1 bg-border" aria-hidden />
+        </div>
         {events.length === 0 ? (
-          <p className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
-            {status === "SCHEDULED"
-              ? "ম্যাচ শুরু হলে ইভেন্টগুলো এখানে লাইভ যুক্ত হবে।"
-              : "কোনো ইভেন্ট রেকর্ড করা হয়নি।"}
-          </p>
+          <div className="edge-lit rounded-2xl border border-border bg-card p-10 text-center">
+            <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+              <Timer className="h-5 w-5" aria-hidden />
+            </span>
+            <p className="text-sm text-muted-foreground">
+              {status === "SCHEDULED"
+                ? "ম্যাচ শুরু হলে ইভেন্টগুলো এখানে লাইভ যুক্ত হবে।"
+                : "কোনো ইভেন্ট রেকর্ড করা হয়নি।"}
+            </p>
+          </div>
         ) : (
-          <div className="divide-y divide-border/60 overflow-hidden rounded-lg border border-border bg-card">
+          <div className="relative overflow-hidden rounded-2xl border border-border bg-card">
+            {/* Center line */}
+            <span className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border/70 sm:block" aria-hidden />
             {events
               .slice()
               .sort((a, b) => b.minute - a.minute)
-              .map((e) => (
-                <div
-                  key={e.id}
-                  className={cn(
-                    "flex items-center gap-3 px-4 py-3",
-                    e.teamSide === "away" && "flex-row-reverse text-right"
-                  )}
-                >
-                  <span className="tabular flex h-7 w-9 shrink-0 items-center justify-center rounded-md border border-border bg-muted/50 font-display text-xs font-bold text-muted-foreground">
-                    {toBn(e.minute)}′
-                  </span>
-                  <span
+              .map((e) => {
+                const isHome = e.teamSide === "home";
+                const isAway = e.teamSide === "away";
+                const isNeutral = !isHome && !isAway;
+                return (
+                  <div
+                    key={e.id}
                     className={cn(
-                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-md",
-                      e.type === "GOAL"
-                        ? "bg-primary/15 text-primary"
-                        : e.type === "RED"
-                          ? "bg-fhb-red/15 text-fhb-red"
-                          : "bg-muted text-muted-foreground"
+                      "relative flex items-center gap-3 border-b border-border/50 px-4 py-3.5 last:border-0 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:gap-4 sm:px-6",
+                      isNeutral && "sm:bg-muted/30"
                     )}
                   >
-                    {eventIcon(e.type)}
-                  </span>
-                  <div className={cn("min-w-0 flex-1", e.teamSide === "away" && "text-right")}>
-                    <p className="truncate text-sm font-semibold text-foreground">{e.playerName ?? e.detail}</p>
-                    <p className="text-[11px] text-muted-foreground">
-                      {eventLabel(e.type)}
-                      <span className="mx-1" aria-hidden>·</span>
-                      {e.teamSide === "home" ? m.homeTeam.name : e.teamSide === "away" ? m.awayTeam.name : ""}
-                    </p>
+                    {/* Home side */}
+                    <div className={cn("min-w-0 sm:flex sm:items-center sm:justify-end sm:gap-3", !isHome && "sm:invisible")}>
+                      <div className="sm:text-right">
+                        <p className="truncate text-[13px] font-semibold text-foreground">{e.playerName ?? e.detail}</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {eventLabel(e.type)} · {isHome ? m.homeTeam.name : ""}
+                        </p>
+                      </div>
+                      <span
+                        className={cn(
+                          "hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl sm:flex",
+                          e.type === "GOAL"
+                            ? "bg-primary/15 text-primary"
+                            : e.type === "RED"
+                              ? "bg-fhb-red/15 text-fhb-red"
+                              : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {eventIcon(e.type)}
+                      </span>
+                    </div>
+
+                    {/* Minute chip */}
+                    <span className="tabular order-first flex h-8 min-w-[3.25rem] shrink-0 items-center justify-center rounded-full border border-border bg-muted/60 px-2 font-display text-xs font-bold text-muted-foreground sm:order-none sm:mx-auto">
+                      {toBn(e.minute)}′
+                    </span>
+
+                    {/* Away side */}
+                    <div className={cn("hidden min-w-0 sm:flex sm:items-center sm:gap-3", !isAway && "sm:invisible")}>
+                      <span
+                        className={cn(
+                          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+                          e.type === "GOAL"
+                            ? "bg-primary/15 text-primary"
+                            : e.type === "RED"
+                              ? "bg-fhb-red/15 text-fhb-red"
+                              : "bg-muted text-muted-foreground"
+                        )}
+                      >
+                        {eventIcon(e.type)}
+                      </span>
+                      <div>
+                        <p className="truncate text-[13px] font-semibold text-foreground">{e.playerName ?? e.detail}</p>
+                        <p className="text-[10px] text-muted-foreground">
+                          {eventLabel(e.type)} · {isAway ? m.awayTeam.name : ""}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Mobile: single row fallback shows event text next to chip */}
+                    <div className="min-w-0 flex-1 sm:hidden">
+                      <p className="truncate text-[13px] font-semibold text-foreground">{e.playerName ?? e.detail}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {eventLabel(e.type)} · {isHome ? m.homeTeam.name : isAway ? m.awayTeam.name : ""}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
           </div>
         )}
       </section>
 
       {/* Live commentary note */}
       {status === "LIVE" && (
-        <div className="mt-6 flex items-start gap-3 rounded-lg border border-fhb-red/30 bg-fhb-red/5 p-4">
+        <div className="mt-6 flex items-start gap-3.5 rounded-2xl border border-fhb-red/30 bg-fhb-red/5 p-4.5 p-4">
           <span className="live-dot mt-1 h-2 w-2 shrink-0 rounded-[2px] bg-fhb-red" aria-hidden />
           <div>
             <p className="text-xs font-bold text-fhb-red">রিয়েল-টাইম আপডেট চালু</p>
@@ -368,6 +453,10 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
           </div>
         </div>
       )}
+
+      <div className="mt-8">
+        <AdSlot placement="IN_FEED" />
+      </div>
     </div>
   );
 }

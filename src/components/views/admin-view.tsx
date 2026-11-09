@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
+import { useReveal } from "@/hooks/use-reveal";
 import { toBn, timeAgo, bnCompact, formatMoney, bnNumber } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +34,7 @@ type AdminStats = {
 
 export function AdminView() {
   const { user } = useAppStore();
+  useReveal();
 
   const { data, isLoading } = useQuery<AdminStats>({
     queryKey: ["admin", "stats"],
@@ -87,7 +89,7 @@ export function AdminView() {
         subtitle="Football Hub Bangladesh-এর সম্পূর্ণ নিয়ন্ত্রণ কেন্দ্র"
         icon={<LayoutDashboard className="h-5 w-5" aria-hidden />}
       >
-        <span className="flex items-center gap-1.5 rounded-md border border-fhb-red/30 bg-fhb-red/10 px-2.5 py-1.5 text-[10px] font-bold text-fhb-red">
+        <span className="flex items-center gap-1.5 rounded-full border border-fhb-red/40 bg-fhb-red/10 px-3 py-1.5 text-[10px] font-bold text-fhb-red">
           <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> অ্যাডমিন
         </span>
       </PageHeader>
@@ -95,9 +97,9 @@ export function AdminView() {
       {/* KPI grid */}
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
         {kpis.map((c) => (
-          <div key={c.label} className="rounded-xl border border-border bg-card p-4">
-            <div className="flex items-center gap-2">
-              <span className={cn("flex h-7 w-7 items-center justify-center rounded-md", c.chip)}>{c.icon}</span>
+          <div key={c.label} className="edge-lit card-lift rounded-2xl border border-border bg-card p-4">
+            <div className="flex items-center gap-2.5">
+              <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg", c.chip)}>{c.icon}</span>
               <span className="text-[10px] font-bold leading-tight text-muted-foreground">{c.label}</span>
             </div>
             <p className="tabular mt-2 font-display text-lg font-bold text-foreground sm:text-xl">{c.value}</p>
@@ -113,8 +115,8 @@ export function AdminView() {
           { label: "কমেন্ট", value: bnNumber(s.totalComments), icon: <MessageSquare className="h-3.5 w-3.5" aria-hidden /> },
           { label: "ম্যাচ", value: bnNumber(s.totalMatches), icon: <Zap className="h-3.5 w-3.5" aria-hidden /> },
         ].map((c) => (
-          <div key={c.label} className="flex items-center gap-2.5 rounded-lg border border-border bg-card/60 px-3.5 py-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted text-primary">
+          <div key={c.label} className="flex items-center gap-2.5 rounded-xl border border-border bg-card/60 px-3.5 py-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
               {c.icon}
             </span>
             <div className="min-w-0">
@@ -127,7 +129,7 @@ export function AdminView() {
 
       {/* Management tabs */}
       <Tabs defaultValue="news" className="mt-9">
-        <TabsList className="grid h-auto w-full grid-cols-2 gap-1 rounded-lg border border-border bg-muted/40 p-1 sm:grid-cols-5">
+        <TabsList className="grid h-auto w-full grid-cols-2 gap-1.5 rounded-2xl border border-border bg-muted/40 p-1.5 sm:grid-cols-5">
           <TabsTrigger value="news" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
             <Newspaper className="h-3.5 w-3.5" aria-hidden /> নিউজ
           </TabsTrigger>
@@ -227,7 +229,7 @@ function NewsManager() {
   };
 
   const articles = data?.articles ?? [];
-  const inputCls = "w-full rounded-md border border-border bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-primary";
+  const inputCls = "w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20";
 
   return (
     <div>
@@ -244,7 +246,7 @@ function NewsManager() {
       {isLoading ? (
         [1, 2, 3].map((i) => <Skeleton key={i} className="mb-2 h-16 rounded-lg" />)
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
+        <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
           <div className="divide-y divide-border/50">
             {articles.map((a) => (
               <div key={a.id} className="flex flex-wrap items-center gap-3 p-3 transition-colors hover:bg-accent/30">
@@ -436,7 +438,7 @@ function MatchManager() {
 
   return (
     <div>
-      <p className="mb-3 flex items-start gap-2.5 rounded-lg border border-fhb-red/25 bg-fhb-red/5 p-3 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="mb-3 flex items-start gap-2.5 rounded-xl border border-fhb-red/25 bg-fhb-red/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-fhb-red" aria-hidden />
         <span>
           <b className="text-foreground">লাইভ টেস্ট টিপ:</b> কোনো আসন্ন ম্যাচের স্ট্যাটাস <b className="text-fhb-red">&ldquo;লাইভ&rdquo;</b> করুন — WebSocket সিমুলেশন সার্ভিস স্বয়ংক্রিয়ভাবে মিনিট ও স্কোর আপডেট শুরু করবে।
@@ -447,7 +449,7 @@ function MatchManager() {
       ) : (
         <div className="fhb-scroll max-h-[560px] space-y-2 overflow-y-auto pr-1">
           {sorted.map((m) => (
-            <div key={m.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3">
+            <div key={m.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-foreground">
                   {m.homeTeam.name} <span className="text-muted-foreground">বনাম</span> {m.awayTeam.name}
@@ -529,7 +531,7 @@ function UserManager() {
       ) : (
         <div className="fhb-scroll max-h-[560px] space-y-2 overflow-y-auto pr-1">
           {users.map((u) => (
-            <div key={u.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3">
+            <div key={u.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
               <div className="min-w-0 flex-1">
                 <p className="flex flex-wrap items-center gap-1.5 truncate text-sm font-semibold text-foreground">
                   {u.name}
@@ -605,7 +607,7 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
 
   return (
     <div>
-      <p className="mb-3 flex items-start gap-2.5 rounded-lg border border-primary/25 bg-primary/5 p-3 text-[11px] leading-relaxed text-muted-foreground">
+      <p className="mb-3 flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
         <span>
           Google AdSense কোড (ca-pub-...) এখানে বসিয়ে দিলেই সাইটজুড়ে সংশ্লিষ্ট প্লেসমেন্টে আসল বিজ্ঞাপন চলবে। প্রিমিয়াম
@@ -614,7 +616,7 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
       </p>
       <div className="space-y-2">
         {ads.map((ad) => (
-          <div key={ad.id} className="rounded-lg border border-border bg-card p-3.5">
+          <div key={ad.id} className="edge-lit rounded-2xl border border-border bg-card p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground">{ad.name}</p>
@@ -654,7 +656,7 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
                   onChange={(e) => setEditing((ed) => (ed ? { ...ed, code: e.target.value } : ed))}
                   rows={4}
                   placeholder='<ins class="adsbygoogle" ...></ins>'
-                  className="w-full resize-y rounded-md border border-border bg-background px-3 py-2 font-mono text-[11px] outline-none transition-colors focus:border-primary"
+                  className="w-full resize-y rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-[11px] outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
                   aria-label="AdSense কোড"
                 />
                 <div className="flex gap-2">
@@ -720,13 +722,13 @@ function PayoutManager() {
       {isLoading ? (
         [1, 2].map((i) => <Skeleton key={i} className="mb-2 h-16 rounded-lg" />)
       ) : payouts.length === 0 ? (
-        <p className="rounded-lg border border-border bg-card p-8 text-center text-sm text-muted-foreground">
+        <p className="edge-lit rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">
           কোনো উত্তোলনের অনুরোধ নেই।
         </p>
       ) : (
         <div className="space-y-2">
           {payouts.map((p) => (
-            <div key={p.id} className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3.5">
+            <div key={p.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:border-primary/25">
               <div className="min-w-0 flex-1">
                 <p className="text-sm font-semibold text-foreground">
                   {p.creator.name} <span className="text-[10px] text-muted-foreground">@{p.creator.username}</span>

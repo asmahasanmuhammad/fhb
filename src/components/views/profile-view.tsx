@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Image from "next/image";
 import type { SafeUser, Post, Video } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
+import { useReveal } from "@/hooks/use-reveal";
 import { timeAgo, bnCompact, bnNumber } from "@/lib/format";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,7 @@ export function ProfileView({ username }: { username?: string }) {
   const me = useAppStore((s) => s.user);
   const navigate = useAppStore((s) => s.navigate);
   const { toast } = useToast();
+  useReveal();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState<"posts" | "videos">("posts");
   const [editing, setEditing] = useState(false);
@@ -62,11 +64,11 @@ export function ProfileView({ username }: { username?: string }) {
   if (!me && !username) {
     return (
       <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-muted">
+        <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-muted">
           <LogIn className="h-7 w-7 text-muted-foreground" aria-hidden />
         </span>
         <p className="text-sm text-muted-foreground">আপনার প্রোফাইল দেখতে লগইন করুন।</p>
-        <Button onClick={() => navigate({ name: "auth" })} className="gap-2 rounded-md bg-primary font-bold">
+        <Button onClick={() => navigate({ name: "auth" })} className="sheen gap-2 rounded-full bg-primary px-6 font-bold">
           <LogIn className="h-4 w-4" aria-hidden /> লগইন / রেজিস্ট্রেশন
         </Button>
       </div>
@@ -76,8 +78,8 @@ export function ProfileView({ username }: { username?: string }) {
   if (isLoading || !data?.user) {
     return (
       <div className="mx-auto max-w-4xl space-y-4 px-4 pt-6">
-        <Skeleton className="h-36 rounded-xl" />
-        <Skeleton className="h-64 rounded-lg" />
+        <Skeleton className="h-44 rounded-2xl" />
+        <Skeleton className="h-64 rounded-2xl" />
       </div>
     );
   }
@@ -85,10 +87,20 @@ export function ProfileView({ username }: { username?: string }) {
   const { user, posts, videos, following, totalLikes } = data;
 
   return (
-    <div className="mx-auto w-full max-w-4xl px-4 pb-12 pt-6 sm:px-6">
-      {/* Profile header */}
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="pitch-pattern p-6">
+    <div className="mx-auto w-full max-w-4xl px-4 pb-14 pt-6 sm:px-6">
+      {/* ═══ Profile header — cinematic ═══ */}
+      <div className="noise stadium-panel relative overflow-hidden rounded-3xl border border-border/70">
+        {/* Top accent line */}
+        <span
+          aria-hidden
+          className={cn(
+            "block h-1.5 w-full",
+            user.isPremium
+              ? "bg-gradient-to-r from-fhb-gold/70 via-fhb-gold to-fhb-gold/70"
+              : "bg-gradient-to-r from-primary/60 via-primary to-primary/60"
+          )}
+        />
+        <div className="pitch-pattern p-6 sm:p-7">
           <div className="flex flex-wrap items-start gap-5">
             <div className="relative">
               <Avatar
@@ -150,7 +162,7 @@ export function ProfileView({ username }: { username?: string }) {
               ) : (
                 <>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="font-display text-2xl font-bold text-foreground">{user.name}</h1>
+                    <h1 className="display-hero text-2xl text-foreground sm:text-3xl">{user.name}</h1>
                     {user.isPremium && (
                       <span className="flex items-center gap-1 rounded-md bg-fhb-gold/15 px-2 py-0.5 text-[10px] font-bold text-fhb-gold">
                         <Crown className="h-3 w-3" aria-hidden /> প্রিমিয়াম
@@ -189,18 +201,18 @@ export function ProfileView({ username }: { username?: string }) {
                         setEditForm({ name: user.name, bio: user.bio ?? "" });
                         setEditing(true);
                       }}
-                      className="gap-1.5 rounded-md"
+                      className="gap-1.5 rounded-full"
                     >
                       <Pencil className="h-3.5 w-3.5" aria-hidden /> প্রোফাইল এডিট
                     </Button>
                   )}
                   {(me?.role === "CREATOR" || me?.role === "ADMIN") && (
-                    <Button variant="outline" size="sm" onClick={() => navigate({ name: "earnings" })} className="gap-1.5 rounded-md">
+                    <Button variant="outline" size="sm" onClick={() => navigate({ name: "earnings" })} className="gap-1.5 rounded-full">
                       <Wallet className="h-3.5 w-3.5" aria-hidden /> আয়ের ড্যাশবোর্ড
                     </Button>
                   )}
                   {me?.role === "ADMIN" && (
-                    <Button size="sm" onClick={() => navigate({ name: "admin" })} className="gap-1.5 rounded-md bg-primary font-bold">
+                    <Button size="sm" onClick={() => navigate({ name: "admin" })} className="sheen gap-1.5 rounded-full bg-primary font-bold">
                       <LayoutGrid className="h-3.5 w-3.5" aria-hidden /> অ্যাডমিন প্যানেল
                     </Button>
                   )}
@@ -210,7 +222,7 @@ export function ProfileView({ username }: { username?: string }) {
                   onClick={() => followMutation.mutate()}
                   disabled={followMutation.isPending}
                   variant={following ? "secondary" : "default"}
-                  className={cn("gap-1.5 rounded-md font-bold", !following && "bg-fhb-red hover:bg-fhb-red/90")}
+                  className={cn("gap-1.5 rounded-full px-5 font-bold", !following && "bg-fhb-red shadow-[0_10px_24px_-10px_var(--fhb-red)] hover:bg-fhb-red/90")}
                 >
                   {following ? <UserCheck className="h-4 w-4" aria-hidden /> : <UserPlus className="h-4 w-4" aria-hidden />}
                   {following ? "ফলোয়িং" : "ফলো করুন"}
@@ -220,16 +232,16 @@ export function ProfileView({ username }: { username?: string }) {
           </div>
 
           {/* Stats strip */}
-          <dl className="mt-6 grid grid-cols-2 divide-x divide-border overflow-hidden rounded-lg border border-border bg-background/50 sm:grid-cols-4">
+          <dl className="mt-6 grid grid-cols-2 divide-x divide-border overflow-hidden rounded-2xl border border-border bg-background/50 backdrop-blur-sm sm:grid-cols-4">
             {[
               [bnNumber(user.followerCount ?? 0), "ফলোয়ার"],
               [bnNumber(user.followingCount ?? 0), "ফলোয়িং"],
               [bnNumber(totalLikes), "মোট লাইক"],
               [bnNumber(posts.length + videos.length), "কনটেন্ট"],
             ].map(([v, l], i) => (
-              <div key={l} className={cn("py-3.5 text-center", i === 0 && "sm:border-l-0")}>
-                <dd className="tabular font-display text-lg font-bold text-primary sm:text-xl">{v}</dd>
-                <dt className="mt-0.5 text-[10px] text-muted-foreground">{l}</dt>
+              <div key={l} className={cn("py-4 text-center", i === 0 && "sm:border-l-0")}>
+                <dd className="tabular font-display text-xl font-bold text-primary sm:text-2xl">{v}</dd>
+                <dt className="mt-1 text-[10px] text-muted-foreground">{l}</dt>
               </div>
             ))}
           </dl>
@@ -237,7 +249,7 @@ export function ProfileView({ username }: { username?: string }) {
       </div>
 
       {/* Tabs */}
-      <div className="mt-6 mb-4 flex rounded-lg border border-border bg-muted/40 p-1" role="tablist" aria-label="প্রোফাইল কনটেন্ট">
+      <div className="mb-5 mt-7 grid grid-cols-2 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5" role="tablist" aria-label="প্রোফাইল কনটেন্ট">
         {(
           [
             ["posts", "পোস্ট", <MessageSquare key="m" className="h-3.5 w-3.5" aria-hidden />, posts.length],
@@ -250,13 +262,13 @@ export function ProfileView({ username }: { username?: string }) {
             aria-selected={tab === key}
             onClick={() => setTab(key)}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-xs font-bold transition-all",
-              tab === key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              "flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-all active:scale-[0.97]",
+              tab === key ? "bg-primary text-primary-foreground shadow-[0_8px_20px_-10px_var(--primary)]" : "text-muted-foreground hover:text-foreground"
             )}
           >
             {icon}
             {label}
-            <span className="tabular rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
+            <span className={cn("tabular rounded-md px-1.5 py-0.5 text-[10px] font-bold", tab === key ? "bg-black/20" : "bg-muted text-muted-foreground")}>
               {bnNumber(count)}
             </span>
           </button>
@@ -266,19 +278,22 @@ export function ProfileView({ username }: { username?: string }) {
       {/* Content */}
       {tab === "posts" ? (
         posts.length === 0 ? (
-          <p className="rounded-lg border border-border bg-card p-10 text-center text-sm text-muted-foreground">
-            এখনো কোনো পোস্ট নেই।
-          </p>
+          <div className="edge-lit rounded-2xl border border-border bg-card p-12 text-center">
+            <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+              <MessageSquare className="h-5 w-5" aria-hidden />
+            </span>
+            <p className="text-sm text-muted-foreground">এখনো কোনো পোস্ট নেই।</p>
+          </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-3.5">
             {posts.map((p) => (
-              <div key={p.id} className="rounded-lg border border-border bg-card p-4">
+              <div key={p.id} className="edge-lit card-lift rounded-2xl border border-border bg-card p-5">
                 <p className="whitespace-pre-line text-sm leading-relaxed">{p.content}</p>
-                <div className="mt-2.5 flex items-center gap-3 border-t border-border/60 pt-2.5 text-[11px] text-muted-foreground">
-                  <span className="flex items-center gap-1">
+                <div className="mt-3.5 flex items-center gap-3.5 border-t border-border/60 pt-3.5 text-[11px] text-muted-foreground">
+                  <span className="flex items-center gap-1.5">
                     <Heart className="h-3 w-3" aria-hidden /> {bnCompact(p.likeCount)}
                   </span>
-                  <span className="flex items-center gap-1">
+                  <span className="flex items-center gap-1.5">
                     <MessageSquare className="h-3 w-3" aria-hidden /> {bnCompact(p.commentCount)}
                   </span>
                   <span className="ml-auto">{timeAgo(p.createdAt)}</span>
@@ -288,25 +303,28 @@ export function ProfileView({ username }: { username?: string }) {
           </div>
         )
       ) : videos.length === 0 ? (
-        <p className="rounded-lg border border-border bg-card p-10 text-center text-sm text-muted-foreground">
-          এখনো কোনো শর্টস নেই।
-        </p>
+        <div className="edge-lit rounded-2xl border border-border bg-card p-12 text-center">
+          <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
+            <Play className="h-5 w-5" aria-hidden />
+          </span>
+          <p className="text-sm text-muted-foreground">এখনো কোনো শর্টস নেই।</p>
+        </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4">
           {videos.map((v) => (
             <button
               key={v.id}
               onClick={() => navigate({ name: "shorts" })}
-              className="card-lift group relative aspect-[9/16] overflow-hidden rounded-lg border border-border"
+              className="card-lift group relative aspect-[9/16] overflow-hidden rounded-2xl border border-border"
               aria-label={`শর্টস দেখুন: ${v.title}`}
             >
               {v.thumbnailUrl && (
-                <Image src={v.thumbnailUrl} alt={v.title} fill sizes="200px" className="object-cover" unoptimized />
+                <Image src={v.thumbnailUrl} alt={v.title} fill sizes="200px" className="img-zoom object-cover" unoptimized />
               )}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 to-transparent" />
-              <div className="absolute inset-x-2.5 bottom-2.5 text-left">
-                <p className="line-clamp-2 text-[11px] font-semibold text-white">{v.title}</p>
-                <p className="mt-0.5 flex items-center gap-1 text-[9px] text-white/70">
+              <div className="photo-scrim absolute inset-0" aria-hidden />
+              <div className="absolute inset-x-3 bottom-3 text-left">
+                <p className="line-clamp-2 text-[11px] font-semibold leading-snug text-white">{v.title}</p>
+                <p className="mt-1 flex items-center gap-1 text-[9px] text-white/70">
                   <Play className="h-2.5 w-2.5 fill-white" aria-hidden /> {bnCompact(v.views)}
                 </p>
               </div>

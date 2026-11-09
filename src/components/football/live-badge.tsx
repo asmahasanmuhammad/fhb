@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { toBn } from "@/lib/format";
 
 /**
- * Broadcast-style LIVE chip — red square dot + minute in Oswald caps.
+ * Broadcast LIVE chip — red square dot + minute, Oswald caps.
  */
 export function LiveBadge({
   minute,
@@ -22,7 +22,7 @@ export function LiveBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-sm border border-fhb-red/40 bg-fhb-red/10 font-display font-bold uppercase text-fhb-red",
+        "inline-flex items-center gap-1.5 rounded-md border border-fhb-red/45 bg-fhb-red/12 font-display font-bold uppercase text-fhb-red",
         size === "sm" ? "px-1.5 py-0.5 text-[10px] tracking-wider" : "px-2 py-0.5 text-[11px] tracking-wider",
         compact && "px-1.5"
       )}
@@ -40,7 +40,7 @@ export function FormDots({ form }: { form: string | null | undefined }) {
   if (!form) return null;
   const styles: Record<string, string> = {
     W: "bg-primary text-primary-foreground",
-    D: "bg-muted text-muted-foreground ring-1 ring-inset ring-border",
+    D: "bg-elevated text-muted-foreground ring-1 ring-inset ring-border",
     L: "bg-fhb-red/90 text-white",
   };
   const labels: Record<string, string> = { W: "জ", D: "ড", L: "হ" };
@@ -50,7 +50,7 @@ export function FormDots({ form }: { form: string | null | undefined }) {
         <span
           key={i}
           className={cn(
-            "flex h-[18px] w-[18px] items-center justify-center rounded-[4px] text-[9px] font-bold leading-none",
+            "flex h-[18px] w-[18px] items-center justify-center rounded-[5px] text-[9px] font-bold leading-none",
             styles[c] ?? styles.D
           )}
           title={{ W: "জয়", D: "ড্র", L: "হার" }[c] ?? ""}

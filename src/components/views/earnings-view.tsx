@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
+import { useReveal } from "@/hooks/use-reveal";
 import { formatMoney, toBn, timeAgo, bnCompact } from "@/lib/format";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,7 @@ const STATUS_META: Record<string, { label: string; cls: string }> = {
 export function EarningsView() {
   const { user } = useAppStore();
   const { toast } = useToast();
+  useReveal();
   const queryClient = useQueryClient();
   const [payoutForm, setPayoutForm] = useState({ amount: 1000, method: "BKASH", account: "" });
 
@@ -70,7 +72,7 @@ export function EarningsView() {
   if (user && user.role !== "CREATOR" && user.role !== "ADMIN") {
     return (
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-3 px-4 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-fhb-gold/15">
+        <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-fhb-gold/15">
           <AlertCircle className="h-7 w-7 text-fhb-gold" aria-hidden />
         </span>
         <p className="text-sm font-bold text-foreground">ক্রিয়েটর ড্যাশবোর্ড</p>
@@ -84,8 +86,8 @@ export function EarningsView() {
   if (isLoading || !data) {
     return (
       <div className="mx-auto max-w-5xl space-y-4 px-4 pt-6">
-        <Skeleton className="h-28 rounded-xl" />
-        <Skeleton className="h-72 rounded-lg" />
+        <Skeleton className="h-32 rounded-2xl" />
+        <Skeleton className="h-72 rounded-2xl" />
       </div>
     );
   }
@@ -107,33 +109,37 @@ export function EarningsView() {
     <div className="mx-auto w-full max-w-5xl px-4 pb-12 pt-6 sm:px-6">
       <PageHeader
         title="আয়ের ড্যাশবোর্ড"
-        subtitle="ক্রিয়েটর মনিটাইজেশন — ভিউ রেভিনিউ, টিপস ও বোনাসের সম্পূর্ণ হিসাব"
+        kicker="creator monetization"
+        subtitle="ভিউ রেভিনিউ, টিপস ও বোনাসের সম্পূর্ণ হিসাব"
         icon={<Wallet className="h-5 w-5" aria-hidden />}
       />
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3.5 lg:grid-cols-4">
         {[
           { label: "মোট আয়", value: formatMoney(stats.total), icon: <Coins className="h-4 w-4" aria-hidden />, chipCls: "bg-fhb-gold/15 text-fhb-gold", valueCls: "text-fhb-gold" },
           { label: "উত্তোলনযোগ্য ব্যালেন্স", value: formatMoney(stats.balance), icon: <Banknote className="h-4 w-4" aria-hidden />, chipCls: "bg-primary/15 text-primary", valueCls: "text-primary" },
           { label: "মোট ভিউ", value: bnCompact(stats.totalViews), icon: <Eye className="h-4 w-4" aria-hidden />, chipCls: "bg-muted text-muted-foreground", valueCls: "text-foreground" },
           { label: "RPM (প্রতি ১০০০ ভিউ)", value: `৳${toBn(stats.rpm.toFixed(1))}`, icon: <TrendingUp className="h-4 w-4" aria-hidden />, chipCls: "bg-fhb-red/15 text-fhb-red", valueCls: "text-fhb-red" },
         ].map((s) => (
-          <div key={s.label} className="rounded-xl border border-border bg-card p-4">
-            <div className="flex items-center gap-2">
-              <span className={cn("flex h-7 w-7 items-center justify-center rounded-md", s.chipCls)}>{s.icon}</span>
+          <div key={s.label} className="edge-lit card-lift rounded-2xl border border-border bg-card p-4.5 p-4 sm:p-5">
+            <div className="flex items-center gap-2.5">
+              <span className={cn("flex h-8 w-8 items-center justify-center rounded-lg", s.chipCls)}>{s.icon}</span>
               <span className="text-[10px] font-bold text-muted-foreground">{s.label}</span>
             </div>
-            <p className={cn("tabular mt-2 font-display text-xl font-bold sm:text-2xl", s.valueCls)}>{s.value}</p>
+            <p className={cn("tabular mt-3 font-display text-xl font-bold sm:text-2xl", s.valueCls)}>{s.value}</p>
           </div>
         ))}
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
         {/* Monthly chart + transactions */}
-        <div className="rounded-xl border border-border bg-card p-5 lg:col-span-2">
-          <h2 className="mb-4 flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest text-foreground">
-            <TrendingUp className="h-4 w-4 text-primary" aria-hidden /> মাসিক আয় (৳)
+        <div className="edge-lit rounded-2xl border border-border bg-card p-5 lg:col-span-2">
+          <h2 className="mb-5 flex items-center gap-2.5 font-display-bn text-base font-bold text-foreground">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 text-primary">
+              <TrendingUp className="h-4 w-4" aria-hidden />
+            </span>
+            মাসিক আয় (৳)
           </h2>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
@@ -152,15 +158,18 @@ export function EarningsView() {
           </div>
 
           {/* Recent earnings */}
-          <h3 className="mb-3 mt-7 flex items-center gap-2 border-t border-border pt-5 font-display text-sm font-bold uppercase tracking-widest text-foreground">
-            <Radio className="h-4 w-4 text-primary" aria-hidden /> সাম্প্রতিক লেনদেন
+          <h3 className="mb-4 mt-8 flex items-center gap-2.5 border-t border-border pt-6 font-display-bn text-base font-bold text-foreground">
+            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 text-primary">
+              <Radio className="h-4 w-4" aria-hidden />
+            </span>
+            সাম্প্রতিক লেনদেন
           </h3>
-          <div className="fhb-scroll max-h-64 space-y-2 overflow-y-auto pr-1">
+          <div className="fhb-scroll max-h-64 space-y-2.5 overflow-y-auto pr-1">
             {earnings.map((e) => {
               const meta = sourceMeta(e.source);
               return (
-                <div key={e.id} className="flex items-center gap-3 rounded-lg border border-border bg-background/50 p-3">
-                  <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-md", meta.cls)} aria-hidden>
+                <div key={e.id} className="flex items-center gap-3 rounded-xl border border-border bg-background/50 p-3 transition-colors hover:border-primary/25">
+                  <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", meta.cls)} aria-hidden>
                     {meta.icon}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -177,9 +186,12 @@ export function EarningsView() {
         {/* Right column */}
         <div className="space-y-5">
           {/* Payout form */}
-          <div className="rounded-xl border border-border bg-card p-5">
-            <h2 className="mb-4 flex items-center gap-2 font-display text-sm font-bold uppercase tracking-widest text-foreground">
-              <Download className="h-4 w-4 text-primary" aria-hidden /> উত্তোলনের অনুরোধ
+          <div className="edge-lit rounded-2xl border border-border bg-card p-5">
+            <h2 className="mb-5 flex items-center gap-2.5 font-display-bn text-base font-bold text-foreground">
+              <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 text-primary">
+                <Download className="h-4 w-4" aria-hidden />
+              </span>
+              উত্তোলনের অনুরোধ
             </h2>
             <div className="space-y-3.5">
               <div>
@@ -193,7 +205,7 @@ export function EarningsView() {
                   max={Math.floor(stats.balance)}
                   value={payoutForm.amount}
                   onChange={(e) => setPayoutForm((f) => ({ ...f, amount: parseInt(e.target.value || "500", 10) }))}
-                  className="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm outline-none transition-colors focus:border-primary"
+                  className="h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
                 />
                 <p className="mt-1 text-[10px] text-muted-foreground">ব্যালেন্স: {formatMoney(stats.balance)}</p>
               </div>
@@ -207,7 +219,7 @@ export function EarningsView() {
                       key={m}
                       onClick={() => setPayoutForm((f) => ({ ...f, method: m }))}
                       className={cn(
-                        "rounded-md border py-2 text-[11px] font-bold transition-colors",
+                        "rounded-xl border py-2.5 text-[11px] font-bold transition-all active:scale-95",
                         payoutForm.method === m
                           ? "border-primary/50 bg-primary/15 text-primary"
                           : "border-border text-muted-foreground hover:text-foreground"
@@ -227,13 +239,13 @@ export function EarningsView() {
                   value={payoutForm.account}
                   onChange={(e) => setPayoutForm((f) => ({ ...f, account: e.target.value }))}
                   placeholder="01XXXXXXXXX"
-                  className="w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm outline-none transition-colors focus:border-primary"
+                  className="h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
                 />
               </div>
               <Button
                 onClick={() => payoutMutation.mutate()}
                 disabled={payoutMutation.isPending || stats.balance < 500 || !payoutForm.account.trim()}
-                className="w-full rounded-md bg-primary font-bold"
+                className="sheen w-full rounded-xl bg-primary font-bold"
               >
                 {payoutMutation.isPending ? "জমা হচ্ছে..." : "অনুরোধ জমা দিন"}
               </Button>
@@ -241,9 +253,9 @@ export function EarningsView() {
 
             {/* Payout history */}
             {payoutRequests.length > 0 && (
-              <div className="mt-4 space-y-2 border-t border-border pt-3">
+              <div className="mt-4 space-y-2 border-t border-border pt-4">
                 {payoutRequests.map((p) => (
-                  <div key={p.id} className="flex items-center justify-between gap-2 rounded-md bg-muted/40 px-3 py-2 text-[11px]">
+                  <div key={p.id} className="flex items-center justify-between gap-2 rounded-xl bg-muted/40 px-3.5 py-2.5 text-[11px]">
                     <span className="flex items-center gap-1.5">
                       {p.status === "PENDING" ? (
                         <Clock className="h-3 w-3 text-fhb-gold" aria-hidden />
@@ -252,7 +264,7 @@ export function EarningsView() {
                       )}
                       {formatMoney(p.amount)} · {p.method === "BKASH" ? "bKash" : p.method}
                     </span>
-                    <span className={cn("rounded-sm px-2 py-0.5 font-bold", STATUS_META[p.status]?.cls ?? "")}>
+                    <span className={cn("rounded-md px-2 py-0.5 font-bold", STATUS_META[p.status]?.cls ?? "")}>
                       {STATUS_META[p.status]?.label}
                     </span>
                   </div>
@@ -262,14 +274,14 @@ export function EarningsView() {
           </div>
 
           {/* Monetized videos */}
-          <div className="overflow-hidden rounded-xl border border-border bg-card">
-            <h2 className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 font-display text-xs font-bold uppercase tracking-widest text-foreground">
+          <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
+            <h2 className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-3.5 font-display-bn text-[13px] font-bold text-foreground">
               <PlayCircle className="h-4 w-4 text-primary" aria-hidden /> আপনার শর্টস ({toBn(videos.length)})
             </h2>
             <div className="divide-y divide-border/60">
               {videos.slice(0, 5).map((v) => (
-                <div key={v.id} className="flex items-center gap-3 px-4 py-2.5">
-                  <div className="relative h-10 w-16 shrink-0 overflow-hidden rounded-md border border-border">
+                <div key={v.id} className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40">
+                  <div className="relative h-11 w-16 shrink-0 overflow-hidden rounded-lg border border-border">
                     {v.thumbnailUrl && (
                       <Image src={v.thumbnailUrl} alt={v.title} fill sizes="64px" className="object-cover" unoptimized />
                     )}
@@ -283,7 +295,7 @@ export function EarningsView() {
                   </div>
                   <span
                     className={cn(
-                      "flex shrink-0 items-center gap-1 rounded-sm px-1.5 py-0.5 text-[9px] font-bold",
+                      "flex shrink-0 items-center gap-1 rounded-md px-2 py-0.5 text-[9px] font-bold",
                       v.monetized ? "bg-primary/15 text-primary" : "bg-muted text-muted-foreground"
                     )}
                   >

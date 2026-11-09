@@ -37,6 +37,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --color-elevated: var(--elevated);
+  --color-elevated-foreground: var(--elevated-foreground);
   --color-fhb-red: var(--fhb-red);
   --color-fhb-gold: var(--fhb-gold);
   --color-fhb-green: var(--fhb-green);
@@ -47,101 +49,121 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  /* Light theme: pitch green + Bangladesh red */
-  --background: oklch(0.982 0.004 140);
-  --foreground: oklch(0.21 0.03 155);
+  --radius: 0.75rem;
+  /* Light theme: clean editorial white + pitch green */
+  --background: oklch(0.975 0.004 140);
+  --foreground: oklch(0.2 0.03 155);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.03 155);
+  --card-foreground: oklch(0.2 0.03 155);
+  --elevated: oklch(1 0 0);
+  --elevated-foreground: oklch(0.2 0.03 155);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.03 155);
-  --primary: oklch(0.5 0.12 155);
+  --popover-foreground: oklch(0.2 0.03 155);
+  --primary: oklch(0.52 0.13 155);
   --primary-foreground: oklch(0.985 0.01 140);
   --secondary: oklch(0.955 0.012 150);
   --secondary-foreground: oklch(0.3 0.04 155);
   --muted: oklch(0.95 0.008 148);
-  --muted-foreground: oklch(0.48 0.03 150);
+  --muted-foreground: oklch(0.47 0.03 150);
   --accent: oklch(0.94 0.02 150);
   --accent-foreground: oklch(0.3 0.05 155);
   --destructive: oklch(0.55 0.22 27);
   --border: oklch(0.9 0.012 150);
   --input: oklch(0.9 0.012 150);
-  --ring: oklch(0.5 0.12 155);
+  --ring: oklch(0.52 0.13 155);
   --chart-1: oklch(0.55 0.14 155);
   --chart-2: oklch(0.6 0.2 25);
   --chart-3: oklch(0.72 0.14 85);
   --chart-4: oklch(0.5 0.01 155);
   --chart-5: oklch(0.68 0.12 85);
-  --sidebar: oklch(0.982 0.004 140);
-  --sidebar-foreground: oklch(0.21 0.03 155);
-  --sidebar-primary: oklch(0.5 0.12 155);
+  --sidebar: oklch(0.975 0.004 140);
+  --sidebar-foreground: oklch(0.2 0.03 155);
+  --sidebar-primary: oklch(0.52 0.13 155);
   --sidebar-primary-foreground: oklch(0.985 0.01 140);
   --sidebar-accent: oklch(0.94 0.02 150);
   --sidebar-accent-foreground: oklch(0.3 0.05 155);
   --sidebar-border: oklch(0.9 0.012 150);
-  --sidebar-ring: oklch(0.5 0.12 155);
-  --fhb-red: oklch(0.55 0.22 27);
-  --fhb-gold: oklch(0.72 0.14 85);
-  --fhb-green: oklch(0.5 0.12 155);
+  --sidebar-ring: oklch(0.52 0.13 155);
+  --fhb-red: oklch(0.56 0.23 27);
+  --fhb-gold: oklch(0.75 0.14 85);
+  --fhb-green: oklch(0.52 0.13 155);
 }
 
 .dark {
-  /* Broadcast Night — deep stadium dark, refined emerald, restrained red */
-  --background: oklch(0.133 0.012 165);
-  --foreground: oklch(0.94 0.008 140);
-  --card: oklch(0.168 0.012 165);
-  --card-foreground: oklch(0.94 0.008 140);
-  --popover: oklch(0.195 0.014 165);
-  --popover-foreground: oklch(0.94 0.008 140);
-  --primary: oklch(0.71 0.16 152);
-  --primary-foreground: oklch(0.13 0.03 160);
-  --secondary: oklch(0.225 0.018 165);
-  --secondary-foreground: oklch(0.94 0.008 140);
-  --muted: oklch(0.215 0.015 165);
-  --muted-foreground: oklch(0.62 0.02 150);
-  --accent: oklch(0.245 0.02 163);
-  --accent-foreground: oklch(0.94 0.008 140);
-  --destructive: oklch(0.62 0.24 25);
-  --border: oklch(1 0 0 / 8%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.71 0.16 152);
-  --chart-1: oklch(0.71 0.16 152);
-  --chart-2: oklch(0.62 0.22 25);
-  --chart-3: oklch(0.78 0.13 85);
-  --chart-4: oklch(0.55 0.01 165);
+  /* ═══ FHB PRIME — Stadium Night ═══
+     Deep broadcast black-green base, layered surfaces,
+     floodlight lime-green accent, Bangladesh red, premium gold. */
+  --background: oklch(0.117 0.012 168);
+  --foreground: oklch(0.96 0.006 140);
+  --card: oklch(0.152 0.014 168);
+  --card-foreground: oklch(0.96 0.006 140);
+  --elevated: oklch(0.192 0.016 168);
+  --elevated-foreground: oklch(0.96 0.006 140);
+  --popover: oklch(0.18 0.015 168);
+  --popover-foreground: oklch(0.96 0.006 140);
+  --primary: oklch(0.84 0.185 148);
+  --primary-foreground: oklch(0.14 0.04 155);
+  --secondary: oklch(0.21 0.016 168);
+  --secondary-foreground: oklch(0.96 0.006 140);
+  --muted: oklch(0.2 0.015 168);
+  --muted-foreground: oklch(0.66 0.02 152);
+  --accent: oklch(0.225 0.02 166);
+  --accent-foreground: oklch(0.96 0.006 140);
+  --destructive: oklch(0.64 0.24 25);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 13%);
+  --ring: oklch(0.84 0.185 148);
+  --chart-1: oklch(0.84 0.185 148);
+  --chart-2: oklch(0.64 0.24 25);
+  --chart-3: oklch(0.82 0.13 85);
+  --chart-4: oklch(0.55 0.01 168);
   --chart-5: oklch(0.68 0.1 85);
-  --sidebar: oklch(0.15 0.013 165);
-  --sidebar-foreground: oklch(0.94 0.008 140);
-  --sidebar-primary: oklch(0.71 0.16 152);
-  --sidebar-primary-foreground: oklch(0.13 0.03 160);
-  --sidebar-accent: oklch(0.245 0.02 163);
-  --sidebar-accent-foreground: oklch(0.94 0.008 140);
-  --sidebar-border: oklch(1 0 0 / 8%);
-  --sidebar-ring: oklch(0.71 0.16 152);
-  --fhb-red: oklch(0.62 0.24 25);
-  --fhb-gold: oklch(0.8 0.13 85);
-  --fhb-green: oklch(0.71 0.16 152);
+  --sidebar: oklch(0.14 0.013 168);
+  --sidebar-foreground: oklch(0.96 0.006 140);
+  --sidebar-primary: oklch(0.84 0.185 148);
+  --sidebar-primary-foreground: oklch(0.14 0.04 155);
+  --sidebar-accent: oklch(0.225 0.02 166);
+  --sidebar-accent-foreground: oklch(0.96 0.006 140);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: oklch(0.84 0.185 148);
+  --fhb-red: oklch(0.65 0.24 25);
+  --fhb-gold: oklch(0.83 0.125 88);
+  --fhb-green: oklch(0.84 0.185 148);
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    scroll-behavior: smooth;
+  }
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-hind), system-ui, sans-serif;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3, h4 {
+    text-wrap: balance;
   }
   ::selection {
-    background: color-mix(in oklab, var(--primary) 40%, transparent);
+    background: color-mix(in oklab, var(--primary) 45%, transparent);
     color: #fff;
   }
 }
 
-/* ============ FHB design system utilities ============ */
+/* ═══════════════ FHB PRIME design system ═══════════════ */
 
 .font-display {
   font-family: var(--font-oswald), var(--font-hind), sans-serif;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.015em;
+}
+
+/* Bengali display: Oswald has no Bengali glyphs — keep Hind for বাংলা headlines */
+.font-display-bn {
+  font-family: var(--font-hind), sans-serif;
+  font-weight: 700;
+  letter-spacing: 0;
 }
 
 /* Tabular numerals for scores & stats */
@@ -149,7 +171,117 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Hide scrollbars but keep scroll */
+/* ── Surfaces ─────────────────────────────── */
+
+/* Frosted broadcast glass */
+.glass {
+  background: color-mix(in oklab, var(--card) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+}
+
+/* Top hairline highlight — the "premium edge" on dark cards */
+.edge-lit {
+  position: relative;
+}
+.edge-lit::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    oklch(1 0 0 / 22%),
+    transparent
+  );
+  pointer-events: none;
+}
+
+/* Cinematic panel: layered stadium gradient */
+.stadium-panel {
+  background:
+    radial-gradient(120% 140% at 85% -10%, oklch(0.84 0.185 148 / 13%), transparent 55%),
+    radial-gradient(90% 120% at 0% 110%, oklch(0.65 0.24 25 / 10%), transparent 52%),
+    linear-gradient(160deg, oklch(0.19 0.02 168), oklch(0.13 0.014 168) 58%);
+}
+
+/* Gold cinematic panel (premium banners) */
+.gold-panel {
+  background:
+    radial-gradient(110% 150% at 88% -12%, oklch(0.83 0.125 88 / 22%), transparent 55%),
+    radial-gradient(80% 110% at 0% 115%, oklch(0.6 0.16 55 / 16%), transparent 55%),
+    linear-gradient(160deg, oklch(0.21 0.025 80), oklch(0.14 0.02 85) 60%);
+}
+
+/* Pitch mow stripes — finer, more broadcast */
+.pitch-pattern {
+  background-image: repeating-linear-gradient(
+    115deg,
+    oklch(1 0 0 / 2.2%) 0px,
+    oklch(1 0 0 / 2.2%) 2px,
+    transparent 2px,
+    transparent 16px
+  );
+}
+
+/* Stadium floodlight glow from top */
+.floodlight {
+  background:
+    radial-gradient(60% 90% at 18% 0%, oklch(0.84 0.185 148 / 9%), transparent 60%),
+    radial-gradient(50% 80% at 82% 0%, oklch(0.84 0.185 148 / 7%), transparent 60%);
+}
+
+/* Film-grain noise overlay */
+.noise::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.34'/%3E%3C/svg%3E");
+}
+
+/* Cinematic photo scrim (bottom-up) */
+.photo-scrim {
+  background: linear-gradient(
+    180deg,
+    oklch(0.12 0.012 168 / 0) 34%,
+    oklch(0.12 0.012 168 / 0.55) 62%,
+    oklch(0.11 0.012 168 / 0.92) 100%
+  );
+}
+
+/* ── Typography helpers ────────────────────── */
+
+/* Huge broadcast headline */
+.display-hero {
+  font-family: var(--font-hind), sans-serif;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+/* Gold shimmer text */
+.gold-text {
+  background: linear-gradient(100deg, oklch(0.88 0.1 88), oklch(0.75 0.14 75) 45%, oklch(0.9 0.08 95));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Uppercase micro label */
+.eyebrow {
+  font-family: var(--font-oswald), sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+}
+
+/* ── Scrollbars ───────────────────────────── */
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -158,10 +290,9 @@
   scrollbar-width: none;
 }
 
-/* Custom scrollbar (visible areas) */
 .fhb-scroll::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 6px;
+  height: 6px;
 }
 .fhb-scroll::-webkit-scrollbar-track {
   background: transparent;
@@ -171,16 +302,18 @@
   border-radius: 999px;
 }
 .fhb-scroll::-webkit-scrollbar-thumb:hover {
-  background: oklch(1 0 0 / 24%);
+  background: oklch(1 0 0 / 26%);
 }
 
-/* LIVE pulse animation */
+/* ── Motion & interaction ─────────────────── */
+
+/* LIVE pulse */
 @keyframes live-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.5; transform: scale(0.8); }
+  50% { opacity: 0.45; transform: scale(0.78); }
 }
 .live-dot {
-  animation: live-pulse 1.2s ease-in-out infinite;
+  animation: live-pulse 1.15s ease-in-out infinite;
 }
 
 /* Score ticker marquee */
@@ -189,34 +322,85 @@
   100% { transform: translateX(-50%); }
 }
 .marquee-track {
-  animation: marquee 45s linear infinite;
+  animation: marquee 55s linear infinite;
 }
 .marquee-track:hover {
   animation-play-state: paused;
 }
 
-/* Subtle pitch-stripe texture for hero panels (replaces gradient glow) */
-.pitch-pattern {
-  background-image: repeating-linear-gradient(
-    115deg,
-    oklch(1 0 0 / 2.6%) 0px,
-    oklch(1 0 0 / 2.6%) 1px,
-    transparent 1px,
-    transparent 13px
-  );
-}
-
-/* Card hover: restrained lift + hairline brighten (no colored shadows) */
+/* Card hover — lift + edge light (no colored shadows) */
 .card-lift {
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
 }
 .card-lift:hover {
-  transform: translateY(-2px);
-  border-color: color-mix(in oklab, var(--primary) 38%, transparent);
-  box-shadow: 0 10px 28px -14px oklch(0 0 0 / 55%);
+  transform: translateY(-3px);
+  border-color: color-mix(in oklab, var(--primary) 32%, transparent);
+  box-shadow:
+    0 1px 0 0 oklch(1 0 0 / 6%) inset,
+    0 18px 40px -18px oklch(0 0 0 / 65%),
+    0 4px 12px -6px oklch(0.84 0.185 148 / 8%);
 }
 
-/* Vertical shorts snap feed */
+/* Image zoom on hover */
+.img-zoom {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.4s ease;
+}
+.group:hover .img-zoom {
+  transform: scale(1.06);
+}
+
+/* Button sheen sweep */
+.sheen {
+  position: relative;
+  overflow: hidden;
+}
+.sheen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 38%, oklch(1 0 0 / 22%) 50%, transparent 62%);
+  transform: translateX(-120%);
+  transition: transform 0.7s ease;
+  pointer-events: none;
+}
+.sheen:hover::after {
+  transform: translateX(120%);
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .marquee-track { animation: none; }
+  .live-dot { animation: none; }
+}
+
+/* Staggered mobile menu items */
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.menu-item {
+  animation: menu-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Header live-minute blink */
+@keyframes ticker-blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+/* ── Shorts feed ──────────────────────────── */
+
 .shorts-feed {
   scroll-snap-type: y mandatory;
   overscroll-behavior-y: contain;
@@ -226,7 +410,6 @@
   scroll-snap-stop: always;
 }
 
-/* Video progress bar — solid brand color */
 .video-progress {
   background: var(--primary);
 }
@@ -237,8 +420,12 @@
   min-width: 44px;
 }
 
-/* Keyframe for live minute ticker in header pill */
-@keyframes ticker-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
+/* Subtle dashed divider */
+.rule-dash {
+  background-image: repeating-linear-gradient(
+    90deg,
+    oklch(1 0 0 / 12%) 0 6px,
+    transparent 6px 12px
+  );
+  height: 1px;
 }

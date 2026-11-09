@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Post, SafeUser } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
+import { useReveal } from "@/hooks/use-reveal";
 import { LikeButton } from "@/components/football/like-button";
 import { CommentSection } from "@/components/football/comment-section";
 import { timeAgo, bnCompact } from "@/lib/format";
@@ -18,6 +19,7 @@ import { cn } from "@/lib/utils";
 export function CommunityView() {
   const { user } = useAppStore();
   const { toast } = useToast();
+  useReveal();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
   const [matchTag, setMatchTag] = useState<string | null>(null);
@@ -58,6 +60,7 @@ export function CommunityView() {
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-6 sm:px-6">
       <PageHeader
         title="ফ্যান কমিউনিটি"
+        kicker="fan zone"
         subtitle="মতামত শেয়ার করুন, আলোচনায় জয়েন করুন — বাংলাদেশের ফুটবলপ্রেমীদের নিজের জায়গা"
         icon={<Radio className="h-5 w-5" aria-hidden />}
       />
@@ -67,7 +70,7 @@ export function CommunityView() {
         <div className="space-y-4 lg:col-span-2">
           {/* Composer */}
           {user ? (
-            <div className="rounded-xl border border-border bg-card p-4">
+            <div className="edge-lit rounded-2xl border border-border bg-card p-4.5 p-5">
               <div className="flex gap-3">
                 <Avatar className="h-10 w-10 border">
                   <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
@@ -82,17 +85,17 @@ export function CommunityView() {
                     placeholder={`${user.name}, আজকের ম্যাচ নিয়ে কী মনে হচ্ছে?`}
                     rows={3}
                     maxLength={600}
-                    className="w-full resize-none rounded-lg border border-border bg-background p-3 text-sm outline-none transition-colors focus:border-primary"
+                    className="w-full resize-none rounded-xl border border-border bg-background p-3.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
                     aria-label="পোস্ট লিখুন"
                   />
-                  <div className="mt-2.5 flex flex-wrap items-center justify-between gap-2">
+                  <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap gap-1.5">
                       {["আবাহনী", "মোহামেডান", "বসুন্ধরা", "জাতীয় দল"].map((tag) => (
                         <button
                           key={tag}
                           onClick={() => setMatchTag((t) => (t === tag ? null : tag))}
                           className={cn(
-                            "rounded-md border px-2.5 py-1 text-[10px] font-bold transition-colors",
+                            "rounded-full border px-3 py-1 text-[10px] font-bold transition-all active:scale-95",
                             matchTag === tag
                               ? "border-primary/50 bg-primary/15 text-primary"
                               : "border-border text-muted-foreground hover:text-foreground"
@@ -106,7 +109,7 @@ export function CommunityView() {
                       size="sm"
                       onClick={() => createPost.mutate()}
                       disabled={!content.trim() || createPost.isPending}
-                      className="bg-primary font-bold"
+                      className="sheen rounded-full bg-primary px-5 font-bold"
                     >
                       {createPost.isPending ? "পোস্ট হচ্ছে..." : "পোস্ট করুন"}
                     </Button>
@@ -117,7 +120,7 @@ export function CommunityView() {
           ) : (
             <button
               onClick={() => useAppStore.getState().navigate({ name: "auth" })}
-              className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-5 text-sm font-semibold text-primary"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
             >
               <LogIn className="h-4 w-4" aria-hidden />
               কমিউনিটিতে পোস্ট করতে লগইন করুন →
@@ -126,10 +129,10 @@ export function CommunityView() {
 
           {/* Posts */}
           {isLoading ? (
-            [1, 2, 3].map((i) => <Skeleton key={i} className="h-40 rounded-xl" />)
+            [1, 2, 3].map((i) => <Skeleton key={i} className="h-40 rounded-2xl" />)
           ) : (
             posts.map((post) => (
-              <article key={post.id} className="rounded-xl border border-border bg-card p-4">
+              <article key={post.id} className="edge-lift card-lift rounded-2xl border border-border bg-card p-5">
                 <div className="flex items-center gap-3">
                   <Avatar className="h-10 w-10 border">
                     <AvatarImage src={post.author.avatarUrl ?? undefined} alt={post.author.name} />
@@ -142,7 +145,7 @@ export function CommunityView() {
                       {post.author.name}
                       {post.author.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="প্রিমিয়াম সদস্য" />}
                       {post.author.role === "CREATOR" && (
-                        <span className="rounded-sm bg-fhb-red/15 px-1.5 text-[9px] font-bold text-fhb-red">ক্রিয়েটর</span>
+                        <span className="rounded-md bg-fhb-red/15 px-1.5 py-0.5 text-[9px] font-bold text-fhb-red">ক্রিয়েটর</span>
                       )}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
@@ -150,15 +153,15 @@ export function CommunityView() {
                     </p>
                   </div>
                   {post.matchTag && (
-                    <span className="shrink-0 rounded-md bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary">
+                    <span className="shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary">
                       #{post.matchTag}
                     </span>
                   )}
                 </div>
 
-                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed">{post.content}</p>
+                <p className="mt-3.5 whitespace-pre-line text-sm leading-relaxed">{post.content}</p>
 
-                <div className="mt-3.5 flex items-center gap-2 border-t border-border/60 pt-3">
+                <div className="mt-4 flex items-center gap-2 border-t border-border/60 pt-3.5">
                   <LikeButton targetType="POST" targetId={post.id} initialCount={post.likeCount} variant="inline" />
                   <Button
                     variant="ghost"
@@ -172,7 +175,7 @@ export function CommunityView() {
                 </div>
 
                 {openComments === post.id && (
-                  <div className="mt-3 border-t border-border/60 pt-3">
+                  <div className="mt-3.5 border-t border-border/60 pt-3.5">
                     <CommentSection targetType="POST" targetId={post.id} />
                   </div>
                 )}
@@ -183,8 +186,8 @@ export function CommunityView() {
 
         {/* Sidebar */}
         <aside className="space-y-5">
-          <div className="overflow-hidden rounded-xl border border-border bg-card">
-            <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 font-display text-xs font-bold uppercase tracking-widest text-foreground">
+          <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
+            <p className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-3.5 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">
               <Sparkles className="h-4 w-4 text-fhb-gold" aria-hidden /> ফলো করার মতো ক্রিয়েটর
             </p>
             <div className="divide-y divide-border/60">
@@ -193,7 +196,7 @@ export function CommunityView() {
               ))}
             </div>
           </div>
-          <div className="rounded-xl border border-fhb-gold/30 bg-fhb-gold/5 p-5">
+          <div className="gold-panel relative overflow-hidden rounded-2xl border border-fhb-gold/25 p-5">
             <p className="flex items-center gap-2 text-sm font-bold text-fhb-gold">
               <Megaphone className="h-4 w-4" aria-hidden /> ক্রিয়েটর হতে চান?
             </p>
@@ -240,7 +243,7 @@ function SuggestedCreator({ creator }: { creator: SafeUser }) {
   const following = data?.following ?? false;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3">
+    <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40">
       <button onClick={() => navigate({ name: "profile", username: creator.username })} aria-label={`${creator.name} প্রোফাইল`}>
         <Avatar className="h-10 w-10 border">
           <AvatarImage src={creator.avatarUrl ?? undefined} alt={creator.name} />
@@ -259,7 +262,7 @@ function SuggestedCreator({ creator }: { creator: SafeUser }) {
           variant={following ? "secondary" : "outline"}
           onClick={() => followMutation.mutate()}
           disabled={followMutation.isPending}
-          className="h-8 gap-1 rounded-md px-3 text-[11px] font-bold"
+          className="h-8 gap-1 rounded-full px-3.5 text-[11px] font-bold"
         >
           {following ? <UserCheck className="h-3 w-3" aria-hidden /> : <UserPlus className="h-3 w-3" aria-hidden />}
           {following ? "ফলোয়িং" : "ফলো"}

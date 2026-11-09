@@ -54,10 +54,10 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
 
   return (
     <section aria-label="কমেন্ট" className="space-y-4">
-      <h3 className="flex items-center gap-2 border-b border-border pb-3 text-sm font-bold">
+      <h3 className="flex items-center gap-2 border-b border-border pb-3.5 text-sm font-bold">
         <MessageCircle className="h-4 w-4 text-primary" aria-hidden />
         কমেন্ট
-        <span className="tabular rounded-sm bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">{bnCount}</span>
+        <span className="tabular rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">{bnCount}</span>
       </h3>
 
       {user ? (
@@ -95,7 +95,7 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
       ) : (
         <button
           onClick={() => navigate({ name: "auth" })}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-border bg-muted/30 p-3.5 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-muted/30 p-3.5 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
         >
           <LogIn className="h-4 w-4" aria-hidden />
           কমেন্ট করতে <span className="font-semibold text-primary">লগইন</span> করুন
@@ -109,7 +109,7 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
           <p className="py-4 text-center text-sm text-muted-foreground">এখনো কোনো কমেন্ট নেই — প্রথম মতামতটি আপনিই দিন।</p>
         ) : (
           comments.map((c) => (
-            <div key={c.id} className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
+            <div key={c.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
               <Avatar className="h-8 w-8 border">
                 <AvatarImage src={c.user.avatarUrl ?? undefined} alt={c.user.name} />
                 <AvatarFallback className="bg-primary/15 text-xs font-bold text-primary">{c.user.name.slice(0, 2)}</AvatarFallback>

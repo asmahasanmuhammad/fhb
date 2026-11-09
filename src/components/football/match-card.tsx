@@ -10,8 +10,8 @@ import { cn } from "@/lib/utils";
 import { MapPin, ChevronRight } from "lucide-react";
 
 /**
- * Broadcast-grade match card — data-dense, tabular score,
- * status edge for LIVE, restrained hover.
+ * Broadcast-grade match card (FotMob/SofaScore style):
+ * stacked team rows + tabular score column + status edge for LIVE.
  */
 export function MatchCard({
   match,
@@ -34,20 +34,20 @@ export function MatchCard({
   const minute = liveData ? liveData.minute : match.minute;
   const period = liveData ? liveData.period : match.period;
   const ko = formatKickoff(match.kickoff);
-  const homeWon = status !== "SCHEDULED" && (homeScore ?? 0) > (awayScore ?? 0);
-  const awayWon = status !== "SCHEDULED" && (awayScore ?? 0) > (homeScore ?? 0);
+  const homeWon = status === "FINISHED" && (homeScore ?? 0) > (awayScore ?? 0);
+  const awayWon = status === "FINISHED" && (awayScore ?? 0) > (homeScore ?? 0);
 
   return (
     <button
       onClick={onClick ?? (() => navigate({ name: "match-detail", id: match.id }))}
       className={cn(
-        "card-lift group relative w-full overflow-hidden rounded-lg border bg-card p-3 text-left sm:p-3.5",
-        status === "LIVE" ? "border-fhb-red/25" : "border-border",
+        "card-lift edge-lit group relative w-full overflow-hidden rounded-xl border bg-card p-3.5 text-left sm:p-4",
+        status === "LIVE" ? "border-fhb-red/30" : "border-border",
         className
       )}
       aria-label={`${match.homeTeam.name} বনাম ${match.awayTeam.name} ম্যাচ দেখুন`}
     >
-      {/* Status edge */}
+      {/* LIVE status edge */}
       <span
         aria-hidden
         className={cn(
@@ -56,12 +56,12 @@ export function MatchCard({
         )}
       />
 
-      {/* Competition meta */}
+      {/* Competition meta strip */}
       {showCompetition && (
-        <div className="mb-2.5 flex min-w-0 items-center justify-between gap-2">
-          <span className="flex min-w-0 items-center gap-1.5 text-[11px] font-medium text-muted-foreground">
+        <div className="mb-3 flex min-w-0 items-center justify-between gap-2 border-b border-border/60 pb-2.5">
+          <span className="flex min-w-0 items-center gap-2 text-[11px] font-medium text-muted-foreground">
             <span
-              className="h-1.5 w-1.5 shrink-0 rounded-[2px]"
+              className="h-2 w-2 shrink-0 rounded-[3px]"
               style={{ backgroundColor: match.competition.accentColor ?? "var(--primary)" }}
               aria-hidden
             />
@@ -73,80 +73,74 @@ export function MatchCard({
           {status === "LIVE" ? (
             <LiveBadge minute={minute} period={period} size="sm" />
           ) : status === "FINISHED" ? (
-            <span className="shrink-0 rounded-sm bg-muted px-1.5 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+            <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
               শেষ
             </span>
           ) : (
-            <span className="shrink-0 rounded-sm border border-primary/30 bg-primary/10 px-1.5 py-0.5 font-display text-[10px] font-bold text-primary">
-              {ko.relative}
+            <span className="shrink-0 rounded-md border border-primary/35 bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+              {ko.relative === "আজ" || ko.relative === "আগামীকাল" || ko.relative === "গতকাল" ? ko.relative : ko.date.split(",")[0]}
             </span>
           )}
         </div>
       )}
 
-      {/* Score row */}
-      <div className="flex items-center gap-2 sm:gap-3">
-        {/* Home */}
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2.5 text-right">
-          <span
-            className={cn(
-              "min-w-0 truncate text-[13px] font-semibold leading-snug sm:text-sm",
-              homeWon ? "text-foreground" : status === "SCHEDULED" ? "text-foreground" : awayWon ? "text-muted-foreground" : "text-foreground"
-            )}
-          >
-            {match.homeTeam.name}
-          </span>
-          <TeamBadge team={match.homeTeam} size="sm" />
-        </div>
-
-        {/* Score / kickoff */}
-        <div className="shrink-0">
-          {status === "SCHEDULED" ? (
-            <div className="rounded-md border bg-background px-3 py-1.5 text-center">
-              <p className="tabular font-display text-base font-bold leading-none">{ko.time}</p>
-              <p className="mt-1 hidden text-[9px] font-medium uppercase tracking-wider text-muted-foreground sm:block">
-                {ko.relative === "আজ" || ko.relative === "আগামীকাল" ? ko.relative : ko.date.split(",")[0]}
-              </p>
-            </div>
-          ) : (
-            <div
-              className={cn(
-                "tabular rounded-md px-2.5 py-1 text-center font-display text-2xl font-bold leading-none",
-                status === "LIVE" ? "text-fhb-red" : "text-foreground"
-              )}
-            >
-              {toBn(homeScore ?? 0)}
-              <span className="mx-1 text-muted-foreground/40">-</span>
-              {toBn(awayScore ?? 0)}
-            </div>
-          )}
-        </div>
-
-        {/* Away */}
-        <div className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
-          <TeamBadge team={match.awayTeam} size="sm" />
-          <span
-            className={cn(
-              "min-w-0 truncate text-[13px] font-semibold leading-snug sm:text-sm",
-              awayWon ? "text-foreground" : status === "SCHEDULED" ? "text-foreground" : homeWon ? "text-muted-foreground" : "text-foreground"
-            )}
-          >
-            {match.awayTeam.name}
-          </span>
-        </div>
+      {/* Team rows */}
+      <div className="space-y-2.5">
+        <TeamRow team={match.homeTeam} score={homeScore} won={homeWon} status={status} />
+        <TeamRow team={match.awayTeam} score={awayScore} won={awayWon} status={status} />
       </div>
 
-      {/* Venue meta */}
-      <div className="mt-2.5 flex items-center justify-between border-t border-border/60 pt-2 text-[10px] text-muted-foreground">
-        <span className="flex min-w-0 items-center gap-1">
-          <MapPin className="h-3 w-3 shrink-0" aria-hidden />
+      {/* Footer meta */}
+      <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-[10px] text-muted-foreground">
+        <span className="flex min-w-0 items-center gap-1.5">
+          <MapPin className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
           <span className="truncate">{match.venue ?? "ভেন্যু নির্ধারিত হয়নি"}</span>
         </span>
-        <span className="flex shrink-0 items-center gap-0.5 font-semibold text-primary opacity-0 transition-opacity group-hover:opacity-100">
-          ম্যাচ সেন্টার
-          <ChevronRight className="h-3 w-3" aria-hidden />
+        <span className="flex shrink-0 items-center gap-1">
+          {status === "SCHEDULED" && (
+            <span className="tabular mr-1 font-display font-semibold text-foreground/80">{ko.time}</span>
+          )}
+          <span className="flex items-center gap-0.5 font-semibold text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+            ম্যাচ সেন্টার
+            <ChevronRight className="h-3 w-3" aria-hidden />
+          </span>
         </span>
       </div>
     </button>
+  );
+}
+
+/** Stacked team row — badge, name, tabular score. */
+function TeamRow({
+  team,
+  score,
+  won,
+  status,
+}: {
+  team: Match["homeTeam"];
+  score: number | null;
+  won: boolean;
+  status: Match["status"];
+}) {
+  return (
+    <div className="flex min-w-0 items-center gap-2.5">
+      <TeamBadge team={team} size="sm" />
+      <span
+        className={cn(
+          "min-w-0 flex-1 truncate text-[13px] leading-snug sm:text-sm",
+          won || status === "SCHEDULED" || status === "LIVE" ? "font-semibold text-foreground" : "font-medium text-muted-foreground"
+        )}
+      >
+        {team.name}
+      </span>
+      <span
+        className={cn(
+          "tabular shrink-0 font-display text-lg font-bold leading-none sm:text-xl",
+          won ? "text-foreground" : status === "SCHEDULED" ? "hidden" : status === "LIVE" ? "text-fhb-red" : "text-muted-foreground"
+        )}
+      >
+        {status !== "SCHEDULED" && toBn(score ?? 0)}
+      </span>
+    </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { Standing, CompetitionRef } from "@/lib/types";
+import { useReveal } from "@/hooks/use-reveal";
 import { StandingsTable } from "@/components/football/standings-table";
 import { TeamBadge } from "@/components/football/team-badge";
 import { PageHeader } from "@/components/football/section-header";
@@ -15,6 +16,7 @@ import { Trophy, Goal, Zap, Medal } from "lucide-react";
 export function StandingsView() {
   const navigate = useAppStore((s) => s.navigate);
   const [tab, setTab] = useState<"table" | "scorers">("table");
+  useReveal();
 
   const { data: compsData } = useQuery<{ competitions: Array<CompetitionRef & { _count?: { matches: number } }> }>({
     queryKey: ["competitions"],
@@ -40,29 +42,32 @@ export function StandingsView() {
     enabled: !!activeId,
   });
 
+  const scorers = data?.topScorers ?? [];
+
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 pb-12 pt-6 sm:px-6">
+    <div className="mx-auto w-full max-w-5xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
         title="লিগ টেবিল ও পরিসংখ্যান"
+        kicker="standings"
         subtitle="পয়েন্ট টেবিল, ফর্ম গাইড ও সেরা গোলদাতার তালিকা"
         icon={<Trophy className="h-5 w-5" aria-hidden />}
       />
 
       {/* Competition selector */}
-      <div className="no-scrollbar mb-4 flex gap-1.5 overflow-x-auto pb-1">
+      <div className="no-scrollbar mb-4 flex gap-2 overflow-x-auto pb-1">
         {(compsData?.competitions ?? []).map((c) => (
           <button
             key={c.id}
             onClick={() => setCompId(c.id)}
             className={cn(
-              "flex shrink-0 items-center gap-1.5 rounded-md border px-3.5 py-2 text-xs font-bold transition-colors",
+              "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold transition-all active:scale-95",
               activeId === c.id
                 ? "border-primary/50 bg-primary/15 text-primary"
-                : "border-border bg-card text-muted-foreground hover:text-foreground"
+                : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
             )}
           >
             <span
-              className="h-1.5 w-1.5 rounded-[2px]"
+              className="h-1.5 w-1.5 rounded-[3px]"
               style={{ backgroundColor: c.accentColor ?? "var(--primary)" }}
               aria-hidden
             />
@@ -72,7 +77,7 @@ export function StandingsView() {
       </div>
 
       {/* Table / scorers segmented control */}
-      <div className="mb-6 flex max-w-sm rounded-lg border border-border bg-muted/40 p-1" role="tablist" aria-label="টেবিল ভিউ">
+      <div className="mb-7 grid max-w-sm grid-cols-2 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5" role="tablist" aria-label="টেবিল ভিউ">
         {(
           [
             ["table", "পয়েন্ট টেবিল", <Trophy key="t" className="h-3.5 w-3.5" aria-hidden />],
@@ -85,8 +90,8 @@ export function StandingsView() {
             aria-selected={tab === key}
             onClick={() => setTab(key)}
             className={cn(
-              "flex flex-1 items-center justify-center gap-1.5 rounded-md py-2 text-xs font-bold transition-all",
-              tab === key ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+              "flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-all active:scale-[0.97]",
+              tab === key ? "bg-primary text-primary-foreground shadow-[0_8px_20px_-10px_var(--primary)]" : "text-muted-foreground hover:text-foreground"
             )}
           >
             {icon}
@@ -96,12 +101,12 @@ export function StandingsView() {
       </div>
 
       {isLoading ? (
-        <Skeleton className="h-96 rounded-lg" />
+        <Skeleton className="h-96 rounded-2xl" />
       ) : tab === "table" ? (
         (data?.standings?.length ?? 0) > 0 ? (
-          <>
+          <div className="reveal">
             <StandingsTable standings={data!.standings} />
-            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-card px-4 py-3 text-[11px] text-muted-foreground">
+            <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-border bg-card px-5 py-3.5 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1.5">
                 <span className="h-2.5 w-1 rounded-sm bg-fhb-gold" /> চ্যাম্পিয়ন জোন
               </span>
@@ -110,73 +115,120 @@ export function StandingsView() {
               </span>
               <span className="ml-auto border-l border-border pl-4">জ = জয় · ড = ড্র · হ = হার · গড = গোল ব্যবধান</span>
             </div>
-          </>
+          </div>
         ) : (
-          <p className="rounded-lg border border-border bg-card p-10 text-center text-sm text-muted-foreground">
-            এই টুর্নামেন্টে কাপ ফরম্যাট চলছে — লিগ টেবিল প্রযোজ্য নয়। ম্যাচ দেখুন{" "}
-            <button
-              onClick={() => navigate({ name: "scores" })}
-              className="font-bold text-primary hover:underline"
-            >
-              লাইভ স্কোর
-            </button>{" "}
-            পেজে।
-          </p>
+          <div className="edge-lit rounded-2xl border border-border bg-card p-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              এই টুর্নামেন্টে কাপ ফরম্যাট চলছে — লিগ টেবিল প্রযোজ্য নয়। ম্যাচ দেখুন{" "}
+              <button
+                onClick={() => navigate({ name: "scores" })}
+                className="font-bold text-primary hover:underline"
+              >
+                লাইভ স্কোর
+              </button>{" "}
+              পেজে।
+            </p>
+          </div>
         )
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
-          {(data?.topScorers ?? []).map((p, i) => (
-            <button
-              key={p.id}
-              onClick={() => navigate({ name: "player-detail", id: p.id })}
-              className="flex w-full items-center gap-3 border-b border-border/50 px-4 py-3.5 text-left transition-colors last:border-0 hover:bg-accent/40 sm:gap-4"
-            >
-              <span
-                className={cn(
-                  "tabular flex h-8 w-8 shrink-0 items-center justify-center rounded-md font-display text-sm font-bold",
-                  i === 0
-                    ? "bg-fhb-gold/20 text-fhb-gold"
-                    : i < 3
-                      ? "bg-primary/15 text-primary"
-                      : "bg-muted text-muted-foreground"
-                )}
-              >
-                {toBn(i + 1)}
-              </span>
-              {p.team && <TeamBadge team={p.team} size="sm" />}
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-bold text-foreground">{p.name}</p>
-                <p className="truncate text-[11px] text-muted-foreground">{p.team?.name ?? "—"}</p>
-              </div>
-              <div className="flex shrink-0 items-center gap-5 text-center">
-                <div className="w-12">
-                  <p className="tabular flex items-center justify-center gap-1 font-display text-lg font-bold text-primary">
-                    <Goal className="h-3.5 w-3.5" aria-hidden />
-                    {toBn(p.goals)}
-                  </p>
-                  <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">গোল</p>
-                </div>
-                <div className="w-12">
-                  <p className="tabular font-display text-lg font-bold text-foreground">{toBn(p.assists)}</p>
-                  <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">অ্যাসিস্ট</p>
-                </div>
-              </div>
-            </button>
-          ))}
+        <div className="reveal space-y-4">
+          {/* Podium — top scorer hero cards */}
+          {scorers.length > 0 && (
+            <div className="grid gap-3 sm:grid-cols-3">
+              {scorers.slice(0, 3).map((p, i) => (
+                <button
+                  key={p.id}
+                  onClick={() => navigate({ name: "player-detail", id: p.id })}
+                  className={cn(
+                    "card-lift edge-lit relative overflow-hidden rounded-2xl border p-5 text-left",
+                    i === 0 ? "gold-panel border-fhb-gold/30" : "border-border bg-card"
+                  )}
+                >
+                  {i === 0 && (
+                    <span className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-fhb-gold/20 font-display text-sm font-bold text-fhb-gold">
+                      {toBn(1)}
+                    </span>
+                  )}
+                  <span
+                    className={cn(
+                      "tabular flex h-8 w-8 items-center justify-center rounded-xl font-display text-sm font-bold",
+                      i === 0 ? "bg-fhb-gold/20 text-fhb-gold" : i < 3 ? "bg-primary/12 text-primary" : "bg-muted text-muted-foreground"
+                    )}
+                  >
+                    {toBn(i + 1)}
+                  </span>
+                  <div className="mt-3.5 flex items-center gap-3">
+                    {p.team && <TeamBadge team={p.team} size="lg" />}
+                    <div className="min-w-0">
+                      <p className="truncate text-sm font-bold text-foreground">{p.name}</p>
+                      <p className="truncate text-[11px] text-muted-foreground">{p.team?.name ?? "—"}</p>
+                    </div>
+                  </div>
+                  <div className="mt-4 flex items-end gap-4 border-t border-border/60 pt-3.5">
+                    <div>
+                      <p className="tabular flex items-center gap-1.5 font-display text-2xl font-bold leading-none text-primary">
+                        <Goal className="h-4 w-4" aria-hidden />
+                        {toBn(p.goals)}
+                      </p>
+                      <p className="mt-1 text-[9px] font-medium uppercase tracking-widest text-muted-foreground">গোল</p>
+                    </div>
+                    <div>
+                      <p className="tabular font-display text-2xl font-bold leading-none text-foreground">{toBn(p.assists)}</p>
+                      <p className="mt-1 text-[9px] font-medium uppercase tracking-widest text-muted-foreground">অ্যাসিস্ট</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+          {/* Rest of the list */}
+          {scorers.length > 3 && (
+            <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
+              {scorers.slice(3).map((p, i) => (
+                <button
+                  key={p.id}
+                  onClick={() => navigate({ name: "player-detail", id: p.id })}
+                  className="group flex w-full items-center gap-3.5 border-b border-border/50 px-4 py-3.5 text-left transition-colors last:border-0 hover:bg-accent/50 sm:gap-4 sm:px-5"
+                >
+                  <span className="tabular flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted font-display text-sm font-bold text-muted-foreground group-hover:text-primary">
+                    {toBn(i + 4)}
+                  </span>
+                  {p.team && <TeamBadge team={p.team} size="sm" />}
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-bold text-foreground group-hover:text-primary">{p.name}</p>
+                    <p className="truncate text-[11px] text-muted-foreground">{p.team?.name ?? "—"}</p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-6 text-center">
+                    <div className="w-12">
+                      <p className="tabular flex items-center justify-center gap-1 font-display text-lg font-bold text-primary">
+                        <Goal className="h-3.5 w-3.5" aria-hidden />
+                        {toBn(p.goals)}
+                      </p>
+                      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">গোল</p>
+                    </div>
+                    <div className="w-12">
+                      <p className="tabular font-display text-lg font-bold text-foreground">{toBn(p.assists)}</p>
+                      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">অ্যাসিস্ট</p>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {/* Cross-links */}
-      <div className="mt-8 flex flex-wrap gap-3">
+      <div className="reveal mt-9 flex flex-wrap gap-3">
         <button
           onClick={() => navigate({ name: "scores" })}
-          className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-xs font-bold text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-xs font-bold text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
         >
           <Zap className="h-4 w-4" aria-hidden /> লাইভ স্কোরে যান
         </button>
         <button
           onClick={() => navigate({ name: "players" })}
-          className="flex items-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-xs font-bold text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-xs font-bold text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
         >
           <Medal className="h-4 w-4" aria-hidden /> সব খেলোয়াড়
         </button>

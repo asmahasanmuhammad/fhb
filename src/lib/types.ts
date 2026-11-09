@@ -163,6 +163,11 @@ export type AdSlotData = {
   adCode: string | null;
   imageHint: string | null;
   linkUrl: string | null;
+  headline: string | null;
+  bodyText: string | null;
+  ctaLabel: string | null;
+  brandColor: string | null;
+  brandInitials: string | null;
   active: boolean;
   impressions: number;
   clicks: number;

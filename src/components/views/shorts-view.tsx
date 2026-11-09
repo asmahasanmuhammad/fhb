@@ -6,6 +6,7 @@ import type { Video } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
 import { LikeButton } from "@/components/football/like-button";
 import { CommentSection } from "@/components/football/comment-section";
+import { VideoPreroll } from "@/components/football/video-preroll";
 import { bnCompact, timeAgo } from "@/lib/format";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -87,6 +88,9 @@ export function ShortsView() {
             ))}
           </div>
         )}
+
+        {/* Video preroll ad — once per session, skippable */}
+        {videos.length > 0 && <VideoPreroll />}
       </div>
     </div>
   );

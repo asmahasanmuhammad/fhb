@@ -324,15 +324,20 @@ model PayoutRequest {
 // ============ ADVERTISING ============
 
 model AdSlot {
-  id          String  @id @default(cuid())
-  name        String
-  placement   String  // HEADER_BANNER | SIDEBAR | IN_FEED | VIDEO_PREROLL | MOBILE_BANNER
-  provider    String  @default("ADSENSE")
-  adCode      String? // AdSense / custom HTML snippet
-  imageHint   String? // demo creative image url
-  linkUrl     String?
-  active      Boolean @default(true)
-  impressions Int     @default(0)
-  clicks      Int     @default(0)
-  updatedAt   DateTime @updatedAt
+  id            String  @id @default(cuid())
+  name          String
+  placement     String  // HEADER_BANNER | SIDEBAR | IN_FEED | VIDEO_PREROLL | MOBILE_BANNER
+  provider      String  @default("ADSENSE")
+  adCode        String? // AdSense / custom HTML snippet
+  imageHint     String? // demo creative image url
+  linkUrl       String?
+  headline      String? // demo creative headline copy
+  bodyText      String? // demo creative supporting copy
+  ctaLabel      String? // demo creative CTA button label
+  brandColor    String? // brand accent color (hex) for the demo creative
+  brandInitials String? // 1-2 letter brand monogram
+  active        Boolean @default(true)
+  impressions   Int     @default(0)
+  clicks        Int     @default(0)
+  updatedAt     DateTime @updatedAt
 }

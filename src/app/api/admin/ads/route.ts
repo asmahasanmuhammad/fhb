@@ -10,6 +10,12 @@ const updateSchema = z.object({
   adCode: z.string().optional(),
   name: z.string().optional(),
   provider: z.string().optional(),
+  headline: z.string().optional(),
+  bodyText: z.string().optional(),
+  ctaLabel: z.string().optional(),
+  brandColor: z.string().optional(),
+  brandInitials: z.string().optional(),
+  linkUrl: z.string().optional(),
 });
 
 export async function PUT(req: NextRequest) {

@@ -307,6 +307,15 @@
 
 /* ── Motion & interaction ─────────────────── */
 
+/* Ad creative rotation fade */
+@keyframes ad-fade {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.ad-creative {
+  animation: ad-fade 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* LIVE pulse */
 @keyframes live-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }

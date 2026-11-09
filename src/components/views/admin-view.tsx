@@ -29,7 +29,7 @@ type AdminStats = {
   };
   recentUsers: Array<{ id: string; name: string; username: string; role: string; isPremium: boolean; createdAt: string }>;
   recentArticles: Array<{ id: string; title: string; category: string; views: number; status: string; createdAt: string }>;
-  ads: Array<{ id: string; name: string; placement: string; active: boolean; impressions: number; clicks: number; adCode: string | null }>;
+  ads: Array<{ id: string; name: string; placement: string; active: boolean; impressions: number; clicks: number; adCode: string | null; headline?: string | null; brandColor?: string | null; brandInitials?: string | null }>;
 };
 
 export function AdminView() {
@@ -618,12 +618,24 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
         {ads.map((ad) => (
           <div key={ad.id} className="edge-lit rounded-2xl border border-border bg-card p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <div className="min-w-0">
-                <p className="text-sm font-semibold text-foreground">{ad.name}</p>
-                <p className="tabular text-[10px] text-muted-foreground">
-                  {ad.placement} · {bnCompact(ad.impressions)} ইমপ্রেশন · {bnCompact(ad.clicks)} ক্লিক · CTR{" "}
-                  {toBn(ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0")}%
-                </p>
+              <div className="flex min-w-0 items-center gap-3">
+                <span
+                  aria-hidden
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[13px] font-bold text-white"
+                  style={{ backgroundColor: ad.brandColor || "#1E9E50" }}
+                >
+                  {(ad.brandInitials || ad.name.slice(0, 2)).trim()}
+                </span>
+                <div className="min-w-0">
+                  <p className="truncate text-sm font-semibold text-foreground">{ad.name}</p>
+                  <p className="tabular text-[10px] text-muted-foreground">
+                    {ad.placement} · {bnCompact(ad.impressions)} ইমপ্রেশন · {bnCompact(ad.clicks)} ক্লিক · CTR{" "}
+                    {toBn(ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0")}%
+                  </p>
+                  {ad.headline && (
+                    <p className="mt-1 truncate text-[11px] italic text-muted-foreground/80">“{ad.headline}”</p>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => setEditing({ id: ad.id, code: ad.adCode ?? "" })} className="rounded-md">

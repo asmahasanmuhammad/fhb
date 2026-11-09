@@ -169,7 +169,7 @@ function NewsManager() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Article | null>(null);
-  const [form, setForm] = useState({ title: "", excerpt: "", content: "", category: "BPL", coverUrl: "", featured: false, status: "PUBLISHED" });
+  const [form, setForm] = useState({ title: "", excerpt: "", content: "", category: "BFL", coverUrl: "", featured: false, status: "PUBLISHED" });
 
   const { data, isLoading } = useQuery<{ articles: Article[] }>({
     queryKey: ["admin", "news"],
@@ -218,7 +218,7 @@ function NewsManager() {
 
   const openNew = () => {
     setEditing(null);
-    setForm({ title: "", excerpt: "", content: "", category: "BPL", coverUrl: "", featured: false, status: "PUBLISHED" });
+    setForm({ title: "", excerpt: "", content: "", category: "BFL", coverUrl: "", featured: false, status: "PUBLISHED" });
     setDialogOpen(true);
   };
 
@@ -330,7 +330,7 @@ function NewsManager() {
                   className={inputCls}
                   aria-label="Category"
                 >
-                  {["BPL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"].map((c) => (
+                  {["BFL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"].map((c) => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>

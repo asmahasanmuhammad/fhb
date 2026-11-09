@@ -452,7 +452,7 @@ export function UploadView() {
               id="tags"
               value={form.tags}
               onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
-              placeholder="BPL,goals,highlights"
+              placeholder="BFL,goals,highlights"
               className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
             />
           </div>

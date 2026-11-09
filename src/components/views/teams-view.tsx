@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Match, Player, Standing, TeamRef } from "@/lib/types";
+import type { Match, Player, Standing, TeamRef, CompetitionRef } from "@/lib/types";
+import { NATIONAL_TEAM_INITIALS } from "@/lib/types";
 import { useReveal } from "@/hooks/use-reveal";
 import { TeamBadge } from "@/components/football/team-badge";
 import { MatchCard } from "@/components/football/match-card";
@@ -20,6 +21,7 @@ type TeamItem = TeamRef & {
   founded: number;
   color2: string;
   description: string | null;
+  standings?: Array<Standing & { competition: CompetitionRef }>;
   _count?: { players: number };
 };
 
@@ -35,17 +37,87 @@ export function TeamsView() {
   });
 
   const teams = data?.teams ?? [];
-  const clubs = teams.filter((t) => !["BAN", "IND", "MDV"].includes(t.initials));
-  const national = teams.filter((t) => ["BAN", "IND", "MDV"].includes(t.initials));
+  const national = teams.filter((t) => NATIONAL_TEAM_INITIALS.includes(t.initials));
+  const clubs = teams.filter((t) => !NATIONAL_TEAM_INITIALS.includes(t.initials));
+
+  const leagueOf = (t: TeamItem) => t.standings?.[0]?.competition;
+  const COUNTRY_FILTERS: Array<{ key: string; label: string }> = [
+    { key: "ALL", label: "All" },
+    { key: "Bangladesh", label: "Bangladesh" },
+    { key: "England", label: "England" },
+    { key: "Spain", label: "Spain" },
+    { key: "Italy", label: "Italy" },
+    { key: "Germany", label: "Germany" },
+    { key: "France", label: "France" },
+    { key: "NATIONAL", label: "National Teams" },
+  ];
+  const [country, setCountry] = useState("ALL");
+
+  const groups: Array<{ title: string; kicker: string; accent?: "red" | "gold"; items: TeamItem[] }> = [];
+  if (country === "ALL") {
+    const bdClubs = clubs.filter((t) => leagueOf(t)?.country === "Bangladesh");
+    const euClubs = clubs.filter((t) => leagueOf(t)?.country && leagueOf(t)!.country !== "Bangladesh");
+    if (bdClubs.length) groups.push({ title: "BFL Clubs", kicker: "bangladesh football league", items: bdClubs });
+    for (const c of ["England", "Spain", "Italy", "Germany", "France"]) {
+      const items = euClubs.filter((t) => leagueOf(t)?.country === c);
+      if (items.length) {
+        const comp = leagueOf(items[0]);
+        groups.push({ title: comp?.name ?? c, kicker: c.toLowerCase(), items });
+      }
+    }
+    const other = clubs.filter((t) => !leagueOf(t));
+    if (other.length) groups.push({ title: "More Clubs", kicker: "other competitions", items: other });
+    if (national.length) groups.push({ title: "National Teams", kicker: "international", accent: "red", items: national });
+  } else if (country === "NATIONAL") {
+    if (national.length) groups.push({ title: "National Teams", kicker: "international", accent: "red", items: national });
+  } else {
+    const items =
+      country === "Bangladesh"
+        ? clubs.filter((t) => leagueOf(t)?.country === "Bangladesh")
+        : clubs.filter((t) => leagueOf(t)?.country === country);
+    const label = COUNTRY_FILTERS.find((f) => f.key === country)?.label ?? country;
+    if (items.length) {
+      const comp = leagueOf(items[0]);
+      groups.push({ title: comp?.name ?? label, kicker: country.toLowerCase(), items });
+    }
+  }
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
         title="Clubs & Teams"
         kicker="clubs & national teams"
-        subtitle="From BPL clubs to the national team — complete profiles for everyone"
+        subtitle="From the BFL to the Premier League — 115 clubs and national teams, complete profiles for everyone"
         icon={<Users className="h-5 w-5" aria-hidden />}
       />
+
+      {/* Country filter */}
+      <div className="no-scrollbar mb-6 flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Filter by country">
+        {COUNTRY_FILTERS.map((f) => {
+          const count =
+            f.key === "ALL" ? teams.length
+            : f.key === "NATIONAL" ? national.length
+            : clubs.filter((t) => leagueOf(t)?.country === f.key).length;
+          if (f.key !== "ALL" && f.key !== "NATIONAL" && count === 0) return null;
+          return (
+            <button
+              key={f.key}
+              role="tab"
+              aria-selected={country === f.key}
+              onClick={() => setCountry(f.key)}
+              className={cn(
+                "flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold transition-all active:scale-95",
+                country === f.key
+                  ? "border-primary/50 bg-primary/15 text-primary"
+                  : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
+              )}
+            >
+              {f.label}
+              <span className="tabular rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold">{fmtNum(count)}</span>
+            </button>
+          );
+        })}
+      </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
@@ -55,26 +127,18 @@ export function TeamsView() {
         </div>
       ) : (
         <>
-          <SectionHeader title="BPL Clubs" kicker="bangladesh premier league" />
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {clubs.map((t) => (
-              <div key={t.id} className="reveal">
-                <TeamCard team={t} onClick={() => navigate({ name: "team-detail", id: t.id })} />
-              </div>
-            ))}
-          </div>
-          {national.length > 0 && (
-            <div className="mt-12">
-              <SectionHeader title="National Team" kicker="international" accent="red" />
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {national.map((t) => (
+          {groups.map((g) => (
+            <div key={g.title} className="mt-8 first:mt-0">
+              <SectionHeader title={g.title} kicker={g.kicker} accent={g.accent} />
+              <div className="mt-4 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                {g.items.map((t) => (
                   <div key={t.id} className="reveal">
                     <TeamCard team={t} onClick={() => navigate({ name: "team-detail", id: t.id })} />
                   </div>
                 ))}
               </div>
             </div>
-          )}
+          ))}
         </>
       )}
     </div>
@@ -168,7 +232,7 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
   const filteredPlayers = squadFilter === "ALL" ? players : players.filter((p) => p.position === squadFilter);
   const upcoming = matches.filter((m) => m.status === "SCHEDULED").reverse();
   const finished = matches.filter((m) => m.status !== "SCHEDULED");
-  const isNational = ["BAN", "IND", "MDV"].includes(team.initials);
+  const isNational = NATIONAL_TEAM_INITIALS.includes(team.initials);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 pb-14 pt-5 sm:px-6">

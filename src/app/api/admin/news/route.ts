@@ -22,7 +22,7 @@ const articleSchema = z.object({
   title: z.string().trim().min(5, "Headline must be at least 5 characters").max(160),
   excerpt: z.string().trim().min(10, "Excerpt must be at least 10 characters").max(400),
   content: z.string().trim().min(20, "Article body must be at least 20 characters"),
-  category: z.enum(["BPL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"]),
+  category: z.enum(["BFL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"]),
   coverUrl: z.string().trim().optional().nullable(),
   status: z.enum(["DRAFT", "PUBLISHED"]).default("PUBLISHED"),
   featured: z.boolean().default(false),

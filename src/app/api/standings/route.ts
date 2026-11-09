@@ -7,21 +7,24 @@ export async function GET(req: NextRequest) {
     const competitionId = req.nextUrl.searchParams.get("competitionId");
     let compId = competitionId;
     if (!compId) {
-      const bpl = await db.competition.findFirst({ where: { shortName: "BPL" } });
-      compId = bpl?.id;
+      const bfl = await db.competition.findFirst({ where: { shortName: "BFL" } });
+      compId = bfl?.id;
     }
     if (!compId) return ok({ standings: [], topScorers: [] });
 
-    const standings = await db.standing.findMany({
-      where: { competitionId: compId },
-      include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true } } },
-      orderBy: { position: "asc" },
-    });
+    const [standings, competition] = await Promise.all([
+      db.standing.findMany({
+        where: { competitionId: compId },
+        include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true } } },
+        orderBy: { position: "asc" },
+      }),
+      db.competition.findUnique({ where: { id: compId } }),
+    ]);
 
-    const competition = await db.competition.findUnique({ where: { id: compId } });
-
+    // Top scorers scoped to the clubs in this competition
+    const teamIds = standings.map((s) => s.teamId);
     const topScorers = await db.player.findMany({
-      where: { goals: { gt: 0 } },
+      where: { teamId: { in: teamIds }, goals: { gt: 0 } },
       orderBy: { goals: "desc" },
       take: 10,
       select: {

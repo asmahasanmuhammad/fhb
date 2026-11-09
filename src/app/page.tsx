@@ -13,6 +13,7 @@ import { TeamsView, TeamDetailView } from "@/components/views/teams-view";
 import { PlayersView, PlayerDetailView } from "@/components/views/players-view";
 import { CompetitionsView, CompetitionDetailView } from "@/components/views/competitions-view";
 import { ShortsView, UploadView } from "@/components/views/shorts-view";
+import { LiveTvView } from "@/components/views/live-tv-view";
 import { CommunityView } from "@/components/views/community-view";
 import { PremiumView } from "@/components/views/premium-view";
 import { AuthView } from "@/components/views/auth-view";
@@ -31,7 +32,7 @@ export default function Page() {
   useEffect(() => {
     const sp = new URLSearchParams(window.location.search);
     const v = sp.get("view");
-    if (v === "shorts") useAppStore.getState().navigate({ name: "shorts" });
+    if (v === "shorts" || v === "live-tv") useAppStore.getState().navigate({ name: v });
   }, []);
 
   const renderView = () => {
@@ -40,6 +41,8 @@ export default function Page() {
         return <HomeView />;
       case "scores":
         return <ScoresView />;
+      case "live-tv":
+        return <LiveTvView />;
       case "match-detail":
         return <MatchDetailView matchId={view.id} />;
       case "standings":

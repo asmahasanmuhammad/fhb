@@ -14,7 +14,7 @@ import { Database } from "bun:sqlite";
 
 const DB_PATH = "/home/z/my-project/db/custom.db";
 const PORT = 3003;
-const TICK_MS = 8000; // simulation tick
+const TICK_MS = 15000; // simulation tick (≈1 match-minute per tick → a full match ≈ 22 min real time)
 const DISCOVER_MS = 15000; // DB re-scan interval
 
 const db = new Database(DB_PATH, { create: true });
@@ -133,8 +133,24 @@ function finishMatch(sim: SimMatch) {
   }
   pushEvent(sim, `⚽ Full-Time: ${sim.homeTeam.name} ${sim.homeScore} - ${sim.awayScore} ${sim.awayTeam.name}`);
   simulations.delete(sim.id);
-  // requeue: for demo continuity, admin can re-set LIVE from dashboard
+  // Demo continuity: arm the next scheduled fixture of the same competition
+  // so the platform always has live matches for the client demo.
+  const compId = (db.query(`SELECT competitionId FROM Match WHERE id = ?`).get(sim.id) as any)?.competitionId as string | undefined;
+  setTimeout(() => armNextLiveMatch(compId), 5000);
   console.log(`[live] Finished: ${sim.homeTeam.name} ${sim.homeScore}-${sim.awayScore} ${sim.awayTeam.name}`);
+}
+
+function armNextLiveMatch(competitionId?: string) {
+  try {
+    const next = competitionId
+      ? (db.query(`SELECT id, homeTeamId, awayTeamId FROM Match WHERE competitionId = ? AND status = 'SCHEDULED' AND kickoff <= datetime('now', '+7 days') ORDER BY kickoff ASC LIMIT 1`).get(competitionId) as any)
+      : (db.query(`SELECT id, homeTeamId, awayTeamId FROM Match WHERE status = 'SCHEDULED' AND kickoff <= datetime('now', '+7 days') ORDER BY kickoff ASC LIMIT 1`).get() as any);
+    if (!next) return;
+    db.query(`UPDATE Match SET status = 'LIVE', minute = 1, period = '1H', homeScore = 0, awayScore = 0, kickoff = datetime('now', '-2 minutes') WHERE id = ?`).run(next.id);
+    console.log(`[live] Armed next live match: ${next.id}`);
+  } catch (e) {
+    console.error("[live] armNextLiveMatch error:", e);
+  }
 }
 
 function pickScorer(sim: SimMatch, side: "home" | "away"): string {
@@ -169,8 +185,8 @@ function tick() {
   let changed = false;
   for (const sim of [...simulations.values()]) {
     if (sim.period === "FT") continue;
-    // advance clock (1 tick ≈ 1-2 minutes)
-    sim.minute = Math.min(90, sim.minute + (Math.random() > 0.4 ? 2 : 1));
+    // advance clock (1 tick ≈ 1 minute)
+    sim.minute = Math.min(90, sim.minute + 1);
     changed = true;
 
     if (sim.minute >= 45 && sim.period === "1H") {

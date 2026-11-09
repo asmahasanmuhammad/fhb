@@ -17,7 +17,8 @@ export function Footer() {
 
   const explore: Array<{ label: string; view: View }> = [
     { label: "Live Scores", view: { name: "scores" } },
-    { label: "League Table", view: { name: "standings" } },
+    { label: "Live TV", view: { name: "live-tv" } },
+    { label: "League Tables", view: { name: "standings" } },
     { label: "Football News", view: { name: "news" } },
     { label: "Teams", view: { name: "teams" } },
     { label: "Players", view: { name: "players" } },
@@ -73,9 +74,9 @@ export function Footer() {
               </div>
             </div>
             <p className="mt-5 max-w-md text-[13px] leading-relaxed text-muted-foreground">
-              Our mission — to grow the game of football in Bangladesh, deliver modern content and connect the nation's
-              A powerful fan and community network built by football lovers. From live scores to
-              shorts — everything on one platform.
+              Our mission — to grow the game of football in Bangladesh, deliver modern content and
+              connect the nation through one powerful platform. A fan and community network built by
+              football lovers: from live scores to shorts, everything in one place.
             </p>
 
             {/* Newsletter */}

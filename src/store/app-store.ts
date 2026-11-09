@@ -6,6 +6,7 @@ import type { SafeUser } from "@/lib/types";
 export type View =
   | { name: "home" }
   | { name: "scores" }
+  | { name: "live-tv" }
   | { name: "standings" }
   | { name: "news" }
   | { name: "news-detail"; id: string }

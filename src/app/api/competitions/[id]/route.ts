@@ -25,12 +25,31 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         orderBy: { kickoff: "desc" },
         take: 40,
       }),
-      db.player.findMany({
-        where: { goals: { gt: 0 } },
-        orderBy: { goals: "desc" },
-        take: 8,
-        include: { team: { select: { id: true, name: true, initials: true, color: true } } },
-      }),
+      (async () => {
+        // scorers from the clubs that compete in this competition
+        const compTeamIds = await db.standing.findMany({
+          where: { competitionId: id },
+          select: { teamId: true },
+        });
+        const ids = compTeamIds.map((s) => s.teamId);
+        if (ids.length === 0) {
+          const compTeams = await db.match.findMany({
+            where: { competitionId: id },
+            select: { homeTeamId: true, awayTeamId: true },
+            take: 60,
+          });
+          compTeams.forEach((m) => {
+            ids.push(m.homeTeamId, m.awayTeamId);
+          });
+        }
+        if (ids.length === 0) return [];
+        return db.player.findMany({
+          where: { teamId: { in: [...new Set(ids)] }, goals: { gt: 0 } },
+          orderBy: { goals: "desc" },
+          take: 8,
+          include: { team: { select: { id: true, name: true, initials: true, color: true } } },
+        });
+      })(),
     ]);
 
     return ok({ competition, standings, matches, topScorers });

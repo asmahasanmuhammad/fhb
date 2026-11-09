@@ -22,11 +22,12 @@ import { cn } from "@/lib/utils";
 import {
   Trophy, Calendar, Newspaper, Users, Video, Shield, LayoutDashboard, LogOut, User2,
   Crown, Upload, Wallet, Menu, X, ChevronRight, Radio, Facebook, Youtube,
-  Twitter, Instagram, Zap, Flame, Heart,
+  Twitter, Instagram, Zap, Flame, Heart, Tv,
 } from "lucide-react";
 
 const NAV_ITEMS: Array<{ label: string; view: View; icon: React.ReactNode }> = [
   { label: "Live Scores", view: { name: "scores" }, icon: <Zap className="h-4 w-4" aria-hidden /> },
+  { label: "Live TV", view: { name: "live-tv" }, icon: <Tv className="h-4 w-4" aria-hidden /> },
   { label: "Standings", view: { name: "standings" }, icon: <Trophy className="h-4 w-4" aria-hidden /> },
   { label: "News", view: { name: "news" }, icon: <Newspaper className="h-4 w-4" aria-hidden /> },
   { label: "Teams", view: { name: "teams" }, icon: <Users className="h-4 w-4" aria-hidden /> },

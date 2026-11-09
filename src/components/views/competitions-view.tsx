@@ -40,7 +40,7 @@ export function CompetitionsView() {
       <PageHeader
         title="Tournaments & Competitions"
         kicker="competitions"
-        subtitle="From the BPL to the SAFF Championship — every competition in one place"
+        subtitle="From the BFL to world football — every competition in one place"
         icon={<Shield className="h-5 w-5" aria-hidden />}
       />
 

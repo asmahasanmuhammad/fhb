@@ -186,12 +186,15 @@ export type MembershipPlan = {
 
 export const CATEGORY_LABELS: Record<string, string> = {
   ALL: "All",
-  BPL: "BPL",
+  BFL: "Bangladesh Football League",
   NATIONAL: "National Team",
   TRANSFER: "Transfer",
   INTERNATIONAL: "International",
   OPINION: "Opinion",
 };
+
+/** Team initials that mark national teams (used for grouping/filters). */
+export const NATIONAL_TEAM_INITIALS = ["BAN", "IND", "MDV", "NEP", "ESP", "ARG"];
 
 export const POSITION_LABELS: Record<string, string> = {
   GK: "Goalkeeper",

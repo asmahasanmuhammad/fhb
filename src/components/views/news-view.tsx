@@ -37,7 +37,7 @@ export function NewsView() {
       <PageHeader
         title="Football News & Transfers"
         kicker="newsroom"
-        subtitle="BPL, national team and international — all updates in one place"
+        subtitle="BFL, national team and international — all updates in one place"
         icon={<Newspaper className="h-5 w-5" aria-hidden />}
       />
 

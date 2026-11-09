@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { formatKickoff, fmtNum, fmtCompact } from "@/lib/format";
 import {
   Zap, Newspaper, Video as VideoIcon, Radio, Flame, Play, MapPin,
-  CalendarDays, ChevronRight, Trophy, Users, Crown, Goal, ArrowRight,
+  CalendarDays, ChevronRight, Trophy, Users, Crown, Goal, ArrowRight, Tv,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -30,7 +30,7 @@ export function HomeView() {
   const { data: matchesData, isLoading: matchesLoading } = useQuery<{ matches: Match[] }>({
     queryKey: ["matches", "home"],
     queryFn: async () => {
-      const res = await fetch("/api/matches?status=ALL&days=45&limit=60");
+      const res = await fetch("/api/matches?status=ALL&days=60&limit=120");
       return res.json().then((j) => j.data);
     },
   });
@@ -95,8 +95,8 @@ export function HomeView() {
               </span>
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-              From the BPL to the SAFF Championship — every goal, every transfer, every moment. Fan
-              Join the community, share your takes and earn as a creator.
+              From the BFL to the Champions League — every goal, every transfer, every moment
+              from home and abroad. Join the community, share your takes and earn as a creator.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <button
@@ -265,6 +265,33 @@ export function HomeView() {
         </div>
       </section>
 
+      {/* ═══════════ LIVE TV PROMO ═══════════ */}
+      <section className="reveal mt-12" aria-label="Live TV">
+        <button
+          onClick={() => navigate({ name: "live-tv" })}
+          className="noise stadium-panel card-lift group relative flex w-full flex-col gap-5 overflow-hidden rounded-2xl border border-border p-5 text-left sm:flex-row sm:items-center sm:p-6"
+        >
+          <span className="pitch-pattern absolute inset-0" aria-hidden />
+          <span className="relative flex h-13 w-13 h-[52px] w-[52px] shrink-0 items-center justify-center rounded-2xl bg-fhb-red/15 text-fhb-red">
+            <Tv className="h-6 w-6" aria-hidden />
+          </span>
+          <span className="relative min-w-0 flex-1">
+            <span className="flex items-center gap-2">
+              <span className="text-base font-bold text-foreground sm:text-lg">Live TV — 13 channels, multi-server streaming</span>
+              <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-label="Live" />
+            </span>
+            <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
+              Watch BFL nights, European matchdays and 24/7 football channels — switch servers instantly,
+              never miss kick-off.
+            </span>
+          </span>
+          <span className="relative flex h-11 shrink-0 items-center gap-2 self-start rounded-full bg-fhb-red px-5 text-xs font-bold text-white transition-transform group-hover:scale-[1.04] sm:self-center">
+            <Play className="h-3.5 w-3.5 fill-white" aria-hidden />
+            Watch now
+          </span>
+        </button>
+      </section>
+
       {/* ═══════════ NEWS — editorial magazine grid ═══════════ */}
       <section className="reveal mt-14" aria-label="Latest news">
         <SectionHeader title="Football News & Transfers" kicker="latest stories" icon={<Newspaper className="h-4 w-4" aria-hidden />} actionLabel="All News" actionView={{ name: "news" }} />
@@ -342,7 +369,7 @@ export function HomeView() {
       {/* ═══════════ STANDINGS + SIDEBAR ═══════════ */}
       <section className="reveal mt-14 grid gap-6 lg:grid-cols-3" aria-label="League table">
         <div className="lg:col-span-2">
-          <SectionHeader title="BPL Points Table" kicker="league table" icon={<Trophy className="h-4 w-4" aria-hidden />} actionLabel="Full Table" actionView={{ name: "standings" }} />
+          <SectionHeader title="BFL Points Table" kicker="bangladesh football league" icon={<Trophy className="h-4 w-4" aria-hidden />} actionLabel="Full Table" actionView={{ name: "standings" }} />
           <StandingsTable standings={standings} compact limit={6} />
         </div>
         <div className="space-y-5">
@@ -388,7 +415,7 @@ export function HomeView() {
           <span className="min-w-0 flex-1">
             <span className="block text-base font-bold text-foreground sm:text-lg">Fan Community</span>
             <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
-              community — share your takes and join the discussion, a home for Bangladesh's football fans.
+              A home for Bangladesh's football fans — share your takes and join the discussion on every matchday.
             </span>
           </span>
           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1.5 group-hover:text-primary" aria-hidden />

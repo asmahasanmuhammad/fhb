@@ -112,11 +112,29 @@ export function LogoMark({ size = 9 }: { size?: number }) {
 }
 
 export function Header() {
-  const { view, navigate, user, logout } = useAppStore();
+  const { view, navigate, user, logout, language, setLanguage } = useAppStore();
   const live = useLiveScores();
   const { toast } = useToast();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [bstTime, setBstTime] = useState("");
+
+  useEffect(() => {
+    const updateTime = () => {
+      setBstTime(
+        new Date().toLocaleTimeString("en-US", {
+          timeZone: "Asia/Dhaka",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        })
+      );
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -150,6 +168,45 @@ export function Header() {
           : "border-border/60 bg-background/80 backdrop-blur-lg"
       )}
     >
+      {/* ── Top Utility Strip: BST Time, FIFA Rank, Edition & Radio ── */}
+      <div className="bg-[#030712] border-b border-white/[0.08] px-4 sm:px-6 py-1.5 text-[11px] text-slate-400">
+        <div className="mx-auto max-w-[1320px] flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1.5 font-mono text-emerald-400 font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{bstTime || "BST --:--"} (Dhaka)</span>
+            </div>
+            <span className="hidden sm:inline text-white/20">|</span>
+            <div className="hidden sm:flex items-center gap-1.5 text-slate-300">
+              <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">FIFA RANK</span>
+              <span className="font-mono font-bold text-white">#183</span>
+              <span className="text-[10px] text-emerald-400 font-bold">▲ +2</span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Live Audio / Radio soundwave */}
+            <div className="hidden md:flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-rose-950/60 border border-rose-500/30 text-rose-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
+              <span className="font-bold text-[10px] tracking-wider uppercase">FHB Radio Live</span>
+              <div className="flex items-end gap-0.5 h-3">
+                <span className="w-0.5 bg-rose-400 soundwave-bar-1" />
+                <span className="w-0.5 bg-rose-400 soundwave-bar-2" />
+                <span className="w-0.5 bg-rose-400 soundwave-bar-3" />
+                <span className="w-0.5 bg-rose-400 soundwave-bar-4" />
+              </div>
+            </div>
+
+            {/* Language Switcher */}
+            <button
+              onClick={() => setLanguage(language === "bn" ? "en" : "bn")}
+              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-white/[0.1] text-[10px] font-bold text-slate-200 transition-colors cursor-pointer"
+            >
+              <span>{language === "bn" ? "🇧🇩 বাংলা" : "🇬🇧 English"}</span>
+            </button>
+          </div>
+        </div>
+      </div>
       {/* ── Live score ticker ── */}
       {liveCount > 0 && (
         <div className="relative flex h-8 items-center overflow-hidden border-b border-border/50 bg-card/60">

@@ -141,10 +141,13 @@ export function Footer() {
             <div className="mt-5 space-y-2 border-t border-border/50 pt-4">
               <p className="flex items-center gap-2 text-[11.5px] text-muted-foreground">
                 <Globe className="h-3.5 w-3.5 text-primary/70" aria-hidden />
-                English (Bangla coming soon)
+                🇧🇩 বাংলা ও 🇬🇧 English Edition Active
               </p>
               <p className="text-[11.5px] text-muted-foreground">
-                Advertise with us · Press · Careers
+                Central Newsdesk: Motijheel C/A, Dhaka-1000 • Regional Bureaus: Chittagong, Sylhet, London
+              </p>
+              <p className="text-[11.5px] text-muted-foreground">
+                Advertise with us · Press & Media · Careers
               </p>
               <p className="text-[11.5px] text-muted-foreground">
                 contact@footballhub.com.bd

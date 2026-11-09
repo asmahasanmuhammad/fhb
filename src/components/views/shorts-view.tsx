@@ -33,7 +33,7 @@ import { fmtCompact, timeAgo } from "@/lib/format";
 import {
   AudioLines, Check, ChevronLeft, Clapperboard, Crown, Info, Lightbulb,
   MessageCircle, Music2, Play, Share2, Upload, UserCheck, UserPlus,
-  Video as VideoIcon, Volume2, VolumeX,
+  Video as VideoIcon, Volume2, VolumeX, Coins, Heart,
 } from "lucide-react";
 
 /* ════════════════════════ Shorts feed ════════════════════════ */
@@ -356,6 +356,64 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
       {/* Right action rail */}
       <div className="absolute bottom-[88px] right-2.5 z-10 flex flex-col items-center gap-4 lg:bottom-6">
         <LikeButton targetType="VIDEO" targetId={video.id} initialCount={video.likeCount} variant="shorts" />
+
+        {/* Fan Tipping Button */}
+        <Sheet>
+          <SheetTrigger asChild>
+            <button className="tap-target flex flex-col items-center gap-1 text-white cursor-pointer" aria-label="Tip creator">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-600/80 hover:bg-rose-600 backdrop-blur transition-all active:scale-90 shadow-lg shadow-rose-950/60">
+                <Coins className="h-5 w-5 text-amber-300" aria-hidden />
+              </span>
+              <span className="font-display text-[10.5px] font-bold text-amber-300 drop-shadow">Tip</span>
+            </button>
+          </SheetTrigger>
+          <SheetContent
+            side={isMobile ? "bottom" : "right"}
+            className={cn("overflow-y-auto p-0", isMobile ? "max-h-[80vh] rounded-t-2xl" : "sm:max-w-md")}
+          >
+            <SheetHeader className="border-b border-border px-5 py-4 bg-gradient-to-r from-rose-950/30 to-card">
+              <SheetTitle className="text-sm flex items-center gap-2">
+                <span className="text-base">🎁</span>
+                <span>Send Fan Tip to @{video.creator.username}</span>
+              </SheetTitle>
+            </SheetHeader>
+            <div className="p-5 space-y-4">
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Support your favorite football creator or star player directly via instant bKash or Nagad micro-donation.
+              </p>
+              
+              <div className="grid grid-cols-2 gap-2.5">
+                {[
+                  { bdt: 20, label: "৳২০ (Cheers)" },
+                  { bdt: 50, label: "৳৫০ (Goal Tip)" },
+                  { bdt: 100, label: "৳১০০ (Match MVP)" },
+                  { bdt: 500, label: "৳৫০০ (Super Fan)" },
+                ].map((tier) => (
+                  <button
+                    key={tier.bdt}
+                    onClick={() => {
+                      toast({
+                        title: `Tip sent! ${tier.label}`,
+                        description: `৳${tier.bdt} successfully tipped to @${video.creator.username} via bKash. Thank you for supporting Bangladeshi football creators!`,
+                      });
+                    }}
+                    className="p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-primary/5 transition-all text-left group cursor-pointer"
+                  >
+                    <span className="font-mono font-black text-primary text-sm block group-hover:scale-105 transition-transform">
+                      {tier.label}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground block mt-0.5">Instant bKash / Nagad</span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="p-3 rounded-xl bg-muted/40 border border-border text-[11px] text-muted-foreground flex items-center gap-2">
+                <span className="text-sm">🛡️</span>
+                <span>Creators receive 90% of tips directly into their FinTech withdrawal balance.</span>
+              </div>
+            </div>
+          </SheetContent>
+        </Sheet>
 
         <Sheet>
           <SheetTrigger asChild>

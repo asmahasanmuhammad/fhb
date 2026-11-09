@@ -48,6 +48,13 @@ dev.log
 dev.out.log
 test
 prompt
+*.tar
+*.zip
+data/*.db
+data/*.db-wal
+data/*.db-shm
+db/*.db-wal
+db/*.db-shm
 
 server.log
 # Skills directory

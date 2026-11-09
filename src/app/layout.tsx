@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Archivo } from "next/font/google";
+import { Inter, Archivo, Barlow_Condensed, Hind_Siliguri } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/components/providers/query-provider";
@@ -15,6 +15,18 @@ const archivo = Archivo({
   variable: "--font-display",
   subsets: ["latin"],
   weight: ["500", "600", "700", "800", "900"],
+});
+
+const barlowCondensed = Barlow_Condensed({
+  variable: "--font-condensed",
+  subsets: ["latin"],
+  weight: ["600", "700", "800", "900"],
+});
+
+const hindSiliguri = Hind_Siliguri({
+  variable: "--font-bangla",
+  subsets: ["bengali"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -53,7 +65,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${inter.variable} ${archivo.variable} antialiased bg-background text-foreground`}
+        className={`${inter.variable} ${archivo.variable} ${barlowCondensed.variable} ${hindSiliguri.variable} antialiased bg-background text-foreground`}
       >
         <QueryProvider>
           <LiveScoreProvider>{children}</LiveScoreProvider>

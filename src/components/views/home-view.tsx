@@ -15,6 +15,7 @@ import { SectionHeader } from "@/components/football/section-header";
 import { TeamCrest } from "@/components/football/team-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatKickoff, fmtNum, fmtCompact, timeAgo } from "@/lib/format";
+import { TacticalPitch } from "@/components/football/tactical-pitch";
 import {
   Zap, Newspaper, Video as VideoIcon, Flame, Play, ChevronRight,
   Trophy, Users, Crown, Goal, Tv, Clock, CalendarDays,
@@ -105,6 +106,25 @@ export function HomeView() {
           </div>
         )}
       </section>
+
+      {/* ═══════════ 2D TACTICAL PITCH COMMAND CENTER ═══════════ */}
+      {heroMatch && (
+        <section className="reveal mt-8 space-y-3" aria-label="Tactical Command Center">
+          <SectionHeader
+            title="Matchday Tactical Pitch & Formation Radar"
+            kicker="tactical command"
+            icon={<Trophy className="h-3.5 w-3.5 text-primary" />}
+            actionLabel="Match Centre (1080p Stream)"
+            actionView={{ name: "match-detail", id: heroMatch.id }}
+          />
+          <TacticalPitch
+            homeTeam={heroMatch.homeTeam}
+            awayTeam={heroMatch.awayTeam}
+            homeFormation="4-3-3"
+            awayFormation="4-2-3-1"
+          />
+        </section>
+      )}
 
       {/* ═══════════ MATCHDAY — date rail + dense rows + side rail ═══════════ */}
       <section className="reveal mt-8 grid gap-6 lg:grid-cols-12" aria-label="Matchday scores">

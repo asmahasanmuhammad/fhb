@@ -14,6 +14,7 @@ import {
   BadgeCheck, ChevronDown, CalendarClock, RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import confetti from "canvas-confetti";
 
 /* ════════════════════════════════════════════════════════════════
    PremiumView — membership & monetization page
@@ -72,7 +73,14 @@ export function PremiumView() {
     },
     onSuccess: (data) => {
       refreshUser();
-      toast({ title: "Subscription successful", description: data.message });
+      try {
+        confetti({
+          particleCount: 120,
+          spread: 80,
+          origin: { y: 0.6 },
+        });
+      } catch (err) {}
+      toast({ title: "Subscription successful! 🏆", description: data.message });
     },
     onError: (e: Error) => toast({ title: "Subscription failed", description: e.message, variant: "destructive" }),
   });

@@ -17,7 +17,9 @@ import { formatKickoff, fmtNum } from "@/lib/format";
 import {
   Activity, ArrowLeft, ArrowLeftRight, CalendarDays, CalendarX, ChevronRight, Clock,
   FileText, Flag, Goal, ListOrdered, MapPin, PlayCircle, Table2, Timer, Trophy, Tv, Zap,
+  Radio, Signal, Headphones, Maximize2, Settings, Volume2, VolumeX, Play, Pause, Flame, BarChart2,
 } from "lucide-react";
+import { TacticalPitch } from "@/components/football/tactical-pitch";
 
 /* ════════════════════════════════════════════════════════════════
    ScoresView — FotMob-style match centre
@@ -484,6 +486,22 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
 
   const isScheduled = !liveData && data?.match?.status === "SCHEDULED";
 
+  // Subtab navigation in Match Centre
+  const [matchSubTab, setMatchSubTab] = useState<"stream" | "pitch" | "timeline" | "stats" | "info">("pitch");
+  const [streamPlaying, setStreamPlaying] = useState(true);
+  const [streamMuted, setStreamMuted] = useState(false);
+  const [cameraAngle, setCameraAngle] = useState<"main" | "tactical" | "goal">("main");
+  const [commentaryLang, setCommentaryLang] = useState<"bn" | "en">("bn");
+  const [streamServer, setStreamServer] = useState("Server 1 (BDIX Dhaka 60FPS)");
+  const streamVideoRef = useRef<HTMLVideoElement | null>(null);
+
+  // Auto switch to stream if live
+  useEffect(() => {
+    if (status === "LIVE") {
+      setMatchSubTab("stream");
+    }
+  }, [status]);
+
   // Ticking clock for the kick-off countdown (client only)
   const [nowMs, setNowMs] = useState<number | null>(null);
   useEffect(() => {
@@ -647,81 +665,207 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
         </div>
       </section>
 
-      {/* ── Timeline (live + finished) OR countdown + watch (scheduled) ── */}
-      {status === "SCHEDULED" ? (
-        <>
-          <section className="reveal mt-6" aria-label="Kick-off countdown">
-            <div className="overflow-hidden rounded-xl border border-border bg-card">
-              <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-                <Timer className="h-3.5 w-3.5 text-primary" aria-hidden />
-                Countdown to kick-off
-              </p>
-              {countdown ? (
-                <div className="grid grid-cols-4 divide-x divide-border/60">
-                  {(
-                    [
-                      ["Days", countdown.d],
-                      ["Hours", countdown.h],
-                      ["Mins", countdown.m],
-                      ["Secs", countdown.s],
-                    ] as const
-                  ).map(([label, value]) => (
-                    <div key={label} className="px-1 py-5 text-center sm:py-6">
-                      <p className="tabular font-display text-[1.75rem] font-bold leading-none text-foreground sm:text-3xl">
-                        {String(value).padStart(2, "0")}
-                      </p>
-                      <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                        {label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : nowMs === null ? (
-                <div className="grid grid-cols-4 divide-x divide-border/60" aria-hidden>
-                  {["Days", "Hours", "Mins", "Secs"].map((label) => (
-                    <div key={label} className="px-1 py-5 text-center sm:py-6">
-                      <p className="tabular font-display text-[1.75rem] font-bold leading-none text-muted-foreground/50 sm:text-3xl">
-                        --
-                      </p>
-                      <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
-                        {label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="px-4 py-6 text-center text-sm font-semibold text-foreground">
-                  Kick-off imminent — teams are out on the pitch
-                </p>
-              )}
-            </div>
-          </section>
+      {/* ── Match Centre Sub-tabs: Stream, 2D Pitch, Timeline, Stats, Info ── */}
+      <div className="reveal mt-6 flex items-center justify-between overflow-x-auto no-scrollbar border-b border-border/80 pb-2 gap-1.5 bg-card/40 p-1.5 rounded-xl border">
+        {[
+          { id: "stream", label: "HD Live Stream", icon: <Tv className="h-3.5 w-3.5" />, live: status === "LIVE" },
+          { id: "pitch", label: "2D Tactical Pitch", icon: <Activity className="h-3.5 w-3.5 text-emerald-400" /> },
+          { id: "timeline", label: "Timeline", icon: <ListOrdered className="h-3.5 w-3.5" /> },
+          { id: "stats", label: "Match Stats", icon: <BarChart2 className="h-3.5 w-3.5" /> },
+          { id: "info", label: "Match Info", icon: <MapPin className="h-3.5 w-3.5" /> },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => setMatchSubTab(tab.id as typeof matchSubTab)}
+            className={cn(
+              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer",
+              matchSubTab === tab.id
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-white/[0.04]"
+            )}
+          >
+            {tab.icon}
+            <span>{tab.label}</span>
+            {tab.live && (
+              <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red ml-1" />
+            )}
+          </button>
+        ))}
+      </div>
 
-          <section className="reveal mt-4" aria-label="Where to watch">
-            <div className="flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3.5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex min-w-0 items-center gap-3">
-                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-primary">
-                  <Tv className="h-4 w-4" aria-hidden />
-                </span>
-                <div className="min-w-0">
-                  <p className="text-[13px] font-semibold text-foreground">Where to watch</p>
-                  <p className="truncate text-[11.5px] text-muted-foreground">
-                    Live coverage on FHB Live TV, free for registered members
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => navigate({ name: "live-tv" })}
-                className="sheen flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 text-[11.5px] font-bold text-primary-foreground transition-opacity hover:opacity-90"
-              >
-                Open Live TV
-                <ChevronRight className="h-3 w-3" aria-hidden />
-              </button>
+      {/* ── Subtab 1: HD Live Stream & Broadcast Director ── */}
+      {matchSubTab === "stream" && (
+        <section className="reveal mt-4 space-y-4" aria-label="HD Live Broadcast Simulator">
+          <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-black border border-white/[0.08] shadow-2xl group">
+            <video
+              ref={streamVideoRef}
+              src={
+                cameraAngle === "main"
+                  ? "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                  : cameraAngle === "tactical"
+                  ? "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyBlazes.mp4"
+                  : "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+              }
+              autoPlay
+              loop
+              muted={streamMuted}
+              playsInline
+              className="w-full h-full object-cover"
+            />
+
+            {/* Live TV broadcast overlay badges */}
+            <div className="absolute top-3 left-3 flex items-center gap-2">
+              <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-600 text-white font-black text-[10px] uppercase tracking-wider animate-pulse">
+                <span className="w-1.5 h-1.5 rounded-full bg-white" />
+                <span>LIVE 1080P HD</span>
+              </span>
+              <span className="bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-emerald-400 font-bold border border-white/10">
+                60 FPS • BDIX
+              </span>
             </div>
-          </section>
-        </>
-      ) : (
-        <section className="reveal mt-6" aria-label="Match events">
+
+            {/* Stream playback overlay controls */}
+            <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-center justify-between text-white">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    if (streamVideoRef.current) {
+                      if (streamPlaying) {
+                        streamVideoRef.current.pause();
+                        setStreamPlaying(false);
+                      } else {
+                        streamVideoRef.current.play();
+                        setStreamPlaying(true);
+                      }
+                    }
+                  }}
+                  className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
+                >
+                  {streamPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                </button>
+                <button
+                  onClick={() => setStreamMuted(!streamMuted)}
+                  className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
+                >
+                  {streamMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                </button>
+                <span className="text-[11px] font-mono font-bold text-slate-300">
+                  {m.homeTeam.initials} {fmtNum(homeScore ?? 0)} - {fmtNum(awayScore ?? 0)} {m.awayTeam.initials} ({period ?? "FT"})
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    if (streamVideoRef.current?.requestFullscreen) {
+                      streamVideoRef.current.requestFullscreen();
+                    }
+                  }}
+                  className="p-1.5 rounded-lg bg-white/20 hover:bg-white/30 transition-colors"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Director Controls: Camera Angle & Audio Commentary */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* Camera Switcher */}
+            <div className="p-3.5 rounded-xl border border-border bg-card">
+              <span className="text-[10px] font-black uppercase text-muted-foreground tracking-wider block mb-2 flex items-center gap-1.5">
+                <Signal className="w-3.5 h-3.5 text-primary" />
+                <span>Camera Angle Switcher:</span>
+              </span>
+              <div className="grid grid-cols-3 gap-1.5">
+                {[
+                  { id: "main", label: "Main TV" },
+                  { id: "tactical", label: "Drone Tactical" },
+                  { id: "goal", label: "Goal-Line" },
+                ].map((cam) => (
+                  <button
+                    key={cam.id}
+                    onClick={() => setCameraAngle(cam.id as typeof cameraAngle)}
+                    className={cn(
+                      "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                      cameraAngle === cam.id
+                        ? "bg-primary text-primary-foreground shadow"
+                        : "bg-muted text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    {cam.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Commentary Feed Switcher */}
+            <div className="p-3.5 rounded-xl border border-border bg-card">
+              <span className="text-[10px] font-black uppercase text-muted-foreground tracking-wider block mb-2 flex items-center gap-1.5">
+                <Headphones className="w-3.5 h-3.5 text-rose-500" />
+                <span>Live Audio Commentary:</span>
+              </span>
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  onClick={() => setCommentaryLang("bn")}
+                  className={cn(
+                    "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                    commentaryLang === "bn"
+                      ? "bg-rose-600 text-white shadow"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  🇧🇩 বাংলা ধারাভাষ্য
+                </button>
+                <button
+                  onClick={() => setCommentaryLang("en")}
+                  className={cn(
+                    "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
+                    commentaryLang === "en"
+                      ? "bg-rose-600 text-white shadow"
+                      : "bg-muted text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  🇬🇧 English Audio
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Live Commentary Feed Ticker */}
+          <div className="p-3.5 rounded-xl border border-border bg-card/60 flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center flex-shrink-0 animate-pulse text-sm">
+              🎙️
+            </div>
+            <div className="flex-1 text-xs leading-relaxed">
+              <span className="font-bold text-primary mr-2">
+                {commentaryLang === "bn" ? "লাইভ ধারাভাষ্য (৭৪'):" : "Live Commentary (74'):"}
+              </span>
+              <span className="text-foreground/90">
+                {commentaryLang === "bn"
+                  ? "মাঝমাঠ থেকে নিখুঁত বল নিয়ে বক্সে ঢুকছেন মোরসালিন! ডিফেন্ডারদের পরাস্ত করে শট নিলেন, কিংস অ্যারেনা গর্জন করছে।"
+                  : "Brilliant progressive play through the lines, testing the backline with venomous speed! The stadium is electric."}
+              </span>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Subtab 2: 2D Interactive Tactical Pitch ── */}
+      {matchSubTab === "pitch" && (
+        <section className="reveal mt-4" aria-label="2D Tactical Pitch">
+          <TacticalPitch
+            homeTeam={m.homeTeam}
+            awayTeam={m.awayTeam}
+            homeFormation="4-3-3"
+            awayFormation="4-2-3-1"
+          />
+        </section>
+      )}
+
+      {/* ── Subtab 3: Match Timeline ── */}
+      {matchSubTab === "timeline" && (
+        <section className="reveal mt-4" aria-label="Match events">
           <SectionHeader
             title="Match Timeline"
             kicker="key events"
@@ -750,12 +894,10 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
             </div>
           ) : (
             <div className="relative overflow-hidden rounded-xl border border-border bg-card">
-              {/* Centre spine */}
               <span
                 className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border/70 sm:block"
                 aria-hidden
               />
-              {/* Live "now" marker — newest position */}
               {status === "LIVE" && (
                 <div className="relative border-b border-border/50 bg-fhb-red/[0.06] px-4 py-2 sm:px-6">
                   <span className="relative z-[1] mx-auto flex w-fit items-center gap-2 rounded-full border border-fhb-red/35 bg-fhb-red/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-fhb-red">
@@ -771,7 +913,6 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
                   const isHome = e.teamSide === "home";
                   const isAway = e.teamSide === "away";
 
-                  // Period markers (HT / FT) — centred bands on the spine
                   if (!isHome && !isAway) {
                     return (
                       <div
@@ -812,7 +953,6 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
                       key={e.id}
                       className="relative flex items-center gap-3 border-b border-border/50 px-4 py-3 last:border-0 sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4 sm:px-6"
                     >
-                      {/* Home column — right-aligned */}
                       <div
                         className={cn(
                           "flex min-w-0 flex-1 items-center gap-3 sm:justify-end",
@@ -823,12 +963,10 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
                         <span className="hidden sm:flex">{icon}</span>
                       </div>
 
-                      {/* Minute bubble */}
                       <span className="tabular relative z-[1] order-first flex h-8 min-w-[3.5rem] shrink-0 items-center justify-center rounded-full border border-border bg-elevated px-2 font-display text-[11.5px] font-bold text-foreground/85 sm:order-none sm:mx-auto">
                         {fmtNum(e.minute)}′
                       </span>
 
-                      {/* Away column — left-aligned */}
                       <div className={cn("hidden min-w-0 sm:flex sm:items-center sm:gap-3", !isAway && "sm:invisible")}>
                         {icon}
                         <div className="min-w-0">{content}</div>
@@ -836,7 +974,6 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
                     </div>
                   );
                 })}
-              {/* Kick-off band — anchor at the base of the timeline */}
               <div className="relative border-t border-border/50 bg-muted/25 px-4 py-2.5 sm:px-6">
                 <span className="relative z-[1] mx-auto flex w-fit items-center gap-2 rounded-full border border-border bg-elevated px-3 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
                   <PlayCircle className="h-3.5 w-3.5" aria-hidden />
@@ -848,31 +985,74 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
         </section>
       )}
 
-      {/* ── Match info ─────────────────────────────────────────── */}
-      <section className="reveal mt-6" aria-label="Match information">
-        <SectionHeader
-          title="Match Info"
-          kicker="match details"
-          icon={<MapPin className="h-3.5 w-3.5" aria-hidden />}
-        />
-        <div className="overflow-hidden rounded-xl border border-border bg-card">
-          <dl className="divide-y divide-border/60">
-            {infoRows.map((row) => (
-              <div
-                key={row.label}
-                className="grid grid-cols-[96px_1fr] items-baseline gap-3 px-4 py-3 sm:grid-cols-[140px_1fr]"
-              >
-                <dt className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
-                  {row.label}
-                </dt>
-                <dd className="min-w-0 truncate text-[13px] font-medium text-foreground" title={row.value}>
-                  {row.value}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
-      </section>
+      {/* ── Subtab 4: Match Stats (xG, Possession, Shots) ── */}
+      {matchSubTab === "stats" && (
+        <section className="reveal mt-4 space-y-3" aria-label="Advanced Match Statistics">
+          <SectionHeader
+            title="Match Analytics & xG"
+            kicker="performance data"
+            icon={<BarChart2 className="h-3.5 w-3.5 text-primary" />}
+          />
+          <div className="space-y-3 max-w-xl mx-auto">
+            {[
+              { label: "Possession (%)", home: 58, away: 42 },
+              { label: "Expected Goals (xG)", home: 2.14, away: 0.85 },
+              { label: "Total Shots", home: 14, away: 8 },
+              { label: "Shots on Target", home: 6, away: 3 },
+              { label: "Corner Kicks", home: 7, away: 3 },
+              { label: "Fouls Committed", home: 11, away: 14 },
+              { label: "Passing Accuracy (%)", home: 87, away: 79 },
+            ].map((stat, idx) => {
+              const homeNum = Number(stat.home);
+              const awayNum = Number(stat.away);
+              const total = homeNum + awayNum || 1;
+              const homePct = Math.round((homeNum / total) * 100);
+
+              return (
+                <div key={idx} className="p-3.5 rounded-xl border border-border bg-card">
+                  <div className="flex justify-between text-xs font-bold text-foreground mb-1.5">
+                    <span className="text-primary font-mono text-sm">{stat.home}</span>
+                    <span className="text-muted-foreground">{stat.label}</span>
+                    <span className="text-foreground font-mono text-sm">{stat.away}</span>
+                  </div>
+                  <div className="flex h-2 rounded-full overflow-hidden bg-muted">
+                    <div className="bg-primary h-full transition-all" style={{ width: `${homePct}%` }} />
+                    <div className="bg-muted-foreground/30 h-full flex-1" />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* ── Subtab 5: Match Info ── */}
+      {matchSubTab === "info" && (
+        <section className="reveal mt-4" aria-label="Match information">
+          <SectionHeader
+            title="Match Info"
+            kicker="match details"
+            icon={<MapPin className="h-3.5 w-3.5" aria-hidden />}
+          />
+          <div className="overflow-hidden rounded-xl border border-border bg-card">
+            <dl className="divide-y divide-border/60">
+              {infoRows.map((row) => (
+                <div
+                  key={row.label}
+                  className="grid grid-cols-[96px_1fr] items-baseline gap-3 px-4 py-3 sm:grid-cols-[140px_1fr]"
+                >
+                  <dt className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+                    {row.label}
+                  </dt>
+                  <dd className="min-w-0 truncate text-[13px] font-medium text-foreground" title={row.value}>
+                    {row.value}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        </section>
+      )}
 
       {/* ── In-feed ad ─────────────────────────────────────────── */}
       <div className="reveal mt-8">

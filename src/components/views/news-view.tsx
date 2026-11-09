@@ -14,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { Newspaper, Search, X, TrendingUp, Clock } from "lucide-react";
 import { fmtLocale, fmtCompact, timeAgo } from "@/lib/format";
+import { TransferRadar } from "@/components/football/transfer-radar";
 
 export function NewsView() {
   const [category, setCategory] = useState("ALL");
@@ -96,6 +97,12 @@ export function NewsView() {
           )}
         </div>
       </div>
+
+      {category === "TRANSFERS" && (
+        <div className="reveal mb-8">
+          <TransferRadar />
+        </div>
+      )}
 
       {isLoading ? (
         /* ── Skeletons mirroring the editorial layout ── */

@@ -13,7 +13,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ use
         isPremium: true, followerCount: true, followingCount: true, createdAt: true,
       },
     });
-    if (!user) return fail("ইউজার পাওয়া যায়নি", 404);
+    if (!user) return fail("User not found", 404);
 
     const [posts, videos] = await Promise.all([
       db.post.findMany({

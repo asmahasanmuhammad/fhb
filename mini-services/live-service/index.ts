@@ -127,11 +127,11 @@ function finishMatch(sim: SimMatch) {
       sim.awayScore,
       sim.id
     );
-    insertEvent(sim, 90, "FT", "", "", null, "ফুল-টাইম");
+    insertEvent(sim, 90, "FT", "", "", null, "Full-Time");
   } catch (e) {
     console.error("[live] finishMatch error:", e);
   }
-  pushEvent(sim, `⚽ ফুল-টাইম: ${sim.homeTeam.name} ${sim.homeScore} - ${sim.awayScore} ${sim.awayTeam.name}`);
+  pushEvent(sim, `⚽ Full-Time: ${sim.homeTeam.name} ${sim.homeScore} - ${sim.awayScore} ${sim.awayTeam.name}`);
   simulations.delete(sim.id);
   // requeue: for demo continuity, admin can re-set LIVE from dashboard
   console.log(`[live] Finished: ${sim.homeTeam.name} ${sim.homeScore}-${sim.awayScore} ${sim.awayTeam.name}`);
@@ -175,8 +175,8 @@ function tick() {
 
     if (sim.minute >= 45 && sim.period === "1H") {
       sim.period = "HT";
-      pushEvent(sim, `⏸️ হাফ-টাইম: ${sim.homeTeam.name} ${sim.homeScore} - ${sim.awayScore} ${sim.awayTeam.name}`);
-      insertEvent(sim, 45, "HT", "", "", null, "হাফ-টাইম");
+      pushEvent(sim, `⏸️ Half-Time: ${sim.homeTeam.name} ${sim.homeScore} - ${sim.awayScore} ${sim.awayTeam.name}`);
+      insertEvent(sim, 45, "HT", "", "", null, "Half-Time");
       persistScore(sim);
       continue;
     }
@@ -201,14 +201,14 @@ function tick() {
       if (side === "home") sim.homeScore++;
       else sim.awayScore++;
       const scorer = pickScorer(sim, side);
-      insertEvent(sim, sim.minute, "GOAL", side, team.id, scorer, "গোল");
-      pushEvent(sim, `⚽ গোল! ${scorer} (${team.name}) — ${sim.homeTeam.initials} ${sim.homeScore}-${sim.awayScore} ${sim.awayTeam.initials}`);
+      insertEvent(sim, sim.minute, "GOAL", side, team.id, scorer, "Goal");
+      pushEvent(sim, `⚽ GOAL! ${scorer} (${team.name}) — ${sim.homeTeam.initials} ${sim.homeScore}-${sim.awayScore} ${sim.awayTeam.initials}`);
       persistScore(sim);
     } else if (r < 0.14) {
       const side: "home" | "away" = Math.random() < 0.5 ? "home" : "away";
       const team = side === "home" ? sim.homeTeam : sim.awayTeam;
       const player = pickScorer(sim, side);
-      insertEvent(sim, sim.minute, "YELLOW", side, team.id, player, "হলুদ কার্ড");
+      insertEvent(sim, sim.minute, "YELLOW", side, team.id, player, "Yellow Card");
     } else if (r < 0.15) {
       persistScore(sim);
     }

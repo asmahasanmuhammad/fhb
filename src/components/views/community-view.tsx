@@ -7,7 +7,7 @@ import { useAppStore } from "@/store/app-store";
 import { useReveal } from "@/hooks/use-reveal";
 import { LikeButton } from "@/components/football/like-button";
 import { CommentSection } from "@/components/football/comment-section";
-import { timeAgo, bnCompact } from "@/lib/format";
+import { timeAgo, fmtCompact } from "@/lib/format";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -48,9 +48,9 @@ export function CommunityView() {
       setContent("");
       setMatchTag(null);
       queryClient.invalidateQueries({ queryKey: ["posts"] });
-      toast({ title: "পোস্ট হয়ে গেছে", description: "কমিউনিটিতে আপনার মতামত এখন লাইভ।" });
+      toast({ title: "Posted", description: "Your take is now live in the community." });
     },
-    onError: (e: Error) => toast({ title: "পোস্ট ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Post failed", description: e.message, variant: "destructive" }),
   });
 
   const posts = data?.posts ?? [];
@@ -59,9 +59,9 @@ export function CommunityView() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-6 sm:px-6">
       <PageHeader
-        title="ফ্যান কমিউনিটি"
+        title="Fan Community"
         kicker="fan zone"
-        subtitle="মতামত শেয়ার করুন, আলোচনায় জয়েন করুন — বাংলাদেশের ফুটবলপ্রেমীদের নিজের জায়গা"
+        subtitle="Share your takes and join the discussion — a home for Bangladesh's football fans"
         icon={<Radio className="h-5 w-5" aria-hidden />}
       />
 
@@ -82,15 +82,15 @@ export function CommunityView() {
                   <textarea
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
-                    placeholder={`${user.name}, আজকের ম্যাচ নিয়ে কী মনে হচ্ছে?`}
+                    placeholder={`${user.name}, what's on your mind about today's match?`}
                     rows={3}
                     maxLength={600}
                     className="w-full resize-none rounded-xl border border-border bg-background p-3.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
-                    aria-label="পোস্ট লিখুন"
+                    aria-label="Write a post"
                   />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
                     <div className="flex flex-wrap gap-1.5">
-                      {["আবাহনী", "মোহামেডান", "বসুন্ধরা", "জাতীয় দল"].map((tag) => (
+                      {["Abahani", "Mohammedan", "Bashundhara", "National Team"].map((tag) => (
                         <button
                           key={tag}
                           onClick={() => setMatchTag((t) => (t === tag ? null : tag))}
@@ -111,7 +111,7 @@ export function CommunityView() {
                       disabled={!content.trim() || createPost.isPending}
                       className="sheen rounded-full bg-primary px-5 font-bold"
                     >
-                      {createPost.isPending ? "পোস্ট হচ্ছে..." : "পোস্ট করুন"}
+                      {createPost.isPending ? "Posting..." : "Post"}
                     </Button>
                   </div>
                 </div>
@@ -123,7 +123,7 @@ export function CommunityView() {
               className="flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10"
             >
               <LogIn className="h-4 w-4" aria-hidden />
-              কমিউনিটিতে পোস্ট করতে লগইন করুন →
+              Log in to post in the community →
             </button>
           )}
 
@@ -143,9 +143,9 @@ export function CommunityView() {
                   <div className="min-w-0 flex-1">
                     <p className="flex items-center gap-1.5 text-sm font-bold">
                       {post.author.name}
-                      {post.author.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="প্রিমিয়াম সদস্য" />}
+                      {post.author.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="Premium Member" />}
                       {post.author.role === "CREATOR" && (
-                        <span className="rounded-md bg-fhb-red/15 px-1.5 py-0.5 text-[9px] font-bold text-fhb-red">ক্রিয়েটর</span>
+                        <span className="rounded-md bg-fhb-red/15 px-1.5 py-0.5 text-[9px] font-bold text-fhb-red">Creator</span>
                       )}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
@@ -170,7 +170,7 @@ export function CommunityView() {
                     className="gap-1.5"
                   >
                     <MessageCircle className="h-4 w-4" aria-hidden />
-                    {bnCompact(post.commentCount)}
+                    {fmtCompact(post.commentCount)}
                   </Button>
                 </div>
 
@@ -188,7 +188,7 @@ export function CommunityView() {
         <aside className="space-y-5">
           <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
             <p className="flex items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-3.5 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-foreground">
-              <Sparkles className="h-4 w-4 text-fhb-gold" aria-hidden /> ফলো করার মতো ক্রিয়েটর
+              <Sparkles className="h-4 w-4 text-fhb-gold" aria-hidden /> Creators to follow
             </p>
             <div className="divide-y divide-border/60">
               {suggested.map((s) => (
@@ -198,10 +198,10 @@ export function CommunityView() {
           </div>
           <div className="gold-panel relative overflow-hidden rounded-2xl border border-fhb-gold/25 p-5">
             <p className="flex items-center gap-2 text-sm font-bold text-fhb-gold">
-              <Megaphone className="h-4 w-4" aria-hidden /> ক্রিয়েটর হতে চান?
+              <Megaphone className="h-4 w-4" aria-hidden /> Want to become a creator?
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              শর্টস আপলোড করুন, ফলোয়ার বাড়ান এবং ভিউ থেকে আয় করুন। অ্যাডমিন প্যানেল থেকে ক্রিয়েটর রোল নিন (ডেমো)।
+              Upload shorts, grow your followers and earn from views. Get the creator role from the admin panel (demo).
             </p>
           </div>
         </aside>
@@ -237,14 +237,14 @@ function SuggestedCreator({ creator }: { creator: SafeUser }) {
       return json.data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["follow", creator.id] }),
-    onError: (e: Error) => toast({ title: "ফলো ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Follow failed", description: e.message, variant: "destructive" }),
   });
 
   const following = data?.following ?? false;
 
   return (
     <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40">
-      <button onClick={() => navigate({ name: "profile", username: creator.username })} aria-label={`${creator.name} প্রোফাইল`}>
+      <button onClick={() => navigate({ name: "profile", username: creator.username })} aria-label={`${creator.name} profile`}>
         <Avatar className="h-10 w-10 border">
           <AvatarImage src={creator.avatarUrl ?? undefined} alt={creator.name} />
           <AvatarFallback className="bg-primary/15 text-sm font-bold text-primary">{creator.name.slice(0, 2)}</AvatarFallback>
@@ -253,7 +253,7 @@ function SuggestedCreator({ creator }: { creator: SafeUser }) {
       <div className="min-w-0 flex-1">
         <p className="truncate text-xs font-bold text-foreground">{creator.name}</p>
         <p className="tabular truncate text-[10px] text-muted-foreground">
-          {bnCompact(creator.followerCount ?? 0)} ফলোয়ার
+          {fmtCompact(creator.followerCount ?? 0)} followers
         </p>
       </div>
       {user && user.id !== creator.id && (
@@ -265,7 +265,7 @@ function SuggestedCreator({ creator }: { creator: SafeUser }) {
           className="h-8 gap-1 rounded-full px-3.5 text-[11px] font-bold"
         >
           {following ? <UserCheck className="h-3 w-3" aria-hidden /> : <UserPlus className="h-3 w-3" aria-hidden />}
-          {following ? "ফলোয়িং" : "ফলো"}
+          {following ? "Following" : "Follow"}
         </Button>
       )}
     </div>

@@ -15,7 +15,7 @@ import { TeamBadge } from "@/components/football/team-badge";
 import { LiveBadge } from "@/components/football/live-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
-import { formatKickoff, toBn, bnCompact } from "@/lib/format";
+import { formatKickoff, fmtNum, fmtCompact } from "@/lib/format";
 import {
   Zap, Newspaper, Video as VideoIcon, Radio, Flame, Play, MapPin,
   CalendarDays, ChevronRight, Trophy, Users, Crown, Goal, ArrowRight,
@@ -76,7 +76,7 @@ export function HomeView() {
       {/* ═══════════ MATCHDAY HERO — cinematic billboard ═══════════ */}
       <section
         className="noise stadium-panel pitch-pattern reveal relative overflow-hidden rounded-3xl border border-border/70 p-6 sm:p-8 lg:p-10"
-        aria-label="ফিচার্ড সেকশন"
+        aria-label="Featured section"
       >
         {/* Floodlight glow */}
         <span className="floodlight pointer-events-none absolute inset-0" aria-hidden />
@@ -86,17 +86,17 @@ export function HomeView() {
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/35 bg-primary/10 px-3.5 py-1.5 text-[11px] font-bold text-primary backdrop-blur-sm">
               <span className="live-dot h-1.5 w-1.5 rounded-full bg-primary" aria-hidden />
-              বাংলাদেশের ফুটবল নেটওয়ার্ক
+              Bangladesh's Football Network
             </span>
             <h1 className="display-hero mt-5 text-[2rem] leading-[1.12] text-foreground sm:text-[2.6rem] lg:text-[3rem]">
-              লাইভ স্কোর। নিউজ। শর্টস।
+              Live scores. News. Shorts.
               <span className="mt-1 block bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-                সব এক প্ল্যাটফর্মে।
+                All on one platform.
               </span>
             </h1>
             <p className="mt-4 max-w-lg text-sm leading-relaxed text-muted-foreground sm:text-[15px]">
-              বিপিএল থেকে সাফ চ্যাম্পিয়নশিপ — প্রতিটি গোল, প্রতিটি ট্রান্সফার, প্রতিটি মুহূর্ত। ফ্যান
-              কমিউনিটিতে যোগ দিন, নিজের মতামত শেয়ার করুন, ক্রিয়েটর হয়ে আয় করুন।
+              From the BPL to the SAFF Championship — every goal, every transfer, every moment. Fan
+              Join the community, share your takes and earn as a creator.
             </p>
             <div className="mt-7 flex flex-wrap gap-3">
               <button
@@ -104,23 +104,23 @@ export function HomeView() {
                 className="sheen group flex h-12 items-center gap-2 rounded-full bg-primary px-6 text-sm font-bold text-primary-foreground shadow-[0_14px_34px_-12px_var(--primary)] transition-transform hover:scale-[1.03] active:scale-95"
               >
                 <Zap className="h-4 w-4" aria-hidden />
-                লাইভ স্কোর দেখুন
+                View Live Scores
               </button>
               <button
                 onClick={() => navigate({ name: "shorts" })}
                 className="flex h-12 items-center gap-2 rounded-full border border-border bg-card/70 px-6 text-sm font-bold text-foreground backdrop-blur-sm transition-all hover:border-primary/50 hover:text-primary active:scale-95"
               >
                 <VideoIcon className="h-4 w-4" aria-hidden />
-                শর্টস দেখুন
+                Watch Shorts
               </button>
             </div>
 
             {/* Stat strip */}
             <dl className="mt-9 grid max-w-lg grid-cols-3 overflow-hidden rounded-2xl border border-border/70 bg-card/40 backdrop-blur-sm">
               {[
-                { v: toBn(matches.length), l: "ম্যাচ ট্র্যাকিং" },
-                { v: bnCompact(articles.reduce((s, a) => s + a.views, 0)), l: "নিউজ রিডস" },
-                { v: bnCompact(videos.reduce((s, v) => s + v.views, 0)), l: "শর্টস ভিউজ" },
+                { v: fmtNum(matches.length), l: "Matches Tracked" },
+                { v: fmtCompact(articles.reduce((s, a) => s + a.views, 0)), l: "News Reads" },
+                { v: fmtCompact(videos.reduce((s, v) => s + v.views, 0)), l: "Shorts Views" },
               ].map((s, i) => (
                 <div key={s.l} className={cn("relative px-4 py-4 text-center", i > 0 && "before:absolute before:inset-y-3 before:left-0 before:w-px before:bg-border/80")}>
                   <dd className="tabular font-display text-2xl font-bold leading-none text-foreground sm:text-[1.7rem]">{s.v}</dd>
@@ -135,7 +135,7 @@ export function HomeView() {
             <button
               onClick={() => navigate({ name: "match-detail", id: heroMatch.id })}
               className="card-lift edge-lit group relative w-full overflow-hidden rounded-2xl border border-border/80 bg-card/80 text-left backdrop-blur-md"
-              aria-label={`ফিচার্ড ম্যাচ: ${heroMatch.homeTeam.name} বনাম ${heroMatch.awayTeam.name}`}
+              aria-label={`Featured match: ${heroMatch.homeTeam.name} vs ${heroMatch.awayTeam.name}`}
             >
               {/* Comp strip */}
               <div className="flex items-center justify-between gap-2 border-b border-border/70 bg-muted/40 px-5 py-3">
@@ -180,9 +180,9 @@ export function HomeView() {
                   ) : (
                     <>
                       <p className="tabular font-display text-5xl font-bold leading-none text-fhb-red sm:text-6xl">
-                        {toBn(heroLive?.homeScore ?? heroMatch.homeScore ?? 0)}
+                        {fmtNum(heroLive?.homeScore ?? heroMatch.homeScore ?? 0)}
                         <span className="mx-2 text-muted-foreground/30">-</span>
-                        {toBn(heroLive?.awayScore ?? heroMatch.awayScore ?? 0)}
+                        {fmtNum(heroLive?.awayScore ?? heroMatch.awayScore ?? 0)}
                       </p>
                       <p className="mt-3">
                         <LiveBadge minute={heroLive?.minute ?? heroMatch.minute} period={heroLive?.period ?? heroMatch.period} size="sm" />
@@ -206,7 +206,7 @@ export function HomeView() {
                   <CalendarDays className="h-3.5 w-3.5 text-primary/80" aria-hidden />
                   {formatKickoff(heroMatch.kickoff).date}
                   <span className="flex items-center gap-0.5 font-bold text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    ম্যাচ সেন্টার <ChevronRight className="h-3 w-3" aria-hidden />
+                    Match Centre <ChevronRight className="h-3 w-3" aria-hidden />
                   </span>
                 </span>
               </div>
@@ -222,8 +222,8 @@ export function HomeView() {
 
       {/* ═══════════ LIVE NOW ═══════════ */}
       {liveNow.length > 0 && (
-        <section className="reveal mt-12" aria-label="লাইভ ম্যাচ">
-          <SectionHeader title="এখন লাইভ" accent="red" kicker="live now" icon={<Radio className="h-4 w-4" aria-hidden />} actionLabel="সব স্কোর" actionView={{ name: "scores" }} />
+        <section className="reveal mt-12" aria-label="Live matches">
+          <SectionHeader title="Live Now" accent="red" kicker="live now" icon={<Radio className="h-4 w-4" aria-hidden />} actionLabel="All Scores" actionView={{ name: "scores" }} />
           <div className={cn("grid grid-cols-1 gap-4", liveNow.length > 1 && "sm:grid-cols-2")}>
             {liveNow.map((m) => (
               <MatchCard key={m.id} match={m} />
@@ -233,15 +233,15 @@ export function HomeView() {
       )}
 
       {/* ═══════════ FIXTURES & RESULTS ═══════════ */}
-      <section className="reveal mt-12" aria-label="ফিক্সচার ও ফলাফল">
-        <SectionHeader title="ম্যাচ সেন্টার" kicker="fixtures & results" icon={<Zap className="h-4 w-4" aria-hidden />} actionLabel="সব ম্যাচ" actionView={{ name: "scores" }} />
+      <section className="reveal mt-12" aria-label="Fixtures & results">
+        <SectionHeader title="Match Centre" kicker="fixtures & results" icon={<Zap className="h-4 w-4" aria-hidden />} actionLabel="All Matches" actionView={{ name: "scores" }} />
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <div className="edge-lit min-w-0 rounded-2xl border border-border bg-card/50 p-4 sm:p-5">
             <p className="mb-4 flex items-center gap-2.5 border-b border-border/70 pb-4 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/12 text-primary">
                 <CalendarDays className="h-3.5 w-3.5" aria-hidden />
               </span>
-              আসছে
+              Upcoming
             </p>
             <div className="space-y-3.5">
               {matchesLoading
@@ -254,7 +254,7 @@ export function HomeView() {
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-gold/12 text-fhb-gold">
                 <Trophy className="h-3.5 w-3.5" aria-hidden />
               </span>
-              সর্বশেষ ফলাফল
+              Latest Results
             </p>
             <div className="space-y-3.5">
               {matchesLoading
@@ -266,8 +266,8 @@ export function HomeView() {
       </section>
 
       {/* ═══════════ NEWS — editorial magazine grid ═══════════ */}
-      <section className="reveal mt-14" aria-label="সর্বশেষ নিউজ">
-        <SectionHeader title="ফুটবল নিউজ ও ট্রান্সফার" kicker="latest stories" icon={<Newspaper className="h-4 w-4" aria-hidden />} actionLabel="সব নিউজ" actionView={{ name: "news" }} />
+      <section className="reveal mt-14" aria-label="Latest news">
+        <SectionHeader title="Football News & Transfers" kicker="latest stories" icon={<Newspaper className="h-4 w-4" aria-hidden />} actionLabel="All News" actionView={{ name: "news" }} />
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {featured && (
             <div className="reveal sm:col-span-2 lg:h-[440px]">
@@ -288,8 +288,8 @@ export function HomeView() {
       </section>
 
       {/* ═══════════ TRENDING SHORTS ═══════════ */}
-      <section className="reveal mt-14" aria-label="ট্রেন্ডিং শর্টস">
-        <SectionHeader title="ট্রেন্ডিং শর্টস" accent="gold" kicker="fan originals" icon={<Flame className="h-4 w-4" aria-hidden />} actionLabel="সব শর্টস" actionView={{ name: "shorts" }} />
+      <section className="reveal mt-14" aria-label="Trending shorts">
+        <SectionHeader title="Trending Shorts" accent="gold" kicker="fan originals" icon={<Flame className="h-4 w-4" aria-hidden />} actionLabel="All Shorts" actionView={{ name: "shorts" }} />
         <div className="no-scrollbar relative -mx-4 overflow-x-auto px-4 pb-1.5 sm:mx-0 sm:px-0">
           <div className="flex gap-4">
             {videos.slice(0, 8).map((v, i) => (
@@ -297,7 +297,7 @@ export function HomeView() {
                 key={v.id}
                 onClick={() => navigate({ name: "shorts" })}
                 className="card-lift group relative h-64 w-40 shrink-0 overflow-hidden rounded-2xl border border-border sm:h-72 sm:w-44"
-                aria-label={`শর্টস দেখুন: ${v.title}`}
+                aria-label={`Watch shorts: ${v.title}`}
               >
                 {v.thumbnailUrl && (
                   <Image
@@ -316,7 +316,7 @@ export function HomeView() {
                     i === 0 ? "bg-fhb-gold/90 text-black" : "bg-black/60 text-white"
                   )}
                 >
-                  #{toBn(i + 1)}
+                  #{fmtNum(i + 1)}
                 </span>
                 {/* Play button */}
                 <span
@@ -329,7 +329,7 @@ export function HomeView() {
                 <div className="absolute inset-x-3 bottom-3 text-left">
                   <p className="line-clamp-2 text-xs font-semibold leading-snug text-white">{v.title}</p>
                   <p className="mt-1.5 flex items-center gap-1.5 text-[10px] text-white/70">
-                    <Play className="h-2.5 w-2.5 fill-white/70" aria-hidden /> {bnCompact(v.views)} ভিউ
+                    <Play className="h-2.5 w-2.5 fill-white/70" aria-hidden /> {fmtCompact(v.views)} views
                   </p>
                 </div>
               </button>
@@ -340,9 +340,9 @@ export function HomeView() {
       </section>
 
       {/* ═══════════ STANDINGS + SIDEBAR ═══════════ */}
-      <section className="reveal mt-14 grid gap-6 lg:grid-cols-3" aria-label="লিগ টেবিল">
+      <section className="reveal mt-14 grid gap-6 lg:grid-cols-3" aria-label="League table">
         <div className="lg:col-span-2">
-          <SectionHeader title="বিপিএল পয়েন্ট টেবিল" kicker="league table" icon={<Trophy className="h-4 w-4" aria-hidden />} actionLabel="সম্পূর্ণ টেবিল" actionView={{ name: "standings" }} />
+          <SectionHeader title="BPL Points Table" kicker="league table" icon={<Trophy className="h-4 w-4" aria-hidden />} actionLabel="Full Table" actionView={{ name: "standings" }} />
           <StandingsTable standings={standings} compact limit={6} />
         </div>
         <div className="space-y-5">
@@ -352,7 +352,7 @@ export function HomeView() {
       </section>
 
       {/* ═══════════ PREMIUM BANNER — cinematic gold ═══════════ */}
-      <section className="reveal mt-14" aria-label="প্রিমিয়াম সদস্যতা">
+      <section className="reveal mt-14" aria-label="Premium membership">
         <button
           onClick={() => navigate({ name: "premium" })}
           className="noise gold-panel group relative flex w-full flex-col gap-6 overflow-hidden rounded-3xl border border-fhb-gold/25 p-6 text-left sm:flex-row sm:items-center sm:p-8"
@@ -363,21 +363,21 @@ export function HomeView() {
           <div className="min-w-0 flex-1">
             <p className="eyebrow text-[10px] text-fhb-gold">FHB Premium</p>
             <h3 className="mt-1.5 text-xl font-bold leading-tight text-foreground sm:text-2xl">
-              বিজ্ঞাপনমুক্ত অভিজ্ঞতা, <span className="gold-text">এক্সক্লুসিভ</span> ট্রান্সফার নিউজ ও HD হাইলাইটস
+              An ad-free experience, <span className="gold-text">exclusive</span> transfer news and HD highlights
             </h3>
             <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
-              মাসে মাত্র ৳৯৯ থেকে শুরু — ক্রিয়েটর হলে আয়ের সুযোগও অনেক বেশি।
+              Starting at just Tk 99/month — with even bigger earning opportunities for creators.
             </p>
           </div>
           <span className="sheen flex h-12 shrink-0 items-center gap-2 self-start rounded-full bg-fhb-gold px-6 text-sm font-bold text-black transition-transform group-hover:scale-[1.04] sm:self-center">
-            আপগ্রেড করুন
+            Upgrade
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden />
           </span>
         </button>
       </section>
 
       {/* ═══════════ COMMUNITY CTA ═══════════ */}
-      <section className="reveal mt-6" aria-label="ফ্যান কমিউনিটি">
+      <section className="reveal mt-6" aria-label="Fan community">
         <button
           onClick={() => navigate({ name: "community" })}
           className="card-lift group relative flex w-full items-center gap-5 overflow-hidden rounded-2xl border border-border bg-card p-5 text-left sm:p-6"
@@ -386,9 +386,9 @@ export function HomeView() {
             <Users className="h-6 w-6" aria-hidden />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-base font-bold text-foreground sm:text-lg">ফ্যান কমিউনিটি</span>
+            <span className="block text-base font-bold text-foreground sm:text-lg">Fan Community</span>
             <span className="mt-1 block text-[13px] leading-relaxed text-muted-foreground">
-              মতামত শেয়ার করুন, আলোচনায় জয়েন করুন — বাংলাদেশের ফুটবলপ্রেমীদের নিজের জায়গা।
+              community — share your takes and join the discussion, a home for Bangladesh's football fans.
             </span>
           </span>
           <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1.5 group-hover:text-primary" aria-hidden />
@@ -420,7 +420,7 @@ function TopScorersMini() {
         <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-gold/15 text-fhb-gold">
           <Goal className="h-3.5 w-3.5" aria-hidden />
         </span>
-        সেরা গোলদাতা
+        Top Scorers
       </p>
       <div className="divide-y divide-border/50">
         {scorers.map((p, i) => (
@@ -435,12 +435,12 @@ function TopScorersMini() {
                 (i === 0 ? "bg-fhb-gold/20 text-fhb-gold" : i < 3 ? "bg-primary/12 text-primary" : "bg-muted text-muted-foreground")
               }
             >
-              {toBn(i + 1)}
+              {fmtNum(i + 1)}
             </span>
             {p.team && <TeamBadge team={p.team} size="xs" />}
             <span className="min-w-0 flex-1 truncate text-[13px] font-semibold text-foreground group-hover:text-primary">{p.name}</span>
             <span className="tabular shrink-0 rounded-md bg-primary/10 px-2 py-0.5 font-display text-sm font-bold text-primary">
-              {toBn(p.goals)}
+              {fmtNum(p.goals)}
             </span>
           </button>
         ))}
@@ -449,7 +449,7 @@ function TopScorersMini() {
         onClick={() => navigate({ name: "standings" })}
         className="flex w-full items-center justify-center gap-1 border-t border-border py-3 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
       >
-        সম্পূর্ণ তালিকা <ChevronRight className="h-3 w-3" aria-hidden />
+        Full list <ChevronRight className="h-3 w-3" aria-hidden />
       </button>
     </div>
   );

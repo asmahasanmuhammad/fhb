@@ -6,7 +6,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   try {
     const { id } = await params;
     const competition = await db.competition.findUnique({ where: { id } });
-    if (!competition) return fail("টুর্নামেন্ট পাওয়া যায়নি", 404);
+    if (!competition) return fail("Competition not found", 404);
 
     const [standings, matches, topScorers] = await Promise.all([
       competition.type === "LEAGUE"

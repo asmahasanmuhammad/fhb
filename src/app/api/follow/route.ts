@@ -8,7 +8,7 @@ import { requireUser } from "@/lib/auth";
 export async function GET(req: NextRequest) {
   try {
     const followingId = req.nextUrl.searchParams.get("followingId");
-    if (!followingId) return fail("followingId প্রয়োজন", 422);
+    if (!followingId) return fail("followingId is required", 422);
     const user = await requireUser();
     const rel = await db.follow.findUnique({
       where: { followerId_followingId: { followerId: user.id, followingId } },
@@ -26,12 +26,12 @@ export async function POST(req: NextRequest) {
     const user = await requireUser();
     const body = await req.json().catch(() => null);
     const parsed = followSchema.safeParse(body);
-    if (!parsed.success) return fail("ভুল অনুরোধ", 422);
+    if (!parsed.success) return fail("Invalid request", 422);
     const { followingId } = parsed.data;
-    if (followingId === user.id) return fail("নিজেকে ফলো করা যায় না", 422);
+    if (followingId === user.id) return fail("You cannot follow yourself", 422);
 
     const target = await db.user.findUnique({ where: { id: followingId } });
-    if (!target) return fail("ইউজার পাওয়া যায়নি", 404);
+    if (!target) return fail("User not found", 404);
 
     const existing = await db.follow.findUnique({
       where: { followerId_followingId: { followerId: user.id, followingId } },

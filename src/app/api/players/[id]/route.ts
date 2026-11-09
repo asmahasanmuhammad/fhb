@@ -9,7 +9,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       where: { id },
       include: { team: true },
     });
-    if (!player) return fail("খেলোয়াড় পাওয়া যায়নি", 404);
+    if (!player) return fail("Player not found", 404);
 
     const similar = player.teamId
       ? await db.player.findMany({

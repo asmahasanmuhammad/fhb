@@ -9,7 +9,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       where: { id },
       include: { players: { orderBy: [{ position: "asc" }, { jerseyNumber: "asc" }] } },
     });
-    if (!team) return fail("দল পাওয়া যায়নি", 404);
+    if (!team) return fail("Team not found", 404);
 
     const matches = await db.match.findMany({
       where: { OR: [{ homeTeamId: id }, { awayTeamId: id }] },

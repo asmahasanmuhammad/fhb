@@ -20,10 +20,10 @@ export async function POST(req: NextRequest) {
     const user = await requireUser();
     const body = await req.json().catch(() => null);
     const parsed = subscribeSchema.safeParse(body);
-    if (!parsed.success) return fail("সঠিক প্ল্যান নির্বাচন করুন", 422);
+    if (!parsed.success) return fail("Select a valid plan", 422);
 
     const plan = await db.membershipPlan.findUnique({ where: { code: parsed.data.planCode } });
-    if (!plan) return fail("প্ল্যান পাওয়া যায়নি", 404);
+    if (!plan) return fail("Plan not found", 404);
 
     // simulate payment success (demo mode — real bKash/Nagad/SSLCommerz integration point)
     const expiresAt = plan.price === 0 ? new Date(0) : new Date(Date.now() + 30 * 864e5);
@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       plan: plan.code,
       isPremium: updated.isPremium,
       premiumUntil: updated.premiumUntil,
-      message: plan.price > 0 ? `${plan.name} প্ল্যান অ্যাক্টিভ হয়েছে! (ডেমো পেমেন্ট)` : "ফ্রি প্ল্যানে ফিরে এসেছেন",
+      message: plan.price > 0 ? `${plan.name} plan activated! (demo payment)` : "You are back on the free plan",
     });
   } catch (e) {
     return handleError(e);

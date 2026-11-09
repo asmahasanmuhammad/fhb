@@ -85,7 +85,7 @@ export function VideoPreroll() {
   const brandColor = ad.brandColor || "#1E9E50";
   const headline = ad.headline || ad.name;
   const body = ad.bodyText;
-  const cta = ad.ctaLabel || "আরও জানুন";
+  const cta = ad.ctaLabel || "Learn More";
   const progress = ((PREROLL_SECONDS - remaining) / PREROLL_SECONDS) * 100;
   const skippable = remaining <= 0;
 
@@ -99,7 +99,7 @@ export function VideoPreroll() {
   };
 
   return (
-    <div className="absolute inset-0 z-30 flex flex-col bg-black" role="complementary" aria-label="বিজ্ঞাপন">
+    <div className="absolute inset-0 z-30 flex flex-col bg-black" role="complementary" aria-label="Advertisement">
       {/* Countdown progress bar */}
       <div className="absolute inset-x-0 top-0 z-10 h-[3px] bg-white/15" aria-hidden>
         <div
@@ -111,7 +111,7 @@ export function VideoPreroll() {
       {/* Label chip */}
       <div className="absolute left-3.5 top-3.5 z-10 flex items-center gap-1.5 rounded-md bg-black/55 px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-white/75 backdrop-blur">
         <Megaphone className="h-3 w-3" aria-hidden />
-        বিজ্ঞাপন · AdSense
+        Ad · AdSense
       </div>
 
       {/* Brand-tinted ambience */}
@@ -148,7 +148,7 @@ export function VideoPreroll() {
       {/* Skip control */}
       <div className="relative z-[5] flex items-center justify-between px-4 pb-5">
         <span className="text-[10px] tabular text-white/50">
-          {skippable ? "ভিডিও শুরু হচ্ছে..." : `স্কিপ করা যাবে ${remaining.toString().replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[+d])} সেকেন্ড পরে`}
+          {skippable ? "Video starting..." : `Skippable in ${remaining}s`}
         </span>
         <button
           onClick={skip}
@@ -156,7 +156,7 @@ export function VideoPreroll() {
           className="flex h-10 items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 text-xs font-bold text-white backdrop-blur transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <SkipForward className="h-3.5 w-3.5" aria-hidden />
-          {skippable ? "স্কিপ করুন" : `${remaining.toString().replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[+d])}`}
+          {skippable ? "Skip" : `${remaining}`}
         </button>
       </div>
     </div>

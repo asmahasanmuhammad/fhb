@@ -2,7 +2,7 @@
 
 import { TeamBadge } from "./team-badge";
 import { LiveBadge } from "./live-badge";
-import { formatKickoff, toBn } from "@/lib/format";
+import { formatKickoff, fmtNum } from "@/lib/format";
 import type { Match } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
 import { useLiveScores } from "@/components/providers/live-score-provider";
@@ -45,7 +45,7 @@ export function MatchCard({
         status === "LIVE" ? "border-fhb-red/30" : "border-border",
         className
       )}
-      aria-label={`${match.homeTeam.name} বনাম ${match.awayTeam.name} ম্যাচ দেখুন`}
+      aria-label={`View match: ${match.homeTeam.name} vs ${match.awayTeam.name}`}
     >
       {/* LIVE status edge */}
       <span
@@ -67,18 +67,18 @@ export function MatchCard({
             />
             <span className="truncate">
               {match.competition.shortName ?? match.competition.name}
-              {match.round ? ` • ${match.round}` : match.matchday ? ` • রাউন্ড ${toBn(match.matchday)}` : ""}
+              {match.round ? ` • ${match.round}` : match.matchday ? ` • Round ${fmtNum(match.matchday)}` : ""}
             </span>
           </span>
           {status === "LIVE" ? (
             <LiveBadge minute={minute} period={period} size="sm" />
           ) : status === "FINISHED" ? (
             <span className="shrink-0 rounded-md bg-muted px-1.5 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              শেষ
+              FT
             </span>
           ) : (
             <span className="shrink-0 rounded-md border border-primary/35 bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold text-primary">
-              {ko.relative === "আজ" || ko.relative === "আগামীকাল" || ko.relative === "গতকাল" ? ko.relative : ko.date.split(",")[0]}
+              {ko.relative === "Today" || ko.relative === "Tomorrow" || ko.relative === "Yesterday" ? ko.relative : ko.date.split(",")[0]}
             </span>
           )}
         </div>
@@ -94,14 +94,14 @@ export function MatchCard({
       <div className="mt-3 flex items-center justify-between border-t border-border/60 pt-2.5 text-[10px] text-muted-foreground">
         <span className="flex min-w-0 items-center gap-1.5">
           <MapPin className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
-          <span className="truncate">{match.venue ?? "ভেন্যু নির্ধারিত হয়নি"}</span>
+          <span className="truncate">{match.venue ?? "Venue TBD"}</span>
         </span>
         <span className="flex shrink-0 items-center gap-1">
           {status === "SCHEDULED" && (
             <span className="tabular mr-1 font-display font-semibold text-foreground/80">{ko.time}</span>
           )}
           <span className="flex items-center gap-0.5 font-semibold text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-            ম্যাচ সেন্টার
+            Match Centre
             <ChevronRight className="h-3 w-3" aria-hidden />
           </span>
         </span>
@@ -139,7 +139,7 @@ function TeamRow({
           won ? "text-foreground" : status === "SCHEDULED" ? "hidden" : status === "LIVE" ? "text-fhb-red" : "text-muted-foreground"
         )}
       >
-        {status !== "SCHEDULED" && toBn(score ?? 0)}
+        {status !== "SCHEDULED" && fmtNum(score ?? 0)}
       </span>
     </div>
   );

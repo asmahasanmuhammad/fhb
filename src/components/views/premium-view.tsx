@@ -42,17 +42,17 @@ export function PremiumView() {
     },
     onSuccess: (data) => {
       refreshUser();
-      toast({ title: "সদস্যতা সফল", description: data.message });
+      toast({ title: "Subscription successful", description: data.message });
     },
-    onError: (e: Error) => toast({ title: "সদস্যতা ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Subscription failed", description: e.message, variant: "destructive" }),
   });
 
   const plans = data?.plans ?? [];
 
   const planMeta: Record<string, { icon: React.ReactNode; desc: string; accent: string }> = {
-    FREE: { icon: <Zap className="h-5 w-5" aria-hidden />, desc: "সবার জন্য প্রাথমিক অভিজ্ঞতা", accent: "text-muted-foreground" },
-    PRO: { icon: <Crown className="h-5 w-5" aria-hidden />, desc: "সত্যিকারের ফুটবল অনুরাগীদের জন্য", accent: "text-fhb-gold" },
-    LEGEND: { icon: <Sparkles className="h-5 w-5" aria-hidden />, desc: "আল্টিমেট ফ্যান এক্সপেরিয়েন্স", accent: "text-fhb-red" },
+    FREE: { icon: <Zap className="h-5 w-5" aria-hidden />, desc: "The starter experience for everyone", accent: "text-muted-foreground" },
+    PRO: { icon: <Crown className="h-5 w-5" aria-hidden />, desc: "For the true football devotees", accent: "text-fhb-gold" },
+    LEGEND: { icon: <Sparkles className="h-5 w-5" aria-hidden />, desc: "The ultimate fan experience", accent: "text-fhb-red" },
   };
 
   return (
@@ -68,17 +68,17 @@ export function PremiumView() {
         <div className="relative mx-auto max-w-2xl">
           <span className="inline-flex items-center gap-2 rounded-full border border-fhb-gold/40 bg-fhb-gold/10 px-4 py-1.5 text-[11px] font-bold text-fhb-gold">
             <Crown className="h-3.5 w-3.5" aria-hidden />
-            FHB প্রিমিয়াম সদস্যতা
+            FHB Premium Membership
           </span>
           <h1 className="display-hero mt-4 text-3xl text-foreground sm:text-[2.75rem]">
-            ফুটবলের নেশা, <span className="gold-text">আরও গভীরভাবে</span>
+            For the love of football — <span className="gold-text">deeper than ever</span>
           </h1>
           <p className="mx-auto mt-3.5 max-w-xl text-sm leading-relaxed text-muted-foreground">
-            বিজ্ঞাপনমুক্ত অভিজ্ঞতা, এক্সক্লুসিভ ট্রান্সফার নিউজ, HD হাইলাইটস ও ক্রিয়েটরদের জন্য বেশি আয়ের সুযোগ।
+            An ad-free experience, exclusive transfer news, HD highlights and bigger earning opportunities for creators.
           </p>
           {user?.isPremium && (
             <span className="mt-5 inline-flex items-center gap-2 rounded-full border border-primary/40 bg-primary/10 px-4 py-1.5 text-xs font-bold text-primary">
-              <ShieldCheck className="h-4 w-4" aria-hidden /> আপনি সক্রিয় প্রিমিয়াম সদস্য
+              <ShieldCheck className="h-4 w-4" aria-hidden /> You are an active premium member
             </span>
           )}
         </div>
@@ -120,7 +120,7 @@ export function PremiumView() {
                   </span>
                   {plan.popular && (
                     <span className="flex items-center gap-1 rounded-full bg-fhb-gold/15 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-fhb-gold">
-                      <Sparkles className="h-3 w-3" aria-hidden /> সবচেয়ে জনপ্রিয়
+                      <Sparkles className="h-3 w-3" aria-hidden /> Most Popular
                     </span>
                   )}
                 </div>
@@ -128,7 +128,7 @@ export function PremiumView() {
                 <p className="mt-1 text-xs text-muted-foreground">{meta.desc}</p>
                 <div className="mt-6 flex items-baseline gap-1.5 border-b border-border/70 pb-6">
                   <span className="tabular font-display text-4xl font-bold text-foreground sm:text-[2.75rem]">
-                    {plan.price === 0 ? "ফ্রি" : formatMoney(plan.price)}
+                    {plan.price === 0 ? "Free" : formatMoney(plan.price)}
                   </span>
                   {plan.price > 0 && <span className="text-xs text-muted-foreground">/{plan.period}</span>}
                 </div>
@@ -167,12 +167,12 @@ export function PremiumView() {
                   )}
                 >
                   {subscribe.isPending && busy === plan.code
-                    ? "প্রসেসিং..."
+                    ? "Processing..."
                     : plan.price === 0
-                      ? "ফ্রি শুরু করুন"
+                      ? "Start Free"
                       : isCurrent
-                        ? "চালু আছে"
-                        : `${plan.name} নিন`}
+                        ? "Active"
+                        : `Get ${plan.name}`}
                 </Button>
               </div>
             );
@@ -187,13 +187,13 @@ export function PremiumView() {
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary">
               <CreditCard className="h-4.5 w-4.5 h-[18px] w-[18px]" aria-hidden />
             </span>
-            পেমেন্ট পদ্ধতি
+            Payment Methods
           </h3>
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-            ডেমো মোডে সাবস্ক্রিপশন সঙ্গে সঙ্গেই অ্যাক্টিভ হয়। প্রোডাকশনে bKash, Nagad, Rocket ও কার্ড পেমেন্ট
-            (SSLCommerz) ইন্টিগ্রেশনের জন্য প্রস্তুত কাঠামো —{" "}
-            <code className="rounded-sm bg-muted px-1.5 py-0.5 text-[10px]">/api/membership</code> এন্ডপয়েন্টে
-            গেটওয়ে কলব্যাক যুক্ত করলেই হবে।
+            In demo mode subscriptions activate instantly. In production, bKash, Nagad, Rocket and card payments are
+            ready for (SSLCommerz) integration —{" "}
+            just wire up gateway callbacks on the <code className="rounded-sm bg-muted px-1.5 py-0.5 text-[10px]">/api/membership</code>
+            endpoint.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
             {["bKash", "Nagad", "Rocket", "Visa", "Mastercard"].map((p) => (
@@ -204,7 +204,7 @@ export function PremiumView() {
           </div>
           <p className="mt-4 flex items-center gap-1.5 text-[11px] text-muted-foreground">
             <BadgeCheck className="h-3.5 w-3.5 text-primary" aria-hidden />
-            SSLCommerz নিরাপদ পেমেন্ট গেটওয়ে সাপোর্টেড
+            SSLCommerz secure payment gateway supported
           </p>
         </div>
         <div className="edge-lit rounded-2xl border border-border bg-card p-6">
@@ -212,13 +212,13 @@ export function PremiumView() {
             <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/12 text-primary">
               <HelpCircle className="h-[18px] w-[18px]" aria-hidden />
             </span>
-            সাধারণ প্রশ্ন
+            Frequently Asked Questions
           </h3>
           <div className="mt-4 space-y-3">
             {[
-              ["প্রিমিয়াম নিলে বিজ্ঞাপন বন্ধ হবে?", "জি! প্রিমিয়াম সদস্যরা সম্পূর্ণ বিজ্ঞাপনমুক্ত অভিজ্ঞতা পান।"],
-              ["ক্রিয়েটররা কীভাবে আয় করেন?", "শর্টসের ভিউ থেকে অ্যাড রেভিনিউ শেয়ার + ফ্যান টিপস — সবকিছু আয়ের ড্যাশবোর্ডে ট্র্যাক হয়।"],
-              ["যেকোনো সময় বাতিল করা যায়?", "হ্যাঁ, প্রোফাইল থেকে যেকোনো সময় ফ্রি প্ল্যানে ফিরে যেতে পারবেন।"],
+              ["Do ads go away with Premium?", "Yes! Premium members get a completely ad-free experience."],
+              ["How do creators earn?", "Ad revenue share from shorts views + fan tips — everything is tracked in the earnings dashboard."],
+              ["Can I cancel anytime?", "Yes, you can return to the free plan anytime from your profile."],
             ].map(([q, a]) => (
               <div key={q} className="rounded-xl border border-border bg-background/50 p-4">
                 <p className="text-xs font-bold text-foreground">{q}</p>

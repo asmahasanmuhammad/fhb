@@ -78,7 +78,7 @@ model Player {
   teamId          String?
   team            Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
   position        String  // GK | DF | MF | FW
-  nationality     String  @default("বাংলাদেশ")
+  nationality     String  @default("Bangladesh")
   jerseyNumber    Int?
   birthYear       Int?
   heightCm        Int?
@@ -101,7 +101,7 @@ model Competition {
   shortName   String
   type        String  // LEAGUE | CUP | INTERNATIONAL
   season      String  @default("2025-26")
-  country     String  @default("বাংলাদেশ")
+  country     String  @default("Bangladesh")
   description String?
   logoUrl     String?
   accentColor String  @default("#10B981")

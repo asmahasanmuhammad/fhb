@@ -103,10 +103,10 @@ async function main() {
     data: {
       email: "admin@fhb.com.bd",
       username: "fhbadmin",
-      name: "FHB অ্যাডমিন",
+      name: "FHB Admin",
       passwordHash: hashPassword("Admin@2025"),
       role: "ADMIN",
-      bio: "Football Hub Bangladesh-এর অফিসিয়াল অ্যাডমিন অ্যাকাউন্ট।",
+      bio: "The official admin account of Football Hub Bangladesh.",
       avatarUrl: null,
     },
   });
@@ -114,20 +114,20 @@ async function main() {
     data: {
       email: "editor@fhb.com.bd",
       username: "rashed_editor",
-      name: "রাশেদুল ইসলাম",
+      name: "Rashedul Islam",
       passwordHash: hashPassword("Editor@2025"),
       role: "ADMIN",
-      bio: "ফুটবল সাংবাদিক — বিপিএল ও জাতীয় দল বিট।",
+      bio: "Football journalist — covering the BPL and the national team.",
     },
   });
   const creator1 = await db.user.create({
     data: {
       email: "creator@fhb.com.bd",
       username: "shakil_khan",
-      name: "শাকিল খান",
+      name: "Shakil Khan",
       passwordHash: hashPassword("Creator@2025"),
       role: "CREATOR",
-      bio: "বিপিএল হাইলাইটস ও ফুটবল কনটেন্ট ক্রিয়েটর। প্রতিদিন নতুন শর্টস! ⚽🔥",
+      bio: "BPL highlights and football content creator. New shorts every day! ⚽🔥",
       followerCount: 12480,
     },
   });
@@ -135,20 +135,20 @@ async function main() {
     data: {
       email: "guru@fhb.com.bd",
       username: "footballguru",
-      name: "ফুটবল গুরু",
+      name: "Football Guru",
       passwordHash: hashPassword("Creator@2025"),
       role: "CREATOR",
-      bio: "ট্যাকটিক্স ব্রেকডাউন, প্লেয়ার অ্যানালাইসিস আর গোলপোস্ট স্পেশাল 🎯",
+      bio: "Tactics breakdowns, player analysis and goalpost specials 🎯",
       followerCount: 8730,
     },
   });
 
   const fanNames: Array<[string, string, string, string]> = [
-    ["tanvir@fhb.com.bd", "tanvir10", "তানভীর আহমেদ", "লাল-সবুজের ডান পাখা 🇧🇩 আবাহনী ফ্যান বয়েজ!"],
-    ["mim@fhb.com.bd", "mim_akter", "মিম আক্তার", "ফুটবল আমার প্রাণ 💚❤️ মোহামেডান সাপোর্টার"],
-    ["sakib@fhb.com.bd", "sakib_h", "সাকিব হোসেন", "বসুন্ধরা কিংস 🦁 সুপার ফ্যান। ম্যাচ মানেই স্টেডিয়াম!"],
-    ["nusrat@fhb.com.bd", "nusrat_j", "নুসরাত জাহান", "ফ্রি-কিক স্পেশালিস্ট ফ্যান 😄 ফুটবল নিয়েই সব"],
-    ["rakib@fhb.com.bd", "rakib_bd", "রাকিব হাসান", "বাংলাদেশের ফুটবল উন্নতি চাই, সাফ চ্যাম্পিয়ন হবেই ইনশাআল্লাহ!"],
+    ["tanvir@fhb.com.bd", "tanvir10", "Tanvir Ahmed", "Right wing of the red and green 🇧🇩 Abahani fan boys!"],
+    ["mim@fhb.com.bd", "mim_akter", "Mim Akter", "Football is my life 💚❤️ Mohammedan supporter"],
+    ["sakib@fhb.com.bd", "sakib_h", "Sakib Hossain", "Bashundhara Kings 🦁 super fan. Match day = stadium day!"],
+    ["nusrat@fhb.com.bd", "nusrat_j", "Nusrat Jahan", "Free-kick specialist fan 😄 All football, all the time"],
+    ["rakib@fhb.com.bd", "rakib_bd", "Rakib Hasan", "I want Bangladesh football to rise — SAFF champions, inshallah!"],
   ];
   const fans = [];
   for (const [email, username, name, bio] of fanNames) {
@@ -179,16 +179,16 @@ async function main() {
 
   // ================= TEAMS (BPL 2025-26) =================
   const teamDefs = [
-    { name: "বসুন্ধরা কিংস", shortName: "Bashundhara Kings", initials: "BK", city: "ঢাকা", stadium: "বসুন্ধরা কিংস এরিনা", founded: 2013, color: "#E11D48", color2: "#4C0519", strength: 0.92 },
-    { name: "আবাহনী লিমিটেড ঢাকা", shortName: "Abahani Ltd Dhaka", initials: "AB", city: "ঢাকা", stadium: "আবাহনী গ্রাউন্ড, ধানমন্ডি", founded: 1972, color: "#0891B2", color2: "#083344", strength: 0.84 },
-    { name: "মোহামেডান স্পোর্টিং ক্লাব", shortName: "Mohammedan SC", initials: "MSC", city: "ঢাকা", stadium: "বীরশ্রেষ্ঠ শহীদ সিপাহী কামাল স্টেডিয়াম", founded: 1936, color: "#059669", color2: "#022C22", strength: 0.82 },
-    { name: "শেখ রাসেল ক্রীড়া চক্র", shortName: "Sheikh Russel KC", initials: "SR", city: "ঢাকা", stadium: "রফিকউদ্দিন ভূঁইয়া স্টেডিয়াম, টঙ্গী", founded: 1995, color: "#7C3AED", color2: "#2E1065", strength: 0.71 },
-    { name: "সাইফ স্পোর্টিং ক্লাব", shortName: "Saif SC", initials: "SAIF", city: "ঢাকা", stadium: "সাইফ মালিবাগ চত্বর মাঠ", founded: 2016, color: "#B91C1C", color2: "#450A0A", strength: 0.68 },
-    { name: "ফোর্টিস ফুটবল ক্লাব", shortName: "Fortis FC", initials: "FTS", city: "ঢাকা", stadium: "ফোর্টিস এরিনা, আমুলিয়া", founded: 2020, color: "#CA8A04", color2: "#422006", strength: 0.61 },
-    { name: "বাংলাদেশ পুলিশ ফুটবল ক্লাব", shortName: "Police FC", initials: "POL", city: "ঢাকা", stadium: "পুলিশ গ্রাউন্ড, রাজারবাগ", founded: 1972, color: "#475569", color2: "#0F172A", strength: 0.56 },
-    { name: "রহমতগঞ্জ মুসলিম ফ্রেন্ডস সোসাইটি", shortName: "Rahmatganj MFS", initials: "RJ", city: "ঢাকা", stadium: "রহমতগঞ্জ মাঠ", founded: 1933, color: "#B45309", color2: "#451A03", strength: 0.51 },
-    { name: "মুক্তিযোদ্ধা সংস্কৃতি কেন্দ্র", shortName: "Muktijoddha SKC", initials: "MSK", city: "ঢাকা", stadium: "মুক্তিযোদ্ধা সংস্কৃতি কেন্দ্র মাঠ", founded: 1972, color: "#DC2626", color2: "#450A0A", strength: 0.49 },
-    { name: "ব্রাদার্স ইউনিয়ন", shortName: "Brothers Union", initials: "BU", city: "ঢাকা", stadium: "গোপীবাগ ব্রাদার্স ইউনিয়ন মাঠ", founded: 1949, color: "#EA580C", color2: "#431407", strength: 0.46 },
+    { name: "Bashundhara Kings", shortName: "Bashundhara Kings", initials: "BK", city: "Dhaka", stadium: "Bashundhara Kings Arena", founded: 2013, color: "#E11D48", color2: "#4C0519", strength: 0.92 },
+    { name: "Abahani Limited Dhaka", shortName: "Abahani Ltd Dhaka", initials: "AB", city: "Dhaka", stadium: "Abahani Ground, Dhanmondi", founded: 1972, color: "#0891B2", color2: "#083344", strength: 0.84 },
+    { name: "Mohammedan Sporting Club", shortName: "Mohammedan SC", initials: "MSC", city: "Dhaka", stadium: "Bir Shrestha Shaheed Sepahi Kamal Stadium", founded: 1936, color: "#059669", color2: "#022C22", strength: 0.82 },
+    { name: "Sheikh Russel Krira Chakra", shortName: "Sheikh Russel KC", initials: "SR", city: "Dhaka", stadium: "Rafiquddin Bhuiyan Stadium, Tongi", founded: 1995, color: "#7C3AED", color2: "#2E1065", strength: 0.71 },
+    { name: "Saif Sporting Club", shortName: "Saif SC", initials: "SAIF", city: "Dhaka", stadium: "Saif Malibagh Court Ground", founded: 2016, color: "#B91C1C", color2: "#450A0A", strength: 0.68 },
+    { name: "Fortis Football Club", shortName: "Fortis FC", initials: "FTS", city: "Dhaka", stadium: "Fortis Arena, Amulia", founded: 2020, color: "#CA8A04", color2: "#422006", strength: 0.61 },
+    { name: "Bangladesh Police Football Club", shortName: "Police FC", initials: "POL", city: "Dhaka", stadium: "Police Ground, Rajarbagh", founded: 1972, color: "#475569", color2: "#0F172A", strength: 0.56 },
+    { name: "Rahmatganj Muslim Friends Society", shortName: "Rahmatganj MFS", initials: "RJ", city: "Dhaka", stadium: "Rahmatganj Ground", founded: 1933, color: "#B45309", color2: "#451A03", strength: 0.51 },
+    { name: "Muktijoddha Sangsad Krira Chakra", shortName: "Muktijoddha SKC", initials: "MSK", city: "Dhaka", stadium: "Muktijoddha Sangsad Ground", founded: 1972, color: "#DC2626", color2: "#450A0A", strength: 0.49 },
+    { name: "Brothers Union", shortName: "Brothers Union", initials: "BU", city: "Dhaka", stadium: "Gopibag Brothers Union Ground", founded: 1949, color: "#EA580C", color2: "#431407", strength: 0.46 },
   ];
   const teams: Record<string, string> = {};
   for (const t of teamDefs) {
@@ -202,7 +202,7 @@ async function main() {
         founded: t.founded,
         color: t.color,
         color2: t.color2,
-        description: `${t.city}ভিত্তিক ${t.shortName} — বাংলাদেশ প্রিমিয়ার লিগের নিয়মিত প্রতিযোগী। হোম ভেন্যু: ${t.stadium}।`,
+        description: `${t.shortName} of ${t.city} — a regular contender in the Bangladesh Premier League. Home venue: ${t.stadium}.`,
       },
     });
     teams[t.initials] = team.id;
@@ -212,68 +212,68 @@ async function main() {
   type PDef = { name: string; team: string; pos: string; num: number; nat?: string; by?: number; nt?: boolean; goals?: number; assists?: number; apps?: number; rating?: number; cs?: number; bio?: string; };
   const playerDefs: PDef[] = [
     // Bashundhara Kings
-    { name: "মিতুল মারমা", team: "BK", pos: "GK", num: 1, nt: true, cs: 5, apps: 7, rating: 7.3, bio: "জাতীয় দলের পছন্দের গোলরক্ষক, রিফ্লেক্সে অসাধারণ।" },
-    { name: "তপু বড়ুয়ান", team: "BK", pos: "DF", num: 5, nt: true, goals: 2, apps: 7, rating: 7.6, bio: "জাতীয় দলের অধিনায়কসুলভ ডিফেন্ডার, এয়ারিয়াল ডুয়েলে শক্তিশালী।" },
-    { name: "রাকিব হোসেন", team: "BK", pos: "MF", num: 7, nt: true, goals: 3, assists: 5, apps: 7, rating: 7.9, bio: "সেট-পিস স্পেশালিস্ট উইঙ্গার, ফ্রি-কিকে জাদুকর।" },
-    { name: "মোহাম্মদ ইব্রাহিম", team: "BK", pos: "FW", num: 11, nt: true, goals: 4, assists: 2, apps: 7, rating: 7.7, bio: "গতিশীল উইঙ্গার, ড্রিবলিংয়ে প্রতিপক্ষের ভয়ের নাম।" },
-    { name: "শেখ মোরশালিন", team: "BK", pos: "FW", num: 9, nt: true, goals: 5, apps: 7, rating: 7.8, bio: "গ্রাম ফুটবল থেকে বিপিএল স্টার — ফিনিশিং তার ব্র্যান্ড।" },
-    { name: "রানিয়েল", team: "BK", pos: "FW", num: 10, nat: "ব্রাজিল", goals: 6, assists: 3, apps: 7, rating: 8.1, bio: "ব্রাজিলিয়ান স্ট্রাইকার, লিগের সেরা ফরেন স্ট্রাইকারদের একজন।" },
-    { name: "দোরিয়েলতন", team: "BK", pos: "FW", num: 99, nat: "ব্রাজিল", goals: 4, assists: 4, apps: 6, rating: 7.7 },
-    { name: "মেহেদী হাসান", team: "BK", pos: "DF", num: 3, apps: 7, rating: 7.1, cs: 4 },
+    { name: "Mitul Marma", team: "BK", pos: "GK", num: 1, nt: true, cs: 5, apps: 7, rating: 7.3, bio: "The national team's first-choice goalkeeper with remarkable reflexes." },
+    { name: "Topu Barman", team: "BK", pos: "DF", num: 5, nt: true, goals: 2, apps: 7, rating: 7.6, bio: "A captain-grade defender for the national team, dominant in aerial duels." },
+    { name: "Rakib Hossain", team: "BK", pos: "MF", num: 7, nt: true, goals: 3, assists: 5, apps: 7, rating: 7.9, bio: "Set-piece specialist winger — a free-kick wizard." },
+    { name: "Mohammad Ibrahim", team: "BK", pos: "FW", num: 11, nt: true, goals: 4, assists: 2, apps: 7, rating: 7.7, bio: "Explosive winger — defenders fear his dribbling." },
+    { name: "Sheikh Morsalin", team: "BK", pos: "FW", num: 9, nt: true, goals: 5, apps: 7, rating: 7.8, bio: "From village football to BPL stardom — finishing is his brand." },
+    { name: "Raniel", team: "BK", pos: "FW", num: 10, nat: "Brazil", goals: 6, assists: 3, apps: 7, rating: 8.1, bio: "Brazilian striker — one of the league's finest foreign forwards." },
+    { name: "Dorielton", team: "BK", pos: "FW", num: 99, nat: "Brazil", goals: 4, assists: 4, apps: 6, rating: 7.7 },
+    { name: "Mehedi Hasan", team: "BK", pos: "DF", num: 3, apps: 7, rating: 7.1, cs: 4 },
     // Abahani
-    { name: "নবীব নেওয়াজ জিবন", team: "AB", pos: "FW", num: 9, nt: true, goals: 5, assists: 1, apps: 7, rating: 7.7, bio: "ভেটেরান স্ট্রাইকার, বক্সের ভেতরে চোখ ধাঁধানো মুভ।" },
-    { name: "সোহেল রানা", team: "AB", pos: "MF", num: 6, nt: true, goals: 1, assists: 3, apps: 7, rating: 7.5, bio: "মিডফিল্ডের ইঞ্জিন, ট্যাকল আর পাসে সমান দক্ষ।" },
-    { name: "ইয়াসিন খান", team: "AB", pos: "DF", num: 4, nt: true, goals: 1, apps: 6, rating: 7.2, bio: "অভিজ্ঞ সেন্টার-ব্যাক, নিজের এরিয়ায় দেয়াল।" },
-    { name: "বিপ্লব আহমেদ", team: "AB", pos: "FW", num: 17, nt: true, goals: 3, assists: 2, apps: 6, rating: 7.4 },
-    { name: "সাইফুল বারী টিটু", team: "AB", pos: "GK", num: 23, apps: 7, cs: 3, rating: 7.0 },
-    { name: "স্যামুয়েল ওকোনকো", team: "AB", pos: "FW", num: 88, nat: "নাইজেরিয়া", goals: 4, apps: 7, rating: 7.5 },
-    { name: "জুনিয়র সিলভা", team: "AB", pos: "MF", num: 8, nat: "ব্রাজিল", goals: 2, assists: 4, apps: 7, rating: 7.4 },
+    { name: "Nabib Newaz Jibon", team: "AB", pos: "FW", num: 9, nt: true, goals: 5, assists: 1, apps: 7, rating: 7.7, bio: "Veteran striker with dazzling movement inside the box." },
+    { name: "Sohel Rana", team: "AB", pos: "MF", num: 6, nt: true, goals: 1, assists: 3, apps: 7, rating: 7.5, bio: "The engine of the midfield — equally sharp at tackling and passing." },
+    { name: "Yasin Khan", team: "AB", pos: "DF", num: 4, nt: true, goals: 1, apps: 6, rating: 7.2, bio: "Experienced centre-back — a wall in his area." },
+    { name: "Biplab Ahmed", team: "AB", pos: "FW", num: 17, nt: true, goals: 3, assists: 2, apps: 6, rating: 7.4 },
+    { name: "Saiful Bari Titu", team: "AB", pos: "GK", num: 23, apps: 7, cs: 3, rating: 7.0 },
+    { name: "Samuel Okonkwo", team: "AB", pos: "FW", num: 88, nat: "Nigeria", goals: 4, apps: 7, rating: 7.5 },
+    { name: "Junior Silva", team: "AB", pos: "MF", num: 8, nat: "Brazil", goals: 2, assists: 4, apps: 7, rating: 7.4 },
     // Mohammedan
-    { name: "জামাল ভূঞা", team: "MSC", pos: "MF", num: 8, nt: true, goals: 2, assists: 4, apps: 7, rating: 7.8, bio: "বাংলাদেশ জাতীয় দলের অধিনায়ক, মিডফিল্ডের প্রাণপুরুষ। বিদেশে খেলা প্রথম বাংলাদেশি।" },
-    { name: "ফয়সাল আহমেদ ফাহিম", team: "MSC", pos: "FW", num: 7, nt: true, goals: 4, assists: 3, apps: 7, rating: 7.6, bio: "তরুণ ও উদীয়মান স্ট্রাইকার, গতি তার অস্ত্র।" },
-    { name: "বিশ্বনাথ ঘোষ", team: "MSC", pos: "DF", num: 5, nt: true, goals: 1, apps: 7, rating: 7.3 },
-    { name: "আশিকুর রহমান", team: "MSC", pos: "GK", num: 1, nt: true, cs: 4, apps: 7, rating: 7.2 },
-    { name: "মার্কোস ফেরেইরা", team: "MSC", pos: "DF", num: 44, nat: "ব্রাজিল", goals: 1, apps: 7, rating: 7.1 },
-    { name: "কোফি আপিয়া", team: "MSC", pos: "FW", num: 77, nat: "ঘানা", goals: 3, apps: 6, rating: 7.3 },
+    { name: "Jamal Bhuyan", team: "MSC", pos: "MF", num: 8, nt: true, goals: 2, assists: 4, apps: 7, rating: 7.8, bio: "Captain of the Bangladesh national team and the heartbeat of the midfield. The first Bangladeshi to play abroad." },
+    { name: "Faisal Ahmed Fahim", team: "MSC", pos: "FW", num: 7, nt: true, goals: 4, assists: 3, apps: 7, rating: 7.6, bio: "A young, rising striker whose weapon is pace." },
+    { name: "Bishwanath Ghosh", team: "MSC", pos: "DF", num: 5, nt: true, goals: 1, apps: 7, rating: 7.3 },
+    { name: "Ashiqur Rahman", team: "MSC", pos: "GK", num: 1, nt: true, cs: 4, apps: 7, rating: 7.2 },
+    { name: "Marcos Ferreira", team: "MSC", pos: "DF", num: 44, nat: "Brazil", goals: 1, apps: 7, rating: 7.1 },
+    { name: "Kofi Appiah", team: "MSC", pos: "FW", num: 77, nat: "Ghana", goals: 3, apps: 6, rating: 7.3 },
     // Sheikh Russel
-    { name: "তৌহিদুল ইসলাম সবুজ", team: "SR", pos: "MF", num: 10, nt: true, goals: 2, assists: 2, apps: 7, rating: 7.2 },
-    { name: "রাশেদুল পালোয়ান", team: "SR", pos: "FW", num: 9, goals: 3, apps: 7, rating: 7.0 },
-    { name: "মাহফুজুর রহমান", team: "SR", pos: "GK", num: 30, apps: 7, cs: 2, rating: 6.8 },
-    { name: "ড্যানিয়েল মেন্ডেস", team: "SR", pos: "MF", num: 20, nat: "ব্রাজিল", goals: 2, assists: 3, apps: 7, rating: 7.1 },
+    { name: "Touhidul Islam Sabuj", team: "SR", pos: "MF", num: 10, nt: true, goals: 2, assists: 2, apps: 7, rating: 7.2 },
+    { name: "Rashedul Palowan", team: "SR", pos: "FW", num: 9, goals: 3, apps: 7, rating: 7.0 },
+    { name: "Mahfuzur Rahman", team: "SR", pos: "GK", num: 30, apps: 7, cs: 2, rating: 6.8 },
+    { name: "Daniel Mendes", team: "SR", pos: "MF", num: 20, nat: "Brazil", goals: 2, assists: 3, apps: 7, rating: 7.1 },
     // Saif SC
-    { name: "রাহাত মিয়া", team: "SAIF", pos: "DF", num: 2, apps: 7, rating: 6.9 },
-    { name: "জুনায়েদ আহমেদ", team: "SAIF", pos: "MF", num: 14, goals: 2, apps: 7, rating: 7.0 },
-    { name: "ইমরান খান", team: "SAIF", pos: "FW", num: 11, goals: 3, assists: 1, apps: 7, rating: 7.1 },
-    { name: "আর্নেস্ট বোয়াটেং", team: "SAIF", pos: "FW", num: 9, nat: "ঘানা", goals: 4, apps: 7, rating: 7.2 },
-    { name: "শহীদুল ইসলাম", team: "SAIF", pos: "GK", num: 1, apps: 6, cs: 2, rating: 6.7 },
+    { name: "Rahat Mia", team: "SAIF", pos: "DF", num: 2, apps: 7, rating: 6.9 },
+    { name: "Junayed Ahmed", team: "SAIF", pos: "MF", num: 14, goals: 2, apps: 7, rating: 7.0 },
+    { name: "Imran Khan", team: "SAIF", pos: "FW", num: 11, goals: 3, assists: 1, apps: 7, rating: 7.1 },
+    { name: "Ernest Boateng", team: "SAIF", pos: "FW", num: 9, nat: "Ghana", goals: 4, apps: 7, rating: 7.2 },
+    { name: "Shahidul Islam", team: "SAIF", pos: "GK", num: 1, apps: 6, cs: 2, rating: 6.7 },
     // Fortis
-    { name: "ফারহান সিদ্দিক", team: "FTS", pos: "MF", num: 8, goals: 2, assists: 2, apps: 7, rating: 6.9 },
-    { name: "তানজিল আহমেদ", team: "FTS", pos: "FW", num: 7, goals: 2, apps: 7, rating: 6.8 },
-    { name: "মোজাম্মেল হোসেন", team: "FTS", pos: "DF", num: 4, goals: 1, apps: 7, rating: 6.8 },
-    { name: "নাঈম উদ্দিন", team: "FTS", pos: "GK", num: 21, apps: 7, cs: 1, rating: 6.6 },
+    { name: "Farhan Siddique", team: "FTS", pos: "MF", num: 8, goals: 2, assists: 2, apps: 7, rating: 6.9 },
+    { name: "Tanjil Ahmed", team: "FTS", pos: "FW", num: 7, goals: 2, apps: 7, rating: 6.8 },
+    { name: "Mozammel Hossain", team: "FTS", pos: "DF", num: 4, goals: 1, apps: 7, rating: 6.8 },
+    { name: "Nayeem Uddin", team: "FTS", pos: "GK", num: 21, apps: 7, cs: 1, rating: 6.6 },
     // Police
-    { name: "কামরুল হাসান", team: "POL", pos: "MF", num: 6, goals: 1, apps: 7, rating: 6.7 },
-    { name: "শাহরিয়ার কবির", team: "POL", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.8 },
-    { name: "আনিসুর রহমান", team: "POL", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.6 },
-    { name: "রিয়াদ হোসেন", team: "POL", pos: "DF", num: 3, apps: 6, rating: 6.5 },
+    { name: "Kamrul Hasan", team: "POL", pos: "MF", num: 6, goals: 1, apps: 7, rating: 6.7 },
+    { name: "Shahriar Kabir", team: "POL", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.8 },
+    { name: "Anisur Rahman", team: "POL", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.6 },
+    { name: "Riyad Hossain", team: "POL", pos: "DF", num: 3, apps: 6, rating: 6.5 },
     // Rahmatganj
-    { name: "তাসিকুল ইসলাম", team: "RJ", pos: "FW", num: 10, goals: 3, apps: 7, rating: 7.0 },
-    { name: "তুতুল হোসেন বাদশা", team: "RJ", pos: "FW", num: 9, nt: true, goals: 2, apps: 7, rating: 6.9 },
-    { name: "মোস্তাফিজুর রহমান", team: "RJ", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.5 },
-    { name: "সুমন বড়ুয়া", team: "RJ", pos: "MF", num: 8, goals: 1, apps: 7, rating: 6.6 },
+    { name: "Tasikul Islam", team: "RJ", pos: "FW", num: 10, goals: 3, apps: 7, rating: 7.0 },
+    { name: "Tutul Hossain Badsha", team: "RJ", pos: "FW", num: 9, nt: true, goals: 2, apps: 7, rating: 6.9 },
+    { name: "Mostafizur Rahman", team: "RJ", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.5 },
+    { name: "Suman Barua", team: "RJ", pos: "MF", num: 8, goals: 1, apps: 7, rating: 6.6 },
     // Muktijoddha
-    { name: "নাজমুল হাসান", team: "MSK", pos: "DF", num: 5, goals: 1, apps: 7, rating: 6.7 },
-    { name: "হাসিবুর রহমান", team: "MSK", pos: "MF", num: 7, goals: 1, apps: 7, rating: 6.6 },
-    { name: "রুস্তম আলী", team: "MSK", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.7 },
-    { name: "ইকবাল হোসেন", team: "MSK", pos: "GK", num: 22, apps: 7, cs: 0, rating: 6.4 },
+    { name: "Nazmul Hasan", team: "MSK", pos: "DF", num: 5, goals: 1, apps: 7, rating: 6.7 },
+    { name: "Hasibur Rahman", team: "MSK", pos: "MF", num: 7, goals: 1, apps: 7, rating: 6.6 },
+    { name: "Rustom Ali", team: "MSK", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.7 },
+    { name: "Iqbal Hossain", team: "MSK", pos: "GK", num: 22, apps: 7, cs: 0, rating: 6.4 },
     // Brothers Union
-    { name: "সাজিদ হোসেন", team: "BU", pos: "MF", num: 10, goals: 1, apps: 7, rating: 6.5 },
-    { name: "আরিফুল ইসলাম", team: "BU", pos: "FW", num: 11, goals: 2, apps: 7, rating: 6.6 },
-    { name: "জুবায়ের আহমেদ", team: "BU", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.3 },
-    { name: "শাকিল আহমেদ", team: "BU", pos: "DF", num: 6, apps: 7, rating: 6.4 },
+    { name: "Sajid Hossain", team: "BU", pos: "MF", num: 10, goals: 1, apps: 7, rating: 6.5 },
+    { name: "Ariful Islam", team: "BU", pos: "FW", num: 11, goals: 2, apps: 7, rating: 6.6 },
+    { name: "Jubayer Ahmed", team: "BU", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.3 },
+    { name: "Shakil Ahmed", team: "BU", pos: "DF", num: 6, apps: 7, rating: 6.4 },
     // National team stars not in BPL clubs (foreign based)
-    { name: "হামজা চৌধুরী", team: "", pos: "MF", num: 17, nat: "ইংল্যান্ড (বাংলাদেশি বংশোদ্ভূত)", nt: true, by: 1997, goals: 1, apps: 3, rating: 8.4, bio: "ইংলিশ প্রিমিয়ার লিগের ক্লাব লিসেস্টার সিটির মিডফিল্ডার। ২০২৫ সালে বাংলাদেশ জাতীয় দলে যোগ দেওয়া সবচেয়ে আলোচিত সাইনিং — বাংলাদেশি বংশোদ্ভূত প্রথম প্রিমিয়ার লিগ খেলোয়াড়।" },
-    { name: "রেজাউল হাসান জীবন", team: "", pos: "DF", num: 3, nt: true, by: 1999, goals: 0, apps: 3, rating: 7.0 },
+    { name: "Hamza Choudhury", team: "", pos: "MF", num: 17, nat: "England (Bangladeshi origin)", nt: true, by: 1997, goals: 1, apps: 3, rating: 8.4, bio: "Midfielder for Leicester City in the English Premier League. His 2025 switch to the Bangladesh national team is the most talked-about signing — the first Premier League player of Bangladeshi origin." },
+    { name: "Rezaul Hasan Jibon", team: "", pos: "DF", num: 3, nt: true, by: 1999, goals: 0, apps: 3, rating: 7.0 },
   ];
 
   const playerIds: Record<string, string> = {};
@@ -283,7 +283,7 @@ async function main() {
         name: p.name,
         teamId: p.team ? teams[p.team] : null,
         position: p.pos,
-        nationality: p.nat ?? "বাংলাদেশ",
+        nationality: p.nat ?? "Bangladesh",
         jerseyNumber: p.num,
         birthYear: p.by ?? rint(1993, 2004),
         heightCm: rint(165, 188),
@@ -293,7 +293,7 @@ async function main() {
         cleanSheets: p.cs ?? 0,
         rating: p.rating ?? 6.5,
         isNationalTeam: p.nt ?? false,
-        bio: p.bio ?? `${p.pos === "GK" ? "গোলরক্ষক" : p.pos === "DF" ? "ডিফেন্ডার" : p.pos === "MF" ? "মিডফিল্ডার" : "ফরোয়ার্ড"} — বিপিএলে নিয়মিত পারফর্ম করছেন।`,
+        bio: p.bio ?? `${p.pos === "GK" ? "Goalkeeper" : p.pos === "DF" ? "Defender" : p.pos === "MF" ? "Midfielder" : "Forward"} — a regular performer in the BPL.`,
       },
     });
     playerIds[p.name] = player.id;
@@ -302,36 +302,36 @@ async function main() {
   // ================= COMPETITIONS =================
   const bpl = await db.competition.create({
     data: {
-      name: "বাংলাদেশ প্রিমিয়ার লিগ",
+      name: "Bangladesh Premier League",
       shortName: "BPL",
       type: "LEAGUE",
       season: "2025-26",
-      country: "বাংলাদেশ",
+      country: "Bangladesh",
       accentColor: "#1FE07A",
       description:
-        "দেশের শীর্ষ ফুটবল লিগ — ১০টি ক্লাব, হোম-অ্যান্ড-অ্যাওয়ে ফরম্যাটে মোট ১৮ রাউন্ড। চ্যাম্পিয়ন দল এএফসি চ্যাম্পিয়ন্স লিগ টু-তে খেলার সুযোগ পায়।",
+        "The nation's top football league — 10 clubs, 18 rounds in a home-and-away format. The champions earn a place in the AFC Champions League Two.",
     },
   });
   const fedCup = await db.competition.create({
     data: {
-      name: "ফেডারেশন কাপ",
+      name: "Federation Cup",
       shortName: "Federation Cup",
       type: "CUP",
       season: "2025-26",
-      country: "বাংলাদেশ",
+      country: "Bangladesh",
       accentColor: "#F5C24B",
-      description: "বাংলাদেশের সবচেয়ে পুরোনো ক্লাব কাপ টুর্নামেন্ট — নকআউট ফরম্যাটে দেশের সেরা ক্লাবগুলোর লড়াই।",
+      description: "Bangladesh's oldest club cup tournament — the nation's best clubs battling it out in knockout format.",
     },
   });
   const saff = await db.competition.create({
     data: {
-      name: "সাফ চ্যাম্পিয়নশিপ",
+      name: "SAFF Championship",
       shortName: "SAFF Championship",
       type: "INTERNATIONAL",
       season: "2025",
-      country: "সাফ অঞ্চল",
+      country: "SAFF Region",
       accentColor: "#FF5A48",
-      description: "দক্ষিণ এশিয়ার শীর্ষ আন্তর্জাতিক ফুটবল টুর্নামেন্ট। বাংলাদেশ, ভারত, মালদ্বীপসহ ৭ দেশের অংশগ্রহণ।",
+      description: "South Asia's premier international football tournament, featuring seven nations including Bangladesh, India and the Maldives.",
     },
   });
 
@@ -402,20 +402,20 @@ async function main() {
       for (let i = 0; i < hs; i++) {
         const [name] = await scorersFor(h, 1);
         await db.matchEvent.create({
-          data: { matchId: m.id, minute: rint(3, 90), type: "GOAL", teamId: teams[h], teamSide: "home", playerName: name, detail: "গোল" },
+          data: { matchId: m.id, minute: rint(3, 90), type: "GOAL", teamId: teams[h], teamSide: "home", playerName: name, detail: "Goal" },
         });
       }
       for (let i = 0; i < as; i++) {
         const [name] = await scorersFor(a, 1);
         await db.matchEvent.create({
-          data: { matchId: m.id, minute: rint(3, 90), type: "GOAL", teamId: teams[a], teamSide: "away", playerName: name, detail: "গোল" },
+          data: { matchId: m.id, minute: rint(3, 90), type: "GOAL", teamId: teams[a], teamSide: "away", playerName: name, detail: "Goal" },
         });
       }
       await db.matchEvent.create({
-        data: { matchId: m.id, minute: 45, type: "HT", detail: "হাফ-টাইম" },
+        data: { matchId: m.id, minute: 45, type: "HT", detail: "Half-Time" },
       });
       await db.matchEvent.create({
-        data: { matchId: m.id, minute: 90, type: "FT", detail: "ফুল-টাইম" },
+        data: { matchId: m.id, minute: 90, type: "FT", detail: "Full-Time" },
       });
     }
   }
@@ -464,21 +464,21 @@ async function main() {
     const [hname] = await scorersFor(h, 1);
     const [aname] = await scorersFor(a, 1);
     await db.matchEvent.create({
-      data: { matchId: m.id, minute: Math.max(2, minute - rint(18, 30)), type: "GOAL", teamId: teams[h], teamSide: "home", playerName: hname, detail: "গোল" },
+      data: { matchId: m.id, minute: Math.max(2, minute - rint(18, 30)), type: "GOAL", teamId: teams[h], teamSide: "home", playerName: hname, detail: "Goal" },
     });
     await db.matchEvent.create({
-      data: { matchId: m.id, minute: Math.max(4, minute - rint(5, 14)), type: "YELLOW", teamId: teams[a], teamSide: "away", playerName: aname, detail: "হলুদ কার্ড" },
+      data: { matchId: m.id, minute: Math.max(4, minute - rint(5, 14)), type: "YELLOW", teamId: teams[a], teamSide: "away", playerName: aname, detail: "Yellow card" },
     });
     return m;
   }
 
-  const liveMatch1 = await createLive(derbyPair, 37); // বসুন্ধরা বনাম মোহামেডান — ডার্বি লাইভ!
+  const liveMatch1 = await createLive(derbyPair, 37); // Bashundhara vs Mohammedan — derby is live!
   const liveMatch2 = await createLive(live2Pair, 68);
   // give live2 a goal
   {
     const [h, a] = live2Pair;
     const [name] = await scorersFor(h, 1);
-    await db.matchEvent.create({ data: { matchId: liveMatch2.id, minute: 24, type: "GOAL", teamId: teams[h], teamSide: "home", playerName: name, detail: "গোল" } });
+    await db.matchEvent.create({ data: { matchId: liveMatch2.id, minute: 24, type: "GOAL", teamId: teams[h], teamSide: "home", playerName: name, detail: "Goal" } });
     await db.match.update({ where: { id: liveMatch2.id }, data: { homeScore: 1, awayScore: 0 } });
   }
 
@@ -539,17 +539,17 @@ async function main() {
         status: "FINISHED",
         period: "FT",
         kickoff,
-        venue: "বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা",
-        round: "কোয়ার্টার ফাইনাল",
+        venue: "Bangabandhu National Stadium, Dhaka",
+        round: "Quarter-final",
       },
     });
     for (let i = 0; i < finalH; i++) {
       const [n] = await scorersFor(h, 1);
-      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: "GOAL", teamSide: "home", teamId: teams[h], playerName: n, detail: "গোল" } });
+      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: "GOAL", teamSide: "home", teamId: teams[h], playerName: n, detail: "Goal" } });
     }
     for (let i = 0; i < finalA; i++) {
       const [n] = await scorersFor(a, 1);
-      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: "GOAL", teamSide: "away", teamId: teams[a], playerName: n, detail: "গোল" } });
+      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: "GOAL", teamSide: "away", teamId: teams[a], playerName: n, detail: "Goal" } });
     }
   }
   // semifinal upcoming
@@ -560,8 +560,8 @@ async function main() {
       awayTeamId: teams["AB"],
       status: "SCHEDULED",
       kickoff: new Date(now.getTime() + 5 * DAY),
-      venue: "বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা",
-      round: "সেমিফাইনাল",
+      venue: "Bangabandhu National Stadium, Dhaka",
+      round: "Semi-final",
       featured: true,
     },
   });
@@ -572,8 +572,8 @@ async function main() {
       awayTeamId: teams["SR"],
       status: "SCHEDULED",
       kickoff: new Date(now.getTime() + 6 * DAY),
-      venue: "বসুন্ধরা কিংস এরিনা, ঢাকা",
-      round: "সেমিফাইনাল",
+      venue: "Bashundhara Kings Arena, Dhaka",
+      round: "Semi-final",
     },
   });
 
@@ -581,22 +581,22 @@ async function main() {
   // Bangladesh "team" — use a pseudo team? We need Team rows for matches. Create national team entries.
   const bd = await db.team.create({
     data: {
-      name: "বাংলাদেশ জাতীয় ফুটবল দল",
+      name: "Bangladesh National Football Team",
       shortName: "Bangladesh",
       initials: "BAN",
-      city: "ঢাকা",
-      stadium: "বঙ্গবন্ধু জাতীয় স্টেডিয়াম",
+      city: "Dhaka",
+      stadium: "Bangabandhu National Stadium",
       founded: 1972,
       color: "#006A4E",
       color2: "#F42A41",
-      description: "লাল-সবুজের প্রতিনিধি — সাফ অঞ্চলের অন্যতম জনপ্রিয় দল। ফিফা র‍্যাঙ্কিং উন্নতির ধারায়।",
+      description: "The red and green representatives — one of the most popular teams in the SAFF region, on an upward FIFA ranking curve.",
     },
   });
   const india = await db.team.create({
-    data: { name: "ভারত জাতীয় ফুটবল দল", shortName: "India", initials: "IND", city: "নয়াদিল্লি", stadium: "জওহরলাল নেহেরু স্টেডিয়াম", founded: 1938, color: "#2563EB", color2: "#1E3A8A", description: "সাফ অঞ্চলের শীর্ষ দল।" },
+    data: { name: "India National Football Team", shortName: "India", initials: "IND", city: "New Delhi", stadium: "Jawaharlal Nehru Stadium", founded: 1938, color: "#2563EB", color2: "#1E3A8A", description: "A top team in the SAFF region." },
   });
   const maldives = await db.team.create({
-    data: { name: "মালদ্বীপ জাতীয় ফুটবল দল", shortName: "Maldives", initials: "MDV", city: "মালে", stadium: "গালোলহু জাতীয় স্টেডিয়াম", founded: 1952, color: "#DC2626", color2: "#7F1D1D", description: "সাফ অঞ্চলের শক্তিশালী দল।" },
+    data: { name: "Maldives National Football Team", shortName: "Maldives", initials: "MDV", city: "Male", stadium: "Galolhu National Stadium", founded: 1952, color: "#DC2626", color2: "#7F1D1D", description: "A strong team in the SAFF region." },
   });
 
   const saff1 = await db.match.create({
@@ -609,13 +609,13 @@ async function main() {
       status: "FINISHED",
       period: "FT",
       kickoff: new Date(now.getTime() - 12 * DAY),
-      venue: "বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা",
-      round: "গ্রুপ পর্ব",
+      venue: "Bangabandhu National Stadium, Dhaka",
+      round: "Group Stage",
       featured: true,
     },
   });
-  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 34, type: "GOAL", teamId: bd.id, teamSide: "home", playerName: "ফয়সাল আহমেদ ফাহিম", detail: "গোল" } });
-  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 61, type: "GOAL", teamId: india.id, teamSide: "away", playerName: "সুনিল ছেত্রী", detail: "গোল (পেনাল্টি)" } });
+  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 34, type: "GOAL", teamId: bd.id, teamSide: "home", playerName: "Faisal Ahmed Fahim", detail: "Goal" } });
+  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 61, type: "GOAL", teamId: india.id, teamSide: "away", playerName: "Sunil Chhetri", detail: "Goal (penalty)" } });
   await db.match.create({
     data: {
       competitionId: saff.id,
@@ -626,8 +626,8 @@ async function main() {
       status: "FINISHED",
       period: "FT",
       kickoff: new Date(now.getTime() - 8 * DAY),
-      venue: "বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা",
-      round: "গ্রুপ পর্ব",
+      venue: "Bangabandhu National Stadium, Dhaka",
+      round: "Group Stage",
     },
   });
   await db.match.create({
@@ -637,8 +637,8 @@ async function main() {
       awayTeamId: india.id,
       status: "SCHEDULED",
       kickoff: new Date(now.getTime() + 3 * DAY),
-      venue: "বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা",
-      round: "সেমিফাইনাল",
+      venue: "Bangabandhu National Stadium, Dhaka",
+      round: "Semi-final",
       featured: true,
     },
   });
@@ -688,241 +688,241 @@ async function main() {
   const day = (n: number) => new Date(now.getTime() - n * DAY);
   const articles = [
     {
-      title: "হামজা চৌধুরী লাল-সবুজে: বাংলাদেশ ফুটবলের ইতিহাসে নতুন অধ্যায়",
+      title: "Hamza Choudhury in Red and Green: A New Chapter in Bangladesh Football History",
       category: "NATIONAL",
       featured: true,
       cover: IMG.celebrate[0],
       views: 48210,
       likes: 1240,
-      excerpt: "ইংলিশ প্রিমিয়ার লিগের তারকা মিডফিল্ডার হামজা চৌধুরী বাংলাদেশ জাতীয় দলের জার্সি গায়ে মাঠে নামছেন — বাংলাদেশি বংশোদ্ভূত এই প্রথম প্রিমিয়ার লিগ খেলোয়াড়।",
-      content: `সিলেটের এক বাংলাদেশি পরিবারের ছেলে, ইংল্যান্ডের মাটিতে বেড়ে ওঠা, আর আজ লাল-সবুজের জার্সি — হামজা চৌধুরীর গল্পটা স্বপ্নের মতোই। লিসেস্টার সিটির হয়ে প্রিমিয়ার লিগ আর এফএ কাপ জিতেছেন যিনি, সেই খেলোয়াড় এবার বাংলাদেশ জাতীয় দলের হয়ে মাঠে নামতে যাচ্ছেন।
+      excerpt: "Premier League midfielder Hamza Choudhury is set to pull on the Bangladesh national team jersey — the first Premier League player of Bangladeshi origin to do so.",
+      content: `A boy from a Bangladeshi family in Sylhet, raised on English soil, now wearing the red and green — Hamza Choudhury's story reads like a dream. The midfielder who won the Premier League and FA Cup with Leicester City is now set to take the field for the Bangladesh national team.
 
-## কেন এটা ঐতিহাসিক
+## Why This Is Historic
 
-বাংলাদেশ ফুটবলের ইতিহাসে এর আগে কখনো এই পর্যায়ের কোনো খেলোয়াড় জাতীয় দলে যোগ দেননি। প্রিমিয়ার লিগে ১০০ ম্যাচের বেশি খেলা মিডফিল্ডার যখন সাফ অঞ্চলের মাঠে নামবেন, তখন শুধু বাংলাদেশ নয় — পুরো দক্ষিণ এশিয়ার ফুটবল মানচিত্রেই এটা বড় সংবাদ।
+No player of this calibre has ever joined the Bangladesh national team before. When a midfielder with over 100 Premier League appearances takes the field in the SAFF region, it is big news not just for Bangladesh but for the entire South Asian football map.
 
-## মিডফিল্ডে কী বদলাবে
+## What Changes in Midfield
 
-- বল জয়ের হার উল্লেখযোগ্যভাবে বাড়বে
-- দ্রুত ট্রানজিশনে সামনের সারিতে সরাসরি পাস
-- সেট-পিসে বাড়তি শক্তি
-- তরুণ খেলোয়াড়দের জন্য রোল মডেল
+- A significantly higher ball-winning rate
+- Direct passes to the front line during quick transitions
+- Extra strength at set pieces
+- Role models for young players
 
-## সমর্থকদের প্রত্যাশা
+## What Fans Expect
 
-সোশ্যাল মিডিয়ায় ইতোমধ্যে হ্যাশট্যাগ **#হামজা_বাংলাদেশে** ট্রেন্ডিং। ঢাকার মাঠে তাঁর প্রথম ম্যাচের টিকিট নিয়ে উৎসাহী সমর্থকদের ভিড় লেগেছে বারো থেকেই।
+The hashtag **#HamzaToBangladesh** is already trending on social media. Fans have been queuing since noon for tickets to his first match in Dhaka.
 
-ফুটবল বিশ্লেষকরা বলছেন, হামজার আগমন শুধু মাঠের ভেতরেই নয় — বাংলাদেশ ফুটবলের ব্র্যান্ড ভ্যালু আর স্পনসরশিপেও নতুন দিগন্ত খুলে দেবে। সাফ সেমিফাইনালে তাঁর অভিষেক হতে পারে বলে জানিয়েছে বিএফএফ সূত্র।`,
+Analysts believe Hamza's arrival opens new horizons beyond the pitch — for Bangladesh football's brand value and sponsorships. BFF sources say he could make his debut in the SAFF semi-final.`,
     },
     {
-      title: "বিপিএলে দাপুটে বসুন্ধরা: কিংস করপোরেশন এগিয়ে থাকল পয়েন্ট টেবিলে",
+      title: "Bashundhara Dominate the BPL: Kings Stay Top of the Table",
       category: "BPL",
       featured: false,
       cover: IMG.action[0],
       views: 32104,
       likes: 890,
-      excerpt: "ঘরের মাঠে দাপুটে জয়ে লিগ টেবিলের শীর্ষে নিজের আধিপত্য ধরে রেখেছে ডিফেন্ডিং চ্যাম্পিয়ন বসুন্ধরা কিংস।",
-      content: `বসুন্ধরা কিংস এরিনায় গতকালের ম্যাচে দর্শকদের উপভোগ্য ফুটবল উপহার দিয়েছে ডিফেন্ডিং চ্যাম্পিয়নরা। প্রথমার্ধেই দুই গোলের লিড নিয়ে তারা ম্যাচের নিয়ন্ত্রণ হাতে নেয়।
+      excerpt: "Defending champions Bashundhara Kings keep their grip on top spot with an emphatic home win.",
+      content: `The defending champions served up an entertaining display in yesterday's match at Bashundhara Kings Arena. Two first-half goals put them in control of the game.
 
-## ম্যাচ রিপোর্ট
+## Match Report
 
-প্রথমার্ধের ২২ মিনিটে রানিয়েলের পাস থেকে মোরশালিনের গোলে এগিয়ে যায় কিংস। ইনজুরি টাইমে রাকিব হোসেনের কার্লড ফ্রি-কিক জালে গিয়ে স্কোরলাইন ২-০ করে। দ্বিতীয়ার্ধে পাল্টা আক্রমণ করলেও ঘাটতি মানতে হয় প্রতিপক্ষকে।
+The Kings went ahead on 22 minutes when Morsalin finished a Raniel pass. In injury time Rakib Hossain's curled free kick made it 2-0. The opponents pushed back after the break but had to settle for the deficit.
 
-## পয়েন্ট টেবিলে অবস্থান
+## Position in the Table
 
-টানা জয়ে কিংস তাদের শীর্ষস্থান আরও মজবুত করেছে। গোল ব্যবধানে তারা দ্বিতীয় স্থানের দলের চেয়ে অনেক এগিয়ে।
+The Kings have strengthened their grip on top spot with back-to-back wins. Their goal difference is far ahead of the second-placed team.
 
-> "স্কোয়াডের গভীরতাই আমাদের শক্তি। মৌসুম লম্বা, এক ম্যাচে নয় — ধারাবাহিকতায় বিশ্বাস রাখি।" — কিংস কোচিং স্টাফ
+> "Squad depth is our strength. The season is long — we believe in consistency, not one-off matches." — Kings coaching staff
 
-পরের রাউন্ডে তাদের মুখোমুখি হতে চলেছে প্রতিদ্বন্দ্বী মোহামেডান — যেটাকে সবাই বলছে মৌসুমের আসল পরীক্ষা।`,
+Next up they face rivals Mohammedan — what everyone is calling the real test of the season.`,
     },
     {
-      title: "ট্রান্সফার বাজার গরম: মোহামেডানের হয়ে খেলতে চান ব্রাজিলিয়ান স্ট্রাইকার",
+      title: "Transfer Market Heats Up: Brazilian Striker Wants Mohammedan Move",
       category: "TRANSFER",
       featured: false,
       cover: IMG.dribble[0],
       views: 27650,
       likes: 540,
-      excerpt: "মধ্যপ্রাচ্যের লিগ থেকে ফিরছেন অভিজ্ঞ ফরোয়ার্ড — মোটবাইকের গুজব নিয়ে আলোচনায় মোহামেডান ক্যাম্প।",
-      content: `জানা গেছে, মোহামেডান এসসি ম্যানেজমেন্ট ব্রাজিলিয়ান স্ট্রাইকার নিয়ে আগ্রহী। সূত্র বলছে, খেলোয়াড়ের এজেন্টের সঙ্গে ইতিমধ্যে প্রাথমিক বৈঠক হয়েছে।
+      excerpt: "An experienced forward returns from a Middle East league — the Mohammedan camp is abuzz with transfer rumours.",
+      content: `Sources say Mohammedan SC management are interested in a Brazilian striker. The player's agent has reportedly already held initial talks with the club.
 
-## চুক্তির শর্ত
+## Contract Terms
 
-- ১ বছরের চুক্তি + ১ বছরের এক্সটেনশন অপশন
-- মাসিক বেতন ধরা হয়েছে বিপিএলের শীর্ষ ব্র্যাকেটে
-- ম্যাচ-উইনিং বোনাস ধারা যুক্ত
+- 1-year contract + 1-year extension option
+- Monthly wage set in the BPL's top bracket
+- Match-winning bonus clause included
 
-মোহামেডান কর্তৃপক্ষ এ বিষয়ে আনুষ্ঠানিক স্বীকারোক্তি এখনো দেয়নি। তবে ক্লাব সূত্র বলছে, আক্রমণে বিদেশি কোটা পূরণে তারা যাচাই-বাছাই করছে একাধিক প্রোফাইল।
+Mohammedan officials have made no formal comment yet. But club sources say they are evaluating several profiles to fill their foreign quota up front.
 
-সমর্থকদের উচ্ছ্বাস দেখা যাচ্ছে সোশ্যাল মিডিয়ায় — অনেকেই মনে করছেন অভিজ্ঞ ব্রাজিলিয়ান যোগ দিলে সামনের সারিতে মোহামেডান হবে আরও ভয়ংকর। ট্রান্সফার উইন্ডো বন্ধ হওয়ার আগেই চূড়ান্ত সিদ্ধান্ত আসতে পারে বলে জানিয়েছে ক্লাব সংশ্লিষ্টরা।`,
+Excitement is visible on social media — many believe an experienced Brazilian would make Mohammedan's attack even more fearsome. Club insiders say a final decision could come before the transfer window closes.`,
     },
     {
-      title: "আবাহনীতে ফেরার পথে জিবন? ক্লাব কর্তৃপক্ষের সঙ্গে বৈঠক শেষে ভালো বার্তা",
+      title: "Jibon on his way back to Abahani? Good news after talks with club officials",
       category: "TRANSFER",
       featured: false,
       cover: IMG.action[1],
       views: 21380,
       likes: 460,
-      excerpt: "জাতীয় দলের স্ট্রাইকার নবীব নেওয়াজ জিবনের পুরোনো ক্লাবে ফেরার বিষয়ে ইতিবাচক আলাপ চলছে বলে জানা গেছে।",
-      content: `সূত্র জানাচ্ছে, আবাহনী কর্তৃপক্ষের সঙ্গে জিবনের সাক্ষাৎকার ইতিমধ্যে শেষ হয়েছে। খেলোয়াড় নিজেও ধানমন্ডির দর্শকদের ভালোবাসার কথা মনে করিয়ে দিয়েছেন।
+      excerpt: "National team striker Nabi Newaz Jibon is reportedly in positive talks over a return to his former club.",
+      content: `Sources say Jibon has already completed talks with Abahani officials. The player himself has spoken about his love for the Dhanmondi faithful.
 
-## কী বাধা এখন
+## What Stands in the Way
 
-চুক্তির মেয়াদ আর বেতন কাঠামো নিয়ে এখনো কিছু আলোচনা বাকি। আবাহনী আনুষ্ঠানিক ঘোষণার আগে সব শর্ত চূড়ান্ত করতে চাইছে।
+Some talks remain over contract length and the wage structure. Abahani want every term finalized before an official announcement.
 
-ফুটবলার বদলি বাজারে দর্শকদের নজর এখন এই দুই ক্লাবের দিকেই। কোন রঙের জার্সিতে জিবনকে দেখা যাবে — কয়েকদিনের মধ্যেই স্পষ্ট হবে বলে মনে করছে সংশ্লিষ্টরা।`,
+All eyes in the transfer market are on these two clubs. Which colour jersey Jibon will wear should become clear within days.`,
     },
     {
-      title: "সাফ সেমিফাইনালের প্রস্তুতি শুরু: ক্যাম্পে যোগ দিলেন সব তারকা",
+      title: "SAFF Semi-Final Prep Begins: All Stars Join the Camp",
       category: "NATIONAL",
       featured: false,
       cover: IMG.training[0],
       views: 19420,
       likes: 512,
-      excerpt: "ভারতের বিপক্ষে সেমিফাইনালের আগে জাতীয় দলের প্রস্তুতি ক্যাম্প শুরু হয়েছে — হামজা চৌধুরীসহ সব নিয়মিত খেলোয়াড় উপস্থিত।",
-      content: `জাতীয় দলের প্রস্তুতি ক্যাম্পে যোগ দিয়েছেন সব নিয়মিত খেলোয়াড়। কোচিং স্টাফ জানিয়েছে, এবারের ক্যাম্পে ফিটনেস ও সেট-পিসে বিশেষ জোর দেওয়া হচ্ছে।
+      excerpt: "The national team's preparation camp has begun ahead of the semi-final against India — all regulars including Hamza Choudhury are present.",
+      content: `All regular players have joined the national team's preparation camp. The coaching staff say this camp puts special emphasis on fitness and set pieces.
 
-## কোচের পরিকল্পনা
+## The Coach's Plan
 
-- প্রথম সপ্তাহ: ফিজিক্যাল ও রিকভারি
-- দ্বিতীয় সপ্তাহ: ট্যাকটিক্যাল ড্রিল, সেট-পিস
-- শেষ পর্ব: প্র্যাকটিস ম্যাচ
+- Week one: physical work and recovery
+- Week two: tactical drills and set pieces
+- Final phase: practice matches
 
-## আঘাতপ্রাপ্তদের খবর
+## Injury News
 
-ডিফেন্সে দুই জন খেলোয়াড় ছোটখাটো ইনজুরিতে আছেন, তবে ম্যাচের আগেই ফিরে আসার আশা করছে মেডিকেল টিম।
+Two defenders are carrying minor injuries, but the medical team expects them back before the match.
 
-সমর্থকদের আবেগ জানিয়ে অধিনায়ক বলেছেন, "বঙ্গবন্ধু স্টেডিয়ামে আমাদের সেরা পারফরম্যান্স দেখানোর সুযোগ — দর্শকের সাপোর্টই আমাদের ১২তম খেলোয়াড়।"`,
+The captain thanked the fans: "Bangabandhu Stadium is our chance to show our best — the crowd's support is our 12th man."`,
     },
     {
-      title: "ফেডারেশন কাপ সেমিফাইনালে মোহামেডান-আবাহনী ক্লাশ: পুরোনো প্রতিদ্বন্দ্বিতার নতুন অধ্যায়",
+      title: "Mohammedan vs Abahani in Federation Cup Semi-Final: A New Chapter in an Old Rivalry",
       category: "NATIONAL",
       featured: false,
       cover: IMG.stadium[0],
       views: 17650,
       likes: 380,
-      excerpt: "ঢাকার ফুটবলের সবচেয়ে বড় দুই প্রতিদ্বন্দ্বী সেমিফাইনালে মুখোমুখি — টিকিটের চাহিদা তুঙ্গে।",
-      content: `ফেডারেশন কাপের সেমিফাইনালে মুখোমুখি হচ্ছে ঢাকার ফুটবলের দুই ঐতিহ্যবাহী ক্লাব — মোহামেডান এসসি ও আবাহনী লিমিটেড। কোয়ার্টার ফাইনালে দাপুটে জয়ে দুই দলই শেষ চারে উঠেছে।
+      excerpt: "Dhaka football's two biggest rivals meet in the semi-final — ticket demand is through the roof.",
+      content: `The Federation Cup semi-final pits two of Dhaka's most storied clubs against each other — Mohammedan SC and Abahani Limited. Both advanced to the last four with emphatic quarter-final wins.
 
-## কোয়ার্টার ফাইনালের ফলাফল
+## Quarter-Final Results
 
-মোহামেডান ফোর্টিসকে ২-০ গোলের ব্যবধানে হারিয়েছে, আর আবাহনী এগিয়েছে রহমতগঞ্জকে ৩-১ গোলে হারিয়ে।
+Mohammedan beat Fortis 2-0, while Abahani advanced with a 3-1 win over Rahmatganj.
 
-## স্টেডিয়াম ও টিকিট
+## Stadium & Tickets
 
-ম্যাচ হবে বঙ্গবন্ধু জাতীয় স্টেডিয়ামে। গ্যালারির টিকিট ইতিমধ্যে প্রায় শেষ — অনলাইনে ব্ল্যাক মার্কেটিং ঠেকাতে বাড়তি নজরদারি চাইছে কর্তৃপক্ষ।
+The match will be played at Bangabandhu National Stadium. Gallery tickets are nearly sold out — authorities want extra monitoring to stop online black-marketing.
 
-দুই ক্লাবের সমর্থকরা সোশ্যাল মিডিয়ায় তুমুল আলোচনায় — কে জিতবে এই ক্লাশ? আপনার ভবিষ্যদ্বাণী কমেন্টে জানান!`,
+Both sets of fans are locked in heated social media debate — who wins this clash? Drop your prediction in the comments!`,
     },
     {
-      title: "গোলরক্ষকদের যুদ্ধ: বিপিএলে এবার ক্লিন-শিটের রেকর্ড কার হবে?",
+      title: "Battle of the Goalkeepers: Who Will Own the BPL Clean-Sheet Record?",
       category: "BPL",
       featured: false,
       cover: IMG.goalkeeper[0],
       views: 15230,
       likes: 320,
-      excerpt: "মিতুল মারমা বনাম আশিকুর রহমান — ক্লিন-শিট তালিকায় তীব্র লড়াইয়ে দুই শীর্ষ গোলরক্ষক।",
-      content: `এই মৌসুমের বিপিএল পরিসংখ্যানে সবচেয়ে মজার লড়াইটা হয়তো গোলরক্ষকদের মধ্যেই। ক্লিন-শিট তালিকায় শীর্ষে আছেন বসুন্ধরার মিতুল মারমা, একদম পিছনে মোহামেডানের আশিকুর রহমান।
+      excerpt: "Mitul Marma vs Ashiqur Rahman — two of the league's top goalkeepers in a fierce clean-sheet race.",
+      content: `The most fascinating battle in this season's BPL stats might just be between the goalkeepers. Bashundhara's Mitul Marma tops the clean-sheet chart, with Mohammedan's Ashiqur Rahman not far behind.
 
-## সেরা সেভের গল্প
+## The Story Behind the Best Saves
 
-শেষ রাউন্ডে মিতুলের পয়েন্ট-ব্ল্যাঙ্ক সেভ সোশ্যাল মিডিয়ায় ভাইরাল। বল ফিরিয়ে দেওয়ার রেকশন টাইম নিয়ে সমর্থকদের কৌতুক-মিশ্রিত বিশ্লেষণও কম নয়।
+Mitul's point-blank save last round went viral on social media. Fans have even produced half-joking analyses of his reaction time.
 
-## পরিসংখ্যান কী বলছে
+## What the Numbers Say
 
-ডিফেন্সের সংগঠনই গোলরক্ষকদের সাফল্যের আসল চাবি — বলছেন বিশ্লেষকরা। যে দল কম শট ছাড়ে বক্সের ভেতরে, সেদের গোলরক্ষকের ক্লিন-শিট সংখ্যাও স্বাভাবিকভাবেই বাড়ে।`,
+Analysts say defensive organisation is the real key to goalkeeping success. Teams that concede fewer shots inside the box naturally boost their keepers' clean-sheet counts.`,
     },
     {
-      title: "গ্রামের মাঠ থেকে বিপিএল: শেখ মোরশালিনের সংগ্রামের গল্প",
+      title: "From Village Fields to the BPL: The Sheikh Morsalin Story",
       category: "OPINION",
       featured: false,
       cover: IMG.training[1],
       views: 28910,
       likes: 1500,
-      excerpt: "খালি পায়ে মাঠ ঘুরে বেড়ানো এক কিশোর, আজ জাতীয় দলের হয়ে গোল করছেন — মোরশালিনের গল্প বাংলাদেশ ফুটবলের ভবিষ্যতের রূপরেখা।",
-      content: `নোয়াখালীর এক গ্রামের ধূলোমাখা মাঠ থেকে বসুন্ধরা কিংসের স্টার্টিং ইলেভেন — শেখ মোরশালিনের যাত্রা সহজ ছিল না। জুতা ছিল না, কিন্তু স্বপ্ন ছিল।
+      excerpt: "A barefoot boy roaming village fields, now scoring for the national team — Morsalin's story sketches the future of Bangladesh football.",
+      content: `From a dusty village ground in Noakhali to Bashundhara Kings' starting eleven — Sheikh Morsalin's journey was never easy. He had no boots, but he had a dream.
 
-## স্কাউটিং থেকে স্টারডম
+## From Scouting to Stardom
 
-স্থানীয় টুর্নামেন্টে চোখ পড়েছিল এক স্কাউটের। তারপর একাডেমি, তারপর বিপিএল। ধারাবাহিক গোলে আজ তিনি জাতীয় দলের নিয়মিত সদস্য।
+A scout first spotted him at a local tournament. Then came the academy, then the BPL. Consistent goals have now made him a regular in the national team.
 
-## এই গল্প কেন গুরুত্বপূর্ণ
+## Why This Story Matters
 
-বাংলাদেশের ফুটবলে ট্যালেন্টের অভাব নেই — অভাব সঠিক স্কাউটিং আর পরিকাঠামোর। মোরশালিনের মতো খেলোয়াড় প্রমাণ করে, সুযোগ পেলে গ্রামের মাঠও তারকা বানাতে পারে।
+Bangladesh football has no shortage of talent — what it lacks is proper scouting and infrastructure. Players like Morsalin prove that given a chance, even a village field can produce a star.
 
-> "আমি জানতাম না পারব কি না। জানতাম শুধু — ছাড়ব না।" — শেখ মোরশালিন
+> "I didn't know if I could make it. I only knew one thing — I would never give up." — Sheikh Morsalin
 
-এই মৌসুমে তাঁর গোল দেখে অনুপ্রাণিত হচ্ছে হাজারো কিশোর। হয়তো তাদেরই কেউ একদিন জার্সি গায়ে দেশের প্রতিনিধিত্ব করবে।`,
+Thousands of youngsters are inspired by his goals this season. Perhaps one of them will wear the jersey and represent the country one day.`,
     },
     {
-      title: "ট্রান্সফার: সাইফ এসসি ছাড়তে পারেন অধিনায়ক, চলছে আলাপ",
+      title: "Transfer: Saif SC Captain Could Leave, Talks Underway",
       category: "TRANSFER",
       featured: false,
       cover: IMG.coach[1],
       views: 12340,
       likes: 210,
-      excerpt: "মৌসুম মাঝপথে ক্লাব ছাড়ার গুজব নিয়ে হইচই সাইফ এসসি ক্যাম্পে — ক্লাব সূত্র তা নিশ্চিত করেনি।",
-      content: `সাইফ স্পোর্টিং ক্লাবের অধিনায়ক নিয়ে চলছে নানা গুজব। সূত্র বলছে, বিদেশি ক্লাব থেকে আগ্রহের কথা জানিয়ে সংশ্লিষ্ট খেলোয়াড়ের এজেন্ট ক্লাবকে জানিয়েছেন।
+      excerpt: "Exit rumours swirl around the Saif SC camp mid-season — club sources have not confirmed them.",
+      content: `Rumours continue to swirl around the Saif Sporting Club captain. Sources say the player's agent has informed the club of interest from a foreign club.
 
-ক্লাব কর্তৃপক্ষ বলছে, চুক্তির আইনি দিক দেখা হচ্ছে। যদি সব শর্ত মেলে, তাহলে সুমুচুল সিদ্ধান্তে ছাড়া হতে পারে।
+Club officials say the legal side of the deal is being reviewed. If all conditions line up, he could be released by mutual consent.
 
-ফুটবল বদলি বাজারে জানুয়ারি অনেক দূরের বিষয় নয় — ততদিনে অনেক কিছুই বদলে যেতে পারে। আপডেট পেতে চোখ রাখুন FHB-তে।`,
+January isn't far away in the transfer market — a lot can change by then. Keep an eye on FHB for updates.`,
     },
     {
-      title: "এএফসি কাপ বাছাই: বাংলাদেশের ক্লাবগুলোর সামনে কঠিন চ্যালেঞ্জ",
+      title: "AFC Cup Qualifiers: A Tough Challenge Ahead for Bangladesh's Clubs",
       category: "INTERNATIONAL",
       featured: false,
       cover: IMG.trophy[0],
       views: 9870,
       likes: 180,
-      excerpt: "এশিয়ার ক্লাব ফুটবলে বাংলাদেশের প্রতিনিধিদের কাছে আসছে প্রিমিয়ার টেস্ট।",
-      content: `এএফসি কাপের বাছাইপর্বে অংশ নিতে যাচ্ছে বাংলাদেশের শীর্ষ ক্লাবগুলো। শক্তিশালী প্রতিপক্ষের বিপক্ষে কীভাবে লড়বে আমাদের দল — সেটাই এখন সবচেয়ে বড় প্রশ্ন।
+      excerpt: "A premier test awaits Bangladesh's representatives in Asian club football.",
+      content: `Bangladesh's top clubs are set to enter the AFC Cup qualifiers. How our teams will fight against stronger opponents is now the biggest question.
 
-## কী দরকার
+## What Is Needed
 
-- দীর্ঘমেয়াদি ক্লাব পরিকাঠামো
-- বিদেশি লিগে অভিজ্ঞতা
-- ঘরের লিগের প্রতিযোগিতামূলক মান
+- Long-term club infrastructure
+- Experience in foreign leagues
+- A more competitive domestic league
 
-## সমর্থকদের ভূমিকা
+## The Role of the Fans
 
-গ্যালারি ভরা স্টেডিয়াম ক্লাব ফুটবলের প্রাণ। আন্তর্জাতিক ম্যাচে দর্শকের উপস্থিতি দলের পারফরম্যান্সে সরাসরি প্রভাব ফেলে।`,
+Packed stadiums are the lifeblood of club football. Crowd presence at international matches directly affects team performance.`,
     },
     {
-      title: "বিপিএল যুব উন্নয়ন কর্মসূচি: একাডেমি থেকে প্রথম একাদশে পথ খুলছে",
+      title: "BPL Youth Development Program: A Path from Academy to the First Eleven",
       category: "BPL",
       featured: false,
       cover: IMG.training[2],
       views: 11230,
       likes: 260,
-      excerpt: "ক্লাবগুলোতে যুব একাডেমি চালুর উদ্যোগ নিয়েছে লিগ কর্তৃপক্ষ — লক্ষ্য নিজস্ব তারকা তৈরি।",
-      content: `বিদেশি খেলোয়াড়ের ওপর নির্ভরতা কমিয়ে নিজস্ব তারকা তৈরির লক্ষ্যে এগোচ্ছে বিপিএল ক্লাবগুলো। একাডেমি স্তর থেকে সিনিয়র দলে উত্তরণের সুস্পষ্ট পথ তৈরি হচ্ছে।
+      excerpt: "League authorities are launching youth academies across clubs — the goal: developing homegrown stars.",
+      content: `BPL clubs are moving to cut their dependence on foreign players and build stars of their own. A clear pathway from academy level to the senior squad is taking shape.
 
-## পরিকল্পনার মূল বিষয়
+## Key Points of the Plan
 
-- অনূর্ধ্ব-১৮ দলের নিয়মিত লিগ
-- প্রতি ক্লাবে বাধ্যতামূলক যুব কোটা
-- সাফল্যের মাপকাঠি: প্রথম একাদশে ঘরোয়া তরুণদের সংখ্যা
+- A regular under-18 league
+- A mandatory youth quota at every club
+- Success metric: the number of domestic youngsters in the first eleven
 
-সমর্থকরা মনে করছেন, দীর্ঘমেয়াদে এটাই বাংলাদেশ ফুটবলের আসল বিনিয়োগ।`,
+Fans believe this is the real long-term investment for Bangladesh football.`,
     },
     {
-      title: "স্টেডিয়াম নিরাপত্তায় নতুন নির্দেশনা: দর্শকসেবায় বাড়ছে আধুনিকায়ন",
+      title: "New Stadium Security Guidelines: Modernization Steps Up for Fans",
       category: "NATIONAL",
       featured: false,
       cover: IMG.fans[0],
       views: 8420,
       likes: 150,
-      excerpt: "গ্যালারির নিরাপত্তা, টিকিটিং ও সেবা — স্টেডিয়াম অভিজ্ঞতা বদলাতে নতুন নির্দেশনা দিয়েছে কর্তৃপক্ষ।",
-      content: `দর্শকদের নিরাপদ ও আরামদায়ক অভিজ্ঞতা নিশ্চিত করতে নতুন নির্দেশনা জারি করেছে কর্তৃপক্ষ। ই-টিকিটিং বাধ্যতামূলক করা, গ্যালারিতে সিসি ক্যামেরা বসানো আর ম্যাচডে পরিবহন সেবা — এগুলোই মূল সিদ্ধান্ত।
+      excerpt: "Gallery security, ticketing and services — authorities roll out new guidelines to transform the stadium experience.",
+      content: `Authorities have issued new guidelines to ensure a safe and comfortable experience for spectators. Mandatory e-ticketing, CCTV cameras in the galleries and matchday transport services are the key decisions.
 
-## কী বদলাচ্ছে
+## What Is Changing
 
-- অনলাইনে টিকিট কেনা বাধ্যতামূলক
-- প্রবেশপথে দ্রুত নিরাপত্তা চেক
-- পরিবার গ্যালারি সম্প্রসারণ
+- Online ticketing is mandatory
+- Faster security checks at entrances
+- Expanded family galleries
 
-ম্যাচডে অভিজ্ঞতা ভালো হলে দর্শক সংখ্যাও বাড়বে — এটাই স্বাভাবিক। সমর্থক সংগঠনগুলো সিদ্ধান্তগুলো স্বাগত জানিয়েছে।`,
+Better matchday experience naturally means bigger crowds. Supporters' groups have welcomed the decisions.`,
     },
   ];
 
@@ -949,14 +949,14 @@ async function main() {
 
   // ================= VIDEOS (Shorts) =================
   const videos = [
-    { title: "রাকিব হোসেনের কার্লড ফ্রি-কিক 🔥 সরাসরি জালে!", url: "/videos/bkb1.mp4", thumb: IMG.action[0], views: 248000, likes: 18400, tags: "ফ্রিকিক,বিপিএল,হাইলাইটস", creator: creator1 },
-    { title: "মোরশালিনের সলো গোল — মিডলাইন থেকে একাই 😱", url: "/videos/sintel1.mp4", thumb: IMG.dribble[1], views: 189000, likes: 15200, tags: "গোল,বিপিএল", creator: creator1 },
-    { title: "ডার্বি ডে ভাইবস 🏟️ গ্যালারির এই দৃশ্য মিস করবেন না", url: "/videos/jelly1.mp4", thumb: IMG.fans[1], views: 132000, likes: 11800, tags: "ডার্বি,ফ্যানস,গ্যালারি", creator: creator2 },
-    { title: "গোলরক্ষক মিতুলের ৩ সেভ যা বিশ্বাস করা যায় না 🧤", url: "/videos/bkb2.mp4", thumb: IMG.goalkeeper[1], views: 98000, likes: 8700, tags: "সেভ,গোলরক্ষক", creator: creator2 },
-    { title: "জামাল ভূঞার পাস ম্যাপ ব্রেকডাউন 🧠 ট্যাকটিক্স টক", url: "/videos/flower.mp4", thumb: IMG.coach[0], views: 76000, likes: 6900, tags: "ট্যাকটিক্স,জামাল", creator: creator2 },
-    { title: "ট্রেনিং ডে: কিভাবে প্রস্তুত নেয় চ্যাম্পিয়নরা 💪", url: "/videos/sintel2.mp4", thumb: IMG.training[0], views: 64000, likes: 5400, tags: "ট্রেনিং,বিপিএল", creator: creator1 },
-    { title: "হামজা চৌধুরী লাল-সবুজে 💚❤️ প্রথম দিনের মুহূর্ত", url: "/videos/jelly2.mp4", thumb: IMG.celebrate[1], views: 412000, likes: 36500, tags: "হামজা,জাতীয়দল", creator: creator1 },
-    { title: "গোল উদযাপনের ১০ বেস্ট মোমেন্ট 🎉 কোনটা আপনার ফেভারিট?", url: "/videos/friday.mp4", thumb: IMG.celebrate[2], views: 58000, likes: 4900, tags: "গোল,সেলিব্রেশন", creator: creator2 },
+    { title: "Rakib Hossain's curled free kick 🔥 straight into the top corner!", url: "/videos/bkb1.mp4", thumb: IMG.action[0], views: 248000, likes: 18400, tags: "freekick,bpl,highlights", creator: creator1 },
+    { title: "Morsalin's solo goal — all alone from the halfway line 😱", url: "/videos/sintel1.mp4", thumb: IMG.dribble[1], views: 189000, likes: 15200, tags: "goals,bpl", creator: creator1 },
+    { title: "Derby day vibes 🏟️ don't miss these gallery scenes", url: "/videos/jelly1.mp4", thumb: IMG.fans[1], views: 132000, likes: 11800, tags: "derby,fans,gallery", creator: creator2 },
+    { title: "Goalkeeper Mitul's 3 saves you won't believe 🧤", url: "/videos/bkb2.mp4", thumb: IMG.goalkeeper[1], views: 98000, likes: 8700, tags: "saves,goalkeeper", creator: creator2 },
+    { title: "Jamal Bhuyan's pass map breakdown 🧠 tactics talk", url: "/videos/flower.mp4", thumb: IMG.coach[0], views: 76000, likes: 6900, tags: "tactics,jamal", creator: creator2 },
+    { title: "Training day: how the champions prepare 💪", url: "/videos/sintel2.mp4", thumb: IMG.training[0], views: 64000, likes: 5400, tags: "training,bpl", creator: creator1 },
+    { title: "Hamza Choudhury in red and green 💚❤️ first-day moments", url: "/videos/jelly2.mp4", thumb: IMG.celebrate[1], views: 412000, likes: 36500, tags: "hamza,nationalteam", creator: creator1 },
+    { title: "10 best goal celebrations 🎉 which one is your favourite?", url: "/videos/friday.mp4", thumb: IMG.celebrate[2], views: 58000, likes: 4900, tags: "goals,celebrations", creator: creator2 },
   ];
   const videoIds: string[] = [];
   for (let i = 0; i < videos.length; i++) {
@@ -965,7 +965,7 @@ async function main() {
       data: {
         creatorId: v.creator.id,
         title: v.title,
-        description: `${v.title} — Football Hub Bangladesh শর্টসে দেখুন বাংলাদেশ ফুটবলের সেরা মুহূর্তগুলো।`,
+        description: `${v.title} — watch the best moments of Bangladesh football on Football Hub Bangladesh Shorts.`,
         videoUrl: v.url,
         thumbnailUrl: v.thumb,
         tags: v.tags,
@@ -980,12 +980,12 @@ async function main() {
 
   // ================= COMMUNITY POSTS =================
   const posts = [
-    { author: fans[0], content: "আজকের ডার্বি ম্যাচ দেখার অভিজ্ঞতা কেমন ছিল সবার? আমি তো গ্যালারির এনভায়রনমেন্টে একেবারে ভাটা! 🏟️🔥 #বিপিএল", likes: 142, tag: "আবাহনী" },
-    { author: fans[1], content: "মোহামেডানের এই মৌসুমের ফর্ম দেখে আশাবাদী হওয়া যায়! ফেডারেশন কাপ সেমিফাইনাল আবাহনীর বিপক্ষে হবে যুদ্ধ ⚔️", likes: 98, tag: "মোহামেডান" },
-    { author: fans[2], content: "বসুন্ধরা কিংস এরিনার ইলেকট্রিক অ্যাটমোসফিয়ারে কেউ যায়নি এখনো? লাইভ স্কোর FHB-তে ফলো করার সাথে সাথে স্টেডিয়ামেও দৌড়ানো লাগবে 😄", likes: 210, tag: "বসুন্ধরা" },
-    { author: fans[3], content: "হামজা চৌধুরী সাফ সেমিফাইনালে খেললে বঙ্গবন্ধু স্টেডিয়ামের গ্যালারি ভেঙে পড়বে ভাই! 🇧🇩 কে কে যাচ্ছেন?", likes: 375, tag: "জাতীয় দল" },
-    { author: fans[4], content: "রাকিব হোসেনের ফ্রি-কিক ভিডিওটা দিনে ৫ বার দেখছি। কার্লিং বলের ফিজিক্স নিয়ে কেউ ব্যাখ্যা করবেন? 🤔⚽", likes: 89, tag: null },
-    { author: fans[1], content: "FHB-র শর্টস ফিড এখন আমার ডেইলি ডোজ 😂 রাতে ঘুমানোর আগে ১০টা হাইলাইটস না দেখলেই না!", likes: 156, tag: null },
+    { author: fans[0], content: "How was everyone's experience at today's derby? The gallery atmosphere was unreal! 🏟️🔥 #BPL", likes: 142, tag: "Abahani" },
+    { author: fans[1], content: "Mohammedan's form this season gives real hope! The Federation Cup semi-final against Abahani will be a war ⚔️", likes: 98, tag: "Mohammedan" },
+    { author: fans[2], content: "Has no one been to the electric atmosphere at Bashundhara Kings Arena yet? Follow live scores on FHB and run to the stadium too 😄", likes: 210, tag: "Bashundhara" },
+    { author: fans[3], content: "If Hamza Choudhury plays in the SAFF semi-final, the Bangabandhu Stadium galleries will explode! 🇧🇩 Who's going?", likes: 375, tag: "National Team" },
+    { author: fans[4], content: "I've watched Rakib Hossain's free-kick video 5 times today. Can anyone explain the physics of that curl? 🤔⚽", likes: 89, tag: null },
+    { author: fans[1], content: "The FHB shorts feed is my daily dose now 😂 Can't sleep without watching 10 highlights first!", likes: 156, tag: null },
   ];
   const postIds: string[] = [];
   for (let i = 0; i < posts.length; i++) {
@@ -1005,20 +1005,20 @@ async function main() {
   // ================= COMMENTS =================
   const newsList = await db.newsArticle.findMany({ take: 4 });
   const commentDefs = [
-    [newsList[0]?.id, "NEWS", fans[0], "হামজা ভাইকে জাতীয় দলে পেয়ে আমরা গর্বিত! ইনশাআল্লাহ সাফ জিতবে আমরা 🇧🇩"],
-    [newsList[0]?.id, "NEWS", fans[3], "প্রিমিয়ার লিগের খেলোয়াড় আমাদের দলে — এটা কল্পনাও করিনি! 💚❤️"],
-    [newsList[0]?.id, "NEWS", fans[4], "মিডফিল্ডে হামজা + জামাল কম্বো হলে সাফ টিমগুলোর ঘুম উড়বে 😎"],
-    [newsList[1]?.id, "NEWS", fans[2], "কিংসের এই ফর্ম দেখে মনে হচ্ছে এবারও লিগ একতরফাই হবে 🦁"],
-    [newsList[1]?.id, "NEWS", fans[1], "মোহামেডান ফ্যান হিসেবে বলছি — ডার্বিতে সব রেকর্ড ভাঙবে, অপেক্ষা করুন 😤"],
-    [videoIds[0], "VIDEO", fans[3], "এই ফ্রি-কিকটা বারবার দেখছি! কার্লিং অবিশ্বাস্য 🔥"],
-    [videoIds[0], "VIDEO", fans[0], "রাকিভাই সেট-পিসে আলাদা লেভেলের খেলোয়াড় ⚡"],
-    [videoIds[6], "VIDEO", fans[4], "হামজা ভাইয়ের ফার্স্ট ডে ফুটেজ! গায়ে কাঁটা দিয়ে উঠলো 🥹"],
-    [videoIds[6], "VIDEO", fans[1], "লাল-সবুজের হয়ে খেলার স্বপ্ন দেখা সবার জন্য অনুপ্রেরণা 💚"],
-    [videoIds[2], "VIDEO", fans[2], "গ্যালারির এই ভাইব আর কোথায় পাবো! ডার্বি মানেই আলাদা 🏟️"],
-    [postIds[0], "POST", fans[2], "ভাই আমিও ছিলাম গ্যালারিতে! এনভায়রনমেন্ট ছিল আউট অফ দ্য ওয়ার্ল্ড 🔥"],
-    [postIds[0], "POST", fans[3], "পরের হোম ম্যাচে আমরাও যাবো, গ্রুপ বানাও সবাই 🙌"],
-    [postIds[3], "POST", fans[0], "আমি যাচ্ছি অবশ্যই! টিকিটের ব্যবস্থা করতে হবে আগেই 🎫"],
-    [postIds[5], "POST", fans[4], "একই অবস্থা ভাই 😂 FHB শর্টসের কারণে ঘুমের সময় কমে গেছে"],
+    [newsList[0]?.id, "NEWS", fans[0], "So proud to have Hamza bhai in the national team! We are winning SAFF inshallah 🇧🇩"],
+    [newsList[0]?.id, "NEWS", fans[3], "A Premier League player in our team — I never even dreamed of this! 💚❤️"],
+    [newsList[0]?.id, "NEWS", fans[4], "A Hamza + Jamal midfield combo would keep SAFF teams awake at night 😎"],
+    [newsList[1]?.id, "NEWS", fans[2], "Looking at the Kings' form, this league looks like a one-horse race again 🦁"],
+    [newsList[1]?.id, "NEWS", fans[1], "Speaking as a Mohammedan fan — every derby record will be broken, just wait 😤"],
+    [videoIds[0], "VIDEO", fans[3], "I keep rewatching this free kick! Unbelievable curl 🔥"],
+    [videoIds[0], "VIDEO", fans[0], "Rakib bhai is on another level at set pieces ⚡"],
+    [videoIds[6], "VIDEO", fans[4], "Hamza bhai's first-day footage! Gave me goosebumps 🥹"],
+    [videoIds[6], "VIDEO", fans[1], "Dreaming of playing for the red and green — an inspiration for everyone 💚"],
+    [videoIds[2], "VIDEO", fans[2], "Where else would you get this gallery vibe! A derby is just different 🏟️"],
+    [postIds[0], "POST", fans[2], "Bro I was in the gallery too! The atmosphere was out of this world 🔥"],
+    [postIds[0], "POST", fans[3], "We're going to the next home match too — everyone make a group 🙌"],
+    [postIds[3], "POST", fans[0], "I'm definitely going! Need to sort tickets early 🎫"],
+    [postIds[5], "POST", fans[4], "Same here bro 😂 FHB shorts have cut into my sleep time"],
   ] as const;
   for (const [targetId, targetType, author, content] of commentDefs) {
     if (!targetId) continue;
@@ -1078,31 +1078,31 @@ async function main() {
   // ================= MEMBERSHIP PLANS =================
   await db.membershipPlan.create({
     data: {
-      code: "FREE", name: "ফ্রি ফ্যান", price: 0, period: "সদা বহাল", popular: false, sortOrder: 1,
-      features: JSON.stringify(["লাইভ স্কোর ও ম্যাচ আপডেট", "সব নিউজ পড়া", "শর্টস ভিডিও দেখা", "কমেন্ট ও লাইক করা", "কমিউনিটিতে যোগ দেওয়া"]),
+      code: "FREE", name: "Free Fan", price: 0, period: "forever", popular: false, sortOrder: 1,
+      features: JSON.stringify(["Live scores & match updates", "Read all news", "Watch shorts videos", "Comment & like", "Join the community"]),
     },
   });
   await db.membershipPlan.create({
     data: {
-      code: "PRO", name: "প্রো সাপোর্টার", price: 149, period: "মাস", popular: true, sortOrder: 2,
-      features: JSON.stringify(["বিজ্ঞাপনমুক্ত অভিজ্ঞতা", "এইচডি ম্যাচ হাইলাইটস", "এক্সক্লুসিভ ট্রান্সফার নিউজ (৪৮ ঘণ্টা আগে)", "প্রিমিয়াম ফ্যান ব্যাজ", "প্রায়োরিটি ম্যাচ অ্যালার্ট"]),
+      code: "PRO", name: "Pro Supporter", price: 149, period: "month", popular: true, sortOrder: 2,
+      features: JSON.stringify(["Ad-free experience", "HD match highlights", "Exclusive transfer news (48 hours early)", "Premium fan badge", "Priority match alerts"]),
     },
   });
   await db.membershipPlan.create({
     data: {
-      code: "LEGEND", name: "লিজেন্ড মেম্বার", price: 399, period: "মাস", popular: false, sortOrder: 3,
-      features: JSON.stringify(["সব প্রো সুবিধা", "লাইভ ম্যাচ কমেন্ট্রি অ্যাক্সেস", "ক্রিয়েটরদের টিপস পাঠানো", "জার্সি ও মার্চেন্ডাইজে ১০% ছাড়", "ড্রয়িং ও মিট অ্যান্ড গ্রিটে আগে অ্যাক্সেস"]),
+      code: "LEGEND", name: "Legend Member", price: 399, period: "month", popular: false, sortOrder: 3,
+      features: JSON.stringify(["All Pro benefits", "Live match commentary access", "Tip creators", "10% off jerseys & merchandise", "Early access to draws & meet-and-greets"]),
     },
   });
 
   // ================= EARNINGS =================
   const earnDefs = [
-    [videoIds[0], 4200, "AD_REVENUE", "ভাইরাল ফ্রি-কিক ভিডিও — অ্যাড রেভিনিউ"],
-    [videoIds[6], 5100, "AD_REVENUE", "হামজা ফার্স্ট ডে — অ্যাড রেভিনিউ"],
-    [videoIds[1], 2600, "AD_REVENUE", "মোরশালিন সলো গোল — অ্যাড রেভিনিউ"],
-    [videoIds[5], 1400, "AD_REVENUE", "ট্রেনিং ডে ভিডিও — অ্যাড রেভিনিউ"],
-    [null, 1800, "TIPS", "ফ্যানদের টিপস (৩২ জন)"],
-    [null, 2500, "BONUS", "মাসের সেরা ক্রিয়েটর বোনাস"],
+    [videoIds[0], 4200, "AD_REVENUE", "Viral free-kick video — ad revenue"],
+    [videoIds[6], 5100, "AD_REVENUE", "Hamza first day — ad revenue"],
+    [videoIds[1], 2600, "AD_REVENUE", "Morsalin solo goal — ad revenue"],
+    [videoIds[5], 1400, "AD_REVENUE", "Training day video — ad revenue"],
+    [null, 1800, "TIPS", "Fan tips (32 fans)"],
+    [null, 2500, "BONUS", "Creator of the month bonus"],
   ] as const;
   let total = 0;
   for (let i = 0; i < earnDefs.length; i++) {
@@ -1126,7 +1126,7 @@ async function main() {
   // creator2 smaller earnings
   for (let i = 0; i < 3; i++) {
     await db.earning.create({
-      data: { creatorId: creator2.id, amount: rint(800, 2200), source: "AD_REVENUE", note: "শর্টস অ্যাড রেভিনিউ", createdAt: new Date(now.getTime() - (i * 5 + 2) * DAY) },
+      data: { creatorId: creator2.id, amount: rint(800, 2200), source: "AD_REVENUE", note: "Shorts ad revenue", createdAt: new Date(now.getTime() - (i * 5 + 2) * DAY) },
     });
   }
 
@@ -1137,26 +1137,26 @@ async function main() {
     impressions: number; clicks: number;
   }> = [
     // HEADER_BANNER (728×90 leaderboard)
-    { name: "bKash — হেডার লিডারবোর্ড (ডেমো)", placement: "HEADER_BANNER", headline: "ক্যাশব্যাক উৎসব! প্রতিটি পেমেন্টে পান ১০০% ক্যাশব্যাক", bodyText: "বিকাশ অ্যাপে বিল পেমেন্ট করে জিতে নিন আকর্ষণীয় পুরস্কার", ctaLabel: "অ্যাপে দেখুন", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 18420, clicks: 412 },
-    { name: "Grameenphone — হেডার লিডারবোর্ড (ডেমো)", placement: "HEADER_BANNER", headline: "স্কোর আপডেট এখন ফ্রি! GP স্কোর অ্যালার্ট সার্ভিস", bodyText: "প্রতিটি ম্যাচের লাইভ স্কোর পান SMS-এ, কোনো ইন্টারনেট লাগবে না", ctaLabel: "চালু করুন", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 16750, clicks: 356 },
-    { name: "Daraz — হেডার লিডারবোর্ড (ডেমো)", placement: "HEADER_BANNER", headline: "১১.১১ মেগা সেল! ফুটবল জার্সি ও গিয়ারে ৭০% পর্যন্ত ছাড়", bodyText: "সীমিত সময়ের অফার — আজই অর্ডার করুন", ctaLabel: "শপিং করুন", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 21980, clicks: 610 },
+    { name: "bKash — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Cashback Festival! 100% cashback on every payment", bodyText: "Pay your bills in the bKash app and win exciting prizes", ctaLabel: "Open App", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 18420, clicks: 412 },
+    { name: "Grameenphone — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Score updates now free! GP Score Alert service", bodyText: "Get live scores of every match by SMS — no internet needed", ctaLabel: "Activate", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 16750, clicks: 356 },
+    { name: "Daraz — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "11.11 Mega Sale! Up to 70% off football jerseys & gear", bodyText: "Limited-time offer — order today", ctaLabel: "Shop Now", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 21980, clicks: 610 },
     // SIDEBAR (300×600 skyscraper)
-    { name: "Walton — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)", placement: "SIDEBAR", headline: "ওয়ালটন ৪K অ্যান্ড্রয়েড টিভিতে দেখুন প্রতিটি লাইভ ম্যাচ", bodyText: "স্টেডিয়ামের অনুভূতি এবার আপনার ড্রয়িংরুমে — EMI-তে ০% সুদে", ctaLabel: "অর্ডার করুন", brandColor: "#0B4EA2", brandInitials: "W", linkUrl: "https://waltonhil.com", impressions: 9840, clicks: 187 },
-    { name: "Pathao — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)", placement: "SIDEBAR", headline: "স্টেডিয়াম যাওয়া এখন সাশ্রয়ী — পাঠাও রাইডে ৪০% ছাড়", bodyText: "ম্যাচ ডে-তে কুপন ব্যবহার করুন: FHB40", ctaLabel: "কুপন নিন", brandColor: "#FF4B63", brandInitials: "P", linkUrl: "https://pathao.com", impressions: 8320, clicks: 205 },
-    { name: "Samsung — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)", placement: "SIDEBAR", headline: "Galaxy Buds — ম্যাচের কমেন্ট্রি শুনুন ক্রিস্টাল ক্লিয়ার সাউন্ডে", bodyText: "ফুটবল সিজন স্পেশাল প্রাইস — স্টক সীমিত", ctaLabel: "আরও জানুন", brandColor: "#1428A0", brandInitials: "S", linkUrl: "https://www.samsung.com/bd", impressions: 7690, clicks: 143 },
+    { name: "Walton — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Watch every live match on a Walton 4K Android TV", bodyText: "The stadium feeling, now in your living room — 0% interest EMI", ctaLabel: "Order Now", brandColor: "#0B4EA2", brandInitials: "W", linkUrl: "https://waltonhil.com", impressions: 9840, clicks: 187 },
+    { name: "Pathao — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Getting to the stadium just got cheaper — 40% off Pathao rides", bodyText: "Use code FHB40 on match day", ctaLabel: "Get Code", brandColor: "#FF4B63", brandInitials: "P", linkUrl: "https://pathao.com", impressions: 8320, clicks: 205 },
+    { name: "Samsung — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Galaxy Buds — hear every word of the commentary in crystal-clear sound", bodyText: "Football season special price — limited stock", ctaLabel: "Learn More", brandColor: "#1428A0", brandInitials: "S", linkUrl: "https://www.samsung.com/bd", impressions: 7690, clicks: 143 },
     // IN_FEED (native in-feed)
-    { name: "Pran-RFL — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "প্রাণ চানাচুর — ম্যাচ দেখার সেরা সঙ্গী", bodyText: "ফ্যামিলি প্যাকে এখন ২০% বেশি", ctaLabel: "দোকান খুঁজুন", brandColor: "#E30613", brandInitials: "PR", linkUrl: "https://www.pranfoods.net", impressions: 27310, clicks: 544 },
-    { name: "Chaldal — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "গ্রোসারি অর্ডার করুন ৩০ মিনিটে ডেলিভারিতে", bodyText: "প্রথম অর্ডারে ১০০ টাকা ছাড় — কুপন: FHB100", ctaLabel: "অর্ডার করুন", brandColor: "#00A651", brandInitials: "C", linkUrl: "https://chaldal.com", impressions: 19870, clicks: 498 },
-    { name: "City Bank — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "City Touch ডিজিটাল ব্যাংকিং — যেকোনো জায়গা থেকে সব লেনদেন", bodyText: "মাত্র ১০ মিনিটে অ্যাকাউন্ট খুলুন", ctaLabel: "খুলুন", brandColor: "#0057B8", brandInitials: "CB", linkUrl: "https://www.thecitybank.com", impressions: 14230, clicks: 267 },
-    { name: "Foodpanda — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "ম্যাচ নাইট স্পেশাল — ফ্রি ডেলিভারি কোড: FHB50", bodyText: "পছন্দের খাবার অর্ডার করুন ম্যাচের হাফ-টাইমেই", ctaLabel: "অর্ডার করুন", brandColor: "#D70F64", brandInitials: "fp", linkUrl: "https://www.foodpanda.com.bd", impressions: 23650, clicks: 712 },
-    { name: "FHB হাউজ অ্যাড — ইন-ফিড (ডেমো)", placement: "IN_FEED", headline: "FHB Premium — বিজ্ঞাপনমুক্ত ফুটবল অভিজ্ঞতা", bodyText: "মাসে মাত্র ৳৯৯ — এক্সক্লুসিভ ট্রান্সফার নিউজ ও HD হাইলাইটস", ctaLabel: "আপগ্রেড করুন", brandColor: "#D4A017", brandInitials: "FHB", linkUrl: "#premium", imageHint: IMG.action[2], impressions: 12680, clicks: 389 },
+    { name: "Pran-RFL — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Pran Chanachur — the perfect match-watching companion", bodyText: "Now 20% more in every family pack", ctaLabel: "Find a Store", brandColor: "#E30613", brandInitials: "PR", linkUrl: "https://www.pranfoods.net", impressions: 27310, clicks: 544 },
+    { name: "Chaldal — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Groceries delivered in 30 minutes", bodyText: "Tk 100 off your first order — code: FHB100", ctaLabel: "Order Now", brandColor: "#00A651", brandInitials: "C", linkUrl: "https://chaldal.com", impressions: 19870, clicks: 498 },
+    { name: "City Bank — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "City Touch Digital Banking — every transaction, anywhere", bodyText: "Open an account in just 10 minutes", ctaLabel: "Open Now", brandColor: "#0057B8", brandInitials: "CB", linkUrl: "https://www.thecitybank.com", impressions: 14230, clicks: 267 },
+    { name: "Foodpanda — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Match Night Special — free delivery code: FHB50", bodyText: "Order your favourites right at half-time", ctaLabel: "Order Now", brandColor: "#D70F64", brandInitials: "fp", linkUrl: "https://www.foodpanda.com.bd", impressions: 23650, clicks: 712 },
+    { name: "FHB House Ad — In-Feed (Demo)", placement: "IN_FEED", headline: "FHB Premium — an ad-free football experience", bodyText: "From just Tk 99/month — exclusive transfer news and HD highlights", ctaLabel: "Upgrade", brandColor: "#D4A017", brandInitials: "FHB", linkUrl: "#premium", imageHint: IMG.action[2], impressions: 12680, clicks: 389 },
     // MOBILE_BANNER (320×50/100 sticky)
-    { name: "bKash — মোবাইল স্টিকি ব্যানার (ডেমো)", placement: "MOBILE_BANNER", headline: "বিকাশ অ্যাপে বিল পেমেন্টে ইনস্ট্যান্ট ক্যাশব্যাক", ctaLabel: "দেখুন", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 41200, clicks: 690 },
-    { name: "Bata — মোবাইল স্টিকি ব্যানার (ডেমো)", placement: "MOBILE_BANNER", headline: "স্পোর্টস স্নিকার্স কলেকশন — ২৫% ছাড়", ctaLabel: "কিনুন", brandColor: "#D31145", brandInitials: "B", linkUrl: "https://www.batabd.com", impressions: 35400, clicks: 528 },
-    { name: "Teer — মোবাইল স্টিকি ব্যানার (ডেমো)", placement: "MOBILE_BANNER", headline: "Teer ফুটবল ফেস্টিভাল — কোড খুঁজে জিতুন সাইনড জার্সি!", ctaLabel: "খেলুন", brandColor: "#F5A800", brandInitials: "T", linkUrl: "https://www.teer.com.bd", impressions: 29850, clicks: 476 },
+    { name: "bKash — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Instant cashback on bill payments in the bKash app", ctaLabel: "View", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 41200, clicks: 690 },
+    { name: "Bata — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Sports Sneakers Collection — 25% Off", ctaLabel: "Shop Now", brandColor: "#D31145", brandInitials: "B", linkUrl: "https://www.batabd.com", impressions: 35400, clicks: 528 },
+    { name: "Teer — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Teer Football Festival — find the code and win a signed jersey!", ctaLabel: "Play Now", brandColor: "#F5A800", brandInitials: "T", linkUrl: "https://www.teer.com.bd", impressions: 29850, clicks: 476 },
     // VIDEO_PREROLL (shorts pre-roll)
-    { name: "Grameenphone — ভিডিও প্রি-রোল (ডেমো)", placement: "VIDEO_PREROLL", headline: "GP ইন্টারনেট — বিনা চার্জে লাইভ স্কোর ও হাইলাইটস", bodyText: "MyGP অ্যাপ থেকে এখনই চালু করুন ফ্রি ভিডিও প্যাক", ctaLabel: "সাবস্ক্রাইব করুন", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 15760, clicks: 402 },
-    { name: "Daraz — ভিডিও প্রি-রোল (ডেমো)", placement: "VIDEO_PREROLL", headline: "Daraz ১১.১১ মেগা সেল — ফুটবল মার্চেন্ডাইজ ৭০% ছাড়ে", bodyText: "প্রিমিয়াম জার্সি, বুট ও ফ্যান গিয়ার — স্টক সীমিত", ctaLabel: "এখনই দেখুন", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 14230, clicks: 377 },
+    { name: "Grameenphone — Video Pre-Roll (Demo)", placement: "VIDEO_PREROLL", headline: "GP Internet — live scores and highlights, free of charge", bodyText: "Activate the free video pack in the MyGP app now", ctaLabel: "Subscribe", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 15760, clicks: 402 },
+    { name: "Daraz — Video Pre-Roll (Demo)", placement: "VIDEO_PREROLL", headline: "Daraz 11.11 Mega Sale — football merch up to 70% off", bodyText: "Premium jerseys, boots and fan gear — limited stock", ctaLabel: "Shop Now", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 14230, clicks: 377 },
   ];
   for (const ad of demoAds) {
     await db.adSlot.create({

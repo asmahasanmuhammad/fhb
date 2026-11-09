@@ -33,11 +33,11 @@ export function AuthView() {
         body: JSON.stringify(payload),
       });
       const json = await res.json();
-      if (!json.success) throw new Error(json.error ?? "কিছু একটা ভুল হয়েছে");
+      if (!json.success) throw new Error(json.error ?? "Something went wrong");
       await refreshUser();
       toast({
-        title: mode === "login" ? "স্বাগতম!" : "অ্যাকাউন্ট তৈরি সফল!",
-        description: json.data.name ? `${json.data.name}, FHB-তে আপনাকে স্বাগতম!` : undefined,
+        title: mode === "login" ? "Welcome back!" : "Account created!",
+        description: json.data.name ? `Welcome to FHB, ${json.data.name}!` : undefined,
       });
       navigate({ name: "home" });
     } catch (err) {
@@ -65,12 +65,12 @@ export function AuthView() {
               <LogoMark size={10} />
             </span>
             <h1 className="display-hero mt-4 text-2xl text-foreground sm:text-[1.7rem]">
-              {mode === "login" ? "স্বাগতম, ফুটবলপ্রেমী!" : "FHB ফ্যামিলিতে যোগ দিন"}
+              {mode === "login" ? "Welcome, football fan!" : "Join the FHB family"}
             </h1>
             <p className="mt-1.5 text-xs text-muted-foreground">
               {mode === "login"
-                ? "লাইভ স্কোর, নিউজ, শর্টস আর কমিউনিটি — সব এক অ্যাকাউন্টে"
-                : "মাত্র ৩০ সেকেন্ডে অ্যাকাউন্ট খুলুন"}
+                ? "Live scores, news, shorts and community — all in one account"
+                : "Create an account in just 30 seconds"}
             </p>
           </div>
 
@@ -92,7 +92,7 @@ export function AuthView() {
                 aria-pressed={mode === m}
               >
                 {m === "login" ? <LogIn className="h-3.5 w-3.5" aria-hidden /> : <UserPlus className="h-3.5 w-3.5" aria-hidden />}
-                {m === "login" ? "লগইন" : "রেজিস্ট্রেশন"}
+                {m === "login" ? "Log In" : "Sign Up"}
               </button>
             ))}
           </div>
@@ -102,7 +102,7 @@ export function AuthView() {
               <>
                 <div>
                   <label htmlFor="name" className="mb-1.5 block text-[11px] font-bold text-foreground">
-                    পূর্ণ নাম <span className="text-fhb-red">*</span>
+                    Full Name <span className="text-fhb-red">*</span>
                   </label>
                   <div className="relative">
                     <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -110,7 +110,7 @@ export function AuthView() {
                       id="name"
                       value={form.name}
                       onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-                      placeholder="আপনার নাম"
+                      placeholder="Your name"
                       className={inputCls}
                       required
                     />
@@ -118,7 +118,7 @@ export function AuthView() {
                 </div>
                 <div>
                   <label htmlFor="username" className="mb-1.5 block text-[11px] font-bold text-foreground">
-                    ইউজারনেম <span className="text-fhb-red">*</span>
+                    Username <span className="text-fhb-red">*</span>
                   </label>
                   <div className="relative">
                     <AtSign className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -126,7 +126,7 @@ export function AuthView() {
                       id="username"
                       value={form.username}
                       onChange={(e) => setForm((f) => ({ ...f, username: e.target.value }))}
-                      placeholder="যেমন: bpl_fan10"
+                      placeholder="e.g. bpl_fan10"
                       pattern="[a-zA-Z0-9_]+"
                       className={inputCls}
                       required
@@ -137,7 +137,7 @@ export function AuthView() {
             )}
             <div>
               <label htmlFor="email" className="mb-1.5 block text-[11px] font-bold text-foreground">
-                {mode === "login" ? "ইমেইল / ইউজারনেম" : "ইমেইল"} <span className="text-fhb-red">*</span>
+                {mode === "login" ? "Email / Username" : "Email"} <span className="text-fhb-red">*</span>
               </label>
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -154,7 +154,7 @@ export function AuthView() {
             </div>
             <div>
               <label htmlFor="password" className="mb-1.5 block text-[11px] font-bold text-foreground">
-                পাসওয়ার্ড <span className="text-fhb-red">*</span>
+                Password <span className="text-fhb-red">*</span>
               </label>
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
@@ -172,7 +172,7 @@ export function AuthView() {
                   type="button"
                   onClick={() => setShowPass((v) => !v)}
                   className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                  aria-label={showPass ? "পাসওয়ার্ড লুকান" : "পাসওয়ার্ড দেখান"}
+                  aria-label={showPass ? "Hide password" : "Show password"}
                 >
                   {showPass ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
                 </button>
@@ -194,18 +194,18 @@ export function AuthView() {
               disabled={busy}
               className="sheen flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-primary-foreground shadow-[0_14px_34px_-12px_var(--primary)] transition-transform hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50"
             >
-              {busy ? "অপেক্ষা করুন..." : mode === "login" ? "লগইন করুন" : "অ্যাকাউন্ট খুলুন"}
+              {busy ? "Please wait..." : mode === "login" ? "Log In" : "Create Account"}
             </button>
           </form>
 
           {/* Demo credentials */}
           <div className="mt-7 rounded-2xl border border-primary/25 bg-primary/5 p-4">
-            <p className="text-[11px] font-bold text-primary">ডেমো অ্যাকাউন্ট (এক ক্লিকে ফিল হবে)</p>
+            <p className="text-[11px] font-bold text-primary">Demo accounts (one click to fill)</p>
             <div className="mt-3 space-y-2">
               {[
-                { icon: <ShieldCheck className="h-4 w-4 text-fhb-red" aria-hidden />, label: "অ্যাডমিন — সম্পূর্ণ কন্ট্রোল", email: "admin@fhb.com.bd", pass: "Admin@2025" },
-                { icon: <Clapperboard className="h-4 w-4 text-primary" aria-hidden />, label: "ক্রিয়েটর — আয়ের ড্যাশবোর্ড", email: "creator@fhb.com.bd", pass: "Creator@2025" },
-                { icon: <Heart className="h-4 w-3.5 text-fhb-gold" aria-hidden />, label: "ফ্যান — লাইক, কমেন্ট, পোস্ট", email: "tanvir@fhb.com.bd", pass: "Fan@2025" },
+                { icon: <ShieldCheck className="h-4 w-4 text-fhb-red" aria-hidden />, label: "Admin — full control", email: "admin@fhb.com.bd", pass: "Admin@2025" },
+                { icon: <Clapperboard className="h-4 w-4 text-primary" aria-hidden />, label: "Creator — earnings dashboard", email: "creator@fhb.com.bd", pass: "Creator@2025" },
+                { icon: <Heart className="h-4 w-3.5 text-fhb-gold" aria-hidden />, label: "Fan — likes, comments, posts", email: "tanvir@fhb.com.bd", pass: "Fan@2025" },
               ].map((d) => (
                 <button
                   key={d.email}

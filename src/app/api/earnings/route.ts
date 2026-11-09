@@ -30,14 +30,14 @@ export async function GET() {
     // monthly series for chart (last 6 months)
     const months: Array<{ month: string; amount: number }> = [];
     const now = new Date();
-    const bnMonths = ["জানু", "ফেব", "মার্চ", "এপ্রি", "মে", "জুন", "জুলা", "আগ", "সেপ", "অক্টো", "নভে", "ডিসে"];
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     for (let i = 5; i >= 0; i--) {
       const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const next = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
       const amount = earnings
         .filter((e) => e.createdAt >= d && e.createdAt < next)
         .reduce((s, e) => s + e.amount, 0);
-      months.push({ month: bnMonths[d.getMonth()], amount });
+      months.push({ month: monthNames[d.getMonth()], amount });
     }
 
     return ok({

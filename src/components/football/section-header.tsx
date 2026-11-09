@@ -93,7 +93,7 @@ export function PageHeader({
             <button
               onClick={goBack}
               className="tap-target flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
-              aria-label="ফিরে যান"
+              aria-label="Go back"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
             </button>

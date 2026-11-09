@@ -13,7 +13,7 @@ import { AdSlot } from "@/components/football/ad-slot";
 import { PageHeader } from "@/components/football/section-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { formatKickoff, toBn } from "@/lib/format";
+import { formatKickoff, fmtNum } from "@/lib/format";
 import { Zap, MapPin, CalendarDays, Clock, Goal, Flag, ArrowLeftRight, Timer, FileText, ArrowLeft } from "lucide-react";
 
 type Tab = "live" | "upcoming" | "finished";
@@ -76,9 +76,9 @@ export function ScoresView() {
   return (
     <div className="mx-auto w-full max-w-4xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
-        title="লাইভ স্কোর ও ফিক্সচার"
+        title="Live Scores & Fixtures"
         kicker="match centre"
-        subtitle="রিয়েল-টাইম আপডেট, কিক-অফ থেকে ফাইনাল হুইসেল পর্যন্ত"
+        subtitle="Real-time updates, from kick-off to the final whistle"
         icon={<Zap className="h-5 w-5" aria-hidden />}
       >
         <span
@@ -90,17 +90,17 @@ export function ScoresView() {
           )}
         >
           <span className={cn("h-1.5 w-1.5 rounded-[2px]", liveConnected ? "live-dot bg-primary" : "bg-muted-foreground")} aria-hidden />
-          {liveConnected ? "রিয়েল-টাইম কানেক্টেড" : "অফলাইন মোড"}
+          {liveConnected ? "Real-time connected" : "Offline mode"}
         </span>
       </PageHeader>
 
       {/* Segmented tabs — broadcast switcher */}
-      <div className="mb-7 grid grid-cols-3 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5" role="tablist" aria-label="ম্যাচ ফিল্টার">
+      <div className="mb-7 grid grid-cols-3 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5" role="tablist" aria-label="Match filter">
         {(
           [
-            ["live", "লাইভ", counts.live, "bg-fhb-red text-white"],
-            ["upcoming", "আসছে", counts.upcoming, "bg-primary text-primary-foreground"],
-            ["finished", "ফলাফল", counts.finished, "bg-elevated text-foreground"],
+            ["live", "Live", counts.live, "bg-fhb-red text-white"],
+            ["upcoming", "Upcoming", counts.upcoming, "bg-primary text-primary-foreground"],
+            ["finished", "Results", counts.finished, "bg-elevated text-foreground"],
           ] as const
         ).map(([key, label, count, activeCls]) => (
           <button
@@ -121,7 +121,7 @@ export function ScoresView() {
                 tab === key ? "bg-black/20" : "bg-muted"
               )}
             >
-              {toBn(count)}
+              {fmtNum(count)}
             </span>
           </button>
         ))}
@@ -140,10 +140,10 @@ export function ScoresView() {
           </span>
           <p className="text-sm text-muted-foreground">
             {tab === "live"
-              ? "এই মুহূর্তে কোনো ম্যাচ লাইভ নেই। ফিক্সচার দেখুন!"
+              ? "No live matches right now. Check the fixtures!"
               : tab === "upcoming"
-                ? "কোনো আসন্ন ম্যাচ নেই।"
-                : "কোনো সম্পন্ন ম্যাচ নেই।"}
+                ? "No upcoming matches."
+                : "No finished matches."}
           </p>
         </div>
       ) : (
@@ -161,7 +161,7 @@ export function ScoresView() {
                   </span>
                   <span className="text-[13px] font-bold text-foreground">{compName}</span>
                   <span className="tabular rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">
-                    {toBn(list.length)}
+                    {fmtNum(list.length)}
                   </span>
                 </span>
                 <span className="h-px flex-1 bg-border" aria-hidden />
@@ -224,9 +224,9 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
       case "GOAL":
         return <Goal className={cn("h-4 w-4", className)} aria-hidden />;
       case "YELLOW":
-        return <span className="h-3.5 w-2.5 rounded-[2px] bg-yellow-400/90" aria-label="হলুদ কার্ড" />;
+        return <span className="h-3.5 w-2.5 rounded-[2px] bg-yellow-400/90" aria-label="Yellow card" />;
       case "RED":
-        return <span className="h-3.5 w-2.5 rounded-[2px] bg-fhb-red" aria-label="লাল কার্ড" />;
+        return <span className="h-3.5 w-2.5 rounded-[2px] bg-fhb-red" aria-label="Red card" />;
       case "SUB":
         return <ArrowLeftRight className={cn("h-4 w-4", className)} aria-hidden />;
       case "HT":
@@ -239,14 +239,14 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
   };
 
   const eventLabel = (type: string) =>
-    type === "GOAL" ? "গোল" : type === "YELLOW" ? "হলুদ কার্ড" : type === "RED" ? "লাল কার্ড" : type === "SUB" ? "বদলি" : type === "HT" ? "হাফ-টাইম" : type === "FT" ? "সম্পন্ন" : "ইভেন্ট";
+    type === "GOAL" ? "Goal" : type === "YELLOW" ? "Yellow Card" : type === "RED" ? "Red Card" : type === "SUB" ? "Substitution" : type === "HT" ? "Half-Time" : type === "FT" ? "Full-Time" : "Event";
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 pb-14 pt-5 sm:px-6">
       <button
         onClick={back}
         className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
-        aria-label="ফিরে যান"
+        aria-label="Go back"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
       </button>
@@ -263,13 +263,13 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
             />
             <span className="truncate">{m.competition.name}</span>
             <span className="hidden text-muted-foreground sm:inline">
-              {m.round ? `• ${m.round}` : m.matchday ? `• রাউন্ড ${toBn(m.matchday)}` : ""}
+              {m.round ? `• ${m.round}` : m.matchday ? `• Round ${fmtNum(m.matchday)}` : ""}
             </span>
           </span>
           {status === "LIVE" && <LiveBadge minute={minute} period={period} />}
           {status === "FINISHED" && (
             <span className="rounded-md bg-muted px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-              সম্পন্ন
+              Finished
             </span>
           )}
           {status === "SCHEDULED" && (
@@ -299,9 +299,9 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
             ) : (
               <>
                 <p className="tabular font-display text-5xl font-bold leading-none text-foreground sm:text-[4.5rem]">
-                  {toBn(homeScore ?? 0)}
+                  {fmtNum(homeScore ?? 0)}
                   <span className="mx-2 text-muted-foreground/35 sm:mx-3">-</span>
-                  {toBn(awayScore ?? 0)}
+                  {fmtNum(awayScore ?? 0)}
                 </p>
                 {status === "LIVE" && (
                   <p className="mt-3.5">
@@ -325,9 +325,9 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
         {/* Meta strip */}
         <div className="grid grid-cols-3 divide-x divide-border/60 border-t border-border/60 bg-black/20 text-center backdrop-blur-sm">
           {[
-            { icon: <MapPin className="h-3.5 w-3.5" aria-hidden />, label: "ভেন্যু", value: m.venue ?? "—" },
-            { icon: <CalendarDays className="h-3.5 w-3.5" aria-hidden />, label: "তারিখ", value: ko.date },
-            { icon: <Clock className="h-3.5 w-3.5" aria-hidden />, label: "কিক-অফ", value: ko.time },
+            { icon: <MapPin className="h-3.5 w-3.5" aria-hidden />, label: "Venue", value: m.venue ?? "—" },
+            { icon: <CalendarDays className="h-3.5 w-3.5" aria-hidden />, label: "Date", value: ko.date },
+            { icon: <Clock className="h-3.5 w-3.5" aria-hidden />, label: "Kick-off", value: ko.time },
           ].map((meta) => (
             <div key={meta.label} className="px-2 py-3.5">
               <p className="flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -343,9 +343,9 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
       </div>
 
       {/* ═══ Events timeline — SofaScore-style two-sided feed ═══ */}
-      <section className="mt-9" aria-label="ম্যাচ ইভেন্ট">
+      <section className="mt-9" aria-label="Match events">
         <div className="mb-5 flex items-center gap-3">
-          <h2 className="font-display-bn text-lg font-bold text-foreground">ম্যাচ ইভেন্ট</h2>
+          <h2 className="font-display-bn text-lg font-bold text-foreground">Match Events</h2>
           <span className="h-px flex-1 bg-border" aria-hidden />
         </div>
         {events.length === 0 ? (
@@ -355,8 +355,8 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
             </span>
             <p className="text-sm text-muted-foreground">
               {status === "SCHEDULED"
-                ? "ম্যাচ শুরু হলে ইভেন্টগুলো এখানে লাইভ যুক্ত হবে।"
-                : "কোনো ইভেন্ট রেকর্ড করা হয়নি।"}
+                ? "Events will appear here live once the match kicks off."
+                : "No events recorded yet."}
             </p>
           </div>
         ) : (
@@ -402,7 +402,7 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
 
                     {/* Minute chip */}
                     <span className="tabular order-first flex h-8 min-w-[3.25rem] shrink-0 items-center justify-center rounded-full border border-border bg-muted/60 px-2 font-display text-xs font-bold text-muted-foreground sm:order-none sm:mx-auto">
-                      {toBn(e.minute)}′
+                      {fmtNum(e.minute)}′
                     </span>
 
                     {/* Away side */}
@@ -446,9 +446,9 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
         <div className="mt-6 flex items-start gap-3.5 rounded-2xl border border-fhb-red/30 bg-fhb-red/5 p-4.5 p-4">
           <span className="live-dot mt-1 h-2 w-2 shrink-0 rounded-[2px] bg-fhb-red" aria-hidden />
           <div>
-            <p className="text-xs font-bold text-fhb-red">রিয়েল-টাইম আপডেট চালু</p>
+            <p className="text-xs font-bold text-fhb-red">Real-time updates on</p>
             <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-              এই ম্যাচের স্কোর ও ইভেন্ট WebSocket-এর মাধ্যমে লাইভ আপডেট হচ্ছে — রিফ্রেশ করার দরকার নেই।
+              This match's score and events update live over WebSocket — no refresh needed.
             </p>
           </div>
         </div>

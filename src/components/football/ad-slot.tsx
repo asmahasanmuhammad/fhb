@@ -130,7 +130,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
   const variant: Variant = isSidebar ? "sidebar" : isBanner || isMobileBanner ? "banner" : "in-feed";
 
   const headline = ad.headline || ad.name;
-  const cta = ad.ctaLabel || "আরও জানুন";
+  const cta = ad.ctaLabel || "Learn More";
 
   return (
     <div
@@ -143,7 +143,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
         className
       )}
       role="complementary"
-      aria-label="বিজ্ঞাপন"
+      aria-label="Advertisement"
     >
       {/* Brand-tinted ambience + photo creative when available */}
       <span
@@ -184,7 +184,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
           key={ad.id}
           onClick={trackClick}
           className="ad-creative relative z-[5] flex h-full w-full flex-col items-center justify-center px-7 pb-7 pt-8 text-center"
-          aria-label={`${ad.name} — বিজ্ঞাপনে ক্লিক করুন`}
+          aria-label={`${ad.name} — click to visit`}
         >
           <AdMonogram brand={ad} size="lg" />
           <p className="mt-4 font-display text-[15px] font-bold leading-snug text-foreground/95">{headline}</p>
@@ -205,7 +205,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
           key={ad.id}
           onClick={trackClick}
           className="ad-creative relative z-[5] flex h-full w-full items-center gap-3.5 px-4 text-left sm:px-6"
-          aria-label={`${ad.name} — বিজ্ঞাপনে ক্লিক করুন`}
+          aria-label={`${ad.name} — click to visit`}
         >
           <AdMonogram brand={ad} size={isMobileBanner ? "sm" : "md"} />
           <span className="min-w-0 flex-1">
@@ -230,7 +230,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
           key={ad.id}
           onClick={trackClick}
           className="ad-creative relative z-[5] flex h-full w-full items-center gap-4 px-5 text-left sm:px-6"
-          aria-label={`${ad.name} — বিজ্ঞাপনে ক্লিক করুন`}
+          aria-label={`${ad.name} — click to visit`}
         >
           <AdMonogram brand={ad} />
           <span className="min-w-0 flex-1">
@@ -252,7 +252,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
       {isSidebar && (
         <span className="absolute inset-x-4 bottom-3 z-10 flex items-center justify-center gap-1.5 text-[9px] text-muted-foreground/70">
           <BadgeCheck className="h-3 w-3 text-primary/70" aria-hidden />
-          নিরাপদ বিজ্ঞাপন — AdSense পলিসি অনুসরণ করা হয়
+          Safe ads — AdSense policy compliant
         </span>
       )}
     </div>

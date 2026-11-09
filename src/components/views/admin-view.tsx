@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
 import { useReveal } from "@/hooks/use-reveal";
-import { toBn, timeAgo, bnCompact, formatMoney, bnNumber } from "@/lib/format";
+import { fmtNum, timeAgo, fmtCompact, formatMoney, fmtLocale } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -54,9 +54,9 @@ export function AdminView() {
         <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-fhb-red/15">
           <Ban className="h-7 w-7 text-fhb-red" aria-hidden />
         </span>
-        <p className="text-sm font-bold text-foreground">অনুমতি নেই</p>
+        <p className="text-sm font-bold text-foreground">Access Denied</p>
         <p className="text-xs leading-relaxed text-muted-foreground">
-          এই পেজটি শুধু অ্যাডমিনদের জন্য। ডেমো দেখতে <b>admin@fhb.com.bd / Admin@2025</b> দিয়ে লগইন করুন।
+          This page is for admins only. To preview the demo, log in with <b>admin@fhb.com.bd / Admin@2025</b>.
         </p>
       </div>
     );
@@ -74,23 +74,23 @@ export function AdminView() {
   const s = data.stats;
 
   const kpis = [
-    { label: "মোট ইউজার", value: bnNumber(s.totalUsers), icon: <Users className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
-    { label: "প্রিমিয়াম সদস্য", value: bnNumber(s.premiumUsers), icon: <Crown className="h-4 w-4" aria-hidden />, chip: "bg-fhb-gold/15 text-fhb-gold" },
-    { label: "নিউজ আর্টিকেল", value: bnNumber(s.totalArticles), icon: <Newspaper className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
-    { label: "শর্টস ভিডিও", value: bnNumber(s.totalVideos), icon: <Video className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
-    { label: "লাইভ ম্যাচ", value: bnNumber(s.liveMatches), icon: <CircleDot className="h-4 w-4" aria-hidden />, chip: "bg-fhb-red/15 text-fhb-red" },
-    { label: "মনিটাইজেশন আয়", value: formatMoney(s.adRevenue + s.membershipRevenue), icon: <TrendingUp className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
+    { label: "Total Users", value: fmtLocale(s.totalUsers), icon: <Users className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
+    { label: "Premium Members", value: fmtLocale(s.premiumUsers), icon: <Crown className="h-4 w-4" aria-hidden />, chip: "bg-fhb-gold/15 text-fhb-gold" },
+    { label: "News Articles", value: fmtLocale(s.totalArticles), icon: <Newspaper className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
+    { label: "Shorts Videos", value: fmtLocale(s.totalVideos), icon: <Video className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
+    { label: "Live Matches", value: fmtLocale(s.liveMatches), icon: <CircleDot className="h-4 w-4" aria-hidden />, chip: "bg-fhb-red/15 text-fhb-red" },
+    { label: "Monetization Revenue", value: formatMoney(s.adRevenue + s.membershipRevenue), icon: <TrendingUp className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
   ];
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-12 pt-6 sm:px-6">
       <PageHeader
-        title="অ্যাডমিন ড্যাশবোর্ড"
-        subtitle="Football Hub Bangladesh-এর সম্পূর্ণ নিয়ন্ত্রণ কেন্দ্র"
+        title="Admin Dashboard"
+        subtitle="The complete control center of Football Hub Bangladesh"
         icon={<LayoutDashboard className="h-5 w-5" aria-hidden />}
       >
         <span className="flex items-center gap-1.5 rounded-full border border-fhb-red/40 bg-fhb-red/10 px-3 py-1.5 text-[10px] font-bold text-fhb-red">
-          <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> অ্যাডমিন
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Admin
         </span>
       </PageHeader>
 
@@ -110,10 +110,10 @@ export function AdminView() {
       {/* Secondary stats */}
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
-          { label: "নিউজ ভিউজ", value: bnCompact(s.newsViews), icon: <Eye className="h-3.5 w-3.5" aria-hidden /> },
-          { label: "ভিডিও ভিউজ", value: bnCompact(s.videoViews), icon: <Clapperboard className="h-3.5 w-3.5" aria-hidden /> },
-          { label: "কমেন্ট", value: bnNumber(s.totalComments), icon: <MessageSquare className="h-3.5 w-3.5" aria-hidden /> },
-          { label: "ম্যাচ", value: bnNumber(s.totalMatches), icon: <Zap className="h-3.5 w-3.5" aria-hidden /> },
+          { label: "News Views", value: fmtCompact(s.newsViews), icon: <Eye className="h-3.5 w-3.5" aria-hidden /> },
+          { label: "Video Views", value: fmtCompact(s.videoViews), icon: <Clapperboard className="h-3.5 w-3.5" aria-hidden /> },
+          { label: "Comments", value: fmtLocale(s.totalComments), icon: <MessageSquare className="h-3.5 w-3.5" aria-hidden /> },
+          { label: "Matches", value: fmtLocale(s.totalMatches), icon: <Zap className="h-3.5 w-3.5" aria-hidden /> },
         ].map((c) => (
           <div key={c.label} className="flex items-center gap-2.5 rounded-xl border border-border bg-card/60 px-3.5 py-3">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted text-primary">
@@ -131,19 +131,19 @@ export function AdminView() {
       <Tabs defaultValue="news" className="mt-9">
         <TabsList className="grid h-auto w-full grid-cols-2 gap-1.5 rounded-2xl border border-border bg-muted/40 p-1.5 sm:grid-cols-5">
           <TabsTrigger value="news" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            <Newspaper className="h-3.5 w-3.5" aria-hidden /> নিউজ
+            <Newspaper className="h-3.5 w-3.5" aria-hidden /> News
           </TabsTrigger>
           <TabsTrigger value="matches" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            <Zap className="h-3.5 w-3.5" aria-hidden /> ম্যাচ
+            <Zap className="h-3.5 w-3.5" aria-hidden /> Matches
           </TabsTrigger>
           <TabsTrigger value="users" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            <Users className="h-3.5 w-3.5" aria-hidden /> ইউজার
+            <Users className="h-3.5 w-3.5" aria-hidden /> Users
           </TabsTrigger>
           <TabsTrigger value="ads" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            <Megaphone className="h-3.5 w-3.5" aria-hidden /> বিজ্ঞাপন
+            <Megaphone className="h-3.5 w-3.5" aria-hidden /> Ads
           </TabsTrigger>
           <TabsTrigger value="payouts" className="gap-1.5 rounded-md text-[11px] font-bold data-[state=active]:bg-card data-[state=active]:shadow-sm">
-            <Wallet className="h-3.5 w-3.5" aria-hidden /> পেআউট
+            <Wallet className="h-3.5 w-3.5" aria-hidden /> Payouts
           </TabsTrigger>
         </TabsList>
 
@@ -192,13 +192,13 @@ function NewsManager() {
       return json;
     },
     onSuccess: () => {
-      toast({ title: editing ? "নিউজ আপডেট হয়েছে" : "নিউজ প্রকাশিত হয়েছে" });
+      toast({ title: editing ? "Article updated" : "Article published" });
       setDialogOpen(false);
       setEditing(null);
       queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
       queryClient.invalidateQueries({ queryKey: ["news"] });
     },
-    onError: (e: Error) => toast({ title: "সেভ ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Save failed", description: e.message, variant: "destructive" }),
   });
 
   const del = useMutation({
@@ -209,11 +209,11 @@ function NewsManager() {
       return json;
     },
     onSuccess: () => {
-      toast({ title: "নিউজ মুছে ফেলা হয়েছে" });
+      toast({ title: "Article deleted" });
       queryClient.invalidateQueries({ queryKey: ["admin", "news"] });
       queryClient.invalidateQueries({ queryKey: ["news"] });
     },
-    onError: (e: Error) => toast({ title: "মুছে ফেলা ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Delete failed", description: e.message, variant: "destructive" }),
   });
 
   const openNew = () => {
@@ -236,10 +236,10 @@ function NewsManager() {
       <div className="mb-3 flex items-center justify-between">
         <p className="flex items-center gap-2 text-xs text-muted-foreground">
           <Newspaper className="h-3.5 w-3.5 text-primary" aria-hidden />
-          মোট {toBn(articles.length)} টি আর্টিকেল
+          {fmtNum(articles.length)} articles total
         </p>
         <Button size="sm" onClick={openNew} className="gap-1.5 rounded-md bg-primary font-bold">
-          <Plus className="h-4 w-4" aria-hidden /> নতুন নিউজ
+          <Plus className="h-4 w-4" aria-hidden /> New Article
         </Button>
       </div>
 
@@ -255,18 +255,18 @@ function NewsManager() {
                   <p className="mt-0.5 flex flex-wrap items-center gap-x-2 text-[10px] text-muted-foreground">
                     <Badge variant="secondary" className="h-4 rounded-sm px-1.5 text-[9px]">{a.category}</Badge>
                     <span className={a.status === "PUBLISHED" ? "font-bold text-primary" : "font-bold text-fhb-gold"}>
-                      {a.status === "PUBLISHED" ? "প্রকাশিত" : "ড্রাফট"}
+                      {a.status === "PUBLISHED" ? "Published" : "Draft"}
                     </span>
                     <span className="flex items-center gap-0.5">
                       <Eye className="h-2.5 w-2.5" aria-hidden />
-                      {bnCompact(a.views)}
+                      {fmtCompact(a.views)}
                     </span>
                     <span>{timeAgo(a.createdAt)}</span>
-                    {a.featured && <Star className="h-3 w-3 fill-fhb-gold text-fhb-gold" aria-label="ফিচার্ড" />}
+                    {a.featured && <Star className="h-3 w-3 fill-fhb-gold text-fhb-gold" aria-label="Featured" />}
                   </p>
                 </div>
                 <div className="flex items-center gap-1">
-                  <Button variant="ghost" size="sm" onClick={() => openEdit(a)} aria-label="এডিট করুন" className="h-8 w-8 p-0">
+                  <Button variant="ghost" size="sm" onClick={() => openEdit(a)} aria-label="Edit" className="h-8 w-8 p-0">
                     <Pencil className="h-3.5 w-3.5" aria-hidden />
                   </Button>
                   <Button
@@ -274,7 +274,7 @@ function NewsManager() {
                     size="sm"
                     onClick={() => del.mutate(a.id)}
                     className="h-8 w-8 p-0 text-fhb-red hover:text-fhb-red"
-                    aria-label="মুছে ফেলুন"
+                    aria-label="Delete"
                   >
                     <Trash2 className="h-3.5 w-3.5" aria-hidden />
                   </Button>
@@ -289,46 +289,46 @@ function NewsManager() {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-xl">
           <DialogHeader>
-            <DialogTitle className="font-display">{editing ? "নিউজ এডিট করুন" : "নতুন নিউজ লিখুন"}</DialogTitle>
+            <DialogTitle className="font-display">{editing ? "Edit Article" : "Write New Article"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-3.5">
             <div>
-              <label className="mb-1 block text-[11px] font-bold text-foreground">শিরোনাম *</label>
+              <label className="mb-1 block text-[11px] font-bold text-foreground">Headline *</label>
               <input
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
                 className={inputCls}
-                aria-label="শিরোনাম"
+                aria-label="Headline"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[11px] font-bold text-foreground">সারসংক্ষেপ *</label>
+              <label className="mb-1 block text-[11px] font-bold text-foreground">Excerpt *</label>
               <textarea
                 value={form.excerpt}
                 onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}
                 rows={2}
                 className={cn(inputCls, "resize-none")}
-                aria-label="সারসংক্ষেপ"
+                aria-label="Excerpt"
               />
             </div>
             <div>
-              <label className="mb-1 block text-[11px] font-bold text-foreground">বিস্তারিত (Markdown সমর্থিত) *</label>
+              <label className="mb-1 block text-[11px] font-bold text-foreground">Body (Markdown supported) *</label>
               <textarea
                 value={form.content}
                 onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
                 rows={8}
                 className={cn(inputCls, "resize-y")}
-                aria-label="বিস্তারিত লেখা"
+                aria-label="Article body"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="mb-1 block text-[11px] font-bold text-foreground">ক্যাটাগরি</label>
+                <label className="mb-1 block text-[11px] font-bold text-foreground">Category</label>
                 <select
                   value={form.category}
                   onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
                   className={inputCls}
-                  aria-label="ক্যাটাগরি"
+                  aria-label="Category"
                 >
                   {["BPL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"].map((c) => (
                     <option key={c} value={c}>{c}</option>
@@ -336,26 +336,26 @@ function NewsManager() {
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-[11px] font-bold text-foreground">স্ট্যাটাস</label>
+                <label className="mb-1 block text-[11px] font-bold text-foreground">Status</label>
                 <select
                   value={form.status}
                   onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
                   className={inputCls}
-                  aria-label="স্ট্যাটাস"
+                  aria-label="Status"
                 >
-                  <option value="PUBLISHED">প্রকাশিত</option>
-                  <option value="DRAFT">ড্রাফট</option>
+                  <option value="PUBLISHED">Published</option>
+                  <option value="DRAFT">Draft</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="mb-1 block text-[11px] font-bold text-foreground">কভার ইমেজ URL</label>
+              <label className="mb-1 block text-[11px] font-bold text-foreground">Cover Image URL</label>
               <input
                 value={form.coverUrl}
                 onChange={(e) => setForm((f) => ({ ...f, coverUrl: e.target.value }))}
                 placeholder="https://..."
                 className={inputCls}
-                aria-label="কভার ইমেজ URL"
+                aria-label="Cover image URL"
               />
             </div>
             <label className="flex items-center gap-2 text-xs font-semibold text-foreground">
@@ -365,20 +365,20 @@ function NewsManager() {
                 onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
                 className="h-4 w-4 accent-[var(--primary)]"
               />
-              হোমপেজে ফিচার করুন
+              Feature on homepage
               <Star className="h-3.5 w-3.5 text-fhb-gold" aria-hidden />
             </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-md">
-              বাতিল
+              Cancel
             </Button>
             <Button
               onClick={() => save.mutate()}
               disabled={save.isPending || !form.title.trim() || !form.content.trim()}
               className="rounded-md bg-primary font-bold"
             >
-              {save.isPending ? "সেভ হচ্ছে..." : "প্রকাশ করুন"}
+              {save.isPending ? "Saving..." : "Publish"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -421,13 +421,13 @@ function MatchManager() {
     onSuccess: (_d, payload) => {
       const msg =
         payload.status === "LIVE"
-          ? "ম্যাচ এখন লাইভ! লাইভ-সিমুলেশন সার্ভিস এটি ১৫ সেকেন্ডের মধ্যে নিয়ে নেবে।"
-          : "ম্যাচ আপডেট হয়েছে";
+          ? "Match is now live! The live simulation service will pick it up within 15 seconds."
+          : "Match updated";
       toast({ title: msg });
       queryClient.invalidateQueries({ queryKey: ["admin", "matches"] });
       queryClient.invalidateQueries({ queryKey: ["matches"] });
     },
-    onError: (e: Error) => toast({ title: "আপডেট ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
   });
 
   const matches = data?.matches ?? [];
@@ -441,7 +441,7 @@ function MatchManager() {
       <p className="mb-3 flex items-start gap-2.5 rounded-xl border border-fhb-red/25 bg-fhb-red/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-fhb-red" aria-hidden />
         <span>
-          <b className="text-foreground">লাইভ টেস্ট টিপ:</b> কোনো আসন্ন ম্যাচের স্ট্যাটাস <b className="text-fhb-red">&ldquo;লাইভ&rdquo;</b> করুন — WebSocket সিমুলেশন সার্ভিস স্বয়ংক্রিয়ভাবে মিনিট ও স্কোর আপডেট শুরু করবে।
+          <b className="text-foreground">Live test tip:</b> set any upcoming match's status to <b className="text-fhb-red">&ldquo;Live&rdquo;</b> — the WebSocket simulation service will automatically start updating minutes and scores.
         </span>
       </p>
       {isLoading ? (
@@ -452,10 +452,10 @@ function MatchManager() {
             <div key={m.id} className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold text-foreground">
-                  {m.homeTeam.name} <span className="text-muted-foreground">বনাম</span> {m.awayTeam.name}
+                  {m.homeTeam.name} <span className="text-muted-foreground">vs</span> {m.awayTeam.name}
                 </p>
                 <p className="tabular text-[10px] text-muted-foreground">
-                  {m.competition.shortName} · {new Date(m.kickoff).toLocaleDateString("bn-BD")} ·{" "}
+                  {m.competition.shortName} · {new Date(m.kickoff).toLocaleDateString("en-US")} ·{" "}
                   {m.homeScore ?? "-"}:{m.awayScore ?? "-"}
                 </p>
               </div>
@@ -474,7 +474,7 @@ function MatchManager() {
                         : "border-border text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    {st === "LIVE" ? "লাইভ" : st === "SCHEDULED" ? "আসছে" : "শেষ"}
+                    {st === "LIVE" ? "Live" : st === "SCHEDULED" ? "Upcoming" : "Finished"}
                   </button>
                 ))}
               </div>
@@ -516,10 +516,10 @@ function UserManager() {
       return json;
     },
     onSuccess: () => {
-      toast({ title: "ইউজার আপডেট হয়েছে" });
+      toast({ title: "User updated" });
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
     },
-    onError: (e: Error) => toast({ title: "আপডেট ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
   });
 
   const users = data?.users ?? [];
@@ -536,13 +536,13 @@ function UserManager() {
                 <p className="flex flex-wrap items-center gap-1.5 truncate text-sm font-semibold text-foreground">
                   {u.name}
                   <span className="text-[10px] text-muted-foreground">@{u.username}</span>
-                  {u.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="প্রিমিয়াম" />}
+                  {u.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="Premium" />}
                   {u.isBanned && (
-                    <Badge className="h-4 rounded-sm bg-fhb-red px-1.5 text-[9px] hover:bg-fhb-red">ব্যান</Badge>
+                    <Badge className="h-4 rounded-sm bg-fhb-red px-1.5 text-[9px] hover:bg-fhb-red">Ban</Badge>
                   )}
                 </p>
                 <p className="tabular text-[10px] text-muted-foreground">
-                  {u.email} · {bnNumber(u.followerCount)} ফলোয়ার · {bnNumber(u._count.comments)} কমেন্ট
+                  {u.email} · {fmtLocale(u.followerCount)} followers · {fmtLocale(u._count.comments)} comments
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-1.5">
@@ -558,7 +558,7 @@ function UserManager() {
                         : "border-border text-muted-foreground hover:text-foreground"
                     )}
                   >
-                    {r === "USER" ? "ফ্যান" : r === "CREATOR" ? "ক্রিয়েটর" : "অ্যাডমিন"}
+                    {r === "USER" ? "Fan" : r === "CREATOR" ? "Creator" : "Admin"}
                   </button>
                 ))}
                 <Button
@@ -566,7 +566,7 @@ function UserManager() {
                   size="sm"
                   onClick={() => update.mutate({ id: u.id, isBanned: !u.isBanned })}
                   className={cn("h-8 w-8 p-0", u.isBanned ? "text-primary hover:text-primary" : "text-fhb-red hover:text-fhb-red")}
-                  aria-label={u.isBanned ? "আনব্যান করুন" : "ব্যান করুন"}
+                  aria-label={u.isBanned ? "Unban" : "Ban"}
                 >
                   {u.isBanned ? <RotateCcw className="h-3.5 w-3.5" aria-hidden /> : <Ban className="h-3.5 w-3.5" aria-hidden />}
                 </Button>
@@ -597,12 +597,12 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
       return json;
     },
     onSuccess: () => {
-      toast({ title: "বিজ্ঞাপন সেটিংস আপডেট হয়েছে" });
+      toast({ title: "Ad settings updated" });
       setEditing(null);
       queryClient.invalidateQueries({ queryKey: ["admin", "stats"] });
       queryClient.invalidateQueries({ queryKey: ["ads"] });
     },
-    onError: (e: Error) => toast({ title: "আপডেট ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
   });
 
   return (
@@ -610,8 +610,8 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
       <p className="mb-3 flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground">
         <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
         <span>
-          Google AdSense কোড (ca-pub-...) এখানে বসিয়ে দিলেই সাইটজুড়ে সংশ্লিষ্ট প্লেসমেন্টে আসল বিজ্ঞাপন চলবে। প্রিমিয়াম
-          সদস্যরা বিজ্ঞাপন দেখতে পাবেন না — এটাই প্রিমিয়ামের মূল সুবিধা।
+          Paste your Google AdSense code (ca-pub-...) here and real ads will serve across the site in matching placements. Premium
+          members never see ads — the core premium benefit.
         </span>
       </p>
       <div className="space-y-2">
@@ -629,8 +629,8 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-semibold text-foreground">{ad.name}</p>
                   <p className="tabular text-[10px] text-muted-foreground">
-                    {ad.placement} · {bnCompact(ad.impressions)} ইমপ্রেশন · {bnCompact(ad.clicks)} ক্লিক · CTR{" "}
-                    {toBn(ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0")}%
+                    {ad.placement} · {fmtCompact(ad.impressions)} impressions · {fmtCompact(ad.clicks)} clicks · CTR{" "}
+                    {fmtNum(ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0")}%
                   </p>
                   {ad.headline && (
                     <p className="mt-1 truncate text-[11px] italic text-muted-foreground/80">“{ad.headline}”</p>
@@ -639,7 +639,7 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
               </div>
               <div className="flex items-center gap-2">
                 <Button variant="outline" size="sm" onClick={() => setEditing({ id: ad.id, code: ad.adCode ?? "" })} className="rounded-md">
-                  কোড এডিট
+                  Edit Code
                 </Button>
                 <button
                   onClick={() => update.mutate({ id: ad.id, active: !ad.active })}
@@ -650,7 +650,7 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
                   )}
                   role="switch"
                   aria-checked={ad.active}
-                  aria-label={`${ad.name} ${ad.active ? "বন্ধ" : "চালু"} করুন`}
+                  aria-label={`${ad.name} ${ad.active ? "Disable" : "Enable"}`}
                 >
                   <span
                     className={cn(
@@ -669,14 +669,14 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
                   rows={4}
                   placeholder='<ins class="adsbygoogle" ...></ins>'
                   className="w-full resize-y rounded-xl border border-border bg-background px-3.5 py-2.5 font-mono text-[11px] outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
-                  aria-label="AdSense কোড"
+                  aria-label="AdSense code"
                 />
                 <div className="flex gap-2">
                   <Button size="sm" onClick={() => update.mutate({ id: ad.id, adCode: editing.code })} className="rounded-md bg-primary font-bold">
-                    সেভ করুন
+                    Save
                   </Button>
                   <Button size="sm" variant="outline" onClick={() => setEditing(null)} className="rounded-md">
-                    বাতিল
+                    Cancel
                   </Button>
                 </div>
               </div>
@@ -714,19 +714,19 @@ function PayoutManager() {
       return json;
     },
     onSuccess: () => {
-      toast({ title: "পেআউট স্ট্যাটাস আপডেট হয়েছে" });
+      toast({ title: "Payout status updated" });
       queryClient.invalidateQueries({ queryKey: ["admin", "payouts"] });
       queryClient.invalidateQueries({ queryKey: ["earnings"] });
     },
-    onError: (e: Error) => toast({ title: "আপডেট ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Update failed", description: e.message, variant: "destructive" }),
   });
 
   const payouts = data?.payouts ?? [];
   const STATUS_UI: Record<string, { label: string; cls: string }> = {
-    PENDING: { label: "অপেক্ষমাণ", cls: "bg-fhb-gold/15 text-fhb-gold" },
-    APPROVED: { label: "অনুমোদিত", cls: "bg-primary/15 text-primary" },
-    PAID: { label: "পরিশোধিত", cls: "bg-primary/15 text-primary" },
-    REJECTED: { label: "বাতিল", cls: "bg-fhb-red/15 text-fhb-red" },
+    PENDING: { label: "Pending", cls: "bg-fhb-gold/15 text-fhb-gold" },
+    APPROVED: { label: "Approved", cls: "bg-primary/15 text-primary" },
+    PAID: { label: "Paid", cls: "bg-primary/15 text-primary" },
+    REJECTED: { label: "Rejected", cls: "bg-fhb-red/15 text-fhb-red" },
   };
 
   return (
@@ -735,7 +735,7 @@ function PayoutManager() {
         [1, 2].map((i) => <Skeleton key={i} className="mb-2 h-16 rounded-lg" />)
       ) : payouts.length === 0 ? (
         <p className="edge-lit rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">
-          কোনো উত্তোলনের অনুরোধ নেই।
+          No withdrawal requests.
         </p>
       ) : (
         <div className="space-y-2">
@@ -746,7 +746,7 @@ function PayoutManager() {
                   {p.creator.name} <span className="text-[10px] text-muted-foreground">@{p.creator.username}</span>
                 </p>
                 <p className="tabular text-[10px] text-muted-foreground">
-                  {formatMoney(p.amount)} · {p.method === "BKASH" ? "bKash" : p.method === "NAGAD" ? "Nagad" : "ব্যাংক"} · {p.account} · {timeAgo(p.createdAt)}
+                  {formatMoney(p.amount)} · {p.method === "BKASH" ? "bKash" : p.method === "NAGAD" ? "Nagad" : "Bank"} · {p.account} · {timeAgo(p.createdAt)}
                 </p>
               </div>
               <span className={cn("rounded-sm px-2.5 py-1 text-[10px] font-bold", STATUS_UI[p.status]?.cls)}>
@@ -760,7 +760,7 @@ function PayoutManager() {
                     onClick={() => update.mutate({ id: p.id, status: "APPROVED" })}
                     className="gap-1 rounded-md text-[11px]"
                   >
-                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" aria-hidden /> অনুমোদন
+                    <CheckCircle2 className="h-3.5 w-3.5 text-primary" aria-hidden /> Approve
                   </Button>
                   <Button
                     size="sm"
@@ -768,7 +768,7 @@ function PayoutManager() {
                     onClick={() => update.mutate({ id: p.id, status: "REJECTED" })}
                     className="gap-1 rounded-md text-[11px]"
                   >
-                    <XCircle className="h-3.5 w-3.5" aria-hidden /> বাতিল
+                    <XCircle className="h-3.5 w-3.5" aria-hidden /> Reject
                   </Button>
                 </div>
               )}
@@ -778,7 +778,7 @@ function PayoutManager() {
                   onClick={() => update.mutate({ id: p.id, status: "PAID" })}
                   className="gap-1 rounded-md bg-primary text-[11px] font-bold"
                 >
-                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> পরিশোধ সম্পন্ন
+                  <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Mark Paid
                 </Button>
               )}
             </div>

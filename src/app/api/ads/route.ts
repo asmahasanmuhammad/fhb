@@ -26,7 +26,7 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
     const parsed = trackSchema.safeParse(body);
-    if (!parsed.success) return fail("ভুল অনুরোধ", 422);
+    if (!parsed.success) return fail("Invalid request", 422);
     const { adId, event } = parsed.data;
     await db.adSlot.update({
       where: { id: adId },

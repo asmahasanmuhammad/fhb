@@ -7,7 +7,7 @@ import { useAppStore } from "@/store/app-store";
 import { LikeButton } from "@/components/football/like-button";
 import { CommentSection } from "@/components/football/comment-section";
 import { VideoPreroll } from "@/components/football/video-preroll";
-import { bnCompact, timeAgo } from "@/lib/format";
+import { fmtCompact, timeAgo } from "@/lib/format";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -50,20 +50,20 @@ export function ShortsView() {
           <button
             onClick={() => navigate({ name: "home" })}
             className="flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur transition-transform active:scale-90"
-            aria-label="ফিরে যান"
+            aria-label="Go back"
           >
             <ChevronLeft className="h-5 w-5" aria-hidden />
           </button>
           <p className="flex items-center gap-2 font-display text-sm font-bold tracking-[0.18em] text-white">
             <Flame className="h-4 w-4 text-fhb-gold" aria-hidden />
-            FHB শর্টস
+            FHB Shorts
           </p>
           {user?.role === "CREATOR" || user?.role === "ADMIN" ? (
             <button
               onClick={() => navigate({ name: "upload" })}
               className="sheen flex items-center gap-1.5 rounded-full bg-primary px-3.5 py-1.5 text-[11px] font-bold text-primary-foreground shadow-[0_8px_20px_-8px_var(--primary)] transition-transform active:scale-95"
             >
-              <Upload className="h-3.5 w-3.5" aria-hidden /> আপলোড
+              <Upload className="h-3.5 w-3.5" aria-hidden /> Upload
             </button>
           ) : (
             <span className="w-9" />
@@ -79,7 +79,7 @@ export function ShortsView() {
             <span className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10">
               <VideoIcon className="h-7 w-7 text-white/70" aria-hidden />
             </span>
-            <p className="text-sm text-white/70">এখনো কোনো শর্টস নেই। প্রথম ভিডিওটি আপনিই আপলোড করুন!</p>
+            <p className="text-sm text-white/70">No shorts yet. Be the first to upload a video!</p>
           </div>
         ) : (
           <div className="shorts-feed no-scrollbar h-full overflow-y-scroll" data-testid="shorts-feed">
@@ -149,7 +149,7 @@ function ShortsItem({ video }: { video: Video }) {
   const share = async () => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/?shorts=1&v=${video.id}`);
-      toast({ title: "লিংক কপি হয়েছে", description: "শর্টসটি শেয়ার করুন।" });
+      toast({ title: "Link copied", description: "Share this short." });
     } catch {
       /* noop */
     }
@@ -179,7 +179,7 @@ function ShortsItem({ video }: { video: Video }) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["follow", video.creator.id] });
     },
-    onError: (e: Error) => toast({ title: "ফলো ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Follow failed", description: e.message, variant: "destructive" }),
   });
 
   const following = followData?.following ?? false;
@@ -218,7 +218,7 @@ function ShortsItem({ video }: { video: Video }) {
       <button
         onClick={() => setMuted((m) => !m)}
         className="absolute right-3 top-20 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur transition-transform active:scale-90"
-        aria-label={muted ? "সাউন্ড চালু করুন" : "সাউন্ড বন্ধ করুন"}
+        aria-label={muted ? "Unmute" : "Mute"}
       >
         {muted ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />}
       </button>
@@ -229,16 +229,16 @@ function ShortsItem({ video }: { video: Video }) {
 
         <Sheet>
           <SheetTrigger asChild>
-            <button className="tap-target flex flex-col items-center gap-1 text-white" aria-label="কমেন্ট দেখুন">
+            <button className="tap-target flex flex-col items-center gap-1 text-white" aria-label="View comments">
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/45 backdrop-blur transition-transform active:scale-90">
                 <MessageCircle className="h-5 w-5" aria-hidden />
               </span>
-              <span className="tabular font-display text-xs font-semibold drop-shadow">{bnCompact(video.commentCount)}</span>
+              <span className="tabular font-display text-xs font-semibold drop-shadow">{fmtCompact(video.commentCount)}</span>
             </button>
           </SheetTrigger>
           <SheetContent side="bottom" className="max-h-[75vh] overflow-y-auto rounded-t-2xl">
             <SheetHeader className="pb-0">
-              <SheetTitle className="text-sm">{bnCompact(video.commentCount)} কমেন্ট</SheetTitle>
+              <SheetTitle className="text-sm">{fmtCompact(video.commentCount)} Comments</SheetTitle>
             </SheetHeader>
             <div className="px-4 pb-6 pt-2">
               <CommentSection targetType="VIDEO" targetId={video.id} />
@@ -246,11 +246,11 @@ function ShortsItem({ video }: { video: Video }) {
           </SheetContent>
         </Sheet>
 
-        <button onClick={share} className="tap-target flex flex-col items-center gap-1 text-white" aria-label="শেয়ার করুন">
+        <button onClick={share} className="tap-target flex flex-col items-center gap-1 text-white" aria-label="Share">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/45 backdrop-blur transition-transform active:scale-90">
             <Share2 className="h-5 w-5" aria-hidden />
           </span>
-          <span className="font-display text-xs font-semibold drop-shadow">শেয়ার</span>
+          <span className="font-display text-xs font-semibold drop-shadow">Share</span>
         </button>
       </div>
 
@@ -259,7 +259,7 @@ function ShortsItem({ video }: { video: Video }) {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => navigate({ name: "profile", username: video.creator.username })}
-            aria-label={`${video.creator.name} এর প্রোফাইল`}
+            aria-label={`${video.creator.name}'s profile`}
           >
             <Avatar className="h-10 w-10 border-2 border-white/80">
               <AvatarImage src={video.creator.avatarUrl ?? undefined} alt={video.creator.name} />
@@ -272,10 +272,10 @@ function ShortsItem({ video }: { video: Video }) {
               className="flex items-center gap-1.5 text-sm font-bold text-white drop-shadow"
             >
               @{video.creator.username}
-              {video.creator.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="প্রিমিয়াম" />}
+              {video.creator.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="Premium" />}
             </button>
             <p className="text-[10px] text-white/70">
-              {bnCompact(video.creator.followerCount ?? 0)} ফলোয়ার · {timeAgo(video.createdAt)}
+              {fmtCompact(video.creator.followerCount ?? 0)} followers · {timeAgo(video.createdAt)}
             </p>
           </div>
           {user && user.id !== video.creator.id && (
@@ -288,11 +288,11 @@ function ShortsItem({ video }: { video: Video }) {
             >
               {following ? (
                 <>
-                  <UserCheck className="h-3.5 w-3.5" aria-hidden /> ফলোয়িং
+                  <UserCheck className="h-3.5 w-3.5" aria-hidden /> Following
                 </>
               ) : (
                 <>
-                  <UserPlus className="h-3.5 w-3.5" aria-hidden /> ফলো
+                  <UserPlus className="h-3.5 w-3.5" aria-hidden /> Follow
                 </>
               )}
             </Button>
@@ -311,7 +311,7 @@ function ShortsItem({ video }: { video: Video }) {
         )}
         <div className="mt-2 flex items-center gap-1.5 text-[10px] text-white/60">
           <Music2 className="h-3 w-3" aria-hidden />
-          <span>মূল সাউন্ড — {video.creator.name}</span>
+          <span>Original sound — {video.creator.name}</span>
         </div>
       </div>
 
@@ -333,8 +333,8 @@ export function UploadView() {
   useEffect(() => {
     if (user && user.role !== "CREATOR" && user.role !== "ADMIN") {
       toast({
-        title: "ক্রিয়েটর অ্যাকাউন্ট প্রয়োজন",
-        description: "শর্টস আপলোড করতে ক্রিয়েটর হিসেবে অনুমোদন নিন (ডেমোতে creator@fhb.com.bd ব্যবহার করুন)।",
+        title: "Creator account required",
+        description: "Get approved as a creator to upload shorts (use creator@fhb.com.bd in the demo).",
       });
       navigate({ name: "shorts" });
     }
@@ -352,11 +352,11 @@ export function UploadView() {
       return json;
     },
     onSuccess: () => {
-      toast({ title: "আপলোড সফল", description: "আপনার শর্টস এখন ফিডে লাইভ।" });
+      toast({ title: "Upload successful", description: "Your shorts are now live in the feed." });
       queryClient.invalidateQueries({ queryKey: ["videos"] });
       navigate({ name: "shorts" });
     },
-    onError: (e: Error) => toast({ title: "আপলোড ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Upload failed", description: e.message, variant: "destructive" }),
   });
 
   const SAMPLE_VIDEOS = ["/videos/bkb1.mp4", "/videos/sintel1.mp4", "/videos/jelly1.mp4", "/videos/flower.mp4", "/videos/friday.mp4", "/videos/bkb2.mp4"];
@@ -378,9 +378,9 @@ export function UploadView() {
           </span>
           <div>
             <p className="eyebrow text-[10px] text-primary">creator studio</p>
-            <h1 className="mt-1 text-xl font-bold text-foreground sm:text-2xl">শর্টস আপলোড করুন</h1>
+            <h1 className="mt-1 text-xl font-bold text-foreground sm:text-2xl">Upload Shorts</h1>
             <p className="mt-1 text-[13px] text-muted-foreground">
-              ডেমো মোড: স্যাম্পল ভিডিও বেছে নিন বা নিজের URL দিন। প্রতিটি ভিডিও মনিটাইজড।
+              Demo mode: pick a sample video or paste your own URL. Every video is monetized.
             </p>
           </div>
         </div>
@@ -389,32 +389,32 @@ export function UploadView() {
       <div className="edge-lit mt-6 space-y-5 rounded-2xl border border-border bg-card p-5 sm:p-7">
         <div>
           <label htmlFor="title" className="mb-2 block text-xs font-bold text-foreground">
-            টাইটেল <span className="text-fhb-red">*</span>
+            Title <span className="text-fhb-red">*</span>
           </label>
           <input
             id="title"
             value={form.title}
             onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-            placeholder="যেমন: রাকিবের ফ্রি-কিক ম্যাজিক"
+            placeholder="e.g. Rakib's free-kick magic"
             className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <div>
           <label htmlFor="desc" className="mb-2 block text-xs font-bold text-foreground">
-            বর্ণনা
+            Description
           </label>
           <textarea
             id="desc"
             value={form.description}
             onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
-            placeholder="ভিডিওর বর্ণনা লিখুন..."
+            placeholder="Describe your video..."
             rows={3}
             className="w-full resize-none rounded-xl border border-border bg-background px-4 py-3 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
           />
         </div>
         <div>
           <label className="mb-2 block text-xs font-bold text-foreground">
-            ভিডিও নির্বাচন <span className="text-fhb-red">*</span>
+            Video <span className="text-fhb-red">*</span>
           </label>
           <div className="no-scrollbar flex gap-2.5 overflow-x-auto pb-1">
             {SAMPLE_VIDEOS.map((url, i) => (
@@ -431,34 +431,34 @@ export function UploadView() {
                 )}
               >
                 <VideoIcon className="h-3.5 w-3.5" aria-hidden />
-                নমুনা {String(i + 1).replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[+d])}
+                Sample {i + 1}
               </button>
             ))}
           </div>
           <input
             value={form.videoUrl}
             onChange={(e) => setForm((f) => ({ ...f, videoUrl: e.target.value }))}
-            placeholder="অথবা ভিডিও URL পেস্ট করুন (.mp4)"
+            placeholder="Or paste a video URL (.mp4)"
             className="mt-2.5 h-10 w-full rounded-xl border border-border bg-background px-4 text-xs outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
-            aria-label="ভিডিও URL"
+            aria-label="Video URL"
           />
         </div>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
             <label htmlFor="tags" className="mb-2 block text-xs font-bold text-foreground">
-              ট্যাগ (কমা দিয়ে আলাদা)
+              Tags (comma separated)
             </label>
             <input
               id="tags"
               value={form.tags}
               onChange={(e) => setForm((f) => ({ ...f, tags: e.target.value }))}
-              placeholder="বিপিএল,গোল,হাইলাইটস"
+              placeholder="BPL,goals,highlights"
               className="h-11 w-full rounded-xl border border-border bg-background px-4 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
             />
           </div>
           <div>
             <label htmlFor="thumb" className="mb-2 block text-xs font-bold text-foreground">
-              থাম্বনেইল URL
+              Thumbnail URL
             </label>
             <input
               id="thumb"
@@ -474,17 +474,17 @@ export function UploadView() {
         {form.videoUrl && form.title && (
           <div className="rounded-xl border border-primary/25 bg-primary/5 p-4">
             <p className="mb-2.5 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-primary">
-              <Play className="h-3 w-3" aria-hidden /> প্রিভিউ
+              <Play className="h-3 w-3" aria-hidden /> Preview
             </p>
             <div className="flex items-center gap-3.5">
               <div className="relative h-16 w-12 shrink-0 overflow-hidden rounded-lg bg-black">
                 {form.thumbnailUrl && (
-                  <img src={form.thumbnailUrl} alt="থাম্বনেইল প্রিভিউ" className="h-full w-full object-cover" />
+                  <img src={form.thumbnailUrl} alt="Thumbnail preview" className="h-full w-full object-cover" />
                 )}
               </div>
               <div className="min-w-0">
                 <p className="truncate text-sm font-bold text-foreground">{form.title}</p>
-                <p className="truncate text-[11px] text-muted-foreground">{form.description || "বর্ণনা নেই"}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{form.description || "No description"}</p>
               </div>
             </div>
           </div>
@@ -496,20 +496,20 @@ export function UploadView() {
           className="sheen flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary text-sm font-bold text-primary-foreground shadow-[0_14px_34px_-12px_var(--primary)] transition-transform hover:scale-[1.01] active:scale-[0.98] disabled:opacity-50 disabled:shadow-none disabled:hover:scale-100"
         >
           <Upload className="h-4 w-4" aria-hidden />
-          {submit.isPending ? "আপলোড হচ্ছে..." : "প্রকাশ করুন"}
+          {submit.isPending ? "Uploading..." : "Publish"}
         </button>
       </div>
 
       {/* Monetization tips */}
       <div className="gold-panel relative mt-6 overflow-hidden rounded-2xl border border-fhb-gold/25 p-5 sm:p-6">
         <p className="flex items-center gap-2 text-sm font-bold text-fhb-gold">
-          <Lightbulb className="h-4 w-4" aria-hidden /> মনিটাইজেশন টিপস
+          <Lightbulb className="h-4 w-4" aria-hidden /> Monetization Tips
         </p>
         <ul className="mt-3 space-y-2 text-xs leading-relaxed text-muted-foreground">
           {[
-            "প্রতি ১০০০ ভিউতে গড় ৳১০-৩০ অ্যাড রেভিনিউ (RPM অনুযায়ী)",
-            "এক্সক্লুসিভ ম্যাচ হাইলাইটস দিয়ে ফলোয়ার বাড়ান",
-            "আয়ের ড্যাশবোর্ড থেকে উত্তোলন করুন (bKash/Nagad)",
+            "Average Tk 10–30 ad revenue per 1,000 views (depending on RPM)",
+            "Grow your following with exclusive match highlights",
+            "Withdraw from your earnings dashboard (bKash/Nagad)",
           ].map((tip) => (
             <li key={tip} className="flex items-start gap-2">
               <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fhb-gold" aria-hidden />

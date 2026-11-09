@@ -13,7 +13,7 @@ import { AdSlot } from "@/components/football/ad-slot";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useAppStore } from "@/store/app-store";
-import { timeAgo, bnCompact } from "@/lib/format";
+import { timeAgo, fmtCompact } from "@/lib/format";
 import { CalendarDays, Eye, Share2, ArrowLeft, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -59,9 +59,9 @@ export function NewsDetailView({ articleId }: { articleId: string }) {
   const share = async () => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/?news=${a.id}`);
-      toast({ title: "লিংক কপি হয়েছে", description: "বন্ধুদের সাথে শেয়ার করুন।" });
+      toast({ title: "Link copied", description: "Share it with your friends." });
     } catch {
-      toast({ title: "শেয়ার ব্যর্থ", description: "ম্যানুয়ালি কপি করুন" });
+      toast({ title: "Share failed", description: "Copy manually" });
     }
   };
 
@@ -78,7 +78,7 @@ export function NewsDetailView({ articleId }: { articleId: string }) {
       <button
         onClick={back}
         className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
-        aria-label="ফিরে যান"
+        aria-label="Go back"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
       </button>
@@ -108,10 +108,10 @@ export function NewsDetailView({ articleId }: { articleId: string }) {
                   <CalendarDays className="h-3 w-3" aria-hidden /> {timeAgo(a.createdAt)}
                 </span>
                 <span className="flex items-center gap-1">
-                  <Eye className="h-3 w-3" aria-hidden /> {bnCompact(a.views)} পড়া হয়েছে
+                  <Eye className="h-3 w-3" aria-hidden /> {fmtCompact(a.views)} reads
                 </span>
                 <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" aria-hidden /> ~{Math.max(1, Math.ceil(a.content.length / 800))} মিনিট
+                  <Clock className="h-3 w-3" aria-hidden /> ~{Math.max(1, Math.ceil(a.content.length / 800))} min read
                 </span>
               </p>
             </div>
@@ -120,7 +120,7 @@ export function NewsDetailView({ articleId }: { articleId: string }) {
             onClick={share}
             className="flex h-9 items-center gap-1.5 rounded-full border border-border px-4 text-xs font-bold text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
           >
-            <Share2 className="h-3.5 w-3.5" aria-hidden /> শেয়ার
+            <Share2 className="h-3.5 w-3.5" aria-hidden /> Share
           </button>
         </div>
 
@@ -165,7 +165,7 @@ export function NewsDetailView({ articleId }: { articleId: string }) {
         {/* Engagement */}
         <div className="mt-9 flex items-center gap-3.5 border-t border-border pt-6">
           <LikeButton targetType="NEWS" targetId={a.id} initialCount={a.likeCount} />
-          <span className="tabular text-xs text-muted-foreground">{bnCompact(a.commentCount)} কমেন্ট</span>
+          <span className="tabular text-xs text-muted-foreground">{fmtCompact(a.commentCount)} comments</span>
         </div>
 
         <div className="mt-7">
@@ -179,9 +179,9 @@ export function NewsDetailView({ articleId }: { articleId: string }) {
 
         {/* Related */}
         {related.length > 0 && (
-          <section className="mt-12" aria-label="সম্পর্কিত নিউজ">
+          <section className="mt-12" aria-label="Related news">
             <div className="mb-5 flex items-center gap-3">
-              <h2 className="font-display-bn text-lg font-bold text-foreground">আরও পড়ুন</h2>
+              <h2 className="font-display-bn text-lg font-bold text-foreground">Read More</h2>
               <span className="h-px flex-1 bg-border" aria-hidden />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

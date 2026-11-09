@@ -43,7 +43,7 @@ export async function PUT(req: NextRequest) {
     await requireAdmin();
     const body = await req.json().catch(() => null);
     const parsed = updateSchema.safeParse(body);
-    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input", 422);
 
     const { id, kickoff, ...rest } = parsed.data;
     const data: Record<string, unknown> = { ...rest };
@@ -70,8 +70,8 @@ export async function POST(req: NextRequest) {
     await requireAdmin();
     const body = await req.json().catch(() => null);
     const parsed = createSchema.safeParse(body);
-    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
-    if (parsed.data.homeTeamId === parsed.data.awayTeamId) return fail("একই দল হোম ও অ্যাওয়ে হতে পারে না", 422);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input", 422);
+    if (parsed.data.homeTeamId === parsed.data.awayTeamId) return fail("The same team cannot be both home and away", 422);
 
     const match = await db.match.create({
       data: {

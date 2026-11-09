@@ -89,7 +89,7 @@ export default function Page() {
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-[100] focus:rounded-lg focus:bg-primary focus:px-3 focus:py-1.5 focus:text-sm focus:font-bold focus:text-primary-foreground"
       >
-        মূল কনটেন্টে যান
+        Skip to main content
       </a>
 
       <Header />
@@ -102,7 +102,7 @@ export default function Page() {
                 F<span className="text-fhb-red">H</span>
                 <span className="absolute -inset-1.5 animate-ping rounded-2xl border border-primary/30" aria-hidden />
               </span>
-              <p className="animate-pulse text-xs font-medium text-muted-foreground">FHB লোড হচ্ছে…</p>
+              <p className="animate-pulse text-xs font-medium text-muted-foreground">Loading FHB…</p>
             </div>
           </div>
         ) : (

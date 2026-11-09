@@ -1,0 +1,2895 @@
+[
+ {
+  "string": "\n                : \"var(--primary)\",\n              boxShadow: \"inset 0 0 0 2px rgba(255,255,255,0.28), inset 0 -5px 8px rgba(0,0,0,0.28), 0 10px 24px -8px rgba(0,0,0,0.55)\",\n            }}\n            aria-hidden\n          >\n            {p.jerseyNumber ?? \"?\"}\n          </span>\n          <div className=\"min-w-0 flex-1\">\n            <div className=\"flex flex-wrap items-center gap-2\">\n              <h1 className=\"display-hero text-2xl text-foreground sm:text-4xl\">{p.name}</h1>\n              {p.isNationalTeam && (\n                <span className=\"flex items-center gap-1.5 rounded-full bg-primary/20 px-3 py-1 text-[11px] font-bold text-primary\">\n                  <Flag className=\"h-3 w-3\" aria-hidden /> জাতীয় দল\n                </span>\n              )}\n              <span className=\"flex items-center gap-1.5 rounded-full bg-fhb-gold/20 px-3 py-1 text-[11px] font-bold text-fhb-gold\">\n                <Star className=\"h-3 w-3\" aria-hidden /> {toBn(p.rating.toFixed(1))}\n              </span>\n            </div>\n            <p className=\"mt-1.5 text-sm text-muted-foreground\">\n              {POSITION_LABELS[p.position] ?? p.position} · {p.team ? p.team.name : \"জাতীয় দল\"} · {p.nationality}\n            </p>\n            <div className=\"mt-3.5 flex flex-wrap gap-2\">\n              {p.birthYear && (\n                <span className=\"flex items-center gap-1.5 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[11px] font-semibold text-foreground/90 backdrop-blur-sm\">\n                  <Cake className=\"h-3.5 w-3.5 text-primary\" aria-hidden /> জন্ম {toBn(p.birthYear)}\n                </span>\n              )}\n              {p.heightCm && (\n                <span className=\"flex items-center gap-1.5 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[11px] font-semibold text-foreground/90 backdrop-blur-sm\">\n                  <Ruler className=\"h-3.5 w-3.5 text-primary\" aria-hidden /> {toBn(p.heightCm)} সেমি\n                </span>\n              )}\n              {p.jerseyNumber != null && (\n                <span className=\"flex items-center gap-1.5 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[11px] font-semibold text-foreground/90 backdrop-blur-sm\">\n                  <Shirt className=\"h-3.5 w-3.5 text-primary\" aria-hidden /> জার্সি #{toBn(p.jerseyNumber)}\n                </span>\n              )}\n            </div>\n          </div>\n          {p.team && (\n            <button\n              onClick={() => navigate({ name: \"team-detail\", id: p.team!.id })}\n              className=\"shrink-0 transition-transform hover:scale-105\"\n              aria-label={",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "\n              : \"var(--primary)\",\n            boxShadow: \"inset 0 0 0 1.5px rgba(255,255,255,0.28), inset 0 -2px 4px rgba(0,0,0,0.25)\",\n          }}\n          aria-hidden\n        >\n          {player.jerseyNumber ?? \"?\"}\n        </span>\n        <div className=\"min-w-0 flex-1\">\n          <p className=\"flex items-center gap-1.5 truncate text-sm font-bold text-foreground group-hover:text-primary\">\n            {player.name}\n            {player.isNationalTeam && <Flag className=\"h-3 w-3 shrink-0 text-primary\" aria-label=\"জাতীয় দলের খেলোয়াড়\" />}\n          </p>\n          <p className=\"truncate text-[11px] text-muted-foreground\">\n            {POSITION_LABELS[player.position] ?? player.position} · {player.team?.name ?? \"জাতীয় দল\"}\n          </p>\n        </div>\n        <ChevronRight\n          className=\"h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary\"\n          aria-hidden\n        />\n      </div>\n      <div className=\"mt-4 grid grid-cols-4 overflow-hidden rounded-xl border border-border bg-background/50 py-3 text-center\">\n        {[\n          [toBn(player.goals), \"গোল\"],\n          [toBn(player.assists), \"অ্যাসিস্ট\"],\n          [toBn(player.appearances), \"ম্যাচ\"],\n          [toBn(player.rating.toFixed(1)), \"রেটিং\"],\n        ].map(([v, l], i) => (\n          <div key={l} className={cn(\"px-1\", i > 0 && \"border-l border-border\")}>\n            <p className=\"tabular font-display text-sm font-bold text-foreground\">{v}</p>\n            <p className=\"mt-0.5 text-[9px] uppercase tracking-wider text-muted-foreground\">{l}</p>\n          </div>\n        ))}\n      </div>\n    </button>\n  );\n}\n\nexport function PlayerDetailView({ playerId }: { playerId: string }) {\n  const navigate = useAppStore((s) => s.navigate);\n  const back = useAppStore((s) => s.back);\n  useReveal();\n\n  const { data, isLoading } = useQuery<{ player: Player; similar: Player[] }>({\n    queryKey: [\"player\", playerId],\n    queryFn: async () => {\n      const res = await fetch(",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": " : \"লাইভ\";\n  return (\n    <span\n      className={cn(\n        \"inline-flex items-center gap-1.5 rounded-md border border-fhb-red/45 bg-fhb-red/12 font-display font-bold uppercase text-fhb-red\",\n        size === \"sm\" ? \"px-1.5 py-0.5 text-[10px] tracking-wider\" : \"px-2 py-0.5 text-[11px] tracking-wider\",\n        compact && \"px-1.5\"\n      )}\n    >\n      <span className=\"live-dot inline-block h-1.5 w-1.5 rounded-[2px] bg-fhb-red\" aria-hidden />\n      {period === \"HT\" || period === \"FT\" ? label : ",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": " }}\n                    onClick={() => {\n                      navigate(item.view);\n                      setMobileOpen(false);\n                    }}\n                    className={cn(\n                      \"menu-item flex items-center gap-3 rounded-2xl border px-4 py-4 text-sm font-semibold transition-all active:scale-[0.97]\",\n                      isActive(item.view)\n                        ? \"border-primary/50 bg-primary/10 text-primary\"\n                        : \"border-border bg-card text-foreground\"\n                    )}\n                  >\n                    <span className={cn(\n                      \"flex h-9 w-9 items-center justify-center rounded-xl\",\n                      isActive(item.view) ? \"bg-primary/20 text-primary\" : \"bg-muted text-muted-foreground\"\n                    )}>\n                      {item.icon}\n                    </span>\n                    {item.label}\n                  </button>\n                ))}\n              </nav>\n\n              {/* Premium banner */}\n              <button\n                style={{ animationDelay: \"360ms\" }}\n                onClick={() => {\n                  navigate({ name: \"premium\" });\n                  setMobileOpen(false);\n                }}\n                className=\"menu-item gold-panel relative mt-4 flex w-full items-center gap-4 overflow-hidden rounded-2xl border border-fhb-gold/30 p-4 text-left\"\n              >\n                <span className=\"flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-fhb-gold/20 text-fhb-gold\">\n                  <Crown className=\"h-5 w-5\" aria-hidden />\n                </span>\n                <span className=\"min-w-0 flex-1\">\n                  <span className=\"block text-sm font-bold text-foreground\">\n                    প্রিমিয়াম <span className=\"text-fhb-gold\">PRO</span>\n                  </span>\n                  <span className=\"mt-0.5 block text-[11px] text-muted-foreground\">\n                    বিজ্ঞাপনমুক্ত + এক্সক্লুসিভ কনটেন্ট\n                  </span>\n                </span>\n                <ChevronRight className=\"h-5 w-5 shrink-0 text-fhb-gold\" aria-hidden />\n              </button>\n\n              {/* Ad slot */}\n              <div className=\"menu-item mt-4\" style={{ animationDelay: \"400ms\" }}>\n                <AdSlot placement=\"MOBILE_BANNER\" className=\"h-20\" />\n              </div>\n\n              {/* Auth cluster */}\n              {!user && (\n                <div className=\"menu-item mt-5 grid grid-cols-2 gap-2.5\" style={{ animationDelay: \"440ms\" }}>\n                  <Button\n                    variant=\"outline\"\n                    className=\"h-12 rounded-xl text-sm font-semibold\"\n                    onClick={() => {\n                      navigate({ name: \"auth\" });\n                      setMobileOpen(false);\n                    }}\n                  >\n                    লগইন\n                  </Button>\n                  <Button\n                    className=\"sheen h-12 rounded-xl bg-primary text-sm font-bold text-primary-foreground\"\n                    onClick={() => {\n                      navigate({ name: \"auth\" });\n                      setMobileOpen(false);\n                    }}\n                  >\n                    ফ্রি যোগ দিন\n                  </Button>\n                </div>\n              )}\n\n              {/* Socials */}\n              <div className=\"menu-item mt-6 flex items-center justify-center gap-2\" style={{ animationDelay: \"480ms\" }}>\n                {[\n                  { label: \"Facebook\", icon: <Facebook className=\"h-4 w-4\" /> },\n                  { label: \"YouTube\", icon: <Youtube className=\"h-4 w-4\" /> },\n                  { label: \"X (Twitter)\", icon: <Twitter className=\"h-4 w-4\" /> },\n                  { label: \"Instagram\", icon: <Instagram className=\"h-4 w-4\" /> },\n                ].map((s) => (\n                  <button\n                    key={s.label}\n                    className=\"flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary\"\n                    aria-label={",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": " }}\n              />\n              <div className=\"p-5\">\n                <div className=\"flex items-start justify-between\">\n                  <span\n                    className=\"flex h-12 w-12 items-center justify-center rounded-2xl\"\n                    style={{\n                      backgroundColor: c.accentColor ?? \"var(--primary)\",\n                      boxShadow: \"inset 0 0 0 1.5px rgba(255,255,255,0.28), inset 0 -3px 5px rgba(0,0,0,0.25)\",\n                    }}\n                    aria-hidden\n                  >\n                    <Trophy className=\"h-5 w-5 text-white\" />\n                  </span>\n                  <span className=\"rounded-full bg-muted px-2.5 py-1 text-[10px] font-bold text-muted-foreground\">\n                    {TYPE_LABELS[c.type] ?? c.type}\n                  </span>\n                </div>\n                <h3 className=\"mt-4 text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary sm:text-lg\">\n                  {c.name}\n                </h3>\n                <p className=\"mt-1 flex items-center gap-1.5 text-xs text-muted-foreground\">\n                  <CalendarDays className=\"h-3.5 w-3.5 text-primary/70\" aria-hidden />\n                  সিজন {c.season} · {c.country}\n                </p>\n                {c.description && (\n                  <p className=\"mt-3 line-clamp-2 text-xs leading-relaxed text-foreground/70\">{c.description}</p>\n                )}\n                <p className=\"mt-4 flex items-center justify-between border-t border-border/60 pt-3.5 text-[11px] font-bold\">\n                  <span className=\"flex items-center gap-1.5 text-primary\">\n                    <Zap className=\"h-3.5 w-3.5\" aria-hidden /> {toBn(c._count?.matches ?? 0)} ম্যাচ ট্র্যাক করা হচ্ছে\n                  </span>\n                  <ChevronRight\n                    className=\"h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary\"\n                    aria-hidden\n                  />\n                </p>\n              </div>\n            </button>\n          ))}\n        </div>\n      )}\n    </div>\n  );\n}\n\nexport function CompetitionDetailView({ competitionId }: { competitionId: string }) {\n  const back = useAppStore((s) => s.back);\n  useReveal();\n  const { data, isLoading } = useQuery<{\n    competition: Competition;\n    standings: Standing[];\n    matches: Match[];\n    topScorers: Array<{ id: string; name: string; goals: number; team: { id: string; name: string; initials: string; color: string } | null }>;\n  }>({\n    queryKey: [\"competition\", competitionId],\n    queryFn: async () => {\n      const res = await fetch(",
+  "files": [
+   "src/components/views/competitions-view.tsx"
+  ]
+ },
+ {
+  "string": " }}\n        />\n      </div>\n\n      {/* Label chip */}\n      <div className=\"absolute left-3.5 top-3.5 z-10 flex items-center gap-1.5 rounded-md bg-black/55 px-2 py-1 text-[9px] font-bold uppercase tracking-widest text-white/75 backdrop-blur\">\n        <Megaphone className=\"h-3 w-3\" aria-hidden />\n        বিজ্ঞাপন · AdSense\n      </div>\n\n      {/* Brand-tinted ambience */}\n      <span\n        aria-hidden\n        className=\"absolute inset-0\"\n        style={{\n          background: ",
+  "files": [
+   "src/components/football/video-preroll.tsx"
+  ]
+ },
+ {
+  "string": " }}\n      />\n      {/* Watermark crest */}\n      <span\n        aria-hidden\n        className=\"pointer-events-none absolute -right-6 -top-6 select-none font-display text-[7rem] font-bold leading-none text-white/[0.04]\"\n      >\n        {team.initials}\n      </span>\n\n      <div className=\"relative p-5\">\n        <div className=\"flex items-start justify-between\">\n          <TeamBadge team={team} size=\"xl\" />\n          <span className=\"flex h-8 w-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-all group-hover:border-primary/50 group-hover:text-primary\">\n            <ChevronRight className=\"h-4 w-4 transition-transform group-hover:translate-x-0.5\" aria-hidden />\n          </span>\n        </div>\n        <h3 className=\"mt-4 text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary sm:text-lg\">\n          {team.name}\n        </h3>\n        <p className=\"mt-0.5 text-xs text-muted-foreground\">{team.shortName}</p>\n        <div className=\"mt-4 space-y-1.5 text-[11px] text-muted-foreground\">\n          <p className=\"flex items-center gap-2\">\n            <MapPin className=\"h-3.5 w-3.5 shrink-0 text-primary/70\" aria-hidden /> {team.city}\n          </p>\n          <p className=\"flex items-center gap-2\">\n            <Building2 className=\"h-3.5 w-3.5 shrink-0 text-primary/70\" aria-hidden /> {team.stadium}\n          </p>\n          <p className=\"flex items-center gap-2\">\n            <CalendarDays className=\"h-3.5 w-3.5 shrink-0 text-primary/70\" aria-hidden /> প্রতিষ্ঠা {toBn(team.founded)}\n          </p>\n        </div>\n        <div className=\"mt-4 flex items-center justify-between border-t border-border/60 pt-3.5 text-[11px]\">\n          <span className=\"flex items-center gap-1.5 text-muted-foreground\">\n            <Users className=\"h-3.5 w-3.5 text-primary/70\" aria-hidden /> স্কোয়াড {toBn(team._count?.players ?? 0)} জন\n          </span>\n          <span className=\"font-bold text-primary opacity-0 transition-opacity group-hover:opacity-100\">প্রোফাইল →</span>\n        </div>\n      </div>\n    </button>\n  );\n}\n\nexport function TeamDetailView({ teamId }: { teamId: string }) {\n  const navigate = useAppStore((s) => s.navigate);\n  const back = useAppStore((s) => s.back);\n  const [squadFilter, setSquadFilter] = useState<string>(\"ALL\");\n  useReveal();\n\n  const { data, isLoading } = useQuery<{\n    team: TeamItem;\n    matches: Match[];\n    standings: Array<Standing & { competition: { id: string; name: string; shortName: string } }>;\n  }>({\n    queryKey: [\"team\", teamId],\n    queryFn: async () => {\n      const res = await fetch(",
+  "files": [
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      const j = await res.json();\n      const ads: AdSlotData[] = j.data?.ads ?? [];\n      // Fisher-Yates shuffle per fetch → different creative order on every page load\n      for (let i = ads.length - 1; i > 0; i--) {\n        const k = Math.floor(Math.random() * (i + 1));\n        [ads[i], ads[k]] = [ads[k], ads[i]];\n      }\n      return { ads };\n    },\n    staleTime: 60_000,\n  });\n\n  const ads = useMemo(() => data?.ads ?? [], [data]);\n\n  // Rotate creatives\n  useEffect(() => {\n    if (ads.length < 2) return;\n    const t = setInterval(() => setTick((x) => x + 1), ROTATE_MS);\n    return () => clearInterval(t);\n  }, [ads.length]);\n\n  const ad = ads.length > 0 ? ads[(tick + offset) % ads.length] : undefined;\n\n  // Impression tracking — once per creative per slot mount\n  useEffect(() => {\n    if (ad && !trackedRef.current.has(ad.id)) {\n      trackedRef.current.add(ad.id);\n      fetch(\"/api/ads\", {\n        method: \"POST\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify({ adId: ad.id, event: \"impression\" }),\n      }).catch(() => {});\n    }\n  }, [ad]);\n\n  // Ad-free for premium members\n  if (!ad || user?.isPremium) return null;\n\n  const brandColor = ad.brandColor || FALLBACK_BRAND;\n\n  const trackClick = () => {\n    fetch(\"/api/ads\", {\n      method: \"POST\",\n      headers: { \"Content-Type\": \"application/json\" },\n      body: JSON.stringify({ adId: ad.id, event: \"click\" }),\n    }).catch(() => {});\n    // Internal demo links (#view) navigate inside the SPA\n    if (ad.linkUrl?.startsWith(\"#\")) {\n      const view = ad.linkUrl.slice(1);\n      if (view === \"premium\" || view === \"scores\" || view === \"news\" || view === \"competitions\") {\n        navigate({ name: view } as never);\n      }\n    }\n  };\n\n  const isBanner = placement === \"HEADER_BANNER\";\n  const isMobileBanner = placement === \"MOBILE_BANNER\";\n  const isSidebar = placement === \"SIDEBAR\";\n  const variant: Variant = isSidebar ? \"sidebar\" : isBanner || isMobileBanner ? \"banner\" : \"in-feed\";\n\n  const headline = ad.headline || ad.name;\n  const cta = ad.ctaLabel || \"আরও জানুন\";\n\n  return (\n    <div\n      className={cn(\n        \"group relative overflow-hidden rounded-2xl border border-border/60 bg-card/40\",\n        isBanner && \"flex h-[90px] items-stretch\",\n        isMobileBanner && \"flex h-20 items-stretch\",\n        isSidebar && \"h-[280px]\",\n        variant === \"in-feed\" && \"h-[110px]\",\n        className\n      )}\n      role=\"complementary\"\n      aria-label=\"বিজ্ঞাপন\"\n    >\n      {/* Brand-tinted ambience + photo creative when available */}\n      <span\n        key={",
+  "files": [
+   "src/components/football/ad-slot.tsx"
+  ]
+ },
+ {
+  "string": ");\n      if (!res.ok) return null;\n      return res.json().then((j) => j.data);\n    },\n    enabled: !!targetUsername,\n  });\n\n  const followMutation = useMutation({\n    mutationFn: async () => {\n      const res = await fetch(\"/api/follow\", {\n        method: \"POST\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify({ followingId: data!.user.id }),\n      });\n      const json = await res.json();\n      if (!json.success) throw new Error(json.error);\n      return json.data;\n    },\n    onSuccess: () => queryClient.invalidateQueries({ queryKey: [\"profile\", targetUsername] }),\n    onError: (e: Error) => toast({ title: \"ফলো ব্যর্থ\", description: e.message, variant: \"destructive\" }),\n  });\n\n  if (!me && !username) {\n    return (\n      <div className=\"mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center gap-4 px-4 text-center\">\n        <span className=\"flex h-16 w-16 items-center justify-center rounded-2xl bg-muted\">\n          <LogIn className=\"h-7 w-7 text-muted-foreground\" aria-hidden />\n        </span>\n        <p className=\"text-sm text-muted-foreground\">আপনার প্রোফাইল দেখতে লগইন করুন।</p>\n        <Button onClick={() => navigate({ name: \"auth\" })} className=\"sheen gap-2 rounded-full bg-primary px-6 font-bold\">\n          <LogIn className=\"h-4 w-4\" aria-hidden /> লগইন / রেজিস্ট্রেশন\n        </Button>\n      </div>\n    );\n  }\n\n  if (isLoading || !data?.user) {\n    return (\n      <div className=\"mx-auto max-w-4xl space-y-4 px-4 pt-6\">\n        <Skeleton className=\"h-44 rounded-2xl\" />\n        <Skeleton className=\"h-64 rounded-2xl\" />\n      </div>\n    );\n  }\n\n  const { user, posts, videos, following, totalLikes } = data;\n\n  return (\n    <div className=\"mx-auto w-full max-w-4xl px-4 pb-14 pt-6 sm:px-6\">\n      {/* ═══ Profile header — cinematic ═══ */}\n      <div className=\"noise stadium-panel relative overflow-hidden rounded-3xl border border-border/70\">\n        {/* Top accent line */}\n        <span\n          aria-hidden\n          className={cn(\n            \"block h-1.5 w-full\",\n            user.isPremium\n              ? \"bg-gradient-to-r from-fhb-gold/70 via-fhb-gold to-fhb-gold/70\"\n              : \"bg-gradient-to-r from-primary/60 via-primary to-primary/60\"\n          )}\n        />\n        <div className=\"pitch-pattern p-6 sm:p-7\">\n          <div className=\"flex flex-wrap items-start gap-5\">\n            <div className=\"relative\">\n              <Avatar\n                className={cn(\n                  \"h-20 w-20 border-2 sm:h-24 sm:w-24\",\n                  user.isPremium ? \"border-fhb-gold/70\" : \"border-primary/40\"\n                )}\n              >\n                <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />\n                <AvatarFallback className=\"bg-primary/15 font-display text-2xl font-bold text-primary\">\n                  {user.name.slice(0, 2)}\n                </AvatarFallback>\n              </Avatar>\n              {user.isPremium && (\n                <span\n                  className=\"absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-fhb-gold text-black shadow-lg\"\n                  title=\"প্রিমিয়াম সদস্য\"\n                >\n                  <Crown className=\"h-4 w-4\" aria-hidden />\n                </span>\n              )}\n            </div>\n\n            <div className=\"min-w-0 flex-1\">\n              {editing ? (\n                <div className=\"space-y-2.5\">\n                  <input\n                    value={editForm.name}\n                    onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}\n                    placeholder=\"নাম\"\n                    className=\"w-full max-w-xs rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary\"\n                    aria-label=\"নাম এডিট করুন\"\n                  />\n                  <textarea\n                    value={editForm.bio}\n                    onChange={(e) => setEditForm((f) => ({ ...f, bio: e.target.value }))}\n                    placeholder=\"বায়ো...\"\n                    rows={2}\n                    className=\"w-full max-w-md resize-none rounded-md border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary\"\n                    aria-label=\"বায়ো এডিট করুন\"\n                  />\n                  <div className=\"flex gap-2\">\n                    <Button\n                      size=\"sm\"\n                      onClick={() => {\n                        useAppStore.getState().setUser({ ...me!, name: editForm.name || me!.name });\n                        setEditing(false);\n                        toast({ title: \"প্রোফাইল আপডেট হয়েছে\" });\n                      }}\n                      className=\"gap-1.5 rounded-md\"\n                    >\n                      <Check className=\"h-3.5 w-3.5\" aria-hidden /> সেভ\n                    </Button>\n                    <Button size=\"sm\" variant=\"outline\" onClick={() => setEditing(false)} className=\"gap-1.5 rounded-md\">\n                      <X className=\"h-3.5 w-3.5\" aria-hidden /> বাতিল\n                    </Button>\n                  </div>\n                </div>\n              ) : (\n                <>\n                  <div className=\"flex flex-wrap items-center gap-2\">\n                    <h1 className=\"display-hero text-2xl text-foreground sm:text-3xl\">{user.name}</h1>\n                    {user.isPremium && (\n                      <span className=\"flex items-center gap-1 rounded-md bg-fhb-gold/15 px-2 py-0.5 text-[10px] font-bold text-fhb-gold\">\n                        <Crown className=\"h-3 w-3\" aria-hidden /> প্রিমিয়াম\n                      </span>\n                    )}\n                    {user.role === \"ADMIN\" && (\n                      <span className=\"rounded-md bg-fhb-red/15 px-2 py-0.5 text-[10px] font-bold text-fhb-red\">অ্যাডমিন</span>\n                    )}\n                    {user.role === \"CREATOR\" && (\n                      <span className=\"flex items-center gap-1 rounded-md bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary\">\n                        <BadgeCheck className=\"h-3 w-3\" aria-hidden /> ক্রিয়েটর\n                      </span>\n                    )}\n                  </div>\n                  <p className=\"mt-1 flex items-center gap-1.5 text-xs text-muted-foreground\">\n                    @{user.username}\n                    <span aria-hidden>·</span>\n                    <span className=\"flex items-center gap-1\">\n                      <CalendarDays className=\"h-3 w-3\" aria-hidden />\n                      FHB সদস্য {timeAgo(user.createdAt ?? new Date().toISOString())} থেকে\n                    </span>\n                  </p>\n                  {user.bio && <p className=\"mt-2 max-w-lg text-sm leading-relaxed text-foreground/80\">{user.bio}</p>}\n                </>\n              )}\n            </div>\n\n            <div className=\"flex flex-col gap-2\">\n              {isMe ? (\n                <>\n                  {!editing && (\n                    <Button\n                      variant=\"outline\"\n                      size=\"sm\"\n                      onClick={() => {\n                        setEditForm({ name: user.name, bio: user.bio ?? \"\" });\n                        setEditing(true);\n                      }}\n                      className=\"gap-1.5 rounded-full\"\n                    >\n                      <Pencil className=\"h-3.5 w-3.5\" aria-hidden /> প্রোফাইল এডিট\n                    </Button>\n                  )}\n                  {(me?.role === \"CREATOR\" || me?.role === \"ADMIN\") && (\n                    <Button variant=\"outline\" size=\"sm\" onClick={() => navigate({ name: \"earnings\" })} className=\"gap-1.5 rounded-full\">\n                      <Wallet className=\"h-3.5 w-3.5\" aria-hidden /> আয়ের ড্যাশবোর্ড\n                    </Button>\n                  )}\n                  {me?.role === \"ADMIN\" && (\n                    <Button size=\"sm\" onClick={() => navigate({ name: \"admin\" })} className=\"sheen gap-1.5 rounded-full bg-primary font-bold\">\n                      <LayoutGrid className=\"h-3.5 w-3.5\" aria-hidden /> অ্যাডমিন প্যানেল\n                    </Button>\n                  )}\n                </>\n              ) : (\n                <Button\n                  onClick={() => followMutation.mutate()}\n                  disabled={followMutation.isPending}\n                  variant={following ? \"secondary\" : \"default\"}\n                  className={cn(\"gap-1.5 rounded-full px-5 font-bold\", !following && \"bg-fhb-red shadow-[0_10px_24px_-10px_var(--fhb-red)] hover:bg-fhb-red/90\")}\n                >\n                  {following ? <UserCheck className=\"h-4 w-4\" aria-hidden /> : <UserPlus className=\"h-4 w-4\" aria-hidden />}\n                  {following ? \"ফলোয়িং\" : \"ফলো করুন\"}\n                </Button>\n              )}\n            </div>\n          </div>\n\n          {/* Stats strip */}\n          <dl className=\"mt-6 grid grid-cols-2 divide-x divide-border overflow-hidden rounded-2xl border border-border bg-background/50 backdrop-blur-sm sm:grid-cols-4\">\n            {[\n              [bnNumber(user.followerCount ?? 0), \"ফলোয়ার\"],\n              [bnNumber(user.followingCount ?? 0), \"ফলোয়িং\"],\n              [bnNumber(totalLikes), \"মোট লাইক\"],\n              [bnNumber(posts.length + videos.length), \"কনটেন্ট\"],\n            ].map(([v, l], i) => (\n              <div key={l} className={cn(\"py-4 text-center\", i === 0 && \"sm:border-l-0\")}>\n                <dd className=\"tabular font-display text-xl font-bold text-primary sm:text-2xl\">{v}</dd>\n                <dt className=\"mt-1 text-[10px] text-muted-foreground\">{l}</dt>\n              </div>\n            ))}\n          </dl>\n        </div>\n      </div>\n\n      {/* Tabs */}\n      <div className=\"mb-5 mt-7 grid grid-cols-2 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5\" role=\"tablist\" aria-label=\"প্রোফাইল কনটেন্ট\">\n        {(\n          [\n            [\"posts\", \"পোস্ট\", <MessageSquare key=\"m\" className=\"h-3.5 w-3.5\" aria-hidden />, posts.length],\n            [\"videos\", \"শর্টস\", <Play key=\"p\" className=\"h-3.5 w-3.5\" aria-hidden />, videos.length],\n          ] as const\n        ).map(([key, label, icon, count]) => (\n          <button\n            key={key}\n            role=\"tab\"\n            aria-selected={tab === key}\n            onClick={() => setTab(key)}\n            className={cn(\n              \"flex items-center justify-center gap-1.5 rounded-xl py-2.5 text-xs font-bold transition-all active:scale-[0.97]\",\n              tab === key ? \"bg-primary text-primary-foreground shadow-[0_8px_20px_-10px_var(--primary)]\" : \"text-muted-foreground hover:text-foreground\"\n            )}\n          >\n            {icon}\n            {label}\n            <span className={cn(\"tabular rounded-md px-1.5 py-0.5 text-[10px] font-bold\", tab === key ? \"bg-black/20\" : \"bg-muted text-muted-foreground\")}>\n              {bnNumber(count)}\n            </span>\n          </button>\n        ))}\n      </div>\n\n      {/* Content */}\n      {tab === \"posts\" ? (\n        posts.length === 0 ? (\n          <div className=\"edge-lit rounded-2xl border border-border bg-card p-12 text-center\">\n            <span className=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground\">\n              <MessageSquare className=\"h-5 w-5\" aria-hidden />\n            </span>\n            <p className=\"text-sm text-muted-foreground\">এখনো কোনো পোস্ট নেই।</p>\n          </div>\n        ) : (\n          <div className=\"space-y-3.5\">\n            {posts.map((p) => (\n              <div key={p.id} className=\"edge-lit card-lift rounded-2xl border border-border bg-card p-5\">\n                <p className=\"whitespace-pre-line text-sm leading-relaxed\">{p.content}</p>\n                <div className=\"mt-3.5 flex items-center gap-3.5 border-t border-border/60 pt-3.5 text-[11px] text-muted-foreground\">\n                  <span className=\"flex items-center gap-1.5\">\n                    <Heart className=\"h-3 w-3\" aria-hidden /> {bnCompact(p.likeCount)}\n                  </span>\n                  <span className=\"flex items-center gap-1.5\">\n                    <MessageSquare className=\"h-3 w-3\" aria-hidden /> {bnCompact(p.commentCount)}\n                  </span>\n                  <span className=\"ml-auto\">{timeAgo(p.createdAt)}</span>\n                </div>\n              </div>\n            ))}\n          </div>\n        )\n      ) : videos.length === 0 ? (\n        <div className=\"edge-lit rounded-2xl border border-border bg-card p-12 text-center\">\n          <span className=\"mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-muted text-muted-foreground\">\n            <Play className=\"h-5 w-5\" aria-hidden />\n          </span>\n          <p className=\"text-sm text-muted-foreground\">এখনো কোনো শর্টস নেই।</p>\n        </div>\n      ) : (\n        <div className=\"grid grid-cols-2 gap-3.5 sm:grid-cols-3 md:grid-cols-4\">\n          {videos.map((v) => (\n            <button\n              key={v.id}\n              onClick={() => navigate({ name: \"shorts\" })}\n              className=\"card-lift group relative aspect-[9/16] overflow-hidden rounded-2xl border border-border\"\n              aria-label={",
+  "files": [
+   "src/components/views/profile-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      return res.json().then((j) => j.data);\n    },\n    enabled: !!user && user.id !== creator.id,\n  });\n\n  const followMutation = useMutation({\n    mutationFn: async () => {\n      const res = await fetch(\"/api/follow\", {\n        method: \"POST\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify({ followingId: creator.id }),\n      });\n      const json = await res.json();\n      if (!json.success) throw new Error(json.error);\n      return json.data;\n    },\n    onSuccess: () => queryClient.invalidateQueries({ queryKey: [\"follow\", creator.id] }),\n    onError: (e: Error) => toast({ title: \"ফলো ব্যর্থ\", description: e.message, variant: \"destructive\" }),\n  });\n\n  const following = data?.following ?? false;\n\n  return (\n    <div className=\"flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent/40\">\n      <button onClick={() => navigate({ name: \"profile\", username: creator.username })} aria-label={",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      return res.json().then((j) => j.data);\n    },\n    enabled: !!user && user.id !== video.creator.id,\n  });\n\n  const followMutation = useMutation({\n    mutationFn: async () => {\n      const res = await fetch(\"/api/follow\", {\n        method: \"POST\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify({ followingId: video.creator.id }),\n      });\n      const json = await res.json();\n      if (!json.success) throw new Error(json.error);\n      return json.data;\n    },\n    onSuccess: () => {\n      queryClient.invalidateQueries({ queryKey: [\"follow\", video.creator.id] });\n    },\n    onError: (e: Error) => toast({ title: \"ফলো ব্যর্থ\", description: e.message, variant: \"destructive\" }),\n  });\n\n  const following = followData?.following ?? false;\n\n  return (\n    <div ref={containerRef} className=\"shorts-item relative flex h-full w-full items-center justify-center\" data-video-id={video.id}>\n      {/* Video */}\n      <video\n        ref={videoRef}\n        src={video.videoUrl}\n        className=\"absolute inset-0 h-full w-full object-cover\"\n        loop\n        muted={muted}\n        playsInline\n        preload=\"metadata\"\n        poster={video.thumbnailUrl ?? undefined}\n        onTimeUpdate={onTimeUpdate}\n        onClick={togglePlay}\n        aria-label={video.title}\n      />\n\n      {/* Gradient overlays */}\n      <div className=\"pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent\" />\n      <div className=\"pointer-events-none absolute inset-x-0 bottom-0 h-80 bg-gradient-to-t from-black/92 via-black/45 to-transparent\" />\n\n      {/* Pause indicator */}\n      {paused && visible && (\n        <div className=\"pointer-events-none absolute inset-0 flex items-center justify-center\" aria-hidden>\n          <span className=\"flex h-20 w-20 animate-in zoom-in-95 items-center justify-center rounded-full border border-white/20 bg-black/50 backdrop-blur\">\n            <Play className=\"h-9 w-9 fill-white/90 text-white/90\" />\n          </span>\n        </div>\n      )}\n\n      {/* Mute toggle */}\n      <button\n        onClick={() => setMuted((m) => !m)}\n        className=\"absolute right-3 top-20 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur transition-transform active:scale-90\"\n        aria-label={muted ? \"সাউন্ড চালু করুন\" : \"সাউন্ড বন্ধ করুন\"}\n      >\n        {muted ? <VolumeX className=\"h-4 w-4\" aria-hidden /> : <Volume2 className=\"h-4 w-4\" aria-hidden />}\n      </button>\n\n      {/* Right action rail */}\n      <div className=\"absolute bottom-28 right-2.5 z-10 flex flex-col items-center gap-4.5 gap-4\">\n        <LikeButton targetType=\"VIDEO\" targetId={video.id} initialCount={video.likeCount} variant=\"shorts\" />\n\n        <Sheet>\n          <SheetTrigger asChild>\n            <button className=\"tap-target flex flex-col items-center gap-1 text-white\" aria-label=\"কমেন্ট দেখুন\">\n              <span className=\"flex h-11 w-11 items-center justify-center rounded-full bg-black/45 backdrop-blur transition-transform active:scale-90\">\n                <MessageCircle className=\"h-5 w-5\" aria-hidden />\n              </span>\n              <span className=\"tabular font-display text-xs font-semibold drop-shadow\">{bnCompact(video.commentCount)}</span>\n            </button>\n          </SheetTrigger>\n          <SheetContent side=\"bottom\" className=\"max-h-[75vh] overflow-y-auto rounded-t-2xl\">\n            <SheetHeader className=\"pb-0\">\n              <SheetTitle className=\"text-sm\">{bnCompact(video.commentCount)} কমেন্ট</SheetTitle>\n            </SheetHeader>\n            <div className=\"px-4 pb-6 pt-2\">\n              <CommentSection targetType=\"VIDEO\" targetId={video.id} />\n            </div>\n          </SheetContent>\n        </Sheet>\n\n        <button onClick={share} className=\"tap-target flex flex-col items-center gap-1 text-white\" aria-label=\"শেয়ার করুন\">\n          <span className=\"flex h-11 w-11 items-center justify-center rounded-full bg-black/45 backdrop-blur transition-transform active:scale-90\">\n            <Share2 className=\"h-5 w-5\" aria-hidden />\n          </span>\n          <span className=\"font-display text-xs font-semibold drop-shadow\">শেয়ার</span>\n        </button>\n      </div>\n\n      {/* Bottom info */}\n      <div className=\"absolute inset-x-0 bottom-0 z-10 p-4 pr-20\">\n        <div className=\"flex items-center gap-2.5\">\n          <button\n            onClick={() => navigate({ name: \"profile\", username: video.creator.username })}\n            aria-label={",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      return res.json().then((j) => j.data);\n    },\n    refetchInterval: liveData ? 15_000 : false,\n  });\n\n  if (isLoading || !data?.match) {\n    return (\n      <div className=\"mx-auto max-w-3xl space-y-4 px-4 pt-6\">\n        <Skeleton className=\"h-10 w-10 rounded-xl\" />\n        <Skeleton className=\"h-48 rounded-2xl\" />\n        <Skeleton className=\"h-64 rounded-2xl\" />\n      </div>\n    );\n  }\n\n  const m = data.match;\n  const homeScore = liveData ? liveData.homeScore : m.homeScore;\n  const awayScore = liveData ? liveData.awayScore : m.awayScore;\n  const minute = liveData ? liveData.minute : m.minute;\n  const period = liveData ? liveData.period : m.period;\n  const status = liveData ? \"LIVE\" : m.status;\n  const events = m.events ?? [];\n  const ko = formatKickoff(m.kickoff);\n  const homeWon = status === \"FINISHED\" && (homeScore ?? 0) > (awayScore ?? 0);\n  const awayWon = status === \"FINISHED\" && (awayScore ?? 0) > (homeScore ?? 0);\n\n  const eventIcon = (type: string, className?: string) => {\n    switch (type) {\n      case \"GOAL\":\n        return <Goal className={cn(\"h-4 w-4\", className)} aria-hidden />;\n      case \"YELLOW\":\n        return <span className=\"h-3.5 w-2.5 rounded-[2px] bg-yellow-400/90\" aria-label=\"হলুদ কার্ড\" />;\n      case \"RED\":\n        return <span className=\"h-3.5 w-2.5 rounded-[2px] bg-fhb-red\" aria-label=\"লাল কার্ড\" />;\n      case \"SUB\":\n        return <ArrowLeftRight className={cn(\"h-4 w-4\", className)} aria-hidden />;\n      case \"HT\":\n        return <Timer className={cn(\"h-4 w-4\", className)} aria-hidden />;\n      case \"FT\":\n        return <Flag className={cn(\"h-4 w-4\", className)} aria-hidden />;\n      default:\n        return <FileText className={cn(\"h-4 w-4\", className)} aria-hidden />;\n    }\n  };\n\n  const eventLabel = (type: string) =>\n    type === \"GOAL\" ? \"গোল\" : type === \"YELLOW\" ? \"হলুদ কার্ড\" : type === \"RED\" ? \"লাল কার্ড\" : type === \"SUB\" ? \"বদলি\" : type === \"HT\" ? \"হাফ-টাইম\" : type === \"FT\" ? \"সম্পন্ন\" : \"ইভেন্ট\";\n\n  return (\n    <div className=\"mx-auto w-full max-w-3xl px-4 pb-14 pt-5 sm:px-6\">\n      <button\n        onClick={back}\n        className=\"mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95\"\n        aria-label=\"ফিরে যান\"\n      >\n        <ArrowLeft className=\"h-4 w-4\" aria-hidden />\n      </button>\n\n      {/* ═══ Scoreboard — cinematic broadcast panel ═══ */}\n      <div className=\"noise stadium-panel pitch-pattern edge-lit relative overflow-hidden rounded-3xl border border-border/70\">\n        {/* Comp strip */}\n        <div className=\"flex items-center justify-between gap-2 border-b border-border/60 bg-black/20 px-5 py-3 backdrop-blur-sm sm:px-7\">\n          <span className=\"flex min-w-0 items-center gap-2.5 text-xs font-bold text-foreground\">\n            <span\n              className=\"h-2 w-2 rounded-[3px]\"\n              style={{ backgroundColor: m.competition.accentColor ?? \"var(--primary)\" }}\n              aria-hidden\n            />\n            <span className=\"truncate\">{m.competition.name}</span>\n            <span className=\"hidden text-muted-foreground sm:inline\">\n              {m.round ? ",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      return res.json().then((j) => j.data);\n    },\n  });\n\n  const players = data?.players ?? [];\n\n  return (\n    <div className=\"mx-auto w-full max-w-6xl px-4 pb-14 pt-6 sm:px-6\">\n      <PageHeader\n        title=\"খেলোয়াড়\"\n        kicker=\"player index\"\n        subtitle=\"পরিসংখ্যান, রেটিং ও পারফরম্যান্স — সব এক ভিউতে\"\n        icon={<Flame className=\"h-5 w-5\" aria-hidden />}\n      />\n\n      {/* Filters */}\n      <div className=\"mb-7 flex flex-wrap items-center gap-2\">\n        <div className=\"no-scrollbar flex flex-wrap gap-1.5\">\n          {[\"ALL\", \"GK\", \"DF\", \"MF\", \"FW\"].map((p) => (\n            <button\n              key={p}\n              onClick={() => setPosition(p)}\n              className={cn(\n                \"rounded-full border px-4 py-1.5 text-[11px] font-bold transition-all active:scale-95\",\n                position === p\n                  ? \"border-primary/50 bg-primary/15 text-primary\"\n                  : \"border-border bg-card text-muted-foreground hover:text-foreground\"\n              )}\n            >\n              {p === \"ALL\" ? \"সব\" : POSITION_LABELS[p]}\n            </button>\n          ))}\n        </div>\n        <button\n          onClick={() => setNationalOnly((v) => !v)}\n          className={cn(\n            \"flex items-center gap-1.5 rounded-full border px-4 py-1.5 text-[11px] font-bold transition-all active:scale-95\",\n            nationalOnly\n              ? \"border-fhb-red/50 bg-fhb-red/15 text-fhb-red\"\n              : \"border-border bg-card text-muted-foreground hover:text-foreground\"\n          )}\n        >\n          <Flag className=\"h-3 w-3\" aria-hidden /> জাতীয় দল\n        </button>\n        <div className=\"ml-auto flex rounded-full border border-border bg-muted/40 p-1\">\n          {([\"goals\", \"rating\"] as const).map((s) => (\n            <button\n              key={s}\n              onClick={() => setSortBy(s)}\n              className={cn(\n                \"rounded-full px-4 py-1.5 text-[11px] font-bold transition-all\",\n                sortBy === s ? \"bg-card text-foreground shadow-sm\" : \"text-muted-foreground hover:text-foreground\"\n              )}\n            >\n              {s === \"goals\" ? \"সর্বোচ্চ গোল\" : \"সেরা রেটিং\"}\n            </button>\n          ))}\n        </div>\n      </div>\n\n      {isLoading ? (\n        <div className=\"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3\">\n          {[1, 2, 3, 4, 5, 6].map((i) => (\n            <Skeleton key={i} className=\"h-40 rounded-2xl\" />\n          ))}\n        </div>\n      ) : players.length === 0 ? (\n        <div className=\"edge-lit rounded-2xl border border-border bg-card p-14 text-center\">\n          <span className=\"mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground\">\n            <Flame className=\"h-6 w-6\" aria-hidden />\n          </span>\n          <p className=\"text-sm text-muted-foreground\">কোনো খেলোয়াড় পাওয়া যায়নি।</p>\n        </div>\n      ) : (\n        <div className=\"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3\">\n          {players.map((p) => (\n            <div key={p.id} className=\"reveal\">\n              <PlayerCard player={p} onClick={() => navigate({ name: \"player-detail\", id: p.id })} />\n            </div>\n          ))}\n        </div>\n      )}\n    </div>\n  );\n}\n\nfunction PlayerCard({ player, onClick }: { player: Player; onClick: () => void }) {\n  return (\n    <button\n      onClick={onClick}\n      className=\"card-lift edge-lit group relative w-full overflow-hidden rounded-2xl border border-border bg-card p-4 text-left sm:p-5\"\n    >\n      <div className=\"flex items-center gap-3.5\">\n        <span\n          className=\"flex h-12 w-12 shrink-0 items-center justify-center rounded-xl font-display text-lg font-bold text-white\"\n          style={{\n            background: player.team\n              ? ",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      return res.json().then((j) => j.data);\n    },\n  });\n\n  if (isLoading || !data?.competition) {\n    return (\n      <div className=\"mx-auto max-w-5xl space-y-4 px-4 pt-6\">\n        <Skeleton className=\"h-10 w-10 rounded-xl\" />\n        <Skeleton className=\"h-40 rounded-2xl\" />\n        <Skeleton className=\"h-72 rounded-2xl\" />\n      </div>\n    );\n  }\n\n  const { competition, standings, matches } = data;\n  const finished = matches.filter((m) => m.status === \"FINISHED\");\n  const upcoming = matches.filter((m) => m.status !== \"FINISHED\").reverse();\n  const accent = competition.accentColor ?? \"#12805c\";\n\n  return (\n    <div className=\"mx-auto w-full max-w-5xl px-4 pb-14 pt-5 sm:px-6\">\n      <button\n        onClick={back}\n        className=\"mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95\"\n        aria-label=\"ফিরে যান\"\n      >\n        <ArrowLeft className=\"h-4 w-4\" aria-hidden />\n      </button>\n\n      {/* ═══ Competition hero ═══ */}\n      <div\n        className=\"noise relative overflow-hidden rounded-3xl border border-border/70 p-6 sm:p-8\"\n        style={{\n          background: ",
+  "files": [
+   "src/components/views/competitions-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      return res.json().then((j) => j.data);\n    },\n  });\n\n  if (isLoading || !data?.player) {\n    return (\n      <div className=\"mx-auto max-w-4xl space-y-4 px-4 pt-6\">\n        <Skeleton className=\"h-10 w-10 rounded-xl\" />\n        <Skeleton className=\"h-52 rounded-2xl\" />\n        <Skeleton className=\"h-64 rounded-2xl\" />\n      </div>\n    );\n  }\n\n  const p = data.player;\n  const isGK = p.position === \"GK\";\n  const teamColor = p.team?.color ?? \"#12805c\";\n\n  return (\n    <div className=\"mx-auto w-full max-w-4xl px-4 pb-14 pt-5 sm:px-6\">\n      <button\n        onClick={back}\n        className=\"mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95\"\n        aria-label=\"ফিরে যান\"\n      >\n        <ArrowLeft className=\"h-4 w-4\" aria-hidden />\n      </button>\n\n      {/* ═══ Player hero — club color cinematic ═══ */}\n      <div\n        className=\"noise relative overflow-hidden rounded-3xl border border-border/70 p-6 sm:p-8\"\n        style={{\n          background: ",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      return res.json().then((j) => j.data);\n    },\n  });\n\n  if (isLoading || !data?.team) {\n    return (\n      <div className=\"mx-auto max-w-5xl space-y-4 px-4 pt-6\">\n        <Skeleton className=\"h-10 w-10 rounded-xl\" />\n        <Skeleton className=\"h-44 rounded-2xl\" />\n        <Skeleton className=\"h-72 rounded-2xl\" />\n      </div>\n    );\n  }\n\n  const { team, matches, standings } = data;\n  const players: Player[] = (team as unknown as { players?: Player[] }).players ?? [];\n  const positions = [\"GK\", \"DF\", \"MF\", \"FW\"];\n  const filteredPlayers = squadFilter === \"ALL\" ? players : players.filter((p) => p.position === squadFilter);\n  const upcoming = matches.filter((m) => m.status === \"SCHEDULED\").reverse();\n  const finished = matches.filter((m) => m.status !== \"SCHEDULED\");\n  const isNational = [\"BAN\", \"IND\", \"MDV\"].includes(team.initials);\n\n  return (\n    <div className=\"mx-auto w-full max-w-5xl px-4 pb-14 pt-5 sm:px-6\">\n      <button\n        onClick={back}\n        className=\"mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95\"\n        aria-label=\"ফিরে যান\"\n      >\n        <ArrowLeft className=\"h-4 w-4\" aria-hidden />\n      </button>\n\n      {/* ═══ Team hero — club color cinematic header ═══ */}\n      <div\n        className=\"noise relative overflow-hidden rounded-3xl border border-border/70 p-6 sm:p-8\"\n        style={{\n          background: ",
+  "files": [
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      toast({ title: \"লিংক কপি হয়েছে\", description: \"বন্ধুদের সাথে শেয়ার করুন।\" });\n    } catch {\n      toast({ title: \"শেয়ার ব্যর্থ\", description: \"ম্যানুয়ালি কপি করুন\" });\n    }\n  };\n\n  return (\n    <div className=\"mx-auto w-full max-w-3xl px-4 pb-14 pt-5 sm:px-6\">\n      {/* Reading progress */}\n      <div className=\"fixed inset-x-0 top-0 z-[60] h-[3px] bg-transparent\" aria-hidden>\n        <div\n          className=\"h-full bg-primary transition-[width] duration-150 ease-out\"\n          style={{ width: ",
+  "files": [
+   "src/components/views/news-detail-view.tsx"
+  ]
+ },
+ {
+  "string": ");\n      toast({ title: \"লিংক কপি হয়েছে\", description: \"শর্টসটি শেয়ার করুন।\" });\n    } catch {\n      /* noop */\n    }\n  };\n\n  // follow state\n  const { data: followData } = useQuery<{ following: boolean }>({\n    queryKey: [\"follow\", video.creator.id, user?.id],\n    queryFn: async () => {\n      const res = await fetch(",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": ")} ৳`, ",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": ",\n        }}\n      />\n\n      {/* Creative */}\n      <div className=\"relative z-[5] flex flex-1 flex-col items-center justify-center gap-4 px-9 text-center\">\n        <div className=\"ad-creative flex flex-col items-center\">\n          <AdMonogram brand={ad} size=\"lg\" />\n          <p className=\"mt-5 font-display text-xl font-bold leading-snug text-white\">{headline}</p>\n          {body && <p className=\"mt-2.5 max-w-[300px] text-[13px] leading-relaxed text-white/70\">{body}</p>}\n          <button\n            onClick={() => {\n              fetch(\"/api/ads\", {\n                method: \"POST\",\n                headers: { \"Content-Type\": \"application/json\" },\n                body: JSON.stringify({ adId: ad.id, event: \"click\" }),\n              }).catch(() => {});\n            }}\n            className=\"mt-6 flex h-12 items-center rounded-full px-8 text-sm font-bold text-white shadow-lg transition-transform active:scale-95\"\n            style={{ backgroundColor: brandColor }}\n          >\n            {cta}\n          </button>\n        </div>\n      </div>\n\n      {/* Skip control */}\n      <div className=\"relative z-[5] flex items-center justify-between px-4 pb-5\">\n        <span className=\"text-[10px] tabular text-white/50\">\n          {skippable ? \"ভিডিও শুরু হচ্ছে...\" : ",
+  "files": [
+   "src/components/football/video-preroll.tsx"
+  ]
+ },
+ {
+  "string": ",\n        }}\n      >\n        <span className=\"pitch-pattern absolute inset-0\" aria-hidden />\n        <span\n          aria-hidden\n          className=\"pointer-events-none absolute -right-4 -top-10 select-none font-display text-[10rem] font-bold leading-none text-white/[0.05] sm:text-[13rem]\"\n        >\n          {team.initials}\n        </span>\n\n        <div className=\"relative flex flex-wrap items-center gap-6\">\n          <TeamBadge team={team} size=\"hero\" />\n          <div className=\"min-w-0 flex-1\">\n            {isNational && (\n              <span className=\"mb-2 inline-flex items-center gap-1.5 rounded-full bg-fhb-red/20 px-3 py-1 text-[10px] font-bold text-fhb-red\">\n                <Flag className=\"h-3 w-3\" aria-hidden /> জাতীয় দল\n              </span>\n            )}\n            <h1 className=\"display-hero text-2xl text-foreground sm:text-4xl\">{team.name}</h1>\n            <div className=\"mt-3.5 flex flex-wrap gap-2\">\n              {[\n                { icon: <MapPin className=\"h-3.5 w-3.5\" aria-hidden />, text: team.city },\n                { icon: <Building2 className=\"h-3.5 w-3.5\" aria-hidden />, text: team.stadium },\n                { icon: <CalendarDays className=\"h-3.5 w-3.5\" aria-hidden />, text: ",
+  "files": [
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": ",\n      },\n    });\n    playerIds[p.name] = player.id;\n  }\n\n  // ================= COMPETITIONS =================\n  const bpl = await db.competition.create({\n    data: {\n      name: \"বাংলাদেশ প্রিমিয়ার লিগ\",\n      shortName: \"BPL\",\n      type: \"LEAGUE\",\n      season: \"2025-26\",\n      country: \"বাংলাদেশ\",\n      accentColor: \"#1FE07A\",\n      description:\n        \"দেশের শীর্ষ ফুটবল লিগ — ১০টি ক্লাব, হোম-অ্যান্ড-অ্যাওয়ে ফরম্যাটে মোট ১৮ রাউন্ড। চ্যাম্পিয়ন দল এএফসি চ্যাম্পিয়ন্স লিগ টু-তে খেলার সুযোগ পায়।\",\n    },\n  });\n  const fedCup = await db.competition.create({\n    data: {\n      name: \"ফেডারেশন কাপ\",\n      shortName: \"Federation Cup\",\n      type: \"CUP\",\n      season: \"2025-26\",\n      country: \"বাংলাদেশ\",\n      accentColor: \"#F5C24B\",\n      description: \"বাংলাদেশের সবচেয়ে পুরোনো ক্লাব কাপ টুর্নামেন্ট — নকআউট ফরম্যাটে দেশের সেরা ক্লাবগুলোর লড়াই।\",\n    },\n  });\n  const saff = await db.competition.create({\n    data: {\n      name: \"সাফ চ্যাম্পিয়নশিপ\",\n      shortName: \"SAFF Championship\",\n      type: \"INTERNATIONAL\",\n      season: \"2025\",\n      country: \"সাফ অঞ্চল\",\n      accentColor: \"#FF5A48\",\n      description: \"দক্ষিণ এশিয়ার শীর্ষ আন্তর্জাতিক ফুটবল টুর্নামেন্ট। বাংলাদেশ, ভারত, মালদ্বীপসহ ৭ দেশের অংশগ্রহণ।\",\n    },\n  });\n\n  // ================= BPL ROUND-ROBIN FIXTURES =================\n  // circle method: 10 teams, 9 rounds. Rounds 1-7 finished, round 8 partially live/upcoming, round 9 scheduled.\n  const order = [\"BK\", \"AB\", \"MSC\", \"SR\", \"SAIF\", \"FTS\", \"POL\", \"RJ\", \"MSK\", \"BU\"];\n  const rounds: Array<Array<[string, string]>> = [];\n  const arr = [...order];\n  for (let r = 0; r < 9; r++) {\n    const pairs: Array<[string, string]> = [];\n    for (let i = 0; i < 5; i++) {\n      const a = arr[i];\n      const b = arr[9 - i];\n      pairs.push(r % 2 === 0 ? [a, b] : [b, a]);\n    }\n    rounds.push(pairs);\n    // rotate: keep first fixed\n    const fixed = arr[0];\n    const rest = arr.slice(1);\n    rest.unshift(rest.pop()!);\n    arr.splice(0, arr.length, fixed, ...rest);\n  }\n\n  const strength: Record<string, number> = {};\n  teamDefs.forEach((t) => (strength[t.initials] = t.strength));\n\n  function genScore(h: string, a: string): [number, number] {\n    const diff = strength[h] - strength[a];\n    const hx = Math.max(0, Math.round(1.4 + diff * 6 + (rnd() - 0.5) * 2.2));\n    const ax = Math.max(0, Math.round(1.1 - diff * 6 + (rnd() - 0.5) * 2.2));\n    return [Math.min(hx, 5), Math.min(ax, 4)];\n  }\n\n  async function scorersFor(teamKey: string, n: number): Promise<string[]> {\n    const squad = playerDefs.filter((p) => p.team === teamKey && p.pos !== \"GK\");\n    const weighted = squad.flatMap((p) => [...Array((p.goals ?? 0) + 1)].map(() => p.name));\n    const out: string[] = [];\n    for (let i = 0; i < n; i++) out.push(pick(weighted.length ? weighted : squad.map((s) => s.name)));\n    return out;\n  }\n\n  const now = new Date();\n  const DAY = 864e5;\n\n  // rounds 1..7 finished\n  for (let r = 0; r < 7; r++) {\n    const matchday = r + 1;\n    const daysAgo = 22 - r * 3; // round 7 = 4 days ago, round 1 = 22 days ago\n    for (const [h, a] of rounds[r]) {\n      const [hs, as] = genScore(h, a);\n      const kickoff = new Date(now.getTime() - daysAgo * DAY - rint(0, 1) * DAY);\n      kickoff.setHours(rint(15, 20), pick([0, 15, 30, 45]), 0, 0);\n      const m = await db.match.create({\n        data: {\n          competitionId: bpl.id,\n          homeTeamId: teams[h],\n          awayTeamId: teams[a],\n          homeScore: hs,\n          awayScore: as,\n          status: \"FINISHED\",\n          period: \"FT\",\n          kickoff,\n          venue: teamDefs.find((t) => t.initials === h)!.stadium,\n          matchday,\n        },\n      });\n      // goal events\n      for (let i = 0; i < hs; i++) {\n        const [name] = await scorersFor(h, 1);\n        await db.matchEvent.create({\n          data: { matchId: m.id, minute: rint(3, 90), type: \"GOAL\", teamId: teams[h], teamSide: \"home\", playerName: name, detail: \"গোল\" },\n        });\n      }\n      for (let i = 0; i < as; i++) {\n        const [name] = await scorersFor(a, 1);\n        await db.matchEvent.create({\n          data: { matchId: m.id, minute: rint(3, 90), type: \"GOAL\", teamId: teams[a], teamSide: \"away\", playerName: name, detail: \"গোল\" },\n        });\n      }\n      await db.matchEvent.create({\n        data: { matchId: m.id, minute: 45, type: \"HT\", detail: \"হাফ-টাইম\" },\n      });\n      await db.matchEvent.create({\n        data: { matchId: m.id, minute: 90, type: \"FT\", detail: \"ফুল-টাইম\" },\n      });\n    }\n  }\n\n  // ---- Round 8: 2 LIVE + 1 upcoming today + 2 upcoming ----\n  const r8pairs = rounds[7]; // 5 pairs\n  const live1 = r8pairs[0]; // BK vs ? — make it the derby: reorder so BK plays MSC\n  // find pair containing BK and MSC if possible, else construct derby manually\n  let derbyIdx = r8pairs.findIndex(([h, a]) => (h === \"BK\" && a === \"MSC\") || (h === \"MSC\" && a === \"BK\"));\n  let live2Pair: [string, string];\n  let upcomingPairs: Array<[string, string]>;\n  let derbyPair: [string, string];\n  if (derbyIdx >= 0) {\n    derbyPair = r8pairs[derbyIdx];\n    const rest = r8pairs.filter((_, i) => i !== derbyIdx);\n    live2Pair = rest[0];\n    upcomingPairs = rest.slice(1);\n  } else {\n    // force: swap to create derby\n    derbyPair = [\"BK\", \"MSC\"];\n    const restTeams = [\"AB\", \"SR\", \"SAIF\", \"FTS\", \"POL\", \"RJ\", \"MSK\", \"BU\"];\n    live2Pair = [restTeams[0], restTeams[1]];\n    upcomingPairs = [[restTeams[2], restTeams[3]], [restTeams[4], restTeams[5]]];\n  }\n\n  async function createLive(pair: [string, string], minute: number) {\n    const [h, a] = pair;\n    const kickoff = new Date(now.getTime() - (minute + rint(2, 6)) * 60 * 1000);\n    const m = await db.match.create({\n      data: {\n        competitionId: bpl.id,\n        homeTeamId: teams[h],\n        awayTeamId: teams[a],\n        homeScore: 0,\n        awayScore: 0,\n        status: \"LIVE\",\n        minute,\n        period: minute <= 45 ? \"1H\" : \"2H\",\n        kickoff,\n        venue: teamDefs.find((t) => t.initials === h)!.stadium,\n        matchday: 8,\n        featured: h === \"BK\" || a === \"BK\",\n      },\n    });\n    // initial events: one early goal each\n    const [hname] = await scorersFor(h, 1);\n    const [aname] = await scorersFor(a, 1);\n    await db.matchEvent.create({\n      data: { matchId: m.id, minute: Math.max(2, minute - rint(18, 30)), type: \"GOAL\", teamId: teams[h], teamSide: \"home\", playerName: hname, detail: \"গোল\" },\n    });\n    await db.matchEvent.create({\n      data: { matchId: m.id, minute: Math.max(4, minute - rint(5, 14)), type: \"YELLOW\", teamId: teams[a], teamSide: \"away\", playerName: aname, detail: \"হলুদ কার্ড\" },\n    });\n    return m;\n  }\n\n  const liveMatch1 = await createLive(derbyPair, 37); // বসুন্ধরা বনাম মোহামেডান — ডার্বি লাইভ!\n  const liveMatch2 = await createLive(live2Pair, 68);\n  // give live2 a goal\n  {\n    const [h, a] = live2Pair;\n    const [name] = await scorersFor(h, 1);\n    await db.matchEvent.create({ data: { matchId: liveMatch2.id, minute: 24, type: \"GOAL\", teamId: teams[h], teamSide: \"home\", playerName: name, detail: \"গোল\" } });\n    await db.match.update({ where: { id: liveMatch2.id }, data: { homeScore: 1, awayScore: 0 } });\n  }\n\n  // upcoming today (this evening) + next days\n  for (let i = 0; i < upcomingPairs.length; i++) {\n    const [h, a] = upcomingPairs[i];\n    const kickoff = new Date(now.getTime() + (4 + i * 3) * 3600 * 1000);\n    await db.match.create({\n      data: {\n        competitionId: bpl.id,\n        homeTeamId: teams[h],\n        awayTeamId: teams[a],\n        status: \"SCHEDULED\",\n        kickoff,\n        venue: teamDefs.find((t) => t.initials === h)!.stadium,\n        matchday: 8,\n      },\n    });\n  }\n  // round 9 next week\n  for (const [h, a] of rounds[8]) {\n    const kickoff = new Date(now.getTime() + (7 + rint(0, 2)) * DAY);\n    kickoff.setHours(pick([15, 17, 19]), pick([0, 30]), 0, 0);\n    await db.match.create({\n      data: {\n        competitionId: bpl.id,\n        homeTeamId: teams[h],\n        awayTeamId: teams[a],\n        status: \"SCHEDULED\",\n        kickoff,\n        venue: teamDefs.find((t) => t.initials === h)!.stadium,\n        matchday: 9,\n      },\n    });\n  }\n\n  // ================= FEDERATION CUP =================\n  const fcPairs: Array<[[string, string], number, number]> = [\n    [[\"MSC\", \"FTS\"], 2, 0],\n    [[\"AB\", \"RJ\"], 3, 1],\n    [[\"BK\", \"MSK\"], 4, 1],\n    [[\"SR\", \"POL\"], 1, 1],\n  ];\n  for (const [[h, a], hs, as] of fcPairs) {\n    let winner = h;\n    let finalH = hs;\n    let finalA = as;\n    if (hs === as) winner = rnd() > 0.5 ? h : a;\n    const kickoff = new Date(now.getTime() - rint(10, 16) * DAY);\n    kickoff.setHours(19, 30, 0, 0);\n    const m = await db.match.create({\n      data: {\n        competitionId: fedCup.id,\n        homeTeamId: teams[h],\n        awayTeamId: teams[a],\n        homeScore: finalH,\n        awayScore: finalA,\n        status: \"FINISHED\",\n        period: \"FT\",\n        kickoff,\n        venue: \"বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা\",\n        round: \"কোয়ার্টার ফাইনাল\",\n      },\n    });\n    for (let i = 0; i < finalH; i++) {\n      const [n] = await scorersFor(h, 1);\n      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: \"GOAL\", teamSide: \"home\", teamId: teams[h], playerName: n, detail: \"গোল\" } });\n    }\n    for (let i = 0; i < finalA; i++) {\n      const [n] = await scorersFor(a, 1);\n      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: \"GOAL\", teamSide: \"away\", teamId: teams[a], playerName: n, detail: \"গোল\" } });\n    }\n  }\n  // semifinal upcoming\n  await db.match.create({\n    data: {\n      competitionId: fedCup.id,\n      homeTeamId: teams[\"MSC\"],\n      awayTeamId: teams[\"AB\"],\n      status: \"SCHEDULED\",\n      kickoff: new Date(now.getTime() + 5 * DAY),\n      venue: \"বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা\",\n      round: \"সেমিফাইনাল\",\n      featured: true,\n    },\n  });\n  await db.match.create({\n    data: {\n      competitionId: fedCup.id,\n      homeTeamId: teams[\"BK\"],\n      awayTeamId: teams[\"SR\"],\n      status: \"SCHEDULED\",\n      kickoff: new Date(now.getTime() + 6 * DAY),\n      venue: \"বসুন্ধরা কিংস এরিনা, ঢাকা\",\n      round: \"সেমিফাইনাল\",\n    },\n  });\n\n  // ================= SAFF (national team) =================\n  // Bangladesh \"team\" — use a pseudo team? We need Team rows for matches. Create national team entries.\n  const bd = await db.team.create({\n    data: {\n      name: \"বাংলাদেশ জাতীয় ফুটবল দল\",\n      shortName: \"Bangladesh\",\n      initials: \"BAN\",\n      city: \"ঢাকা\",\n      stadium: \"বঙ্গবন্ধু জাতীয় স্টেডিয়াম\",\n      founded: 1972,\n      color: \"#006A4E\",\n      color2: \"#F42A41\",\n      description: \"লাল-সবুজের প্রতিনিধি — সাফ অঞ্চলের অন্যতম জনপ্রিয় দল। ফিফা র‍্যাঙ্কিং উন্নতির ধারায়।\",\n    },\n  });\n  const india = await db.team.create({\n    data: { name: \"ভারত জাতীয় ফুটবল দল\", shortName: \"India\", initials: \"IND\", city: \"নয়াদিল্লি\", stadium: \"জওহরলাল নেহেরু স্টেডিয়াম\", founded: 1938, color: \"#2563EB\", color2: \"#1E3A8A\", description: \"সাফ অঞ্চলের শীর্ষ দল।\" },\n  });\n  const maldives = await db.team.create({\n    data: { name: \"মালদ্বীপ জাতীয় ফুটবল দল\", shortName: \"Maldives\", initials: \"MDV\", city: \"মালে\", stadium: \"গালোলহু জাতীয় স্টেডিয়াম\", founded: 1952, color: \"#DC2626\", color2: \"#7F1D1D\", description: \"সাফ অঞ্চলের শক্তিশালী দল।\" },\n  });\n\n  const saff1 = await db.match.create({\n    data: {\n      competitionId: saff.id,\n      homeTeamId: bd.id,\n      awayTeamId: india.id,\n      homeScore: 1,\n      awayScore: 1,\n      status: \"FINISHED\",\n      period: \"FT\",\n      kickoff: new Date(now.getTime() - 12 * DAY),\n      venue: \"বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা\",\n      round: \"গ্রুপ পর্ব\",\n      featured: true,\n    },\n  });\n  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 34, type: \"GOAL\", teamId: bd.id, teamSide: \"home\", playerName: \"ফয়সাল আহমেদ ফাহিম\", detail: \"গোল\" } });\n  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 61, type: \"GOAL\", teamId: india.id, teamSide: \"away\", playerName: \"সুনিল ছেত্রী\", detail: \"গোল (পেনাল্টি)\" } });\n  await db.match.create({\n    data: {\n      competitionId: saff.id,\n      homeTeamId: bd.id,\n      awayTeamId: maldives.id,\n      homeScore: 2,\n      awayScore: 0,\n      status: \"FINISHED\",\n      period: \"FT\",\n      kickoff: new Date(now.getTime() - 8 * DAY),\n      venue: \"বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা\",\n      round: \"গ্রুপ পর্ব\",\n    },\n  });\n  await db.match.create({\n    data: {\n      competitionId: saff.id,\n      homeTeamId: bd.id,\n      awayTeamId: india.id,\n      status: \"SCHEDULED\",\n      kickoff: new Date(now.getTime() + 3 * DAY),\n      venue: \"বঙ্গবন্ধু জাতীয় স্টেডিয়াম, ঢাকা\",\n      round: \"সেমিফাইনাল\",\n      featured: true,\n    },\n  });\n\n  // ================= STANDINGS (computed from finished BPL matches) =================\n  type Row = { played: number; won: number; drawn: number; lost: number; gf: number; ga: number; points: number; form: string[] };\n  const table: Record<string, Row> = {};\n  order.forEach((k) => (table[k] = { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0, form: [] }));\n  const finishedBpl = await db.match.findMany({\n    where: { competitionId: bpl.id, status: \"FINISHED\" },\n    include: { homeTeam: true, awayTeam: true },\n  });\n  for (const m of finishedBpl) {\n    const hk = m.homeTeam.initials;\n    const ak = m.awayTeam.initials;\n    if (!table[hk] || !table[ak]) continue;\n    const hs = m.homeScore ?? 0;\n    const as = m.awayScore ?? 0;\n    table[hk].played++; table[ak].played++;\n    table[hk].gf += hs; table[hk].ga += as;\n    table[ak].gf += as; table[ak].ga += hs;\n    if (hs > as) { table[hk].won++; table[hk].points += 3; table[ak].lost++; table[hk].form.push(\"W\"); table[ak].form.push(\"L\"); }\n    else if (hs < as) { table[ak].won++; table[ak].points += 3; table[hk].lost++; table[ak].form.push(\"W\"); table[hk].form.push(\"L\"); }\n    else { table[hk].drawn++; table[ak].drawn++; table[hk].points++; table[ak].points++; table[hk].form.push(\"D\"); table[ak].form.push(\"D\"); }\n  }\n  const sorted = Object.entries(table).sort((a, b) => b[1].points - a[1].points || b[1].gf - b[1].ga - (a[1].gf - a[1].ga) || b[1].gf - a[1].gf);\n  let pos = 1;\n  for (const [k, row] of sorted) {\n    await db.standing.create({\n      data: {\n        competitionId: bpl.id,\n        teamId: teams[k],\n        position: pos++,\n        played: row.played,\n        won: row.won,\n        drawn: row.drawn,\n        lost: row.lost,\n        goalsFor: row.gf,\n        goalsAgainst: row.ga,\n        points: row.points,\n        form: row.form.slice(-5).join(\"\"),\n      },\n    });\n  }\n\n  // ================= NEWS =================\n  const day = (n: number) => new Date(now.getTime() - n * DAY);\n  const articles = [\n    {\n      title: \"হামজা চৌধুরী লাল-সবুজে: বাংলাদেশ ফুটবলের ইতিহাসে নতুন অধ্যায়\",\n      category: \"NATIONAL\",\n      featured: true,\n      cover: IMG.celebrate[0],\n      views: 48210,\n      likes: 1240,\n      excerpt: \"ইংলিশ প্রিমিয়ার লিগের তারকা মিডফিল্ডার হামজা চৌধুরী বাংলাদেশ জাতীয় দলের জার্সি গায়ে মাঠে নামছেন — বাংলাদেশি বংশোদ্ভূত এই প্রথম প্রিমিয়ার লিগ খেলোয়াড়।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n      },\n    });\n    teams[t.initials] = team.id;\n  }\n\n  // ================= PLAYERS =================\n  type PDef = { name: string; team: string; pos: string; num: number; nat?: string; by?: number; nt?: boolean; goals?: number; assists?: number; apps?: number; rating?: number; cs?: number; bio?: string; };\n  const playerDefs: PDef[] = [\n    // Bashundhara Kings\n    { name: \"মিতুল মারমা\", team: \"BK\", pos: \"GK\", num: 1, nt: true, cs: 5, apps: 7, rating: 7.3, bio: \"জাতীয় দলের পছন্দের গোলরক্ষক, রিফ্লেক্সে অসাধারণ।\" },\n    { name: \"তপু বড়ুয়ান\", team: \"BK\", pos: \"DF\", num: 5, nt: true, goals: 2, apps: 7, rating: 7.6, bio: \"জাতীয় দলের অধিনায়কসুলভ ডিফেন্ডার, এয়ারিয়াল ডুয়েলে শক্তিশালী।\" },\n    { name: \"রাকিব হোসেন\", team: \"BK\", pos: \"MF\", num: 7, nt: true, goals: 3, assists: 5, apps: 7, rating: 7.9, bio: \"সেট-পিস স্পেশালিস্ট উইঙ্গার, ফ্রি-কিকে জাদুকর।\" },\n    { name: \"মোহাম্মদ ইব্রাহিম\", team: \"BK\", pos: \"FW\", num: 11, nt: true, goals: 4, assists: 2, apps: 7, rating: 7.7, bio: \"গতিশীল উইঙ্গার, ড্রিবলিংয়ে প্রতিপক্ষের ভয়ের নাম।\" },\n    { name: \"শেখ মোরশালিন\", team: \"BK\", pos: \"FW\", num: 9, nt: true, goals: 5, apps: 7, rating: 7.8, bio: \"গ্রাম ফুটবল থেকে বিপিএল স্টার — ফিনিশিং তার ব্র্যান্ড।\" },\n    { name: \"রানিয়েল\", team: \"BK\", pos: \"FW\", num: 10, nat: \"ব্রাজিল\", goals: 6, assists: 3, apps: 7, rating: 8.1, bio: \"ব্রাজিলিয়ান স্ট্রাইকার, লিগের সেরা ফরেন স্ট্রাইকারদের একজন।\" },\n    { name: \"দোরিয়েলতন\", team: \"BK\", pos: \"FW\", num: 99, nat: \"ব্রাজিল\", goals: 4, assists: 4, apps: 6, rating: 7.7 },\n    { name: \"মেহেদী হাসান\", team: \"BK\", pos: \"DF\", num: 3, apps: 7, rating: 7.1, cs: 4 },\n    // Abahani\n    { name: \"নবীব নেওয়াজ জিবন\", team: \"AB\", pos: \"FW\", num: 9, nt: true, goals: 5, assists: 1, apps: 7, rating: 7.7, bio: \"ভেটেরান স্ট্রাইকার, বক্সের ভেতরে চোখ ধাঁধানো মুভ।\" },\n    { name: \"সোহেল রানা\", team: \"AB\", pos: \"MF\", num: 6, nt: true, goals: 1, assists: 3, apps: 7, rating: 7.5, bio: \"মিডফিল্ডের ইঞ্জিন, ট্যাকল আর পাসে সমান দক্ষ।\" },\n    { name: \"ইয়াসিন খান\", team: \"AB\", pos: \"DF\", num: 4, nt: true, goals: 1, apps: 6, rating: 7.2, bio: \"অভিজ্ঞ সেন্টার-ব্যাক, নিজের এরিয়ায় দেয়াল।\" },\n    { name: \"বিপ্লব আহমেদ\", team: \"AB\", pos: \"FW\", num: 17, nt: true, goals: 3, assists: 2, apps: 6, rating: 7.4 },\n    { name: \"সাইফুল বারী টিটু\", team: \"AB\", pos: \"GK\", num: 23, apps: 7, cs: 3, rating: 7.0 },\n    { name: \"স্যামুয়েল ওকোনকো\", team: \"AB\", pos: \"FW\", num: 88, nat: \"নাইজেরিয়া\", goals: 4, apps: 7, rating: 7.5 },\n    { name: \"জুনিয়র সিলভা\", team: \"AB\", pos: \"MF\", num: 8, nat: \"ব্রাজিল\", goals: 2, assists: 4, apps: 7, rating: 7.4 },\n    // Mohammedan\n    { name: \"জামাল ভূঞা\", team: \"MSC\", pos: \"MF\", num: 8, nt: true, goals: 2, assists: 4, apps: 7, rating: 7.8, bio: \"বাংলাদেশ জাতীয় দলের অধিনায়ক, মিডফিল্ডের প্রাণপুরুষ। বিদেশে খেলা প্রথম বাংলাদেশি।\" },\n    { name: \"ফয়সাল আহমেদ ফাহিম\", team: \"MSC\", pos: \"FW\", num: 7, nt: true, goals: 4, assists: 3, apps: 7, rating: 7.6, bio: \"তরুণ ও উদীয়মান স্ট্রাইকার, গতি তার অস্ত্র।\" },\n    { name: \"বিশ্বনাথ ঘোষ\", team: \"MSC\", pos: \"DF\", num: 5, nt: true, goals: 1, apps: 7, rating: 7.3 },\n    { name: \"আশিকুর রহমান\", team: \"MSC\", pos: \"GK\", num: 1, nt: true, cs: 4, apps: 7, rating: 7.2 },\n    { name: \"মার্কোস ফেরেইরা\", team: \"MSC\", pos: \"DF\", num: 44, nat: \"ব্রাজিল\", goals: 1, apps: 7, rating: 7.1 },\n    { name: \"কোফি আপিয়া\", team: \"MSC\", pos: \"FW\", num: 77, nat: \"ঘানা\", goals: 3, apps: 6, rating: 7.3 },\n    // Sheikh Russel\n    { name: \"তৌহিদুল ইসলাম সবুজ\", team: \"SR\", pos: \"MF\", num: 10, nt: true, goals: 2, assists: 2, apps: 7, rating: 7.2 },\n    { name: \"রাশেদুল পালোয়ান\", team: \"SR\", pos: \"FW\", num: 9, goals: 3, apps: 7, rating: 7.0 },\n    { name: \"মাহফুজুর রহমান\", team: \"SR\", pos: \"GK\", num: 30, apps: 7, cs: 2, rating: 6.8 },\n    { name: \"ড্যানিয়েল মেন্ডেস\", team: \"SR\", pos: \"MF\", num: 20, nat: \"ব্রাজিল\", goals: 2, assists: 3, apps: 7, rating: 7.1 },\n    // Saif SC\n    { name: \"রাহাত মিয়া\", team: \"SAIF\", pos: \"DF\", num: 2, apps: 7, rating: 6.9 },\n    { name: \"জুনায়েদ আহমেদ\", team: \"SAIF\", pos: \"MF\", num: 14, goals: 2, apps: 7, rating: 7.0 },\n    { name: \"ইমরান খান\", team: \"SAIF\", pos: \"FW\", num: 11, goals: 3, assists: 1, apps: 7, rating: 7.1 },\n    { name: \"আর্নেস্ট বোয়াটেং\", team: \"SAIF\", pos: \"FW\", num: 9, nat: \"ঘানা\", goals: 4, apps: 7, rating: 7.2 },\n    { name: \"শহীদুল ইসলাম\", team: \"SAIF\", pos: \"GK\", num: 1, apps: 6, cs: 2, rating: 6.7 },\n    // Fortis\n    { name: \"ফারহান সিদ্দিক\", team: \"FTS\", pos: \"MF\", num: 8, goals: 2, assists: 2, apps: 7, rating: 6.9 },\n    { name: \"তানজিল আহমেদ\", team: \"FTS\", pos: \"FW\", num: 7, goals: 2, apps: 7, rating: 6.8 },\n    { name: \"মোজাম্মেল হোসেন\", team: \"FTS\", pos: \"DF\", num: 4, goals: 1, apps: 7, rating: 6.8 },\n    { name: \"নাঈম উদ্দিন\", team: \"FTS\", pos: \"GK\", num: 21, apps: 7, cs: 1, rating: 6.6 },\n    // Police\n    { name: \"কামরুল হাসান\", team: \"POL\", pos: \"MF\", num: 6, goals: 1, apps: 7, rating: 6.7 },\n    { name: \"শাহরিয়ার কবির\", team: \"POL\", pos: \"FW\", num: 9, goals: 2, apps: 7, rating: 6.8 },\n    { name: \"আনিসুর রহমান\", team: \"POL\", pos: \"GK\", num: 1, apps: 7, cs: 1, rating: 6.6 },\n    { name: \"রিয়াদ হোসেন\", team: \"POL\", pos: \"DF\", num: 3, apps: 6, rating: 6.5 },\n    // Rahmatganj\n    { name: \"তাসিকুল ইসলাম\", team: \"RJ\", pos: \"FW\", num: 10, goals: 3, apps: 7, rating: 7.0 },\n    { name: \"তুতুল হোসেন বাদশা\", team: \"RJ\", pos: \"FW\", num: 9, nt: true, goals: 2, apps: 7, rating: 6.9 },\n    { name: \"মোস্তাফিজুর রহমান\", team: \"RJ\", pos: \"GK\", num: 1, apps: 7, cs: 1, rating: 6.5 },\n    { name: \"সুমন বড়ুয়া\", team: \"RJ\", pos: \"MF\", num: 8, goals: 1, apps: 7, rating: 6.6 },\n    // Muktijoddha\n    { name: \"নাজমুল হাসান\", team: \"MSK\", pos: \"DF\", num: 5, goals: 1, apps: 7, rating: 6.7 },\n    { name: \"হাসিবুর রহমান\", team: \"MSK\", pos: \"MF\", num: 7, goals: 1, apps: 7, rating: 6.6 },\n    { name: \"রুস্তম আলী\", team: \"MSK\", pos: \"FW\", num: 9, goals: 2, apps: 7, rating: 6.7 },\n    { name: \"ইকবাল হোসেন\", team: \"MSK\", pos: \"GK\", num: 22, apps: 7, cs: 0, rating: 6.4 },\n    // Brothers Union\n    { name: \"সাজিদ হোসেন\", team: \"BU\", pos: \"MF\", num: 10, goals: 1, apps: 7, rating: 6.5 },\n    { name: \"আরিফুল ইসলাম\", team: \"BU\", pos: \"FW\", num: 11, goals: 2, apps: 7, rating: 6.6 },\n    { name: \"জুবায়ের আহমেদ\", team: \"BU\", pos: \"GK\", num: 1, apps: 7, cs: 1, rating: 6.3 },\n    { name: \"শাকিল আহমেদ\", team: \"BU\", pos: \"DF\", num: 6, apps: 7, rating: 6.4 },\n    // National team stars not in BPL clubs (foreign based)\n    { name: \"হামজা চৌধুরী\", team: \"\", pos: \"MF\", num: 17, nat: \"ইংল্যান্ড (বাংলাদেশি বংশোদ্ভূত)\", nt: true, by: 1997, goals: 1, apps: 3, rating: 8.4, bio: \"ইংলিশ প্রিমিয়ার লিগের ক্লাব লিসেস্টার সিটির মিডফিল্ডার। ২০২৫ সালে বাংলাদেশ জাতীয় দলে যোগ দেওয়া সবচেয়ে আলোচিত সাইনিং — বাংলাদেশি বংশোদ্ভূত প্রথম প্রিমিয়ার লিগ খেলোয়াড়।\" },\n    { name: \"রেজাউল হাসান জীবন\", team: \"\", pos: \"DF\", num: 3, nt: true, by: 1999, goals: 0, apps: 3, rating: 7.0 },\n  ];\n\n  const playerIds: Record<string, string> = {};\n  for (const p of playerDefs) {\n    const player = await db.player.create({\n      data: {\n        name: p.name,\n        teamId: p.team ? teams[p.team] : null,\n        position: p.pos,\n        nationality: p.nat ?? \"বাংলাদেশ\",\n        jerseyNumber: p.num,\n        birthYear: p.by ?? rint(1993, 2004),\n        heightCm: rint(165, 188),\n        goals: p.goals ?? 0,\n        assists: p.assists ?? 0,\n        appearances: p.apps ?? 0,\n        cleanSheets: p.cs ?? 0,\n        rating: p.rating ?? 6.5,\n        isNationalTeam: p.nt ?? false,\n        bio: p.bio ?? ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"আবাহনীতে ফেরার পথে জিবন? ক্লাব কর্তৃপক্ষের সঙ্গে বৈঠক শেষে ভালো বার্তা\",\n      category: \"TRANSFER\",\n      featured: false,\n      cover: IMG.action[1],\n      views: 21380,\n      likes: 460,\n      excerpt: \"জাতীয় দলের স্ট্রাইকার নবীব নেওয়াজ জিবনের পুরোনো ক্লাবে ফেরার বিষয়ে ইতিবাচক আলাপ চলছে বলে জানা গেছে।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"এএফসি কাপ বাছাই: বাংলাদেশের ক্লাবগুলোর সামনে কঠিন চ্যালেঞ্জ\",\n      category: \"INTERNATIONAL\",\n      featured: false,\n      cover: IMG.trophy[0],\n      views: 9870,\n      likes: 180,\n      excerpt: \"এশিয়ার ক্লাব ফুটবলে বাংলাদেশের প্রতিনিধিদের কাছে আসছে প্রিমিয়ার টেস্ট।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"গোলরক্ষকদের যুদ্ধ: বিপিএলে এবার ক্লিন-শিটের রেকর্ড কার হবে?\",\n      category: \"BPL\",\n      featured: false,\n      cover: IMG.goalkeeper[0],\n      views: 15230,\n      likes: 320,\n      excerpt: \"মিতুল মারমা বনাম আশিকুর রহমান — ক্লিন-শিট তালিকায় তীব্র লড়াইয়ে দুই শীর্ষ গোলরক্ষক।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"গ্রামের মাঠ থেকে বিপিএল: শেখ মোরশালিনের সংগ্রামের গল্প\",\n      category: \"OPINION\",\n      featured: false,\n      cover: IMG.training[1],\n      views: 28910,\n      likes: 1500,\n      excerpt: \"খালি পায়ে মাঠ ঘুরে বেড়ানো এক কিশোর, আজ জাতীয় দলের হয়ে গোল করছেন — মোরশালিনের গল্প বাংলাদেশ ফুটবলের ভবিষ্যতের রূপরেখা।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"ট্রান্সফার বাজার গরম: মোহামেডানের হয়ে খেলতে চান ব্রাজিলিয়ান স্ট্রাইকার\",\n      category: \"TRANSFER\",\n      featured: false,\n      cover: IMG.dribble[0],\n      views: 27650,\n      likes: 540,\n      excerpt: \"মধ্যপ্রাচ্যের লিগ থেকে ফিরছেন অভিজ্ঞ ফরোয়ার্ড — মোটবাইকের গুজব নিয়ে আলোচনায় মোহামেডান ক্যাম্প।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"ট্রান্সফার: সাইফ এসসি ছাড়তে পারেন অধিনায়ক, চলছে আলাপ\",\n      category: \"TRANSFER\",\n      featured: false,\n      cover: IMG.coach[1],\n      views: 12340,\n      likes: 210,\n      excerpt: \"মৌসুম মাঝপথে ক্লাব ছাড়ার গুজব নিয়ে হইচই সাইফ এসসি ক্যাম্পে — ক্লাব সূত্র তা নিশ্চিত করেনি।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"ফেডারেশন কাপ সেমিফাইনালে মোহামেডান-আবাহনী ক্লাশ: পুরোনো প্রতিদ্বন্দ্বিতার নতুন অধ্যায়\",\n      category: \"NATIONAL\",\n      featured: false,\n      cover: IMG.stadium[0],\n      views: 17650,\n      likes: 380,\n      excerpt: \"ঢাকার ফুটবলের সবচেয়ে বড় দুই প্রতিদ্বন্দ্বী সেমিফাইনালে মুখোমুখি — টিকিটের চাহিদা তুঙ্গে।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"বিপিএল যুব উন্নয়ন কর্মসূচি: একাডেমি থেকে প্রথম একাদশে পথ খুলছে\",\n      category: \"BPL\",\n      featured: false,\n      cover: IMG.training[2],\n      views: 11230,\n      likes: 260,\n      excerpt: \"ক্লাবগুলোতে যুব একাডেমি চালুর উদ্যোগ নিয়েছে লিগ কর্তৃপক্ষ — লক্ষ্য নিজস্ব তারকা তৈরি।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"বিপিএলে দাপুটে বসুন্ধরা: কিংস করপোরেশন এগিয়ে থাকল পয়েন্ট টেবিলে\",\n      category: \"BPL\",\n      featured: false,\n      cover: IMG.action[0],\n      views: 32104,\n      likes: 890,\n      excerpt: \"ঘরের মাঠে দাপুটে জয়ে লিগ টেবিলের শীর্ষে নিজের আধিপত্য ধরে রেখেছে ডিফেন্ডিং চ্যাম্পিয়ন বসুন্ধরা কিংস।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"সাফ সেমিফাইনালের প্রস্তুতি শুরু: ক্যাম্পে যোগ দিলেন সব তারকা\",\n      category: \"NATIONAL\",\n      featured: false,\n      cover: IMG.training[0],\n      views: 19420,\n      likes: 512,\n      excerpt: \"ভারতের বিপক্ষে সেমিফাইনালের আগে জাতীয় দলের প্রস্তুতি ক্যাম্প শুরু হয়েছে — হামজা চৌধুরীসহ সব নিয়মিত খেলোয়াড় উপস্থিত।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ",\n    },\n    {\n      title: \"স্টেডিয়াম নিরাপত্তায় নতুন নির্দেশনা: দর্শকসেবায় বাড়ছে আধুনিকায়ন\",\n      category: \"NATIONAL\",\n      featured: false,\n      cover: IMG.fans[0],\n      views: 8420,\n      likes: 150,\n      excerpt: \"গ্যালারির নিরাপত্তা, টিকিটিং ও সেবা — স্টেডিয়াম অভিজ্ঞতা বদলাতে নতুন নির্দেশনা দিয়েছে কর্তৃপক্ষ।\",\n      content: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ", icon: <TrendingUp className=\"h-4 w-4\" aria-hidden />, chipCls: \"bg-fhb-red/15 text-fhb-red\", valueCls: \"text-fhb-red\" },\n        ].map((s) => (\n          <div key={s.label} className=\"edge-lit card-lift rounded-2xl border border-border bg-card p-4.5 p-4 sm:p-5\">\n            <div className=\"flex items-center gap-2.5\">\n              <span className={cn(\"flex h-8 w-8 items-center justify-center rounded-lg\", s.chipCls)}>{s.icon}</span>\n              <span className=\"text-[10px] font-bold text-muted-foreground\">{s.label}</span>\n            </div>\n            <p className={cn(\"tabular mt-3 font-display text-xl font-bold sm:text-2xl\", s.valueCls)}>{s.value}</p>\n          </div>\n        ))}\n      </div>\n\n      <div className=\"mt-6 grid gap-6 lg:grid-cols-3\">\n        {/* Monthly chart + transactions */}\n        <div className=\"edge-lit rounded-2xl border border-border bg-card p-5 lg:col-span-2\">\n          <h2 className=\"mb-5 flex items-center gap-2.5 font-display-bn text-base font-bold text-foreground\">\n            <span className=\"flex h-8 w-8 items-center justify-center rounded-lg bg-primary/12 text-primary\">\n              <TrendingUp className=\"h-4 w-4\" aria-hidden />\n            </span>\n            মাসিক আয় (৳)\n          </h2>\n          <div className=\"h-56\">\n            <ResponsiveContainer width=\"100%\" height=\"100%\">\n              <BarChart data={monthly} margin={{ top: 4, right: 4, left: -14, bottom: 0 }}>\n                <CartesianGrid strokeDasharray=\"3 3\" stroke=\"rgba(255,255,255,0.07)\" vertical={false} />\n                <XAxis dataKey=\"month\" tick={{ fontSize: 11, fill: \"rgba(255,255,255,0.55)\" }} axisLine={false} tickLine={false} />\n                <YAxis tick={{ fontSize: 10, fill: \"rgba(255,255,255,0.55)\" }} axisLine={false} tickLine={false} />\n                <Tooltip\n                  cursor={{ fill: \"rgba(255,255,255,0.05)\" }}\n                  contentStyle={{ background: \"#0f1512\", border: \"1px solid rgba(255,255,255,0.12)\", borderRadius: 10, fontSize: 12 }}\n                  formatter={(v: number) => [",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": ", { method: \"DELETE\" });\n      const json = await res.json();\n      if (!json.success) throw new Error(json.error);\n      return json;\n    },\n    onSuccess: () => {\n      toast({ title: \"নিউজ মুছে ফেলা হয়েছে\" });\n      queryClient.invalidateQueries({ queryKey: [\"admin\", \"news\"] });\n      queryClient.invalidateQueries({ queryKey: [\"news\"] });\n    },\n    onError: (e: Error) => toast({ title: \"মুছে ফেলা ব্যর্থ\", description: e.message, variant: \"destructive\" }),\n  });\n\n  const openNew = () => {\n    setEditing(null);\n    setForm({ title: \"\", excerpt: \"\", content: \"\", category: \"BPL\", coverUrl: \"\", featured: false, status: \"PUBLISHED\" });\n    setDialogOpen(true);\n  };\n\n  const openEdit = (a: Article) => {\n    setEditing(a);\n    setForm({ title: a.title, excerpt: a.excerpt, content: a.content, category: a.category, coverUrl: a.coverUrl ?? \"\", featured: a.featured, status: a.status });\n    setDialogOpen(true);\n  };\n\n  const articles = data?.articles ?? [];\n  const inputCls = \"w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20\";\n\n  return (\n    <div>\n      <div className=\"mb-3 flex items-center justify-between\">\n        <p className=\"flex items-center gap-2 text-xs text-muted-foreground\">\n          <Newspaper className=\"h-3.5 w-3.5 text-primary\" aria-hidden />\n          মোট {toBn(articles.length)} টি আর্টিকেল\n        </p>\n        <Button size=\"sm\" onClick={openNew} className=\"gap-1.5 rounded-md bg-primary font-bold\">\n          <Plus className=\"h-4 w-4\" aria-hidden /> নতুন নিউজ\n        </Button>\n      </div>\n\n      {isLoading ? (\n        [1, 2, 3].map((i) => <Skeleton key={i} className=\"mb-2 h-16 rounded-lg\" />)\n      ) : (\n        <div className=\"edge-lit overflow-hidden rounded-2xl border border-border bg-card\">\n          <div className=\"divide-y divide-border/50\">\n            {articles.map((a) => (\n              <div key={a.id} className=\"flex flex-wrap items-center gap-3 p-3 transition-colors hover:bg-accent/30\">\n                <div className=\"min-w-0 flex-1\">\n                  <p className=\"truncate text-sm font-semibold text-foreground\">{a.title}</p>\n                  <p className=\"mt-0.5 flex flex-wrap items-center gap-x-2 text-[10px] text-muted-foreground\">\n                    <Badge variant=\"secondary\" className=\"h-4 rounded-sm px-1.5 text-[9px]\">{a.category}</Badge>\n                    <span className={a.status === \"PUBLISHED\" ? \"font-bold text-primary\" : \"font-bold text-fhb-gold\"}>\n                      {a.status === \"PUBLISHED\" ? \"প্রকাশিত\" : \"ড্রাফট\"}\n                    </span>\n                    <span className=\"flex items-center gap-0.5\">\n                      <Eye className=\"h-2.5 w-2.5\" aria-hidden />\n                      {bnCompact(a.views)}\n                    </span>\n                    <span>{timeAgo(a.createdAt)}</span>\n                    {a.featured && <Star className=\"h-3 w-3 fill-fhb-gold text-fhb-gold\" aria-label=\"ফিচার্ড\" />}\n                  </p>\n                </div>\n                <div className=\"flex items-center gap-1\">\n                  <Button variant=\"ghost\" size=\"sm\" onClick={() => openEdit(a)} aria-label=\"এডিট করুন\" className=\"h-8 w-8 p-0\">\n                    <Pencil className=\"h-3.5 w-3.5\" aria-hidden />\n                  </Button>\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    onClick={() => del.mutate(a.id)}\n                    className=\"h-8 w-8 p-0 text-fhb-red hover:text-fhb-red\"\n                    aria-label=\"মুছে ফেলুন\"\n                  >\n                    <Trash2 className=\"h-3.5 w-3.5\" aria-hidden />\n                  </Button>\n                </div>\n              </div>\n            ))}\n          </div>\n        </div>\n      )}\n\n      {/* Editor dialog */}\n      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>\n        <DialogContent className=\"max-h-[85vh] max-w-2xl overflow-y-auto rounded-xl\">\n          <DialogHeader>\n            <DialogTitle className=\"font-display\">{editing ? \"নিউজ এডিট করুন\" : \"নতুন নিউজ লিখুন\"}</DialogTitle>\n          </DialogHeader>\n          <div className=\"space-y-3.5\">\n            <div>\n              <label className=\"mb-1 block text-[11px] font-bold text-foreground\">শিরোনাম *</label>\n              <input\n                value={form.title}\n                onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}\n                className={inputCls}\n                aria-label=\"শিরোনাম\"\n              />\n            </div>\n            <div>\n              <label className=\"mb-1 block text-[11px] font-bold text-foreground\">সারসংক্ষেপ *</label>\n              <textarea\n                value={form.excerpt}\n                onChange={(e) => setForm((f) => ({ ...f, excerpt: e.target.value }))}\n                rows={2}\n                className={cn(inputCls, \"resize-none\")}\n                aria-label=\"সারসংক্ষেপ\"\n              />\n            </div>\n            <div>\n              <label className=\"mb-1 block text-[11px] font-bold text-foreground\">বিস্তারিত (Markdown সমর্থিত) *</label>\n              <textarea\n                value={form.content}\n                onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}\n                rows={8}\n                className={cn(inputCls, \"resize-y\")}\n                aria-label=\"বিস্তারিত লেখা\"\n              />\n            </div>\n            <div className=\"grid grid-cols-2 gap-3\">\n              <div>\n                <label className=\"mb-1 block text-[11px] font-bold text-foreground\">ক্যাটাগরি</label>\n                <select\n                  value={form.category}\n                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}\n                  className={inputCls}\n                  aria-label=\"ক্যাটাগরি\"\n                >\n                  {[\"BPL\", \"NATIONAL\", \"TRANSFER\", \"INTERNATIONAL\", \"OPINION\"].map((c) => (\n                    <option key={c} value={c}>{c}</option>\n                  ))}\n                </select>\n              </div>\n              <div>\n                <label className=\"mb-1 block text-[11px] font-bold text-foreground\">স্ট্যাটাস</label>\n                <select\n                  value={form.status}\n                  onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}\n                  className={inputCls}\n                  aria-label=\"স্ট্যাটাস\"\n                >\n                  <option value=\"PUBLISHED\">প্রকাশিত</option>\n                  <option value=\"DRAFT\">ড্রাফট</option>\n                </select>\n              </div>\n            </div>\n            <div>\n              <label className=\"mb-1 block text-[11px] font-bold text-foreground\">কভার ইমেজ URL</label>\n              <input\n                value={form.coverUrl}\n                onChange={(e) => setForm((f) => ({ ...f, coverUrl: e.target.value }))}\n                placeholder=\"https://...\"\n                className={inputCls}\n                aria-label=\"কভার ইমেজ URL\"\n              />\n            </div>\n            <label className=\"flex items-center gap-2 text-xs font-semibold text-foreground\">\n              <input\n                type=\"checkbox\"\n                checked={form.featured}\n                onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}\n                className=\"h-4 w-4 accent-[var(--primary)]\"\n              />\n              হোমপেজে ফিচার করুন\n              <Star className=\"h-3.5 w-3.5 text-fhb-gold\" aria-hidden />\n            </label>\n          </div>\n          <DialogFooter>\n            <Button variant=\"outline\" onClick={() => setDialogOpen(false)} className=\"rounded-md\">\n              বাতিল\n            </Button>\n            <Button\n              onClick={() => save.mutate()}\n              disabled={save.isPending || !form.title.trim() || !form.content.trim()}\n              className=\"rounded-md bg-primary font-bold\"\n            >\n              {save.isPending ? \"সেভ হচ্ছে...\" : \"প্রকাশ করুন\"}\n            </Button>\n          </DialogFooter>\n        </DialogContent>\n      </Dialog>\n    </div>\n  );\n}\n\n/* ============ MATCH MANAGER ============ */\ntype AdminMatch = {\n  id: string; status: string; homeScore: number | null; awayScore: number | null; kickoff: string; round: string | null; venue: string | null;\n  homeTeam: { id: string; name: string; initials: string; color: string };\n  awayTeam: { id: string; name: string; initials: string; color: string };\n  competition: { id: string; name: string; shortName: string };\n};\n\nfunction MatchManager() {\n  const { toast } = useToast();\n  const queryClient = useQueryClient();\n\n  const { data, isLoading } = useQuery<{ matches: AdminMatch[] }>({\n    queryKey: [\"admin\", \"matches\"],\n    queryFn: async () => {\n      const res = await fetch(\"/api/admin/matches\");\n      return res.json().then((j) => j.data);\n    },\n  });\n\n  const update = useMutation({\n    mutationFn: async (payload: Record<string, unknown>) => {\n      const res = await fetch(\"/api/admin/matches\", {\n        method: \"PUT\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify(payload),\n      });\n      const json = await res.json();\n      if (!json.success) throw new Error(json.error);\n      return json;\n    },\n    onSuccess: (_d, payload) => {\n      const msg =\n        payload.status === \"LIVE\"\n          ? \"ম্যাচ এখন লাইভ! লাইভ-সিমুলেশন সার্ভিস এটি ১৫ সেকেন্ডের মধ্যে নিয়ে নেবে।\"\n          : \"ম্যাচ আপডেট হয়েছে\";\n      toast({ title: msg });\n      queryClient.invalidateQueries({ queryKey: [\"admin\", \"matches\"] });\n      queryClient.invalidateQueries({ queryKey: [\"matches\"] });\n    },\n    onError: (e: Error) => toast({ title: \"আপডেট ব্যর্থ\", description: e.message, variant: \"destructive\" }),\n  });\n\n  const matches = data?.matches ?? [];\n  const sorted = [...matches].sort((a, b) => {\n    const rank = (s: string) => (s === \"LIVE\" ? 0 : s === \"SCHEDULED\" ? 1 : 2);\n    return rank(a.status) - rank(b.status) || +new Date(b.kickoff) - +new Date(a.kickoff);\n  });\n\n  return (\n    <div>\n      <p className=\"mb-3 flex items-start gap-2.5 rounded-xl border border-fhb-red/25 bg-fhb-red/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground\">\n        <Info className=\"mt-0.5 h-4 w-4 shrink-0 text-fhb-red\" aria-hidden />\n        <span>\n          <b className=\"text-foreground\">লাইভ টেস্ট টিপ:</b> কোনো আসন্ন ম্যাচের স্ট্যাটাস <b className=\"text-fhb-red\">&ldquo;লাইভ&rdquo;</b> করুন — WebSocket সিমুলেশন সার্ভিস স্বয়ংক্রিয়ভাবে মিনিট ও স্কোর আপডেট শুরু করবে।\n        </span>\n      </p>\n      {isLoading ? (\n        [1, 2, 3].map((i) => <Skeleton key={i} className=\"mb-2 h-16 rounded-lg\" />)\n      ) : (\n        <div className=\"fhb-scroll max-h-[560px] space-y-2 overflow-y-auto pr-1\">\n          {sorted.map((m) => (\n            <div key={m.id} className=\"flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25\">\n              <div className=\"min-w-0 flex-1\">\n                <p className=\"truncate text-sm font-semibold text-foreground\">\n                  {m.homeTeam.name} <span className=\"text-muted-foreground\">বনাম</span> {m.awayTeam.name}\n                </p>\n                <p className=\"tabular text-[10px] text-muted-foreground\">\n                  {m.competition.shortName} · {new Date(m.kickoff).toLocaleDateString(\"bn-BD\")} ·{\" \"}\n                  {m.homeScore ?? \"-\"}:{m.awayScore ?? \"-\"}\n                </p>\n              </div>\n              <div className=\"flex items-center gap-1.5\">\n                {([\"SCHEDULED\", \"LIVE\", \"FINISHED\"] as const).map((st) => (\n                  <button\n                    key={st}\n                    onClick={() => update.mutate({ id: m.id, status: st })}\n                    disabled={m.status === st || update.isPending}\n                    className={cn(\n                      \"rounded-md border px-2.5 py-1.5 text-[10px] font-bold transition-colors disabled:opacity-40\",\n                      m.status === st\n                        ? st === \"LIVE\"\n                          ? \"border-fhb-red/50 bg-fhb-red/15 text-fhb-red\"\n                          : \"border-primary/50 bg-primary/15 text-primary\"\n                        : \"border-border text-muted-foreground hover:text-foreground\"\n                    )}\n                  >\n                    {st === \"LIVE\" ? \"লাইভ\" : st === \"SCHEDULED\" ? \"আসছে\" : \"শেষ\"}\n                  </button>\n                ))}\n              </div>\n            </div>\n          ))}\n        </div>\n      )}\n    </div>\n  );\n}\n\n/* ============ USER MANAGER ============ */\ntype AdminUser = {\n  id: string; name: string; username: string; email: string; role: string; isPremium: boolean;\n  isBanned: boolean; followerCount: number; createdAt: string;\n  _count: { posts: number; videos: number; comments: number };\n};\n\nfunction UserManager() {\n  const { toast } = useToast();\n  const queryClient = useQueryClient();\n  const { data, isLoading } = useQuery<{ users: AdminUser[] }>({\n    queryKey: [\"admin\", \"users\"],\n    queryFn: async () => {\n      const res = await fetch(\"/api/admin/users\");\n      return res.json().then((j) => j.data);\n    },\n  });\n\n  const update = useMutation({\n    mutationFn: async (payload: { id: string; role?: string; isBanned?: boolean }) => {\n      const res = await fetch(\"/api/admin/users\", {\n        method: \"PUT\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify(payload),\n      });\n      const json = await res.json();\n      if (!json.success) throw new Error(json.error);\n      return json;\n    },\n    onSuccess: () => {\n      toast({ title: \"ইউজার আপডেট হয়েছে\" });\n      queryClient.invalidateQueries({ queryKey: [\"admin\", \"users\"] });\n    },\n    onError: (e: Error) => toast({ title: \"আপডেট ব্যর্থ\", description: e.message, variant: \"destructive\" }),\n  });\n\n  const users = data?.users ?? [];\n\n  return (\n    <div>\n      {isLoading ? (\n        [1, 2, 3].map((i) => <Skeleton key={i} className=\"mb-2 h-16 rounded-lg\" />)\n      ) : (\n        <div className=\"fhb-scroll max-h-[560px] space-y-2 overflow-y-auto pr-1\">\n          {users.map((u) => (\n            <div key={u.id} className=\"flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25\">\n              <div className=\"min-w-0 flex-1\">\n                <p className=\"flex flex-wrap items-center gap-1.5 truncate text-sm font-semibold text-foreground\">\n                  {u.name}\n                  <span className=\"text-[10px] text-muted-foreground\">@{u.username}</span>\n                  {u.isPremium && <Crown className=\"h-3 w-3 text-fhb-gold\" aria-label=\"প্রিমিয়াম\" />}\n                  {u.isBanned && (\n                    <Badge className=\"h-4 rounded-sm bg-fhb-red px-1.5 text-[9px] hover:bg-fhb-red\">ব্যান</Badge>\n                  )}\n                </p>\n                <p className=\"tabular text-[10px] text-muted-foreground\">\n                  {u.email} · {bnNumber(u.followerCount)} ফলোয়ার · {bnNumber(u._count.comments)} কমেন্ট\n                </p>\n              </div>\n              <div className=\"flex flex-wrap items-center gap-1.5\">\n                {([\"USER\", \"CREATOR\", \"ADMIN\"] as const).map((r) => (\n                  <button\n                    key={r}\n                    onClick={() => update.mutate({ id: u.id, role: r })}\n                    disabled={u.role === r || update.isPending}\n                    className={cn(\n                      \"rounded-md border px-2 py-1 text-[10px] font-bold transition-colors disabled:opacity-40\",\n                      u.role === r\n                        ? \"border-primary/50 bg-primary/15 text-primary\"\n                        : \"border-border text-muted-foreground hover:text-foreground\"\n                    )}\n                  >\n                    {r === \"USER\" ? \"ফ্যান\" : r === \"CREATOR\" ? \"ক্রিয়েটর\" : \"অ্যাডমিন\"}\n                  </button>\n                ))}\n                <Button\n                  variant=\"ghost\"\n                  size=\"sm\"\n                  onClick={() => update.mutate({ id: u.id, isBanned: !u.isBanned })}\n                  className={cn(\"h-8 w-8 p-0\", u.isBanned ? \"text-primary hover:text-primary\" : \"text-fhb-red hover:text-fhb-red\")}\n                  aria-label={u.isBanned ? \"আনব্যান করুন\" : \"ব্যান করুন\"}\n                >\n                  {u.isBanned ? <RotateCcw className=\"h-3.5 w-3.5\" aria-hidden /> : <Ban className=\"h-3.5 w-3.5\" aria-hidden />}\n                </Button>\n              </div>\n            </div>\n          ))}\n        </div>\n      )}\n    </div>\n  );\n}\n\n/* ============ AD MANAGER ============ */\nfunction AdManager({ ads }: { ads: AdminStats[\"ads\"] }) {\n  const { toast } = useToast();\n  const queryClient = useQueryClient();\n  const [editing, setEditing] = useState<{ id: string; code: string } | null>(null);\n\n  const update = useMutation({\n    mutationFn: async (payload: { id: string; active?: boolean; adCode?: string }) => {\n      const res = await fetch(\"/api/admin/ads\", {\n        method: \"PUT\",\n        headers: { \"Content-Type\": \"application/json\" },\n        body: JSON.stringify(payload),\n      });\n      const json = await res.json();\n      if (!json.success) throw new Error(json.error);\n      return json;\n    },\n    onSuccess: () => {\n      toast({ title: \"বিজ্ঞাপন সেটিংস আপডেট হয়েছে\" });\n      setEditing(null);\n      queryClient.invalidateQueries({ queryKey: [\"admin\", \"stats\"] });\n      queryClient.invalidateQueries({ queryKey: [\"ads\"] });\n    },\n    onError: (e: Error) => toast({ title: \"আপডেট ব্যর্থ\", description: e.message, variant: \"destructive\" }),\n  });\n\n  return (\n    <div>\n      <p className=\"mb-3 flex items-start gap-2.5 rounded-xl border border-primary/25 bg-primary/5 p-3.5 text-[11px] leading-relaxed text-muted-foreground\">\n        <Info className=\"mt-0.5 h-4 w-4 shrink-0 text-primary\" aria-hidden />\n        <span>\n          Google AdSense কোড (ca-pub-...) এখানে বসিয়ে দিলেই সাইটজুড়ে সংশ্লিষ্ট প্লেসমেন্টে আসল বিজ্ঞাপন চলবে। প্রিমিয়াম\n          সদস্যরা বিজ্ঞাপন দেখতে পাবেন না — এটাই প্রিমিয়ামের মূল সুবিধা।\n        </span>\n      </p>\n      <div className=\"space-y-2\">\n        {ads.map((ad) => (\n          <div key={ad.id} className=\"edge-lit rounded-2xl border border-border bg-card p-4\">\n            <div className=\"flex flex-wrap items-center justify-between gap-2\">\n              <div className=\"flex min-w-0 items-center gap-3\">\n                <span\n                  aria-hidden\n                  className=\"flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-[13px] font-bold text-white\"\n                  style={{ backgroundColor: ad.brandColor || \"#1E9E50\" }}\n                >\n                  {(ad.brandInitials || ad.name.slice(0, 2)).trim()}\n                </span>\n                <div className=\"min-w-0\">\n                  <p className=\"truncate text-sm font-semibold text-foreground\">{ad.name}</p>\n                  <p className=\"tabular text-[10px] text-muted-foreground\">\n                    {ad.placement} · {bnCompact(ad.impressions)} ইমপ্রেশন · {bnCompact(ad.clicks)} ক্লিক · CTR{\" \"}\n                    {toBn(ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : \"0\")}%\n                  </p>\n                  {ad.headline && (\n                    <p className=\"mt-1 truncate text-[11px] italic text-muted-foreground/80\">“{ad.headline}”</p>\n                  )}\n                </div>\n              </div>\n              <div className=\"flex items-center gap-2\">\n                <Button variant=\"outline\" size=\"sm\" onClick={() => setEditing({ id: ad.id, code: ad.adCode ?? \"\" })} className=\"rounded-md\">\n                  কোড এডিট\n                </Button>\n                <button\n                  onClick={() => update.mutate({ id: ad.id, active: !ad.active })}\n                  disabled={update.isPending}\n                  className={cn(\n                    \"relative h-6 w-11 rounded-full transition-colors\",\n                    ad.active ? \"bg-primary\" : \"bg-muted\"\n                  )}\n                  role=\"switch\"\n                  aria-checked={ad.active}\n                  aria-label={",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": ";\n\n  const today = new Date();\n  const isSameDay = d.toDateString() === today.toDateString();\n  const tomorrow = new Date(today.getTime() + 864e5);\n  const yesterday = new Date(today.getTime() - 864e5);\n  let relative = date;\n  if (isSameDay) relative = \"আজ\";\n  else if (d.toDateString() === tomorrow.toDateString()) relative = \"আগামীকাল\";\n  else if (d.toDateString() === yesterday.toDateString()) relative = \"গতকাল\";\n\n  return { date, time, relative };\n}\n\nexport function formatMoney(amount: number): string {\n  return ",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": ";\n    await db.newsArticle.create({\n      data: {\n        title: a.title,\n        slug,\n        excerpt: a.excerpt,\n        content: a.content,\n        category: a.category,\n        coverUrl: a.cover,\n        authorId: i % 3 === 0 ? admin.id : editor.id,\n        status: \"PUBLISHED\",\n        featured: a.featured,\n        views: a.views,\n        likeCount: a.likes,\n        createdAt: day(i + 1),\n      },\n    });\n  }\n\n  // ================= VIDEOS (Shorts) =================\n  const videos = [\n    { title: \"রাকিব হোসেনের কার্লড ফ্রি-কিক 🔥 সরাসরি জালে!\", url: \"/videos/bkb1.mp4\", thumb: IMG.action[0], views: 248000, likes: 18400, tags: \"ফ্রিকিক,বিপিএল,হাইলাইটস\", creator: creator1 },\n    { title: \"মোরশালিনের সলো গোল — মিডলাইন থেকে একাই 😱\", url: \"/videos/sintel1.mp4\", thumb: IMG.dribble[1], views: 189000, likes: 15200, tags: \"গোল,বিপিএল\", creator: creator1 },\n    { title: \"ডার্বি ডে ভাইবস 🏟️ গ্যালারির এই দৃশ্য মিস করবেন না\", url: \"/videos/jelly1.mp4\", thumb: IMG.fans[1], views: 132000, likes: 11800, tags: \"ডার্বি,ফ্যানস,গ্যালারি\", creator: creator2 },\n    { title: \"গোলরক্ষক মিতুলের ৩ সেভ যা বিশ্বাস করা যায় না 🧤\", url: \"/videos/bkb2.mp4\", thumb: IMG.goalkeeper[1], views: 98000, likes: 8700, tags: \"সেভ,গোলরক্ষক\", creator: creator2 },\n    { title: \"জামাল ভূঞার পাস ম্যাপ ব্রেকডাউন 🧠 ট্যাকটিক্স টক\", url: \"/videos/flower.mp4\", thumb: IMG.coach[0], views: 76000, likes: 6900, tags: \"ট্যাকটিক্স,জামাল\", creator: creator2 },\n    { title: \"ট্রেনিং ডে: কিভাবে প্রস্তুত নেয় চ্যাম্পিয়নরা 💪\", url: \"/videos/sintel2.mp4\", thumb: IMG.training[0], views: 64000, likes: 5400, tags: \"ট্রেনিং,বিপিএল\", creator: creator1 },\n    { title: \"হামজা চৌধুরী লাল-সবুজে 💚❤️ প্রথম দিনের মুহূর্ত\", url: \"/videos/jelly2.mp4\", thumb: IMG.celebrate[1], views: 412000, likes: 36500, tags: \"হামজা,জাতীয়দল\", creator: creator1 },\n    { title: \"গোল উদযাপনের ১০ বেস্ট মোমেন্ট 🎉 কোনটা আপনার ফেভারিট?\", url: \"/videos/friday.mp4\", thumb: IMG.celebrate[2], views: 58000, likes: 4900, tags: \"গোল,সেলিব্রেশন\", creator: creator2 },\n  ];\n  const videoIds: string[] = [];\n  for (let i = 0; i < videos.length; i++) {\n    const v = videos[i];\n    const vid = await db.video.create({\n      data: {\n        creatorId: v.creator.id,\n        title: v.title,\n        description: ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": ";\n  return toBn(value);\n}\n\nexport function bnNumber(value: number): string {\n  return toBn(value.toLocaleString(\"en-US\"));\n}\n\nexport function timeAgo(dateStr: string): string {\n  const diff = Date.now() - new Date(dateStr).getTime();\n  const mins = Math.floor(diff / 60000);\n  if (mins < 1) return \"এইমাত্র\";\n  if (mins < 60) return ",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": ";\n}\n\nexport function formatKickoff(dateStr: string): { date: string; time: string; relative: string } {\n  const d = new Date(dateStr);\n  const bnMonths = [\"জানুয়ারি\", \"ফেব্রুয়ারি\", \"মার্চ\", \"এপ্রিল\", \"মে\", \"জুন\", \"জুলাই\", \"আগস্ট\", \"সেপ্টেম্বর\", \"অক্টোবর\", \"নভেম্বর\", \"ডিসেম্বর\"];\n  const bnDays = [\"রবিবার\", \"সোমবার\", \"মঙ্গলবার\", \"বুধবার\", \"বৃহস্পতিবার\", \"শুক্রবার\", \"শনিবার\"];\n  const date = ",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "AdSense কোড",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "Bata — মোবাইল স্টিকি ব্যানার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Chaldal — ইন-ফিড ব্যানার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "City Bank — ইন-ফিড ব্যানার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "City Touch ডিজিটাল ব্যাংকিং — যেকোনো জায়গা থেকে সব লেনদেন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Daraz ১১.১১ মেগা সেল — ফুটবল মার্চেন্ডাইজ ৭০% ছাড়ে",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Daraz — ভিডিও প্রি-রোল (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Daraz — হেডার লিডারবোর্ড (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "FHB Premium — বিজ্ঞাপনমুক্ত ফুটবল অভিজ্ঞতা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "FHB অ্যাডমিন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "FHB ফ্যামিলিতে যোগ দিন",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "FHB হাউজ অ্যাড — ইন-ফিড (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "FHB-র শর্টস ফিড এখন আমার ডেইলি ডোজ 😂 রাতে ঘুমানোর আগে ১০টা হাইলাইটস না দেখলেই না!",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Foodpanda — ইন-ফিড ব্যানার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Football Hub Bangladesh (FHB) — বাংলাদেশের ফুটবলের ডিজিটাল ঠিকানা",
+  "files": [
+   "src/app/layout.tsx"
+  ]
+ },
+ {
+  "string": "Football Hub Bangladesh-এর অফিসিয়াল অ্যাডমিন অ্যাকাউন্ট।",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Football Hub Bangladesh-এর সম্পূর্ণ নিয়ন্ত্রণ কেন্দ্র",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "GP ইন্টারনেট — বিনা চার্জে লাইভ স্কোর ও হাইলাইটস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Galaxy Buds — ম্যাচের কমেন্ট্রি শুনুন ক্রিস্টাল ক্লিয়ার সাউন্ডে",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Grameenphone — ভিডিও প্রি-রোল (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Grameenphone — হেডার লিডারবোর্ড (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "MyGP অ্যাপ থেকে এখনই চালু করুন ফ্রি ভিডিও প্যাক",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Pathao — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Pran-RFL — ইন-ফিড ব্যানার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "RPM (প্রতি ১০০০ ভিউ)",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "Samsung — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Teer ফুটবল ফেস্টিভাল — কোড খুঁজে জিতুন সাইনড জার্সি!",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Teer — মোবাইল স্টিকি ব্যানার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "Walton — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "bKash — মোবাইল স্টিকি ব্যানার (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "bKash — হেডার লিডারবোর্ড (ডেমো)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "followingId প্রয়োজন",
+  "files": [
+   "src/app/api/follow/route.ts"
+  ]
+ },
+ {
+  "string": "targetType ও targetId প্রয়োজন",
+  "files": [
+   "src/app/api/comments/route.ts"
+  ]
+ },
+ {
+  "string": "}\n                    rows={3}\n                    maxLength={600}\n                    className=\"w-full resize-none rounded-xl border border-border bg-background p-3.5 text-sm outline-none transition-all focus:border-primary/60 focus:ring-2 focus:ring-primary/20\"\n                    aria-label=\"পোস্ট লিখুন\"\n                  />\n                  <div className=\"mt-3 flex flex-wrap items-center justify-between gap-2\">\n                    <div className=\"flex flex-wrap gap-1.5\">\n                      {[\"আবাহনী\", \"মোহামেডান\", \"বসুন্ধরা\", \"জাতীয় দল\"].map((tag) => (\n                        <button\n                          key={tag}\n                          onClick={() => setMatchTag((t) => (t === tag ? null : tag))}\n                          className={cn(\n                            \"rounded-full border px-3 py-1 text-[10px] font-bold transition-all active:scale-95\",\n                            matchTag === tag\n                              ? \"border-primary/50 bg-primary/15 text-primary\"\n                              : \"border-border text-muted-foreground hover:text-foreground\"\n                          )}\n                        >\n                          #{tag}\n                        </button>\n                      ))}\n                    </div>\n                    <Button\n                      size=\"sm\"\n                      onClick={() => createPost.mutate()}\n                      disabled={!content.trim() || createPost.isPending}\n                      className=\"sheen rounded-full bg-primary px-5 font-bold\"\n                    >\n                      {createPost.isPending ? \"পোস্ট হচ্ছে...\" : \"পোস্ট করুন\"}\n                    </Button>\n                  </div>\n                </div>\n              </div>\n            </div>\n          ) : (\n            <button\n              onClick={() => useAppStore.getState().navigate({ name: \"auth\" })}\n              className=\"flex w-full items-center justify-center gap-2 rounded-2xl border border-dashed border-primary/40 bg-primary/5 p-5 text-sm font-semibold text-primary transition-colors hover:bg-primary/10\"\n            >\n              <LogIn className=\"h-4 w-4\" aria-hidden />\n              কমিউনিটিতে পোস্ট করতে লগইন করুন →\n            </button>\n          )}\n\n          {/* Posts */}\n          {isLoading ? (\n            [1, 2, 3].map((i) => <Skeleton key={i} className=\"h-40 rounded-2xl\" />)\n          ) : (\n            posts.map((post) => (\n              <article key={post.id} className=\"edge-lift card-lift rounded-2xl border border-border bg-card p-5\">\n                <div className=\"flex items-center gap-3\">\n                  <Avatar className=\"h-10 w-10 border\">\n                    <AvatarImage src={post.author.avatarUrl ?? undefined} alt={post.author.name} />\n                    <AvatarFallback className=\"bg-primary/15 text-sm font-bold text-primary\">\n                      {post.author.name.slice(0, 2)}\n                    </AvatarFallback>\n                  </Avatar>\n                  <div className=\"min-w-0 flex-1\">\n                    <p className=\"flex items-center gap-1.5 text-sm font-bold\">\n                      {post.author.name}\n                      {post.author.isPremium && <Crown className=\"h-3 w-3 text-fhb-gold\" aria-label=\"প্রিমিয়াম সদস্য\" />}\n                      {post.author.role === \"CREATOR\" && (\n                        <span className=\"rounded-md bg-fhb-red/15 px-1.5 py-0.5 text-[9px] font-bold text-fhb-red\">ক্রিয়েটর</span>\n                      )}\n                    </p>\n                    <p className=\"text-[11px] text-muted-foreground\">\n                      @{post.author.username} · {timeAgo(post.createdAt)}\n                    </p>\n                  </div>\n                  {post.matchTag && (\n                    <span className=\"shrink-0 rounded-full bg-primary/10 px-2.5 py-1 text-[10px] font-bold text-primary\">\n                      #{post.matchTag}\n                    </span>\n                  )}\n                </div>\n\n                <p className=\"mt-3.5 whitespace-pre-line text-sm leading-relaxed\">{post.content}</p>\n\n                <div className=\"mt-4 flex items-center gap-2 border-t border-border/60 pt-3.5\">\n                  <LikeButton targetType=\"POST\" targetId={post.id} initialCount={post.likeCount} variant=\"inline\" />\n                  <Button\n                    variant=\"ghost\"\n                    size=\"sm\"\n                    onClick={() => setOpenComments(openComments === post.id ? null : post.id)}\n                    className=\"gap-1.5\"\n                  >\n                    <MessageCircle className=\"h-4 w-4\" aria-hidden />\n                    {bnCompact(post.commentCount)}\n                  </Button>\n                </div>\n\n                {openComments === post.id && (\n                  <div className=\"mt-3.5 border-t border-border/60 pt-3.5\">\n                    <CommentSection targetType=\"POST\" targetId={post.id} />\n                  </div>\n                )}\n              </article>\n            ))\n          )}\n        </div>\n\n        {/* Sidebar */}\n        <aside className=\"space-y-5\">\n          <div className=\"edge-lit overflow-hidden rounded-2xl border border-border bg-card\">\n            <p className=\"flex items-center gap-2.5 border-b border-border bg-muted/40 px-4 py-3.5 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-foreground\">\n              <Sparkles className=\"h-4 w-4 text-fhb-gold\" aria-hidden /> ফলো করার মতো ক্রিয়েটর\n            </p>\n            <div className=\"divide-y divide-border/60\">\n              {suggested.map((s) => (\n                <SuggestedCreator key={s.id} creator={s} />\n              ))}\n            </div>\n          </div>\n          <div className=\"gold-panel relative overflow-hidden rounded-2xl border border-fhb-gold/25 p-5\">\n            <p className=\"flex items-center gap-2 text-sm font-bold text-fhb-gold\">\n              <Megaphone className=\"h-4 w-4\" aria-hidden /> ক্রিয়েটর হতে চান?\n            </p>\n            <p className=\"mt-1.5 text-xs leading-relaxed text-muted-foreground\">\n              শর্টস আপলোড করুন, ফলোয়ার বাড়ান এবং ভিউ থেকে আয় করুন। অ্যাডমিন প্যানেল থেকে ক্রিয়েটর রোল নিন (ডেমো)।\n            </p>\n          </div>\n        </aside>\n      </div>\n    </div>\n  );\n}\n\nfunction SuggestedCreator({ creator }: { creator: SafeUser }) {\n  const { user } = useAppStore();\n  const queryClient = useQueryClient();\n  const { toast } = useToast();\n  const navigate = useAppStore((s) => s.navigate);\n\n  const { data } = useQuery<{ following: boolean }>({\n    queryKey: [\"follow\", creator.id, user?.id],\n    queryFn: async () => {\n      const res = await fetch(",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": "}\n            >\n              <span className=\"live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red\" aria-hidden />\n              লাইভ {toBn(liveCount)}\n            </button>\n          )}\n\n          <button\n            onClick={() => navigate({ name: \"premium\" })}\n            className=\"sheen hidden items-center gap-1.5 rounded-full border border-fhb-gold/45 bg-gradient-to-b from-fhb-gold/20 to-fhb-gold/5 px-3.5 py-1.5 text-[11px] font-bold text-fhb-gold transition-all hover:border-fhb-gold/70 hover:from-fhb-gold/30 sm:flex\"\n          >\n            <Crown className=\"h-3.5 w-3.5\" aria-hidden />\n            প্রিমিয়াম\n          </button>\n\n          {user ? (\n            <DropdownMenu>\n              <DropdownMenuTrigger asChild>\n                <button\n                  className=\"flex items-center gap-2 rounded-full border border-border bg-card p-1 pr-2.5 transition-all hover:border-primary/50 hover:shadow-[0_6px_20px_-8px_rgba(0,0,0,0.6)]\"\n                  aria-label=\"অ্যাকাউন্ট মেনু\"\n                >\n                  <Avatar className=\"h-7 w-7 border border-border/60\">\n                    <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />\n                    <AvatarFallback className=\"bg-primary/15 text-[11px] font-bold text-primary\">{user.name.slice(0, 2)}</AvatarFallback>\n                  </Avatar>\n                  <span className=\"hidden max-w-[90px] truncate text-xs font-semibold sm:block\">{user.name}</span>\n                </button>\n              </DropdownMenuTrigger>\n              <DropdownMenuContent align=\"end\" className=\"w-60 rounded-xl border-border/80 p-1.5\">\n                <DropdownMenuLabel className=\"rounded-lg py-2 text-xs text-muted-foreground\">\n                  <span className=\"flex items-center gap-2\">\n                    <span className=\"flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 font-display text-xs font-bold text-primary\">\n                      {user.name.slice(0, 2).toUpperCase()}\n                    </span>\n                    <span className=\"min-w-0 flex-col\">\n                      <span className=\"block truncate font-semibold text-foreground\">{user.name}</span>\n                      <span className=\"block truncate text-[10px]\">{user.email}</span>\n                    </span>\n                  </span>\n                  {user.isPremium && (\n                    <span className=\"mt-2 inline-flex items-center gap-1 rounded-md bg-fhb-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-fhb-gold\">\n                      <Crown className=\"h-3 w-3\" aria-hidden /> প্রিমিয়াম সদস্য\n                    </span>\n                  )}\n                </DropdownMenuLabel>\n                <DropdownMenuSeparator className=\"my-1\" />\n                <DropdownMenuItem onClick={() => navigate({ name: \"profile\" })} className=\"gap-2.5 rounded-lg text-xs\">\n                  <User2 className=\"h-4 w-4 text-primary\" aria-hidden /> আমার প্রোফাইল\n                </DropdownMenuItem>\n                {(user.role === \"CREATOR\" || user.role === \"ADMIN\") && (\n                  <>\n                    <DropdownMenuItem onClick={() => navigate({ name: \"upload\" })} className=\"gap-2.5 rounded-lg text-xs\">\n                      <Upload className=\"h-4 w-4 text-primary\" aria-hidden /> ভিডিও আপলোড\n                    </DropdownMenuItem>\n                    <DropdownMenuItem onClick={() => navigate({ name: \"earnings\" })} className=\"gap-2.5 rounded-lg text-xs\">\n                      <Wallet className=\"h-4 w-4 text-primary\" aria-hidden /> আয়ের ড্যাশবোর্ড\n                    </DropdownMenuItem>\n                  </>\n                )}\n                {user.role === \"ADMIN\" && (\n                  <DropdownMenuItem onClick={() => navigate({ name: \"admin\" })} className=\"gap-2.5 rounded-lg text-xs\">\n                    <LayoutDashboard className=\"h-4 w-4 text-primary\" aria-hidden /> অ্যাডমিন প্যানেল\n                  </DropdownMenuItem>\n                )}\n                <DropdownMenuItem onClick={() => navigate({ name: \"premium\" })} className=\"gap-2.5 rounded-lg text-xs\">\n                  <Crown className=\"h-4 w-4 text-fhb-gold\" aria-hidden /> প্রিমিয়াম সদস্যতা\n                </DropdownMenuItem>\n                <DropdownMenuSeparator className=\"my-1\" />\n                <DropdownMenuItem onClick={handleLogout} className=\"gap-2.5 rounded-lg text-xs text-fhb-red focus:text-fhb-red\">\n                  <LogOut className=\"h-4 w-4\" aria-hidden /> লগআউট\n                </DropdownMenuItem>\n              </DropdownMenuContent>\n            </DropdownMenu>\n          ) : (\n            <>\n              <Button variant=\"ghost\" size=\"sm\" onClick={() => navigate({ name: \"auth\" })} className=\"text-xs font-semibold\">\n                লগইন\n              </Button>\n              <Button\n                size=\"sm\"\n                onClick={() => navigate({ name: \"auth\" })}\n                className=\"sheen gap-1 rounded-full bg-primary px-4 text-xs font-bold text-primary-foreground shadow-[0_8px_22px_-8px_var(--primary)] hover:bg-primary/90\"\n              >\n                যোগ দিন <ChevronRight className=\"h-3.5 w-3.5\" aria-hidden />\n              </Button>\n            </>\n          )}\n\n          {/* Mobile menu trigger */}\n          <button\n            className=\"tap-target flex items-center justify-center rounded-xl border border-border bg-card text-foreground lg:hidden\"\n            onClick={() => setMobileOpen((v) => !v)}\n            aria-label={mobileOpen ? \"মেনু বন্ধ করুন\" : \"মেনু খুলুন\"}\n            aria-expanded={mobileOpen}\n          >\n            {mobileOpen ? <X className=\"h-5 w-5\" /> : <Menu className=\"h-5 w-5\" />}\n          </button>\n        </div>\n      </div>\n\n      {/* ── Mobile full menu (portal — header backdrop-filter would\n          otherwise become the containing block for fixed positioning) ── */}\n      {mobileOpen &&\n        createPortal(\n          <div\n            className={cn(\n              \"fixed inset-x-0 bottom-0 z-40 overflow-y-auto border-t border-border bg-background/98 backdrop-blur-2xl lg:hidden\",\n              liveCount > 0 ? \"top-[100px] sm:top-[104px]\" : \"top-16 sm:top-[68px]\"\n            )}\n          >\n            <div className=\"px-4 pb-24 pt-5\">\n              {/* Nav grid */}\n              <nav className=\"grid grid-cols-2 gap-2.5\" aria-label=\"মোবাইল মেনু\">\n                {NAV_ITEMS.map((item, i) => (\n                  <button\n                    key={item.label}\n                    style={{ animationDelay: ",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "}\n            >\n              {/* Comp strip */}\n              <div className=\"flex items-center justify-between gap-2 border-b border-border/70 bg-muted/40 px-5 py-3\">\n                <span className=\"flex min-w-0 items-center gap-2 text-xs font-bold text-foreground\">\n                  <span\n                    className=\"h-2 w-2 rounded-[3px]\"\n                    style={{ backgroundColor: heroMatch.competition.accentColor ?? \"var(--primary)\" }}\n                    aria-hidden\n                  />\n                  <span className=\"truncate\">{heroMatch.competition.name}</span>\n                  {heroMatch.round && (\n                    <span className=\"shrink-0 rounded-md bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-muted-foreground\">\n                      {heroMatch.round}\n                    </span>\n                  )}\n                </span>\n                {heroMatch.status === \"LIVE\" || heroLive ? (\n                  <LiveBadge minute={heroLive?.minute ?? heroMatch.minute} period={heroLive?.period ?? heroMatch.period} size=\"sm\" />\n                ) : (\n                  <span className=\"shrink-0 rounded-md border border-primary/35 bg-primary/10 px-2 py-0.5 font-display text-[10px] font-bold uppercase tracking-widest text-primary\">\n                    {heroMatch.competition.shortName}\n                  </span>\n                )}\n              </div>\n\n              {/* Teams + score */}\n              <div className=\"grid grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 py-8 sm:gap-5 sm:py-10\">\n                <div className=\"flex flex-col items-center gap-3 text-center\">\n                  <TeamBadge team={heroMatch.homeTeam} size=\"hero\" />\n                  <p className=\"line-clamp-2 text-[13px] font-bold leading-tight sm:text-sm\">{heroMatch.homeTeam.name}</p>\n                </div>\n                <div className=\"px-1 text-center\">\n                  {heroMatch.status === \"SCHEDULED\" ? (\n                    <>\n                      <p className=\"tabular font-display text-4xl font-bold leading-none sm:text-5xl\">\n                        {formatKickoff(heroMatch.kickoff).time}\n                      </p>\n                      <p className=\"mt-3 inline-block rounded-full bg-muted px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground\">\n                        {formatKickoff(heroMatch.kickoff).relative}\n                      </p>\n                    </>\n                  ) : (\n                    <>\n                      <p className=\"tabular font-display text-5xl font-bold leading-none text-fhb-red sm:text-6xl\">\n                        {toBn(heroLive?.homeScore ?? heroMatch.homeScore ?? 0)}\n                        <span className=\"mx-2 text-muted-foreground/30\">-</span>\n                        {toBn(heroLive?.awayScore ?? heroMatch.awayScore ?? 0)}\n                      </p>\n                      <p className=\"mt-3\">\n                        <LiveBadge minute={heroLive?.minute ?? heroMatch.minute} period={heroLive?.period ?? heroMatch.period} size=\"sm\" />\n                      </p>\n                    </>\n                  )}\n                </div>\n                <div className=\"flex flex-col items-center gap-3 text-center\">\n                  <TeamBadge team={heroMatch.awayTeam} size=\"hero\" />\n                  <p className=\"line-clamp-2 text-[13px] font-bold leading-tight sm:text-sm\">{heroMatch.awayTeam.name}</p>\n                </div>\n              </div>\n\n              {/* Meta footer */}\n              <div className=\"flex items-center justify-between gap-2 border-t border-border/70 bg-muted/30 px-5 py-3 text-[11px] text-muted-foreground\">\n                <span className=\"flex min-w-0 items-center gap-1.5\">\n                  <MapPin className=\"h-3.5 w-3.5 shrink-0 text-primary/80\" aria-hidden />\n                  <span className=\"truncate\">{heroMatch.venue ?? heroMatch.competition.name}</span>\n                </span>\n                <span className=\"flex shrink-0 items-center gap-1.5\">\n                  <CalendarDays className=\"h-3.5 w-3.5 text-primary/80\" aria-hidden />\n                  {formatKickoff(heroMatch.kickoff).date}\n                  <span className=\"flex items-center gap-0.5 font-bold text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100\">\n                    ম্যাচ সেন্টার <ChevronRight className=\"h-3 w-3\" aria-hidden />\n                  </span>\n                </span>\n              </div>\n            </button>\n          )}\n        </div>\n      </section>\n\n      {/* Header banner ad */}\n      <div className=\"reveal mt-6\">\n        <AdSlot placement=\"HEADER_BANNER\" />\n      </div>\n\n      {/* ═══════════ LIVE NOW ═══════════ */}\n      {liveNow.length > 0 && (\n        <section className=\"reveal mt-12\" aria-label=\"লাইভ ম্যাচ\">\n          <SectionHeader title=\"এখন লাইভ\" accent=\"red\" kicker=\"live now\" icon={<Radio className=\"h-4 w-4\" aria-hidden />} actionLabel=\"সব স্কোর\" actionView={{ name: \"scores\" }} />\n          <div className={cn(\"grid grid-cols-1 gap-4\", liveNow.length > 1 && \"sm:grid-cols-2\")}>\n            {liveNow.map((m) => (\n              <MatchCard key={m.id} match={m} />\n            ))}\n          </div>\n        </section>\n      )}\n\n      {/* ═══════════ FIXTURES & RESULTS ═══════════ */}\n      <section className=\"reveal mt-12\" aria-label=\"ফিক্সচার ও ফলাফল\">\n        <SectionHeader title=\"ম্যাচ সেন্টার\" kicker=\"fixtures & results\" icon={<Zap className=\"h-4 w-4\" aria-hidden />} actionLabel=\"সব ম্যাচ\" actionView={{ name: \"scores\" }} />\n        <div className=\"grid grid-cols-1 gap-5 lg:grid-cols-2\">\n          <div className=\"edge-lit min-w-0 rounded-2xl border border-border bg-card/50 p-4 sm:p-5\">\n            <p className=\"mb-4 flex items-center gap-2.5 border-b border-border/70 pb-4 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground\">\n              <span className=\"flex h-7 w-7 items-center justify-center rounded-lg bg-primary/12 text-primary\">\n                <CalendarDays className=\"h-3.5 w-3.5\" aria-hidden />\n              </span>\n              আসছে\n            </p>\n            <div className=\"space-y-3.5\">\n              {matchesLoading\n                ? [1, 2].map((i) => <Skeleton key={i} className=\"h-28 rounded-xl\" />)\n                : upcoming.map((m) => <MatchCard key={m.id} match={m} showCompetition />)}\n            </div>\n          </div>\n          <div className=\"edge-lit min-w-0 rounded-2xl border border-border bg-card/50 p-4 sm:p-5\">\n            <p className=\"mb-4 flex items-center gap-2.5 border-b border-border/70 pb-4 font-display text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground\">\n              <span className=\"flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-gold/12 text-fhb-gold\">\n                <Trophy className=\"h-3.5 w-3.5\" aria-hidden />\n              </span>\n              সর্বশেষ ফলাফল\n            </p>\n            <div className=\"space-y-3.5\">\n              {matchesLoading\n                ? [1, 2].map((i) => <Skeleton key={i} className=\"h-28 rounded-xl\" />)\n                : recent.map((m) => <MatchCard key={m.id} match={m} showCompetition />)}\n            </div>\n          </div>\n        </div>\n      </section>\n\n      {/* ═══════════ NEWS — editorial magazine grid ═══════════ */}\n      <section className=\"reveal mt-14\" aria-label=\"সর্বশেষ নিউজ\">\n        <SectionHeader title=\"ফুটবল নিউজ ও ট্রান্সফার\" kicker=\"latest stories\" icon={<Newspaper className=\"h-4 w-4\" aria-hidden />} actionLabel=\"সব নিউজ\" actionView={{ name: \"news\" }} />\n        <div className=\"grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3\">\n          {featured && (\n            <div className=\"reveal sm:col-span-2 lg:h-[440px]\">\n              <NewsCard article={featured} size=\"lg\" className=\"h-full min-h-[300px]\" />\n            </div>\n          )}\n          {restNews[0] && (\n            <div className=\"reveal\">\n              <NewsCard article={restNews[0]} />\n            </div>\n          )}\n          {restNews.slice(1, 4).map((a) => (\n            <div key={a.id} className=\"reveal\">\n              <NewsCard article={a} />\n            </div>\n          ))}\n        </div>\n      </section>\n\n      {/* ═══════════ TRENDING SHORTS ═══════════ */}\n      <section className=\"reveal mt-14\" aria-label=\"ট্রেন্ডিং শর্টস\">\n        <SectionHeader title=\"ট্রেন্ডিং শর্টস\" accent=\"gold\" kicker=\"fan originals\" icon={<Flame className=\"h-4 w-4\" aria-hidden />} actionLabel=\"সব শর্টস\" actionView={{ name: \"shorts\" }} />\n        <div className=\"no-scrollbar relative -mx-4 overflow-x-auto px-4 pb-1.5 sm:mx-0 sm:px-0\">\n          <div className=\"flex gap-4\">\n            {videos.slice(0, 8).map((v, i) => (\n              <button\n                key={v.id}\n                onClick={() => navigate({ name: \"shorts\" })}\n                className=\"card-lift group relative h-64 w-40 shrink-0 overflow-hidden rounded-2xl border border-border sm:h-72 sm:w-44\"\n                aria-label={",
+  "files": [
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "}\n          >\n            <Avatar className=\"h-10 w-10 border-2 border-white/80\">\n              <AvatarImage src={video.creator.avatarUrl ?? undefined} alt={video.creator.name} />\n              <AvatarFallback className=\"bg-primary text-sm font-bold\">{video.creator.name.slice(0, 2)}</AvatarFallback>\n            </Avatar>\n          </button>\n          <div className=\"min-w-0\">\n            <button\n              onClick={() => navigate({ name: \"profile\", username: video.creator.username })}\n              className=\"flex items-center gap-1.5 text-sm font-bold text-white drop-shadow\"\n            >\n              @{video.creator.username}\n              {video.creator.isPremium && <Crown className=\"h-3 w-3 text-fhb-gold\" aria-label=\"প্রিমিয়াম\" />}\n            </button>\n            <p className=\"text-[10px] text-white/70\">\n              {bnCompact(video.creator.followerCount ?? 0)} ফলোয়ার · {timeAgo(video.createdAt)}\n            </p>\n          </div>\n          {user && user.id !== video.creator.id && (\n            <Button\n              size=\"sm\"\n              variant={following ? \"secondary\" : \"default\"}\n              onClick={() => followMutation.mutate()}\n              disabled={followMutation.isPending}\n              className={cn(\"ml-2 h-8 gap-1 rounded-full px-4 text-[11px] font-bold\", !following && \"bg-fhb-red shadow-[0_8px_20px_-8px_var(--fhb-red)] hover:bg-fhb-red/90\")}\n            >\n              {following ? (\n                <>\n                  <UserCheck className=\"h-3.5 w-3.5\" aria-hidden /> ফলোয়িং\n                </>\n              ) : (\n                <>\n                  <UserPlus className=\"h-3.5 w-3.5\" aria-hidden /> ফলো\n                </>\n              )}\n            </Button>\n          )}\n        </div>\n\n        <p className=\"mt-2.5 line-clamp-2 text-[13px] leading-snug text-white drop-shadow\">{video.title}</p>\n        {video.tags && (\n          <div className=\"mt-1.5 flex flex-wrap gap-1.5\">\n            {video.tags.split(\",\").map((t) => (\n              <span key={t} className=\"rounded-md bg-white/15 px-2 py-0.5 text-[10px] font-semibold text-white backdrop-blur\">\n                #{t.trim()}\n              </span>\n            ))}\n          </div>\n        )}\n        <div className=\"mt-2 flex items-center gap-1.5 text-[10px] text-white/60\">\n          <Music2 className=\"h-3 w-3\" aria-hidden />\n          <span>মূল সাউন্ড — {video.creator.name}</span>\n        </div>\n      </div>\n\n      {/* Progress bar */}\n      <div className=\"absolute inset-x-0 bottom-0 z-20 h-[3px] bg-white/15\" aria-hidden>\n        <div className=\"video-progress h-full transition-[width] duration-150\" style={{ width: ",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "}\n        </span>\n        <button\n          onClick={skip}\n          disabled={!skippable}\n          className=\"flex h-10 items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 text-xs font-bold text-white backdrop-blur transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40\"\n        >\n          <SkipForward className=\"h-3.5 w-3.5\" aria-hidden />\n          {skippable ? \"স্কিপ করুন\" : ",
+  "files": [
+   "src/components/football/video-preroll.tsx"
+  ]
+ },
+ {
+  "string": "})\n                      </span>\n                      <span className=\"ml-4 h-1 w-1 rounded-full bg-primary/60\" aria-hidden />\n                    </button>\n                  ))}\n                </div>\n              ))}\n            </div>\n            <span\n              className=\"pointer-events-none absolute inset-y-0 left-0 z-[5] w-12 bg-gradient-to-r from-card to-transparent\"\n              aria-hidden\n            />\n            <span\n              className=\"pointer-events-none absolute inset-y-0 right-0 z-[5] w-12 bg-gradient-to-l from-card to-transparent\"\n              aria-hidden\n            />\n          </div>\n        </div>\n      )}\n\n      {/* ── Main bar ── */}\n      <div className=\"mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:h-[68px] sm:px-6\">\n        {/* Logo + wordmark */}\n        <Link\n          href=\"/\"\n          onClick={(e) => {\n            e.preventDefault();\n            navigate({ name: \"home\" });\n          }}\n          className=\"group flex shrink-0 items-center gap-3\"\n          aria-label=\"Football Hub Bangladesh হোমপেজ\"\n        >\n          <span className=\"transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105\">\n            <LogoMark />\n          </span>\n          <span className=\"hidden flex-col leading-none sm:flex\">\n            <span className=\"font-display text-[17px] font-bold tracking-[0.06em] text-foreground\">\n              FOOTBALL HUB <span className=\"text-primary\">BD</span>\n            </span>\n            <span className=\"mt-1 text-[9.5px] font-semibold uppercase tracking-[0.16em] text-muted-foreground\">\n              বাংলাদেশের ফুটবল নেটওয়ার্ক\n            </span>\n          </span>\n        </Link>\n\n        {/* Desktop nav — underline tabs */}\n        <nav className=\"hidden h-full items-center lg:flex\" aria-label=\"প্রধান মেনু\">\n          {NAV_ITEMS.map((item) => (\n            <button\n              key={item.label}\n              onClick={() => navigate(item.view)}\n              className={cn(\n                \"relative flex h-full items-center px-3 text-[13px] font-semibold transition-colors\",\n                isActive(item.view)\n                  ? \"text-foreground\"\n                  : \"text-muted-foreground hover:text-foreground\"\n              )}\n              aria-current={isActive(item.view) ? \"page\" : undefined}\n            >\n              {item.label}\n              {liveCount > 0 && item.view.name === \"scores\" && (\n                <span className=\"live-dot ml-1.5 h-1.5 w-1.5 rounded-[2px] bg-fhb-red\" aria-hidden />\n              )}\n              <span\n                aria-hidden\n                className={cn(\n                  \"absolute inset-x-2.5 bottom-0 h-[2.5px] rounded-full transition-all duration-300\",\n                  isActive(item.view) ? \"bg-primary opacity-100\" : \"bg-primary opacity-0\"\n                )}\n              />\n            </button>\n          ))}\n        </nav>\n\n        {/* Right cluster */}\n        <div className=\"flex items-center gap-2\">\n          {liveCount > 0 && (\n            <button\n              onClick={() => navigate({ name: \"scores\" })}\n              className=\"hidden items-center gap-1.5 rounded-full border border-fhb-red/45 bg-fhb-red/10 px-3 py-1.5 font-display text-[11px] font-bold uppercase tracking-wider text-fhb-red transition-all hover:bg-fhb-red/20 sm:flex\"\n              aria-label={",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "অক্টো",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "অথবা ভিডিও URL পেস্ট করুন (.mp4)",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "অনুমোদিত",
+  "files": [
+   "src/components/views/admin-view.tsx",
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "অনুরোধ জমা দিন",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "অনুরোধ ব্যর্থ",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "অনেকবার চেষ্টা হয়েছে, একটু পরে আবার করুন",
+  "files": [
+   "src/app/api/auth/login/route.ts",
+   "src/app/api/auth/register/route.ts"
+  ]
+ },
+ {
+  "string": "অপছন্দ করুন",
+  "files": [
+   "src/components/football/like-button.tsx"
+  ]
+ },
+ {
+  "string": "অপেক্ষমাণ",
+  "files": [
+   "src/components/views/admin-view.tsx",
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "অপেক্ষা করুন...",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "অফলাইন মোড",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "অর্ডার করুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "অ্যাকাউন্ট খুলুন",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "অ্যাকাউন্ট তৈরি সফল!",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "অ্যাকাউন্ট নম্বর দিন",
+  "files": [
+   "src/app/api/payouts/route.ts"
+  ]
+ },
+ {
+  "string": "অ্যাডমিন অনুমতি প্রয়োজন",
+  "files": [
+   "src/lib/auth.ts"
+  ]
+ },
+ {
+  "string": "অ্যাডমিন ড্যাশবোর্ড",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "অ্যাডমিন — সম্পূর্ণ কন্ট্রোল",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "অ্যাপে দেখুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "অ্যাসিস্ট",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "আইডি প্রয়োজন",
+  "files": [
+   "src/app/api/admin/news/route.ts"
+  ]
+ },
+ {
+  "string": "আগ",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "আগামীকাল",
+  "files": [
+   "src/components/football/match-card.tsx"
+  ]
+ },
+ {
+  "string": "আজ",
+  "files": [
+   "src/components/football/match-card.tsx"
+  ]
+ },
+ {
+  "string": "আজকের ডার্বি ম্যাচ দেখার অভিজ্ঞতা কেমন ছিল সবার? আমি তো গ্যালারির এনভায়রনমেন্টে একেবারে ভাটা! 🏟️🔥 #বিপিএল",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "আন্তর্জাতিক",
+  "files": [
+   "src/components/views/competitions-view.tsx",
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "আপগ্রেড করুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "আপডেট ব্যর্থ",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "আপনার ইমেইল ঠিকানা",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "আপনার নাম",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "আপনার মতামত লিখুন... (সর্বোচ্চ ৫০০ অক্ষর)",
+  "files": [
+   "src/components/football/comment-section.tsx"
+  ]
+ },
+ {
+  "string": "আপনার শর্টস এখন ফিডে লাইভ।",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "আপলোড ব্যর্থ",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "আপলোড সফল",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "আপলোড হচ্ছে...",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "আবার দেখা হবে!",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "আবাহনী",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "আবাহনী গ্রাউন্ড, ধানমন্ডি",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "আবাহনী লিমিটেড ঢাকা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "আমি জানতাম না পারব কি না। জানতাম শুধু — ছাড়ব না।",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "আমি যাচ্ছি অবশ্যই! টিকিটের ব্যবস্থা করতে হবে আগেই 🎫",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "আয়",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "আয়ের ড্যাশবোর্ড",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "আয়ের ড্যাশবোর্ড থেকে উত্তোলন করুন (bKash/Nagad)",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "আরও জানুন",
+  "files": [
+   "prisma/seed.ts",
+   "src/components/football/video-preroll.tsx"
+  ]
+ },
+ {
+  "string": "আল্টিমেট ফ্যান এক্সপেরিয়েন্স",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "আসছে",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "ইউজার পাওয়া যায়নি",
+  "files": [
+   "src/app/api/follow/route.ts",
+   "src/app/api/users/[username]/route.ts"
+  ]
+ },
+ {
+  "string": "ইউজারনেম কমপক্ষে ৩ অক্ষরের",
+  "files": [
+   "src/app/api/auth/register/route.ts"
+  ]
+ },
+ {
+  "string": "ইউজারনেমে শুধু ইংরেজি অক্ষর, সংখ্যা ও _ ব্যবহার করুন",
+  "files": [
+   "src/app/api/auth/register/route.ts"
+  ]
+ },
+ {
+  "string": "ইমেইল",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "ইমেইল / ইউজারনেম",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "ইমেইল ও পাসওয়ার্ড দিন",
+  "files": [
+   "src/app/api/auth/login/route.ts"
+  ]
+ },
+ {
+  "string": "উত্তোলনযোগ্য ব্যালেন্স",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "উত্তোলনের অনুরোধ জমা হয়েছে",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "উদাহরণ: you@example.com",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "এই অ্যাকাউন্ট সাময়িকভাবে বন্ধ করা হয়েছে",
+  "files": [
+   "src/app/api/auth/login/route.ts"
+  ]
+ },
+ {
+  "string": "এই ইমেইল বা ইউজারনেম দিয়ে অ্যাকাউন্ট আছে — লগইন করুন",
+  "files": [
+   "src/app/api/auth/register/route.ts"
+  ]
+ },
+ {
+  "string": "এই ফ্রি-কিকটা বারবার দেখছি! কার্লিং অবিশ্বাস্য 🔥",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "এই মুহূর্তে কোনো ম্যাচ লাইভ নেই। ফিক্সচার দেখুন!",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "এইচডি ম্যাচ হাইলাইটস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "একই অবস্থা ভাই 😂 FHB শর্টসের কারণে ঘুমের সময় কমে গেছে",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "একই দল হোম ও অ্যাওয়ে হতে পারে না",
+  "files": [
+   "src/app/api/admin/matches/route.ts"
+  ]
+ },
+ {
+  "string": "একই পজিশনের খেলোয়াড়",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "এক্সক্লুসিভ ট্রান্সফার নিউজ (৪৮ ঘণ্টা আগে)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "এক্সক্লুসিভ ম্যাচ হাইলাইটস দিয়ে ফলোয়ার বাড়ান",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "এখনই দেখুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "এপ্রি",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "ওয়ালটন ৪K অ্যান্ড্রয়েড টিভিতে দেখুন প্রতিটি লাইভ ম্যাচ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "কমিউনিটি",
+  "files": [
+   "src/components/layout/footer.tsx",
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "কমিউনিটিতে আপনার মতামত এখন লাইভ।",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": "কমিউনিটিতে যোগ দেওয়া",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "কমেন্ট",
+  "files": [
+   "src/components/football/comment-section.tsx",
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "কমেন্ট ও লাইক করা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "কমেন্ট করুন",
+  "files": [
+   "src/components/football/comment-section.tsx"
+  ]
+ },
+ {
+  "string": "কমেন্ট ব্যর্থ",
+  "files": [
+   "src/components/football/comment-section.tsx"
+  ]
+ },
+ {
+  "string": "কমেন্ট লিখুন",
+  "files": [
+   "src/app/api/comments/route.ts",
+   "src/components/football/comment-section.tsx"
+  ]
+ },
+ {
+  "string": "কমেন্ট ৫০০ অক্ষরের মধ্যে রাখুন",
+  "files": [
+   "src/app/api/comments/route.ts"
+  ]
+ },
+ {
+  "string": "কাপ",
+  "files": [
+   "src/components/views/competitions-view.tsx"
+  ]
+ },
+ {
+  "string": "কিংসের এই ফর্ম দেখে মনে হচ্ছে এবারও লিগ একতরফাই হবে 🦁",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "কিক-অফ",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "কিছু একটা ভুল হয়েছে",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "কিনুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "কুপন নিন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "কোনো আসন্ন ম্যাচ নেই।",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "কোনো ইভেন্ট রেকর্ড করা হয়নি।",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "কোনো সম্পন্ন ম্যাচ নেই।",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "ক্যাশব্যাক উৎসব! প্রতিটি পেমেন্টে পান ১০০% ক্যাশব্যাক",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ক্রিয়েটর অ্যাকাউন্ট প্রয়োজন",
+  "files": [
+   "src/components/views/shorts-view.tsx",
+   "src/lib/auth.ts"
+  ]
+ },
+ {
+  "string": "ক্রিয়েটর আয়ের ড্যাশবোর্ড",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "ক্রিয়েটর — আয়ের ড্যাশবোর্ড",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "ক্রিয়েটরদের টিপস পাঠানো",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ক্রিয়েটররা কীভাবে আয় করেন?",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "ক্লাব ও দলসমূহ",
+  "files": [
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": "ক্লিন-শিট",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "খুলুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "খেলুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "খেলোয়াড়",
+  "files": [
+   "src/components/layout/footer.tsx",
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "খেলোয়াড় পাওয়া যায়নি",
+  "files": [
+   "src/app/api/players/[id]/route.ts"
+  ]
+ },
+ {
+  "string": "গড় রেটিং",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "গতকাল",
+  "files": [
+   "src/components/football/match-card.tsx"
+  ]
+ },
+ {
+  "string": "গোপীবাগ ব্রাদার্স ইউনিয়ন মাঠ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "গোল",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "গোলরক্ষক",
+  "files": [
+   "prisma/seed.ts",
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "গ্যালারির এই ভাইব আর কোথায় পাবো! ডার্বি মানেই আলাদা 🏟️",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "গ্রোসারি অর্ডার করুন ৩০ মিনিটে ডেলিভারিতে",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "চালু",
+  "files": [
+   "src/components/views/admin-view.tsx",
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "চালু আছে",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "চালু করুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "জ",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "জমা হচ্ছে...",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "জয়",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "জাতীয় দল",
+  "files": [
+   "prisma/seed.ts",
+   "src/components/views/teams-view.tsx",
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "জানু",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "জার্সি ও মার্চেন্ডাইজে ১০% ছাড়",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "জি! প্রিমিয়াম সদস্যরা সম্পূর্ণ বিজ্ঞাপনমুক্ত অভিজ্ঞতা পান।",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "জুন",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "জুলা",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "টাইটেল কমপক্ষে ৩ অক্ষরের",
+  "files": [
+   "src/app/api/videos/route.ts"
+  ]
+ },
+ {
+  "string": "টুর্নামেন্ট",
+  "files": [
+   "src/components/layout/footer.tsx",
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "টুর্নামেন্ট ও কম্পিটিশন",
+  "files": [
+   "src/components/views/competitions-view.tsx"
+  ]
+ },
+ {
+  "string": "টুর্নামেন্ট পাওয়া যায়নি",
+  "files": [
+   "src/app/api/competitions/[id]/route.ts"
+  ]
+ },
+ {
+  "string": "টেবিল",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "টেবিল ভিউ",
+  "files": [
+   "src/components/views/standings-view.tsx"
+  ]
+ },
+ {
+  "string": "ট্যাকটিক্স ব্রেকডাউন, প্লেয়ার অ্যানালাইসিস আর গোলপোস্ট স্পেশাল 🎯",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ট্রান্সফার",
+  "files": [
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "ট্রেনিং ডে ভিডিও — অ্যাড রেভিনিউ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ড",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "ডিফেন্ডার",
+  "files": [
+   "prisma/seed.ts",
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "ডিসে",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "ড্র",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "ড্রয়িং ও মিট অ্যান্ড গ্রিটে আগে অ্যাক্সেস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ঢাকা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "তানভীর আহমেদ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "তারিখ",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "থাম্বনেইল প্রিভিউ",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "দল",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "দল পাওয়া যায়নি",
+  "files": [
+   "src/app/api/teams/[id]/route.ts"
+  ]
+ },
+ {
+  "string": "দলসমূহ",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "দেখুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "দোকান খুঁজুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "নভে",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "নাম কমপক্ষে ২ অক্ষরের হতে হবে",
+  "files": [
+   "src/app/api/auth/register/route.ts"
+  ]
+ },
+ {
+  "string": "নিউজ",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "নিউজ আপডেট হয়েছে",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "নিউজ আর্টিকেল",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "নিউজ খুঁজুন...",
+  "files": [
+   "src/components/views/news-view.tsx"
+  ]
+ },
+ {
+  "string": "নিউজ পাওয়া যায়নি",
+  "files": [
+   "src/app/api/news/[id]/route.ts"
+  ]
+ },
+ {
+  "string": "নিউজ প্রকাশিত হয়েছে",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "নিউজ ভিউজ",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "নিউজ রিডস",
+  "files": [
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "নিউজ সার্চ",
+  "files": [
+   "src/components/views/news-view.tsx"
+  ]
+ },
+ {
+  "string": "নিউজলেটার ইমেইল",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "নিজেকে ফলো করা যায় না",
+  "files": [
+   "src/app/api/follow/route.ts"
+  ]
+ },
+ {
+  "string": "নিজেকে ব্যান করা যায় না",
+  "files": [
+   "src/app/api/admin/users/route.ts"
+  ]
+ },
+ {
+  "string": "নুসরাত জাহান",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "পছন্দ করুন",
+  "files": [
+   "src/components/football/like-button.tsx"
+  ]
+ },
+ {
+  "string": "পছন্দের খাবার অর্ডার করুন ম্যাচের হাফ-টাইমেই",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "পয়েন্ট টেবিল",
+  "files": [
+   "src/components/views/standings-view.tsx"
+  ]
+ },
+ {
+  "string": "পয়েন্ট টেবিল, ফর্ম গাইড ও সেরা গোলদাতার তালিকা",
+  "files": [
+   "src/components/views/standings-view.tsx"
+  ]
+ },
+ {
+  "string": "পরিশোধিত",
+  "files": [
+   "src/components/views/admin-view.tsx",
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "পরের হোম ম্যাচে আমরাও যাবো, গ্রুপ বানাও সবাই 🙌",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "পর্যাপ্ত ব্যালেন্স নেই",
+  "files": [
+   "src/app/api/payouts/route.ts"
+  ]
+ },
+ {
+  "string": "পাঠানো হচ্ছে...",
+  "files": [
+   "src/components/football/comment-section.tsx"
+  ]
+ },
+ {
+  "string": "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের",
+  "files": [
+   "src/app/api/auth/register/route.ts"
+  ]
+ },
+ {
+  "string": "পাসওয়ার্ড দেখান",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "পাসওয়ার্ড লুকান",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "পুলিশ গ্রাউন্ড, রাজারবাগ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "পেআউট স্ট্যাটাস আপডেট হয়েছে",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "পোস্ট ব্যর্থ",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": "পোস্ট হয়ে গেছে",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": "পোস্টে কিছু লিখুন",
+  "files": [
+   "src/app/api/posts/route.ts"
+  ]
+ },
+ {
+  "string": "প্রকাশ করুন",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "প্রতি ১০০০ ভিউতে গড় ৳১০-৩০ অ্যাড রেভিনিউ (RPM অনুযায়ী)",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "প্রতিটি ম্যাচের লাইভ স্কোর পান SMS-এ, কোনো ইন্টারনেট লাগবে না",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রথম অর্ডারে ১০০ টাকা ছাড় — কুপন: FHB100",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রসেসিং...",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "প্রাণ চানাচুর — ম্যাচ দেখার সেরা সঙ্গী",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রায়োরিটি ম্যাচ অ্যালার্ট",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রিমিয়াম",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "প্রিমিয়াম জার্সি, বুট ও ফ্যান গিয়ার — স্টক সীমিত",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রিমিয়াম নিলে বিজ্ঞাপন বন্ধ হবে?",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "প্রিমিয়াম ফ্যান ব্যাজ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রিমিয়াম সদস্য",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "প্রিমিয়াম সদস্যতা",
+  "files": [
+   "src/components/layout/footer.tsx",
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "প্রিমিয়ার লিগের খেলোয়াড় আমাদের দলে — এটা কল্পনাও করিনি! 💚❤️",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রো সাপোর্টার",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "প্রোফাইল",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "প্ল্যান পাওয়া যায়নি",
+  "files": [
+   "src/app/api/membership/route.ts"
+  ]
+ },
+ {
+  "string": "ফরোয়ার্ড",
+  "files": [
+   "prisma/seed.ts",
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "ফর্ম ইনডেক্স",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "ফলাফল",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "ফলো",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": "ফলোয়িং",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": "ফিচার্ড সেকশন",
+  "files": [
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "ফিরে যান",
+  "files": [
+   "src/components/football/section-header.tsx",
+   "src/components/views/news-detail-view.tsx",
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "ফুটবল আমার প্রাণ 💚❤️ মোহামেডান সাপোর্টার",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফুটবল গুরু",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফুটবল নিউজ",
+  "files": [
+   "src/app/layout.tsx",
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "ফুটবল নিউজ ও ট্রান্সফার",
+  "files": [
+   "src/components/views/news-view.tsx"
+  ]
+ },
+ {
+  "string": "ফুটবল সাংবাদিক — বিপিএল ও জাতীয় দল বিট।",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফুটবল সিজন স্পেশাল প্রাইস — স্টক সীমিত",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফুটার — এক্সপ্লোর",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "ফুটার — প্ল্যাটফর্ম",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "ফেব",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "ফোর্টিস এরিনা, আমুলিয়া",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফোর্টিস ফুটবল ক্লাব",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফ্যান কমিউনিটি",
+  "files": [
+   "src/components/views/community-view.tsx",
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "ফ্যান — লাইক, কমেন্ট, পোস্ট",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "ফ্যানদের টিপস (৩২ জন)",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফ্যামিলি প্যাকে এখন ২০% বেশি",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফ্রি",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "ফ্রি প্ল্যানে ফিরে এসেছেন",
+  "files": [
+   "src/app/api/membership/route.ts"
+  ]
+ },
+ {
+  "string": "ফ্রি ফ্যান",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ফ্রি শুরু করুন",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "ফ্রি-কিক স্পেশালিস্ট ফ্যান 😄 ফুটবল নিয়েই সব",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বঙ্গবন্ধু স্টেডিয়ামে আমাদের সেরা পারফরম্যান্স দেখানোর সুযোগ — দর্শকের সাপোর্টই আমাদের ১২তম খেলোয়াড়।",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বন্ধ",
+  "files": [
+   "src/components/views/admin-view.tsx",
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "বর্ণনা নেই",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "বসুন্ধরা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বসুন্ধরা কিংস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বসুন্ধরা কিংস এরিনা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বসুন্ধরা কিংস এরিনার ইলেকট্রিক অ্যাটমোসফিয়ারে কেউ যায়নি এখনো? লাইভ স্কোর FHB-তে ফলো করার সাথে সাথে স্টেডিয়ামেও দৌড়ানো লাগবে 😄",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বসুন্ধরা কিংস 🦁 সুপার ফ্যান। ম্যাচ মানেই স্টেডিয়াম!",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বাংলাদেশ",
+  "files": [
+   "prisma/schema.prisma"
+  ]
+ },
+ {
+  "string": "বাংলাদেশ পুলিশ ফুটবল ক্লাব",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বাংলাদেশ প্রিমিয়ার লিগ",
+  "files": [
+   "src/app/layout.tsx"
+  ]
+ },
+ {
+  "string": "বাংলাদেশ ফুটবল",
+  "files": [
+   "src/app/layout.tsx"
+  ]
+ },
+ {
+  "string": "বাংলাদেশের ফুটবল উন্নতি চাই, সাফ চ্যাম্পিয়ন হবেই ইনশাআল্লাহ!",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বাতিল",
+  "files": [
+   "src/components/views/admin-view.tsx",
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "বিকাশ অ্যাপে বিল পেমেন্ট করে জিতে নিন আকর্ষণীয় পুরস্কার",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বিকাশ অ্যাপে বিল পেমেন্টে ইনস্ট্যান্ট ক্যাশব্যাক",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বিজ্ঞাপন",
+  "files": [
+   "src/components/football/video-preroll.tsx"
+  ]
+ },
+ {
+  "string": "বিজ্ঞাপনমুক্ত অভিজ্ঞতা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বিপিএল",
+  "files": [
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "বিপিএল ক্লাব",
+  "files": [
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": "বিপিএল ক্লাব থেকে জাতীয় দল — সবার সম্পূর্ণ প্রোফাইল",
+  "files": [
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": "বিপিএল থেকে সাফ চ্যাম্পিয়নশিপ — সব কম্পিটিশনের কেন্দ্র",
+  "files": [
+   "src/components/views/competitions-view.tsx"
+  ]
+ },
+ {
+  "string": "বিপিএল পয়েন্ট টেবিল",
+  "files": [
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "বিপিএল হাইলাইটস ও ফুটবল কনটেন্ট ক্রিয়েটর। প্রতিদিন নতুন শর্টস! ⚽🔥",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "বিপিএল, জাতীয় দল ও আন্তর্জাতিক — সব আপডেট এক জায়গায়",
+  "files": [
+   "src/components/views/news-view.tsx"
+  ]
+ },
+ {
+  "string": "বিপিএল,গোল,হাইলাইটস",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "বিস্তারিত লেখা কমপক্ষে ২০ অক্ষরের",
+  "files": [
+   "src/app/api/admin/news/route.ts"
+  ]
+ },
+ {
+  "string": "বীরশ্রেষ্ঠ শহীদ সিপাহী কামাল স্টেডিয়াম",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ব্যাংক",
+  "files": [
+   "src/components/views/admin-view.tsx",
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "ব্রাদার্স ইউনিয়ন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ভাই আমিও ছিলাম গ্যালারিতে! এনভায়রনমেন্ট ছিল আউট অফ দ্য ওয়ার্ল্ড 🔥",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ভাইরাল ফ্রি-কিক ভিডিও — অ্যাড রেভিনিউ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ভিউ রেভিনিউ, টিপস ও বোনাসের সম্পূর্ণ হিসাব",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "ভিডিও URL",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "ভিডিও URL দিন",
+  "files": [
+   "src/app/api/videos/route.ts"
+  ]
+ },
+ {
+  "string": "ভিডিও ভিউজ",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "ভিডিওর বর্ণনা লিখুন...",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "ভুল অনুরোধ",
+  "files": [
+   "src/app/api/ads/route.ts",
+   "src/app/api/follow/route.ts",
+   "src/app/api/likes/route.ts"
+  ]
+ },
+ {
+  "string": "ভুল ইমেইল/ইউজারনেম বা পাসওয়ার্ড",
+  "files": [
+   "src/app/api/auth/login/route.ts"
+  ]
+ },
+ {
+  "string": "ভুল তথ্য",
+  "files": [
+   "src/app/api/admin/ads/route.ts",
+   "src/app/api/admin/matches/route.ts",
+   "src/app/api/admin/news/route.ts",
+   "src/app/api/admin/payouts/route.ts",
+   "src/app/api/admin/users/route.ts",
+   "src/app/api/auth/register/route.ts",
+   "src/app/api/comments/route.ts",
+   "src/app/api/payouts/route.ts",
+   "src/app/api/posts/route.ts",
+   "src/app/api/videos/route.ts"
+  ]
+ },
+ {
+  "string": "ভেন্যু",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "ভেন্যু নির্ধারিত হয়নি",
+  "files": [
+   "src/components/football/match-card.tsx"
+  ]
+ },
+ {
+  "string": "মতামত",
+  "files": [
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "মতামত শেয়ার করুন, আলোচনায় জয়েন করুন — বাংলাদেশের ফুটবলপ্রেমীদের নিজের জায়গা",
+  "files": [
+   "src/components/views/community-view.tsx"
+  ]
+ },
+ {
+  "string": "মনিটাইজেশন আয়",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "মাত্র ১০ মিনিটে অ্যাকাউন্ট খুলুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মাত্র ৩০ সেকেন্ডে অ্যাকাউন্ট খুলুন",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "মার্চ",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "মাস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মাসে মাত্র ৳৯৯ — এক্সক্লুসিভ ট্রান্সফার নিউজ ও HD হাইলাইটস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মাসের সেরা ক্রিয়েটর বোনাস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মিডফিল্ডার",
+  "files": [
+   "prisma/seed.ts",
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "মিডফিল্ডে হামজা + জামাল কম্বো হলে সাফ টিমগুলোর ঘুম উড়বে 😎",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মিম আক্তার",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মুক্তিযোদ্ধা সংস্কৃতি কেন্দ্র",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মুক্তিযোদ্ধা সংস্কৃতি কেন্দ্র মাঠ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মে",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "মোট আয়",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "মোট ইউজার",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "মোট ভিউ",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "মোবাইল নেভিগেশন",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "মোরশালিন সলো গোল — অ্যাড রেভিনিউ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মোহামেডান",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মোহামেডান ফ্যান হিসেবে বলছি — ডার্বিতে সব রেকর্ড ভাঙবে, অপেক্ষা করুন 😤",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মোহামেডান স্পোর্টিং ক্লাব",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "মোহামেডানের এই মৌসুমের ফর্ম দেখে আশাবাদী হওয়া যায়! ফেডারেশন কাপ সেমিফাইনাল আবাহনীর বিপক্ষে হবে যুদ্ধ ⚔️",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ম্যাচ",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "ম্যাচ ইভেন্ট",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "ম্যাচ খেলেছেন",
+  "files": [
+   "src/components/views/players-view.tsx"
+  ]
+ },
+ {
+  "string": "ম্যাচ ট্র্যাকিং",
+  "files": [
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "ম্যাচ ডে-তে কুপন ব্যবহার করুন: FHB40",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ম্যাচ নাইট স্পেশাল — ফ্রি ডেলিভারি কোড: FHB50",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "ম্যাচ পাওয়া যায়নি",
+  "files": [
+   "src/app/api/matches/[id]/route.ts"
+  ]
+ },
+ {
+  "string": "ম্যাচ ফিল্টার",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "ম্যাচ শুরু হলে ইভেন্টগুলো এখানে লাইভ যুক্ত হবে।",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "ম্যাচসমূহ",
+  "files": [
+   "src/components/views/competitions-view.tsx",
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": "যেকোনো সময় বাতিল করা যায়?",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "যেমন: bpl_fan10",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "যেমন: রাকিবের ফ্রি-কিক ম্যাজিক",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "রফিকউদ্দিন ভূঁইয়া স্টেডিয়াম, টঙ্গী",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "রহমতগঞ্জ মাঠ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "রহমতগঞ্জ মুসলিম ফ্রেন্ডস সোসাইটি",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "রাকিব হাসান",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "রাকিব হোসেনের ফ্রি-কিক ভিডিওটা দিনে ৫ বার দেখছি। কার্লিং বলের ফিজিক্স নিয়ে কেউ ব্যাখ্যা করবেন? 🤔⚽",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "রাকিভাই সেট-পিসে আলাদা লেভেলের খেলোয়াড় ⚡",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "রাশেদুল ইসলাম",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "রিয়েল-টাইম আপডেট, কিক-অফ থেকে ফাইনাল হুইসেল পর্যন্ত",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "রিয়েল-টাইম কানেক্টেড",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "রেজিস্ট্রেশন",
+  "files": [
+   "src/components/layout/footer.tsx",
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "লগআউট সফল",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "লগইন",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "লগইন করুন",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "লগইন প্রয়োজন",
+  "files": [
+   "src/lib/auth.ts"
+  ]
+ },
+ {
+  "string": "লাইভ",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "লাইভ ম্যাচ",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "লাইভ ম্যাচ কমেন্ট্রি অ্যাক্সেস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "লাইভ স্কোর",
+  "files": [
+   "src/app/layout.tsx",
+   "src/components/layout/footer.tsx",
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "লাইভ স্কোর ও ফিক্সচার",
+  "files": [
+   "src/components/views/scores-view.tsx"
+  ]
+ },
+ {
+  "string": "লাইভ স্কোর ও ম্যাচ আপডেট",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "লাইভ স্কোর • নিউজ • শর্টস • কমিউনিটি — বাংলাদেশের ফুটবল হাব",
+  "files": [
+   "src/app/layout.tsx"
+  ]
+ },
+ {
+  "string": "লাইভ স্কোর, নিউজ, শর্টস আর কমিউনিটি — সব এক অ্যাকাউন্টে",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "লাইভ স্কোর, ফিক্সচার, লিগ টেবিল, ফুটবল নিউজ, ট্রান্সফার আপডেট, শর্ট ভিডিও ও ফ্যান কমিউনিটি — বাংলাদেশের ফুটবলের সম্পূর্ণ প্ল্যাটফর্ম।",
+  "files": [
+   "src/app/layout.tsx"
+  ]
+ },
+ {
+  "string": "লাল-সবুজের ডান পাখা 🇧🇩 আবাহনী ফ্যান বয়েজ!",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "লাল-সবুজের হয়ে খেলার স্বপ্ন দেখা সবার জন্য অনুপ্রেরণা 💚",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "লিগ",
+  "files": [
+   "src/components/views/competitions-view.tsx"
+  ]
+ },
+ {
+  "string": "লিগ টেবিল",
+  "files": [
+   "src/components/layout/footer.tsx",
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "লিগ টেবিল ও পরিসংখ্যান",
+  "files": [
+   "src/components/views/standings-view.tsx"
+  ]
+ },
+ {
+  "string": "লিজেন্ড মেম্বার",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "শপিং করুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "শর্টস",
+  "files": [
+   "src/components/layout/footer.tsx",
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "শর্টস অ্যাড রেভিনিউ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "শর্টস আপলোড",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "শর্টস আপলোড করতে ক্রিয়েটর হিসেবে অনুমোদন নিন (ডেমোতে creator@fhb.com.bd ব্যবহার করুন)।",
+  "files": [
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "শর্টস ভিউজ",
+  "files": [
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "শর্টস ভিডিও",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "শর্টস ভিডিও দেখা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "শর্টসের ভিউ থেকে অ্যাড রেভিনিউ শেয়ার + ফ্যান টিপস — সবকিছু আয়ের ড্যাশবোর্ডে ট্র্যাক হয়।",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "শাকিল খান",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "শিরোনাম কমপক্ষে ৫ অক্ষরের",
+  "files": [
+   "src/app/api/admin/news/route.ts"
+  ]
+ },
+ {
+  "string": "শেখ রাসেল ক্রীড়া চক্র",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "শেষ",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "সঠিক ইমেইল দিন",
+  "files": [
+   "src/app/api/auth/register/route.ts",
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "সঠিক প্ল্যান নির্বাচন করুন",
+  "files": [
+   "src/app/api/membership/route.ts"
+  ]
+ },
+ {
+  "string": "সত্যিকারের ফুটবল অনুরাগীদের জন্য",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "সদস্যতা ব্যর্থ",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "সদস্যতা সফল",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "সদা বহাল",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সপ্তাহিক ফুটবল ডাইজেস্ট পাঠানো হবে।",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "সব",
+  "files": [
+   "src/components/views/teams-view.tsx",
+   "src/lib/types.ts"
+  ]
+ },
+ {
+  "string": "সব নিউজ পড়া",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সব প্রো সুবিধা",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সবার জন্য প্রাথমিক অভিজ্ঞতা",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "সম্পর্কিত নিউজ",
+  "files": [
+   "src/components/views/news-detail-view.tsx"
+  ]
+ },
+ {
+  "string": "সম্পূর্ণ টেবিল",
+  "files": [
+   "src/components/views/home-view.tsx"
+  ]
+ },
+ {
+  "string": "সর্বনিম্ন উত্তোলন ৫০০ টাকা",
+  "files": [
+   "src/app/api/payouts/route.ts"
+  ]
+ },
+ {
+  "string": "সাইফ মালিবাগ চত্বর মাঠ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সাইফ স্পোর্টিং ক্লাব",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সাকিব হোসেন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সাবস্ক্রাইব করুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সাবস্ক্রাইব সফল!",
+  "files": [
+   "src/components/layout/footer.tsx"
+  ]
+ },
+ {
+  "string": "সারসংক্ষেপ কমপক্ষে ১০ অক্ষরের",
+  "files": [
+   "src/app/api/admin/news/route.ts"
+  ]
+ },
+ {
+  "string": "সার্চ মুছুন",
+  "files": [
+   "src/components/views/news-view.tsx"
+  ]
+ },
+ {
+  "string": "সার্ভারে সমস্যা হয়েছে, আবার চেষ্টা করুন",
+  "files": [
+   "src/lib/api.ts"
+  ]
+ },
+ {
+  "string": "সীমিত সময়ের অফার — আজই অর্ডার করুন",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "সেপ",
+  "files": [
+   "src/app/api/earnings/route.ts"
+  ]
+ },
+ {
+  "string": "সেভ ব্যর্থ",
+  "files": [
+   "src/components/views/admin-view.tsx"
+  ]
+ },
+ {
+  "string": "সেরা গোলদাতা",
+  "files": [
+   "src/components/views/standings-view.tsx"
+  ]
+ },
+ {
+  "string": "স্কোয়াড",
+  "files": [
+   "src/components/views/teams-view.tsx"
+  ]
+ },
+ {
+  "string": "স্কোয়াডের গভীরতাই আমাদের শক্তি। মৌসুম লম্বা, এক ম্যাচে নয় — ধারাবাহিকতায় বিশ্বাস রাখি।",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "স্কোর",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "স্কোর আপডেট এখন ফ্রি! GP স্কোর অ্যালার্ট সার্ভিস",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "স্টেডিয়াম যাওয়া এখন সাশ্রয়ী — পাঠাও রাইডে ৪০% ছাড়",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "স্টেডিয়ামের অনুভূতি এবার আপনার ড্রয়িংরুমে — EMI-তে ০% সুদে",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "স্ট্যান্ডিং",
+  "files": [
+   "src/components/views/competitions-view.tsx"
+  ]
+ },
+ {
+  "string": "স্পোর্টস স্নিকার্স কলেকশন — ২৫% ছাড়",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "স্বাগতম!",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "স্বাগতম, ফুটবলপ্রেমী!",
+  "files": [
+   "src/components/views/auth-view.tsx"
+  ]
+ },
+ {
+  "string": "হ",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "হাফ-টাইম",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "হামজা চৌধুরী সাফ সেমিফাইনালে খেললে বঙ্গবন্ধু স্টেডিয়ামের গ্যালারি ভেঙে পড়বে ভাই! 🇧🇩 কে কে যাচ্ছেন?",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "হামজা ফার্স্ট ডে — অ্যাড রেভিনিউ",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "হামজা ভাইকে জাতীয় দলে পেয়ে আমরা গর্বিত! ইনশাআল্লাহ সাফ জিতবে আমরা 🇧🇩",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "হামজা ভাইয়ের ফার্স্ট ডে ফুটেজ! গায়ে কাঁটা দিয়ে উঠলো 🥹",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "হার",
+  "files": [
+   "src/components/football/live-badge.tsx"
+  ]
+ },
+ {
+  "string": "হোম",
+  "files": [
+   "src/components/layout/header.tsx"
+  ]
+ },
+ {
+  "string": "হ্যাঁ, প্রোফাইল থেকে যেকোনো সময় ফ্রি প্ল্যানে ফিরে যেতে পারবেন।",
+  "files": [
+   "src/components/views/premium-view.tsx"
+  ]
+ },
+ {
+  "string": "০",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "০১২৩৪৫৬৭৮৯",
+  "files": [
+   "src/components/football/comment-section.tsx",
+   "src/components/football/video-preroll.tsx",
+   "src/components/views/shorts-view.tsx"
+  ]
+ },
+ {
+  "string": "১",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "১১.১১ মেগা সেল! ফুটবল জার্সি ও গিয়ারে ৭০% পর্যন্ত ছাড়",
+  "files": [
+   "prisma/seed.ts"
+  ]
+ },
+ {
+  "string": "২",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "২-৩ কর্মদিবসে প্রসেস হবে।",
+  "files": [
+   "src/components/views/earnings-view.tsx"
+  ]
+ },
+ {
+  "string": "৩",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "৪",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "৫",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "৬",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "৬০০ অক্ষরের মধ্যে লিখুন",
+  "files": [
+   "src/app/api/posts/route.ts"
+  ]
+ },
+ {
+  "string": "৭",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "৮",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ },
+ {
+  "string": "৯",
+  "files": [
+   "src/lib/format.ts"
+  ]
+ }
+]

@@ -1,0 +1,402 @@
+     1→  1131→[565] (prisma/seed.ts)
+     2→  1132→    [postIds[0], "POST", fans[3], "পরের হোম ম্যাচে আমরাও যাবো, গ্রুপ বানাও সবাই 🙌"],
+     3→  1133→[566] (prisma/seed.ts)
+     4→  1134→    [postIds[3], "POST", fans[0], "আমি যাচ্ছি অবশ্যই! টিকিটের ব্যবস্থা করতে হবে আগেই 🎫"],
+     5→  1135→[567] (prisma/seed.ts)
+     6→  1136→    [postIds[5], "POST", fans[4], "একই অবস্থা ভাই 😂 FHB শর্টসের কারণে ঘুমের সময় কমে গেছে"],
+     7→  1137→[568] (prisma/seed.ts)
+     8→  1138→    [videoIds[0], "VIDEO", fans[0], "রাকিভাই সেট-পিসে আলাদা লেভেলের খেলোয়াড় ⚡"],
+     9→  1139→[569] (prisma/seed.ts)
+    10→  1140→    [videoIds[0], "VIDEO", fans[3], "এই ফ্রি-কিকটা বারবার দেখছি! কার্লিং অবিশ্বাস্য 🔥"],
+    11→  1141→[570] (prisma/seed.ts)
+    12→  1142→    [videoIds[0], 4200, "AD_REVENUE", "ভাইরাল ফ্রি-কিক ভিডিও — অ্যাড রেভিনিউ"],
+    13→  1143→[571] (prisma/seed.ts)
+    14→  1144→    [videoIds[1], 2600, "AD_REVENUE", "মোরশালিন সলো গোল — অ্যাড রেভিনিউ"],
+    15→  1145→[572] (prisma/seed.ts)
+    16→  1146→    [videoIds[2], "VIDEO", fans[2], "গ্যালারির এই ভাইব আর কোথায় পাবো! ডার্বি মানেই আলাদা 🏟️"],
+    17→  1147→[573] (prisma/seed.ts)
+    18→  1148→    [videoIds[5], 1400, "AD_REVENUE", "ট্রেনিং ডে ভিডিও — অ্যাড রেভিনিউ"],
+    19→  1149→[574] (prisma/seed.ts)
+    20→  1150→    [videoIds[6], "VIDEO", fans[1], "লাল-সবুজের হয়ে খেলার স্বপ্ন দেখা সবার জন্য অনুপ্রেরণা 💚"],
+    21→  1151→[575] (prisma/seed.ts)
+    22→  1152→    [videoIds[6], "VIDEO", fans[4], "হামজা ভাইয়ের ফার্স্ট ডে ফুটেজ! গায়ে কাঁটা দিয়ে উঠলো 🥹"],
+    23→  1153→[576] (prisma/seed.ts)
+    24→  1154→    [videoIds[6], 5100, "AD_REVENUE", "হামজা ফার্স্ট ডে — অ্যাড রেভিনিউ"],
+    25→  1155→[577] (prisma/seed.ts)
+    26→  1156→    await db.matchEvent.create({ data: { matchId: liveMatch2.id, minute: 24, type: "GOAL", teamId: teams[h], teamSide: "home", playerName: name, detail: "গোল" } });
+    27→  1157→[578] (api/earnings/route.ts)
+    28→  1158→    const bnMonths = ["জানু", "ফেব", "মার্চ", "এপ্রি", "মে", "জুন", "জুলা", "আগ", "সেপ", "অক্টো", "নভে", "ডিসে"];
+    29→  1159→[579] (prisma/seed.ts)
+    30→  1160→    data: { name: "ভারত জাতীয় ফুটবল দল", shortName: "India", initials: "IND", city: "নয়াদিল্লি", stadium: "জওহরলাল নেহেরু স্টেডিয়াম", founded: 1938, color: "#2563EB", color2: "#1E3A8A", description: "সাফ অঞ্চলের শীর্ষ দল।" },
+    31→  1161→[580] (prisma/seed.ts)
+    32→  1162→    data: { name: "মালদ্বীপ জাতীয় ফুটবল দল", shortName: "Maldives", initials: "MDV", city: "মালে", stadium: "গালোলহু জাতীয় স্টেডিয়াম", founded: 1952, color: "#DC2626", color2: "#7F1D1D", description: "সাফ অঞ্চলের শক্তিশালী দল।" },
+    33→  1163→[581] (layout.tsx)
+    34→  1164→    description: "লাইভ স্কোর • নিউজ • শর্টস • কমিউনিটি — বাংলাদেশের ফুটবল হাব",
+    35→  1165→[582] (api/news/[id]/route.ts)
+    36→  1166→    if (!article || article.status !== "PUBLISHED") return fail("নিউজ পাওয়া যায়নি", 404);
+    37→  1167→[583] (api/competitions/[id]/route.ts)
+    38→  1168→    if (!competition) return fail("টুর্নামেন্ট পাওয়া যায়নি", 404);
+    39→  1169→[584] (api/follow/route.ts)
+    40→  1170→    if (!followingId) return fail("followingId প্রয়োজন", 422);
+    41→  1171→[585] (api/admin/news/route.ts)
+    42→  1172→    if (!id) return fail("আইডি প্রয়োজন", 422);
+    43→  1173→[586] (api/matches/[id]/route.ts)
+    44→  1174→    if (!match) return fail("ম্যাচ পাওয়া যায়নি", 404);
+    45→  1175→[587] (api/auth/login/route.ts)
+    46→  1176→    if (!parsed.success) return fail("ইমেইল ও পাসওয়ার্ড দিন", 422);
+    47→  1177→[588] (api/ads/route.ts,api/follow/route.ts,api/likes/route.ts)
+    48→  1178→    if (!parsed.success) return fail("ভুল অনুরোধ", 422);
+    49→  1179→[589] (api/admin/ads/route.ts,api/admin/payouts/route.ts,api/admin/users/route.ts)
+    50→  1180→    if (!parsed.success) return fail("ভুল তথ্য", 422);
+    51→  1181→[590] (api/membership/route.ts)
+    52→  1182→    if (!parsed.success) return fail("সঠিক প্ল্যান নির্বাচন করুন", 422);
+    53→  1183→[591] (api/admin/matches/route.ts,api/admin/news/route.ts,api/comments/route.ts,api/payouts/route.ts,api/posts/route.ts,api/videos/route.ts)
+    54→  1184→    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
+    55→  1185→[592] (api/admin/news/route.ts)
+    56→  1186→    if (!parsedId.success) return fail("আইডি প্রয়োজন", 422);
+    57→  1187→[593] (api/membership/route.ts)
+    58→  1188→    if (!plan) return fail("প্ল্যান পাওয়া যায়নি", 404);
+    59→  1189→[594] (api/players/[id]/route.ts)
+    60→  1190→    if (!player) return fail("খেলোয়াড় পাওয়া যায়নি", 404);
+    61→  1191→[595] (api/auth/login/route.ts)
+    62→  1192→    if (!rateLimit(`login:${ip}`, 15, 60_000)) return fail("অনেকবার চেষ্টা হয়েছে, একটু পরে আবার করুন", 429);
+    63→  1193→[596] (api/auth/register/route.ts)
+    64→  1194→    if (!rateLimit(`register:${ip}`, 10, 60_000)) return fail("অনেকবার চেষ্টা হয়েছে, একটু পরে আবার করুন", 429);
+    65→  1195→[597] (api/follow/route.ts)
+    66→  1196→    if (!target) return fail("ইউজার পাওয়া যায়নি", 404);
+    67→  1197→[598] (api/comments/route.ts)
+    68→  1198→    if (!targetType || !targetId) return fail("targetType ও targetId প্রয়োজন", 422);
+    69→  1199→[599] (api/teams/[id]/route.ts)
+    70→  1200→    if (!team) return fail("দল পাওয়া যায়নি", 404);
+    71→  1201→[600] (api/users/[username]/route.ts)
+    72→  1202→    if (!user) return fail("ইউজার পাওয়া যায়নি", 404);
+    73→  1203→[601] (api/follow/route.ts)
+    74→  1204→    if (followingId === user.id) return fail("নিজেকে ফলো করা যায় না", 422);
+    75→  1205→[602] (api/admin/matches/route.ts)
+    76→  1206→    if (parsed.data.homeTeamId === parsed.data.awayTeamId) return fail("একই দল হোম ও অ্যাওয়ে হতে পারে না", 422);
+    77→  1207→[603] (api/admin/users/route.ts)
+    78→  1208→    if (parsed.data.id === admin.id && parsed.data.isBanned) return fail("নিজেকে ব্যান করা যায় না", 422);
+    79→  1209→[604] (api/auth/login/route.ts)
+    80→  1210→    if (user.isBanned) return fail("এই অ্যাকাউন্ট সাময়িকভাবে বন্ধ করা হয়েছে", 403);
+    81→  1211→[605] (earnings-view.tsx)
+    82→  1212→    onError: (e: Error) => toast({ title: "অনুরোধ ব্যর্থ", description: e.message, variant: "destructive" }),
+    83→  1213→[606] (admin-view.tsx)
+    84→  1214→    onError: (e: Error) => toast({ title: "আপডেট ব্যর্থ", description: e.message, variant: "destructive" }),
+    85→  1215→[607] (shorts-view.tsx)
+    86→  1216→    onError: (e: Error) => toast({ title: "আপলোড ব্যর্থ", description: e.message, variant: "destructive" }),
+    87→  1217→[608] (football/comment-section.tsx)
+    88→  1218→    onError: (e: Error) => toast({ title: "কমেন্ট ব্যর্থ", description: e.message, variant: "destructive" }),
+    89→  1219→[609] (community-view.tsx)
+    90→  1220→    onError: (e: Error) => toast({ title: "পোস্ট ব্যর্থ", description: e.message, variant: "destructive" }),
+    91→  1221→[610] (community-view.tsx,profile-view.tsx,shorts-view.tsx)
+    92→  1222→    onError: (e: Error) => toast({ title: "ফলো ব্যর্থ", description: e.message, variant: "destructive" }),
+    93→  1223→[611] (admin-view.tsx)
+    94→  1224→    onError: (e: Error) => toast({ title: "মুছে ফেলা ব্যর্থ", description: e.message, variant: "destructive" }),
+    95→  1225→[612] (premium-view.tsx)
+    96→  1226→    onError: (e: Error) => toast({ title: "সদস্যতা ব্যর্থ", description: e.message, variant: "destructive" }),
+    97→  1227→[613] (admin-view.tsx)
+    98→  1228→    onError: (e: Error) => toast({ title: "সেভ ব্যর্থ", description: e.message, variant: "destructive" }),
+    99→  1229→[614] (football/live-badge.tsx)
+   100→  1230→    period === "HT" ? "হাফ-টাইম" : period === "FT" ? "শেষ" : minute != null ? `${toBn(minute)}′` : "লাইভ";
+   101→  1231→[615] (lib/auth.ts)
+   102→  1232→    throw new AuthError("ক্রিয়েটর অ্যাকাউন্ট প্রয়োজন", 403);
+   103→  1233→[616] (layout/header.tsx)
+   104→  1234→    toast({ title: "লগআউট সফল", description: "আবার দেখা হবে!" });
+   105→  1235→[617] (layout/footer.tsx)
+   106→  1236→    toast({ title: "সাবস্ক্রাইব সফল!", description: "সপ্তাহিক ফুটবল ডাইজেস্ট পাঠানো হবে।" });
+   107→  1237→[618] (scores-view.tsx)
+   108→  1238→    type === "GOAL" ? "গোল" : type === "YELLOW" ? "হলুদ কার্ড" : type === "RED" ? "লাল কার্ড" : type === "SUB" ? "বদলি" : type === "HT" ? "হাফ-টাইম" : type === "FT" ? "সম্পন্ন" : "ইভেন্ট";
+   109→  1239→[619] (prisma/seed.ts)
+   110→  1240→    { author: fans[0], content: "আজকের ডার্বি ম্যাচ দেখার অভিজ্ঞতা কেমন ছিল সবার? আমি তো গ্যালারির এনভায়রনমেন্টে একেবারে ভাটা! 🏟️🔥 #বিপিএল", likes: 142, tag: "আবাহনী" },
+   111→  1241→[620] (prisma/seed.ts)
+   112→  1242→    { author: fans[1], content: "FHB-র শর্টস ফিড এখন আমার ডেইলি ডোজ 😂 রাতে ঘুমানোর আগে ১০টা হাইলাইটস না দেখলেই না!", likes: 156, tag: null },
+   113→  1243→[621] (prisma/seed.ts)
+   114→  1244→    { author: fans[1], content: "মোহামেডানের এই মৌসুমের ফর্ম দেখে আশাবাদী হওয়া যায়! ফেডারেশন কাপ সেমিফাইনাল আবাহনীর বিপক্ষে হবে যুদ্ধ ⚔️", likes: 98, tag: "মোহামেডান" },
+   115→  1245→[622] (prisma/seed.ts)
+   116→  1246→    { author: fans[2], content: "বসুন্ধরা কিংস এরিনার ইলেকট্রিক অ্যাটমোসফিয়ারে কেউ যায়নি এখনো? লাইভ স্কোর FHB-তে ফলো করার সাথে সাথে স্টেডিয়ামেও দৌড়ানো লাগবে 😄", likes: 210, tag: "বসুন্ধরা" },
+   117→  1247→[623] (prisma/seed.ts)
+   118→  1248→    { author: fans[3], content: "হামজা চৌধুরী সাফ সেমিফাইনালে খেললে বঙ্গবন্ধু স্টেডিয়ামের গ্যালারি ভেঙে পড়বে ভাই! 🇧🇩 কে কে যাচ্ছেন?", likes: 375, tag: "জাতীয় দল" },
+   119→  1249→[624] (prisma/seed.ts)
+   120→  1250→    { author: fans[4], content: "রাকিব হোসেনের ফ্রি-কিক ভিডিওটা দিনে ৫ বার দেখছি। কার্লিং বলের ফিজিক্স নিয়ে কেউ ব্যাখ্যা করবেন? 🤔⚽", likes: 89, tag: null },
+   121→  1251→[625] (layout/footer.tsx)
+   122→  1252→    { label: "কমিউনিটি", view: { name: "community" } },
+   123→  1253→[626] (layout/footer.tsx)
+   124→  1254→    { label: "ক্রিয়েটর আয়ের ড্যাশবোর্ড", view: { name: "earnings" } },
+   125→  1255→[627] (layout/footer.tsx)
+   126→  1256→    { label: "খেলোয়াড়", view: { name: "players" } },
+   127→  1257→[628] (layout/footer.tsx)
+   128→  1258→    { label: "টুর্নামেন্ট", view: { name: "competitions" } },
+   129→  1259→[629] (layout/footer.tsx)
+   130→  1260→    { label: "দলসমূহ", view: { name: "teams" } },
+   131→  1261→[630] (admin-view.tsx)
+   132→  1262→    { label: "নিউজ আর্টিকেল", value: bnNumber(s.totalArticles), icon: <Newspaper className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
+   133→  1263→[631] (admin-view.tsx)
+   134→  1264→    { label: "প্রিমিয়াম সদস্য", value: bnNumber(s.premiumUsers), icon: <Crown className="h-4 w-4" aria-hidden />, chip: "bg-fhb-gold/15 text-fhb-gold" },
+   135→  1265→[632] (layout/footer.tsx)
+   136→  1266→    { label: "প্রিমিয়াম সদস্যতা", view: { name: "premium" } },
+   137→  1267→[633] (layout/footer.tsx)
+   138→  1268→    { label: "ফুটবল নিউজ", view: { name: "news" } },
+   139→  1269→[634] (admin-view.tsx)
+   140→  1270→    { label: "মনিটাইজেশন আয়", value: formatMoney(s.adRevenue + s.membershipRevenue), icon: <TrendingUp className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
+   141→  1271→[635] (admin-view.tsx)
+   142→  1272→    { label: "মোট ইউজার", value: bnNumber(s.totalUsers), icon: <Users className="h-4 w-4" aria-hidden />, chip: "bg-primary/15 text-primary" },
+   143→  1273→[636] (layout/footer.tsx)
+   144→  1274→    { label: "রেজিস্ট্রেশন", view: { name: "auth" } },
+   145→  1275→[637] (admin-view.tsx)
+   146→  1276→    { label: "লাইভ ম্যাচ", value: bnNumber(s.liveMatches), icon: <CircleDot className="h-4 w-4" aria-hidden />, chip: "bg-fhb-red/15 text-fhb-red" },
+   147→  1277→[638] (layout/footer.tsx)
+   148→  1278→    { label: "লাইভ স্কোর", view: { name: "scores" } },
+   149→  1279→[639] (layout/footer.tsx)
+   150→  1280→    { label: "লিগ টেবিল", view: { name: "standings" } },
+   151→  1281→[640] (layout/footer.tsx)
+   152→  1282→    { label: "শর্টস আপলোড", view: { name: "upload" } },
+   153→  1283→[641] (admin-view.tsx)
+   154→  1284→    { label: "শর্টস ভিডিও", value: bnNumber(s.totalVideos), icon: <Video className="h-4 w-4" aria-hidden />, chip: "bg-muted text-muted-foreground" },
+   155→  1285→[642] (layout/footer.tsx)
+   156→  1286→    { label: "শর্টস", view: { name: "shorts" } },
+   157→  1287→[643] (prisma/seed.ts)
+   158→  1288→    { name: "Bata — মোবাইল স্টিকি ব্যানার (ডেমো)", placement: "MOBILE_BANNER", headline: "স্পোর্টস স্নিকার্স কলেকশন — ২৫% ছাড়", ctaLabel: "কিনুন", brandColor: "#D31145", brandInitials: "B", linkUrl: "https://www.batabd.com", impressions: 35400, clicks: 528 },
+   159→  1289→[644] (prisma/seed.ts)
+   160→  1290→    { name: "Chaldal — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "গ্রোসারি অর্ডার করুন ৩০ মিনিটে ডেলিভারিতে", bodyText: "প্রথম অর্ডারে ১০০ টাকা ছাড় — কুপন: FHB100", ctaLabel: "অর্ডার করুন", brandColor: "#00A651", brandInitials: "C", linkUrl: "https://chaldal.com", impressions: 19870, clicks: 498 },
+   161→  1291→[645] (prisma/seed.ts)
+   162→  1292→    { name: "City Bank — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "City Touch ডিজিটাল ব্যাংকিং — যেকোনো জায়গা থেকে সব লেনদেন", bodyText: "মাত্র ১০ মিনিটে অ্যাকাউন্ট খুলুন", ctaLabel: "খুলুন", brandColor: "#0057B8", brandInitials: "CB", linkUrl: "https://www.thecitybank.com", impressions: 14230, clicks: 267 },
+   163→  1293→[646] (prisma/seed.ts)
+   164→  1294→    { name: "Daraz — ভিডিও প্রি-রোল (ডেমো)", placement: "VIDEO_PREROLL", headline: "Daraz ১১.১১ মেগা সেল — ফুটবল মার্চেন্ডাইজ ৭০% ছাড়ে", bodyText: "প্রিমিয়াম জার্সি, বুট ও ফ্যান গিয়ার — স্টক সীমিত", ctaLabel: "এখনই দেখুন", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 14230, clicks: 377 },
+   165→  1295→[647] (prisma/seed.ts)
+   166→  1296→    { name: "Daraz — হেডার লিডারবোর্ড (ডেমো)", placement: "HEADER_BANNER", headline: "১১.১১ মেগা সেল! ফুটবল জার্সি ও গিয়ারে ৭০% পর্যন্ত ছাড়", bodyText: "সীমিত সময়ের অফার — আজই অর্ডার করুন", ctaLabel: "শপিং করুন", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 21980, clicks: 610 },
+   167→  1297→[648] (prisma/seed.ts)
+   168→  1298→    { name: "FHB হাউজ অ্যাড — ইন-ফিড (ডেমো)", placement: "IN_FEED", headline: "FHB Premium — বিজ্ঞাপনমুক্ত ফুটবল অভিজ্ঞতা", bodyText: "মাসে মাত্র ৳৯৯ — এক্সক্লুসিভ ট্রান্সফার নিউজ ও HD হাইলাইটস", ctaLabel: "আপগ্রেড করুন", brandColor: "#D4A017", brandInitials: "FHB", linkUrl: "#premium", imageHint: IMG.action[2], impressions: 12680, clicks: 389 },
+   169→  1299→[649] (prisma/seed.ts)
+   170→  1300→    { name: "Foodpanda — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "ম্যাচ নাইট স্পেশাল — ফ্রি ডেলিভারি কোড: FHB50", bodyText: "পছন্দের খাবার অর্ডার করুন ম্যাচের হাফ-টাইমেই", ctaLabel: "অর্ডার করুন", brandColor: "#D70F64", brandInitials: "fp", linkUrl: "https://www.foodpanda.com.bd", impressions: 23650, clicks: 712 },
+   171→  1301→[650] (prisma/seed.ts)
+   172→  1302→    { name: "Grameenphone — ভিডিও প্রি-রোল (ডেমো)", placement: "VIDEO_PREROLL", headline: "GP ইন্টারনেট — বিনা চার্জে লাইভ স্কোর ও হাইলাইটস", bodyText: "MyGP অ্যাপ থেকে এখনই চালু করুন ফ্রি ভিডিও প্যাক", ctaLabel: "সাবস্ক্রাইব করুন", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 15760, clicks: 402 },
+   173→  1303→[651] (prisma/seed.ts)
+   174→  1304→    { name: "Grameenphone — হেডার লিডারবোর্ড (ডেমো)", placement: "HEADER_BANNER", headline: "স্কোর আপডেট এখন ফ্রি! GP স্কোর অ্যালার্ট সার্ভিস", bodyText: "প্রতিটি ম্যাচের লাইভ স্কোর পান SMS-এ, কোনো ইন্টারনেট লাগবে না", ctaLabel: "চালু করুন", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 16750, clicks: 356 },
+   175→  1305→[652] (prisma/seed.ts)
+   176→  1306→    { name: "Pathao — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)", placement: "SIDEBAR", headline: "স্টেডিয়াম যাওয়া এখন সাশ্রয়ী — পাঠাও রাইডে ৪০% ছাড়", bodyText: "ম্যাচ ডে-তে কুপন ব্যবহার করুন: FHB40", ctaLabel: "কুপন নিন", brandColor: "#FF4B63", brandInitials: "P", linkUrl: "https://pathao.com", impressions: 8320, clicks: 205 },
+   177→  1307→[653] (prisma/seed.ts)
+   178→  1308→    { name: "Pran-RFL — ইন-ফিড ব্যানার (ডেমো)", placement: "IN_FEED", headline: "প্রাণ চানাচুর — ম্যাচ দেখার সেরা সঙ্গী", bodyText: "ফ্যামিলি প্যাকে এখন ২০% বেশি", ctaLabel: "দোকান খুঁজুন", brandColor: "#E30613", brandInitials: "PR", linkUrl: "https://www.pranfoods.net", impressions: 27310, clicks: 544 },
+   179→  1309→[654] (prisma/seed.ts)
+   180→  1310→    { name: "Samsung — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)", placement: "SIDEBAR", headline: "Galaxy Buds — ম্যাচের কমেন্ট্রি শুনুন ক্রিস্টাল ক্লিয়ার সাউন্ডে", bodyText: "ফুটবল সিজন স্পেশাল প্রাইস — স্টক সীমিত", ctaLabel: "আরও জানুন", brandColor: "#1428A0", brandInitials: "S", linkUrl: "https://www.samsung.com/bd", impressions: 7690, clicks: 143 },
+   181→  1311→[655] (prisma/seed.ts)
+   182→  1312→    { name: "Teer — মোবাইল স্টিকি ব্যানার (ডেমো)", placement: "MOBILE_BANNER", headline: "Teer ফুটবল ফেস্টিভাল — কোড খুঁজে জিতুন সাইনড জার্সি!", ctaLabel: "খেলুন", brandColor: "#F5A800", brandInitials: "T", linkUrl: "https://www.teer.com.bd", impressions: 29850, clicks: 476 },
+   183→  1313→[656] (prisma/seed.ts)
+   184→  1314→    { name: "Walton — সাইডবার স্কাইস্ক্র্যাপার (ডেমো)", placement: "SIDEBAR", headline: "ওয়ালটন ৪K অ্যান্ড্রয়েড টিভিতে দেখুন প্রতিটি লাইভ ম্যাচ", bodyText: "স্টেডিয়ামের অনুভূতি এবার আপনার ড্রয়িংরুমে — EMI-তে ০% সুদে", ctaLabel: "অর্ডার করুন", brandColor: "#0B4EA2", brandInitials: "W", linkUrl: "https://waltonhil.com", impressions: 9840, clicks: 187 },
+   185→  1315→[657] (prisma/seed.ts)
+   186→  1316→    { name: "bKash — মোবাইল স্টিকি ব্যানার (ডেমো)", placement: "MOBILE_BANNER", headline: "বিকাশ অ্যাপে বিল পেমেন্টে ইনস্ট্যান্ট ক্যাশব্যাক", ctaLabel: "দেখুন", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 41200, clicks: 690 },
+   187→  1317→[658] (prisma/seed.ts)
+   188→  1318→    { name: "bKash — হেডার লিডারবোর্ড (ডেমো)", placement: "HEADER_BANNER", headline: "ক্যাশব্যাক উৎসব! প্রতিটি পেমেন্টে পান ১০০% ক্যাশব্যাক", bodyText: "বিকাশ অ্যাপে বিল পেমেন্ট করে জিতে নিন আকর্ষণীয় পুরস্কার", ctaLabel: "অ্যাপে দেখুন", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 18420, clicks: 412 },
+   189→  1319→[659] (prisma/seed.ts)
+   190→  1320→    { name: "আনিসুর রহমান", team: "POL", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.6 },
+   191→  1321→[660] (prisma/seed.ts)
+   192→  1322→    { name: "আবাহনী লিমিটেড ঢাকা", shortName: "Abahani Ltd Dhaka", initials: "AB", city: "ঢাকা", stadium: "আবাহনী গ্রাউন্ড, ধানমন্ডি", founded: 1972, color: "#0891B2", color2: "#083344", strength: 0.84 },
+   193→  1323→[661] (prisma/seed.ts)
+   194→  1324→    { name: "আরিফুল ইসলাম", team: "BU", pos: "FW", num: 11, goals: 2, apps: 7, rating: 6.6 },
+   195→  1325→[662] (prisma/seed.ts)
+   196→  1326→    { name: "আর্নেস্ট বোয়াটেং", team: "SAIF", pos: "FW", num: 9, nat: "ঘানা", goals: 4, apps: 7, rating: 7.2 },
+   197→  1327→[663] (prisma/seed.ts)
+   198→  1328→    { name: "আশিকুর রহমান", team: "MSC", pos: "GK", num: 1, nt: true, cs: 4, apps: 7, rating: 7.2 },
+   199→  1329→[664] (prisma/seed.ts)
+   200→  1330→    { name: "ইকবাল হোসেন", team: "MSK", pos: "GK", num: 22, apps: 7, cs: 0, rating: 6.4 },
+   201→  1331→[665] (prisma/seed.ts)
+   202→  1332→    { name: "ইমরান খান", team: "SAIF", pos: "FW", num: 11, goals: 3, assists: 1, apps: 7, rating: 7.1 },
+   203→  1333→[666] (prisma/seed.ts)
+   204→  1334→    { name: "ইয়াসিন খান", team: "AB", pos: "DF", num: 4, nt: true, goals: 1, apps: 6, rating: 7.2, bio: "অভিজ্ঞ সেন্টার-ব্যাক, নিজের এরিয়ায় দেয়াল।" },
+   205→  1335→[667] (prisma/seed.ts)
+   206→  1336→    { name: "কামরুল হাসান", team: "POL", pos: "MF", num: 6, goals: 1, apps: 7, rating: 6.7 },
+   207→  1337→[668] (prisma/seed.ts)
+   208→  1338→    { name: "কোফি আপিয়া", team: "MSC", pos: "FW", num: 77, nat: "ঘানা", goals: 3, apps: 6, rating: 7.3 },
+   209→  1339→[669] (prisma/seed.ts)
+   210→  1340→    { name: "জামাল ভূঞা", team: "MSC", pos: "MF", num: 8, nt: true, goals: 2, assists: 4, apps: 7, rating: 7.8, bio: "বাংলাদেশ জাতীয় দলের অধিনায়ক, মিডফিল্ডের প্রাণপুরুষ। বিদেশে খেলা প্রথম বাংলাদেশি।" },
+   211→  1341→[670] (prisma/seed.ts)
+   212→  1342→    { name: "জুনায়েদ আহমেদ", team: "SAIF", pos: "MF", num: 14, goals: 2, apps: 7, rating: 7.0 },
+   213→  1343→[671] (prisma/seed.ts)
+   214→  1344→    { name: "জুনিয়র সিলভা", team: "AB", pos: "MF", num: 8, nat: "ব্রাজিল", goals: 2, assists: 4, apps: 7, rating: 7.4 },
+   215→  1345→[672] (prisma/seed.ts)
+   216→  1346→    { name: "জুবায়ের আহমেদ", team: "BU", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.3 },
+   217→  1347→[673] (prisma/seed.ts)
+   218→  1348→    { name: "ড্যানিয়েল মেন্ডেস", team: "SR", pos: "MF", num: 20, nat: "ব্রাজিল", goals: 2, assists: 3, apps: 7, rating: 7.1 },
+   219→  1349→[674] (prisma/seed.ts)
+   220→  1350→    { name: "তপু বড়ুয়ান", team: "BK", pos: "DF", num: 5, nt: true, goals: 2, apps: 7, rating: 7.6, bio: "জাতীয় দলের অধিনায়কসুলভ ডিফেন্ডার, এয়ারিয়াল ডুয়েলে শক্তিশালী।" },
+   221→  1351→[675] (prisma/seed.ts)
+   222→  1352→    { name: "তানজিল আহমেদ", team: "FTS", pos: "FW", num: 7, goals: 2, apps: 7, rating: 6.8 },
+   223→  1353→[676] (prisma/seed.ts)
+   224→  1354→    { name: "তাসিকুল ইসলাম", team: "RJ", pos: "FW", num: 10, goals: 3, apps: 7, rating: 7.0 },
+   225→  1355→[677] (prisma/seed.ts)
+   226→  1356→    { name: "তুতুল হোসেন বাদশা", team: "RJ", pos: "FW", num: 9, nt: true, goals: 2, apps: 7, rating: 6.9 },
+   227→  1357→[678] (prisma/seed.ts)
+   228→  1358→    { name: "তৌহিদুল ইসলাম সবুজ", team: "SR", pos: "MF", num: 10, nt: true, goals: 2, assists: 2, apps: 7, rating: 7.2 },
+   229→  1359→[679] (prisma/seed.ts)
+   230→  1360→    { name: "দোরিয়েলতন", team: "BK", pos: "FW", num: 99, nat: "ব্রাজিল", goals: 4, assists: 4, apps: 6, rating: 7.7 },
+   231→  1361→[680] (prisma/seed.ts)
+   232→  1362→    { name: "নবীব নেওয়াজ জিবন", team: "AB", pos: "FW", num: 9, nt: true, goals: 5, assists: 1, apps: 7, rating: 7.7, bio: "ভেটেরান স্ট্রাইকার, বক্সের ভেতরে চোখ ধাঁধানো মুভ।" },
+   233→  1363→[681] (prisma/seed.ts)
+   234→  1364→    { name: "নাঈম উদ্দিন", team: "FTS", pos: "GK", num: 21, apps: 7, cs: 1, rating: 6.6 },
+   235→  1365→[682] (prisma/seed.ts)
+   236→  1366→    { name: "নাজমুল হাসান", team: "MSK", pos: "DF", num: 5, goals: 1, apps: 7, rating: 6.7 },
+   237→  1367→[683] (prisma/seed.ts)
+   238→  1368→    { name: "ফয়সাল আহমেদ ফাহিম", team: "MSC", pos: "FW", num: 7, nt: true, goals: 4, assists: 3, apps: 7, rating: 7.6, bio: "তরুণ ও উদীয়মান স্ট্রাইকার, গতি তার অস্ত্র।" },
+   239→  1369→[684] (prisma/seed.ts)
+   240→  1370→    { name: "ফারহান সিদ্দিক", team: "FTS", pos: "MF", num: 8, goals: 2, assists: 2, apps: 7, rating: 6.9 },
+   241→  1371→[685] (prisma/seed.ts)
+   242→  1372→    { name: "ফোর্টিস ফুটবল ক্লাব", shortName: "Fortis FC", initials: "FTS", city: "ঢাকা", stadium: "ফোর্টিস এরিনা, আমুলিয়া", founded: 2020, color: "#CA8A04", color2: "#422006", strength: 0.61 },
+   243→  1373→[686] (prisma/seed.ts)
+   244→  1374→    { name: "বসুন্ধরা কিংস", shortName: "Bashundhara Kings", initials: "BK", city: "ঢাকা", stadium: "বসুন্ধরা কিংস এরিনা", founded: 2013, color: "#E11D48", color2: "#4C0519", strength: 0.92 },
+   245→  1375→[687] (prisma/seed.ts)
+   246→  1376→    { name: "বাংলাদেশ পুলিশ ফুটবল ক্লাব", shortName: "Police FC", initials: "POL", city: "ঢাকা", stadium: "পুলিশ গ্রাউন্ড, রাজারবাগ", founded: 1972, color: "#475569", color2: "#0F172A", strength: 0.56 },
+   247→  1377→[688] (prisma/seed.ts)
+   248→  1378→    { name: "বিপ্লব আহমেদ", team: "AB", pos: "FW", num: 17, nt: true, goals: 3, assists: 2, apps: 6, rating: 7.4 },
+   249→  1379→[689] (prisma/seed.ts)
+   250→  1380→    { name: "বিশ্বনাথ ঘোষ", team: "MSC", pos: "DF", num: 5, nt: true, goals: 1, apps: 7, rating: 7.3 },
+   251→  1381→[690] (prisma/seed.ts)
+   252→  1382→    { name: "ব্রাদার্স ইউনিয়ন", shortName: "Brothers Union", initials: "BU", city: "ঢাকা", stadium: "গোপীবাগ ব্রাদার্স ইউনিয়ন মাঠ", founded: 1949, color: "#EA580C", color2: "#431407", strength: 0.46 },
+   253→  1383→[691] (prisma/seed.ts)
+   254→  1384→    { name: "মার্কোস ফেরেইরা", team: "MSC", pos: "DF", num: 44, nat: "ব্রাজিল", goals: 1, apps: 7, rating: 7.1 },
+   255→  1385→[692] (prisma/seed.ts)
+   256→  1386→    { name: "মাহফুজুর রহমান", team: "SR", pos: "GK", num: 30, apps: 7, cs: 2, rating: 6.8 },
+   257→  1387→[693] (prisma/seed.ts)
+   258→  1388→    { name: "মিতুল মারমা", team: "BK", pos: "GK", num: 1, nt: true, cs: 5, apps: 7, rating: 7.3, bio: "জাতীয় দলের পছন্দের গোলরক্ষক, রিফ্লেক্সে অসাধারণ।" },
+   259→  1389→[694] (prisma/seed.ts)
+   260→  1390→    { name: "মুক্তিযোদ্ধা সংস্কৃতি কেন্দ্র", shortName: "Muktijoddha SKC", initials: "MSK", city: "ঢাকা", stadium: "মুক্তিযোদ্ধা সংস্কৃতি কেন্দ্র মাঠ", founded: 1972, color: "#DC2626", color2: "#450A0A", strength: 0.49 },
+   261→  1391→[695] (prisma/seed.ts)
+   262→  1392→    { name: "মেহেদী হাসান", team: "BK", pos: "DF", num: 3, apps: 7, rating: 7.1, cs: 4 },
+   263→  1393→[696] (prisma/seed.ts)
+   264→  1394→    { name: "মোজাম্মেল হোসেন", team: "FTS", pos: "DF", num: 4, goals: 1, apps: 7, rating: 6.8 },
+   265→  1395→[697] (prisma/seed.ts)
+   266→  1396→    { name: "মোস্তাফিজুর রহমান", team: "RJ", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.5 },
+   267→  1397→[698] (prisma/seed.ts)
+   268→  1398→    { name: "মোহামেডান স্পোর্টিং ক্লাব", shortName: "Mohammedan SC", initials: "MSC", city: "ঢাকা", stadium: "বীরশ্রেষ্ঠ শহীদ সিপাহী কামাল স্টেডিয়াম", founded: 1936, color: "#059669", color2: "#022C22", strength: 0.82 },
+   269→  1399→[699] (prisma/seed.ts)
+   270→  1400→    { name: "মোহাম্মদ ইব্রাহিম", team: "BK", pos: "FW", num: 11, nt: true, goals: 4, assists: 2, apps: 7, rating: 7.7, bio: "গতিশীল উইঙ্গার, ড্রিবলিংয়ে প্রতিপক্ষের ভয়ের নাম।" },
+   271→  1401→[700] (prisma/seed.ts)
+   272→  1402→    { name: "রহমতগঞ্জ মুসলিম ফ্রেন্ডস সোসাইটি", shortName: "Rahmatganj MFS", initials: "RJ", city: "ঢাকা", stadium: "রহমতগঞ্জ মাঠ", founded: 1933, color: "#B45309", color2: "#451A03", strength: 0.51 },
+   273→  1403→[701] (prisma/seed.ts)
+   274→  1404→    { name: "রাকিব হোসেন", team: "BK", pos: "MF", num: 7, nt: true, goals: 3, assists: 5, apps: 7, rating: 7.9, bio: "সেট-পিস স্পেশালিস্ট উইঙ্গার, ফ্রি-কিকে জাদুকর।" },
+   275→  1405→[702] (prisma/seed.ts)
+   276→  1406→    { name: "রানিয়েল", team: "BK", pos: "FW", num: 10, nat: "ব্রাজিল", goals: 6, assists: 3, apps: 7, rating: 8.1, bio: "ব্রাজিলিয়ান স্ট্রাইকার, লিগের সেরা ফরেন স্ট্রাইকারদের একজন।" },
+   277→  1407→[703] (prisma/seed.ts)
+   278→  1408→    { name: "রাশেদুল পালোয়ান", team: "SR", pos: "FW", num: 9, goals: 3, apps: 7, rating: 7.0 },
+   279→  1409→[704] (prisma/seed.ts)
+   280→  1410→    { name: "রাহাত মিয়া", team: "SAIF", pos: "DF", num: 2, apps: 7, rating: 6.9 },
+   281→  1411→[705] (prisma/seed.ts)
+   282→  1412→    { name: "রিয়াদ হোসেন", team: "POL", pos: "DF", num: 3, apps: 6, rating: 6.5 },
+   283→  1413→[706] (prisma/seed.ts)
+   284→  1414→    { name: "রুস্তম আলী", team: "MSK", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.7 },
+   285→  1415→[707] (prisma/seed.ts)
+   286→  1416→    { name: "রেজাউল হাসান জীবন", team: "", pos: "DF", num: 3, nt: true, by: 1999, goals: 0, apps: 3, rating: 7.0 },
+   287→  1417→[708] (prisma/seed.ts)
+   288→  1418→    { name: "শহীদুল ইসলাম", team: "SAIF", pos: "GK", num: 1, apps: 6, cs: 2, rating: 6.7 },
+   289→  1419→[709] (prisma/seed.ts)
+   290→  1420→    { name: "শাকিল আহমেদ", team: "BU", pos: "DF", num: 6, apps: 7, rating: 6.4 },
+   291→  1421→[710] (prisma/seed.ts)
+   292→  1422→    { name: "শাহরিয়ার কবির", team: "POL", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.8 },
+   293→  1423→[711] (prisma/seed.ts)
+   294→  1424→    { name: "শেখ মোরশালিন", team: "BK", pos: "FW", num: 9, nt: true, goals: 5, apps: 7, rating: 7.8, bio: "গ্রাম ফুটবল থেকে বিপিএল স্টার — ফিনিশিং তার ব্র্যান্ড।" },
+   295→  1425→[712] (prisma/seed.ts)
+   296→  1426→    { name: "শেখ রাসেল ক্রীড়া চক্র", shortName: "Sheikh Russel KC", initials: "SR", city: "ঢাকা", stadium: "রফিকউদ্দিন ভূঁইয়া স্টেডিয়াম, টঙ্গী", founded: 1995, color: "#7C3AED", color2: "#2E1065", strength: 0.71 },
+   297→  1427→[713] (prisma/seed.ts)
+   298→  1428→    { name: "সাইফ স্পোর্টিং ক্লাব", shortName: "Saif SC", initials: "SAIF", city: "ঢাকা", stadium: "সাইফ মালিবাগ চত্বর মাঠ", founded: 2016, color: "#B91C1C", color2: "#450A0A", strength: 0.68 },
+   299→  1429→[714] (prisma/seed.ts)
+   300→  1430→    { name: "সাইফুল বারী টিটু", team: "AB", pos: "GK", num: 23, apps: 7, cs: 3, rating: 7.0 },
+   301→  1431→[715] (prisma/seed.ts)
+   302→  1432→    { name: "সাজিদ হোসেন", team: "BU", pos: "MF", num: 10, goals: 1, apps: 7, rating: 6.5 },
+   303→  1433→[716] (prisma/seed.ts)
+   304→  1434→    { name: "সুমন বড়ুয়া", team: "RJ", pos: "MF", num: 8, goals: 1, apps: 7, rating: 6.6 },
+   305→  1435→[717] (prisma/seed.ts)
+   306→  1436→    { name: "সোহেল রানা", team: "AB", pos: "MF", num: 6, nt: true, goals: 1, assists: 3, apps: 7, rating: 7.5, bio: "মিডফিল্ডের ইঞ্জিন, ট্যাকল আর পাসে সমান দক্ষ।" },
+   307→  1437→[718] (prisma/seed.ts)
+   308→  1438→    { name: "স্যামুয়েল ওকোনকো", team: "AB", pos: "FW", num: 88, nat: "নাইজেরিয়া", goals: 4, apps: 7, rating: 7.5 },
+   309→  1439→[719] (prisma/seed.ts)
+   310→  1440→    { name: "হামজা চৌধুরী", team: "", pos: "MF", num: 17, nat: "ইংল্যান্ড (বাংলাদেশি বংশোদ্ভূত)", nt: true, by: 1997, goals: 1, apps: 3, rating: 8.4, bio: "ইংলিশ প্রিমিয়ার লিগের ক্লাব লিসেস্টার সিটির মিডফিল্ডার। ২০২৫ সালে বাংলাদেশ জাতীয় দলে যোগ দেওয়া সবচেয়ে আলোচিত সাইনিং — বাংলাদেশি বংশোদ্ভূত প্রথম প্রিমিয়ার লিগ খেলোয়াড়।" },
+   311→  1441→[720] (prisma/seed.ts)
+   312→  1442→    { name: "হাসিবুর রহমান", team: "MSK", pos: "MF", num: 7, goals: 1, apps: 7, rating: 6.6 },
+   313→  1443→[721] (prisma/seed.ts)
+   314→  1444→    { title: "গোল উদযাপনের ১০ বেস্ট মোমেন্ট 🎉 কোনটা আপনার ফেভারিট?", url: "/videos/friday.mp4", thumb: IMG.celebrate[2], views: 58000, likes: 4900, tags: "গোল,সেলিব্রেশন", creator: creator2 },
+   315→  1445→[722] (prisma/seed.ts)
+   316→  1446→    { title: "গোলরক্ষক মিতুলের ৩ সেভ যা বিশ্বাস করা যায় না 🧤", url: "/videos/bkb2.mp4", thumb: IMG.goalkeeper[1], views: 98000, likes: 8700, tags: "সেভ,গোলরক্ষক", creator: creator2 },
+   317→  1447→[723] (prisma/seed.ts)
+   318→  1448→    { title: "জামাল ভূঞার পাস ম্যাপ ব্রেকডাউন 🧠 ট্যাকটিক্স টক", url: "/videos/flower.mp4", thumb: IMG.coach[0], views: 76000, likes: 6900, tags: "ট্যাকটিক্স,জামাল", creator: creator2 },
+   319→  1449→[724] (prisma/seed.ts)
+   320→  1450→    { title: "ট্রেনিং ডে: কিভাবে প্রস্তুত নেয় চ্যাম্পিয়নরা 💪", url: "/videos/sintel2.mp4", thumb: IMG.training[0], views: 64000, likes: 5400, tags: "ট্রেনিং,বিপিএল", creator: creator1 },
+   321→  1451→[725] (prisma/seed.ts)
+   322→  1452→    { title: "ডার্বি ডে ভাইবস 🏟️ গ্যালারির এই দৃশ্য মিস করবেন না", url: "/videos/jelly1.mp4", thumb: IMG.fans[1], views: 132000, likes: 11800, tags: "ডার্বি,ফ্যানস,গ্যালারি", creator: creator2 },
+   323→  1453→[726] (prisma/seed.ts)
+   324→  1454→    { title: "মোরশালিনের সলো গোল — মিডলাইন থেকে একাই 😱", url: "/videos/sintel1.mp4", thumb: IMG.dribble[1], views: 189000, likes: 15200, tags: "গোল,বিপিএল", creator: creator1 },
+   325→  1455→[727] (prisma/seed.ts)
+   326→  1456→    { title: "রাকিব হোসেনের কার্লড ফ্রি-কিক 🔥 সরাসরি জালে!", url: "/videos/bkb1.mp4", thumb: IMG.action[0], views: 248000, likes: 18400, tags: "ফ্রিকিক,বিপিএল,হাইলাইটস", creator: creator1 },
+   327→  1457→[728] (prisma/seed.ts)
+   328→  1458→    { title: "হামজা চৌধুরী লাল-সবুজে 💚❤️ প্রথম দিনের মুহূর্ত", url: "/videos/jelly2.mp4", thumb: IMG.celebrate[1], views: 412000, likes: 36500, tags: "হামজা,জাতীয়দল", creator: creator1 },
+   329→  1459→[729] (lib/types.ts)
+   330→  1460→  ALL: "সব",
+   331→  1461→[730] (earnings-view.tsx)
+   332→  1462→  APPROVED: { label: "অনুমোদিত", cls: "bg-primary/15 text-primary" },
+   333→  1463→[731] (lib/types.ts)
+   334→  1464→  BPL: "বিপিএল",
+   335→  1465→[732] (competitions-view.tsx)
+   336→  1466→  CUP: "কাপ",
+   337→  1467→[733] (lib/types.ts)
+   338→  1468→  DF: "ডিফেন্ডার",
+   339→  1469→[734] (lib/types.ts)
+   340→  1470→  FW: "ফরোয়ার্ড",
+   341→  1471→[735] (lib/types.ts)
+   342→  1472→  GK: "গোলরক্ষক",
+   343→  1473→[736] (competitions-view.tsx,lib/types.ts)
+   344→  1474→  INTERNATIONAL: "আন্তর্জাতিক",
+   345→  1475→[737] (competitions-view.tsx)
+   346→  1476→  LEAGUE: "লিগ",
+   347→  1477→[738] (lib/types.ts)
+   348→  1478→  MF: "মিডফিল্ডার",
+   349→  1479→[739] (lib/types.ts)
+   350→  1480→  NATIONAL: "জাতীয় দল",
+   351→  1481→[740] (lib/types.ts)
+   352→  1482→  OPINION: "মতামত",
+   353→  1483→[741] (earnings-view.tsx)
+   354→  1484→  PAID: { label: "পরিশোধিত", cls: "bg-primary/15 text-primary" },
+   355→  1485→[742] (earnings-view.tsx)
+   356→  1486→  PENDING: { label: "অপেক্ষমাণ", cls: "bg-fhb-gold/15 text-fhb-gold" },
+   357→  1487→[743] (earnings-view.tsx)
+   358→  1488→  REJECTED: { label: "বাতিল", cls: "bg-fhb-red/15 text-fhb-red" },
+   359→  1489→[744] (lib/types.ts)
+   360→  1490→  TRANSFER: "ট্রান্সফার",
+   361→  1491→[745] (api/payouts/route.ts)
+   362→  1492→  account: z.string().trim().min(5, "অ্যাকাউন্ট নম্বর দিন").max(40),
+   363→  1493→[746] (api/payouts/route.ts)
+   364→  1494→  amount: z.number().min(500, "সর্বনিম্ন উত্তোলন ৫০০ টাকা"),
+   365→  1495→[747] (prisma/seed.ts)
+   366→  1496→  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 34, type: "GOAL", teamId: bd.id, teamSide: "home", playerName: "ফয়সাল আহমেদ ফাহিম", detail: "গোল" } });
+   367→  1497→[748] (prisma/seed.ts)
+   368→  1498→  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 61, type: "GOAL", teamId: india.id, teamSide: "away", playerName: "সুনিল ছেত্রী", detail: "গোল (পেনাল্টি)" } });
+   369→  1499→[749] (lib/format.ts)
+   370→  1500→  const bnDays = ["রবিবার", "সোমবার", "মঙ্গলবার", "বুধবার", "বৃহস্পতিবার", "শুক্রবার", "শনিবার"];
+   371→  1501→[750] (lib/format.ts)
+   372→  1502→  const bnMonths = ["জানুয়ারি", "ফেব্রুয়ারি", "মার্চ", "এপ্রিল", "মে", "জুন", "জুলাই", "আগস্ট", "সেপ্টেম্বর", "অক্টোবর", "নভেম্বর", "ডিসেম্বর"];
+   373→  1503→[751] (football/ad-slot.tsx,football/video-preroll.tsx)
+   374→  1504→  const cta = ad.ctaLabel || "আরও জানুন";
+   375→  1505→[752] (football/live-badge.tsx)
+   376→  1506→  const labels: Record<string, string> = { W: "জ", D: "ড", L: "হ" };
+   377→  1507→[753] (prisma/seed.ts)
+   378→  1508→  const liveMatch1 = await createLive(derbyPair, 37); // বসুন্ধরা বনাম মোহামেডান — ডার্বি লাইভ!
+   379→  1509→[754] (api/comments/route.ts)
+   380→  1510→  content: z.string().trim().min(1, "কমেন্ট লিখুন").max(500, "কমেন্ট ৫০০ অক্ষরের মধ্যে রাখুন"),
+   381→  1511→[755] (api/posts/route.ts)
+   382→  1512→  content: z.string().trim().min(2, "পোস্টে কিছু লিখুন").max(600, "৬০০ অক্ষরের মধ্যে লিখুন"),
+   383→  1513→[756] (api/admin/news/route.ts)
+   384→  1514→  content: z.string().trim().min(20, "বিস্তারিত লেখা কমপক্ষে ২০ অক্ষরের"),
+   385→  1515→[757] (prisma/schema.prisma)
+   386→  1516→  country     String  @default("বাংলাদেশ")
+   387→  1517→[758] (lib/format.ts)
+   388→  1518→  else if (d.toDateString() === tomorrow.toDateString()) relative = "আগামীকাল";
+   389→  1519→[759] (lib/format.ts)
+   390→  1520→  else if (d.toDateString() === yesterday.toDateString()) relative = "গতকাল";
+   391→  1521→[760] (api/auth/register/route.ts)
+   392→  1522→  email: z.string().trim().email("সঠিক ইমেইল দিন"),
+   393→  1523→[761] (api/admin/news/route.ts)
+   394→  1524→  excerpt: z.string().trim().min(10, "সারসংক্ষেপ কমপক্ষে ১০ অক্ষরের").max(400),
+   395→  1525→[762] (lib/auth.ts)
+   396→  1526→  if (!user) throw new AuthError("লগইন প্রয়োজন", 401);
+   397→  1527→[763] (lib/format.ts)
+   398→  1528→  if (days < 30) return `${toBn(days)} দিন আগে`;
+   399→  1529→[764] (lib/format.ts)
+   400→  1530→  if (hours < 24) return `${toBn(hours)} ঘণ্টা আগে`;
+   401→
+   402→[showing lines 1131-1530 of 1725; use offset=1531 with limit to continue reading]

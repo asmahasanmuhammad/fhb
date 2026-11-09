@@ -9,7 +9,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       where: { OR: [{ id }, { slug: id }] },
       include: { author: { select: { id: true, name: true, username: true, avatarUrl: true, bio: true } } },
     });
-    if (!article || article.status !== "PUBLISHED") return fail("নিউজ পাওয়া যায়নি", 404);
+    if (!article || article.status !== "PUBLISHED") return fail("Article not found", 404);
 
     // increment views (fire & forget)
     db.newsArticle.update({ where: { id: article.id }, data: { views: { increment: 1 } } }).catch(() => {});

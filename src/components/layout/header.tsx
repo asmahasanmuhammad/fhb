@@ -17,7 +17,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { toBn } from "@/lib/format";
+import { fmtNum } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
   Trophy, Calendar, Newspaper, Users, Video, Shield, LayoutDashboard, LogOut, User2,
@@ -26,22 +26,22 @@ import {
 } from "lucide-react";
 
 const NAV_ITEMS: Array<{ label: string; view: View; icon: React.ReactNode }> = [
-  { label: "লাইভ স্কোর", view: { name: "scores" }, icon: <Zap className="h-4 w-4" aria-hidden /> },
-  { label: "টেবিল", view: { name: "standings" }, icon: <Trophy className="h-4 w-4" aria-hidden /> },
-  { label: "নিউজ", view: { name: "news" }, icon: <Newspaper className="h-4 w-4" aria-hidden /> },
-  { label: "দল", view: { name: "teams" }, icon: <Users className="h-4 w-4" aria-hidden /> },
-  { label: "খেলোয়াড়", view: { name: "players" }, icon: <Flame className="h-4 w-4" aria-hidden /> },
-  { label: "টুর্নামেন্ট", view: { name: "competitions" }, icon: <Shield className="h-4 w-4" aria-hidden /> },
-  { label: "শর্টস", view: { name: "shorts" }, icon: <Video className="h-4 w-4" aria-hidden /> },
-  { label: "কমিউনিটি", view: { name: "community" }, icon: <Radio className="h-4 w-4" aria-hidden /> },
+  { label: "Live Scores", view: { name: "scores" }, icon: <Zap className="h-4 w-4" aria-hidden /> },
+  { label: "Standings", view: { name: "standings" }, icon: <Trophy className="h-4 w-4" aria-hidden /> },
+  { label: "News", view: { name: "news" }, icon: <Newspaper className="h-4 w-4" aria-hidden /> },
+  { label: "Teams", view: { name: "teams" }, icon: <Users className="h-4 w-4" aria-hidden /> },
+  { label: "Players", view: { name: "players" }, icon: <Flame className="h-4 w-4" aria-hidden /> },
+  { label: "Competitions", view: { name: "competitions" }, icon: <Shield className="h-4 w-4" aria-hidden /> },
+  { label: "Shorts", view: { name: "shorts" }, icon: <Video className="h-4 w-4" aria-hidden /> },
+  { label: "Community", view: { name: "community" }, icon: <Radio className="h-4 w-4" aria-hidden /> },
 ];
 
 const MOBILE_NAV: Array<{ label: string; view: View; icon: React.ReactNode }> = [
-  { label: "হোম", view: { name: "home" }, icon: <Trophy className="h-5 w-5" aria-hidden /> },
-  { label: "স্কোর", view: { name: "scores" }, icon: <Zap className="h-5 w-5" aria-hidden /> },
-  { label: "শর্টস", view: { name: "shorts" }, icon: <Video className="h-5 w-5" aria-hidden /> },
-  { label: "নিউজ", view: { name: "news" }, icon: <Newspaper className="h-5 w-5" aria-hidden /> },
-  { label: "প্রোফাইল", view: { name: "profile" }, icon: <User2 className="h-5 w-5" aria-hidden /> },
+  { label: "Home", view: { name: "home" }, icon: <Trophy className="h-5 w-5" aria-hidden /> },
+  { label: "Scores", view: { name: "scores" }, icon: <Zap className="h-5 w-5" aria-hidden /> },
+  { label: "Shorts", view: { name: "shorts" }, icon: <Video className="h-5 w-5" aria-hidden /> },
+  { label: "News", view: { name: "news" }, icon: <Newspaper className="h-5 w-5" aria-hidden /> },
+  { label: "Profile", view: { name: "profile" }, icon: <User2 className="h-5 w-5" aria-hidden /> },
 ];
 
 /** Premium SVG shield crest — club-grade brand mark. */
@@ -128,7 +128,7 @@ export function Header() {
 
   const handleLogout = async () => {
     await logout();
-    toast({ title: "লগআউট সফল", description: "আবার দেখা হবে!" });
+    toast({ title: "Logged out", description: "See you again!" });
     navigate({ name: "home" });
   };
 
@@ -146,7 +146,7 @@ export function Header() {
         <div className="relative flex h-9 items-center overflow-hidden border-b border-border/50 bg-card/70">
           <span className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-fhb-red px-3.5 font-display text-[10px] font-bold uppercase tracking-[0.18em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-8px)_100%,0_100%)]">
             <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-white" aria-hidden />
-            লাইভ {toBn(liveCount)}
+            LIVE {fmtNum(liveCount)}
           </span>
           <div className="relative flex-1 overflow-hidden">
             <div className="marquee-track flex whitespace-nowrap">
@@ -160,11 +160,11 @@ export function Header() {
                     >
                       <span>{m.homeTeam.name}</span>
                       <span className="tabular rounded-md bg-fhb-red/15 px-1.5 py-0.5 font-bold text-fhb-red">
-                        {toBn(m.homeScore)} - {toBn(m.awayScore)}
+                        {fmtNum(m.homeScore)} - {fmtNum(m.awayScore)}
                       </span>
                       <span>{m.awayTeam.name}</span>
                       <span className="text-muted-foreground">
-                        ({m.period === "HT" ? "HT" : `${toBn(m.minute)}′`})
+                        ({m.period === "HT" ? "HT" : `${fmtNum(m.minute)}′`})
                       </span>
                       <span className="ml-4 h-1 w-1 rounded-full bg-primary/60" aria-hidden />
                     </button>
@@ -194,7 +194,7 @@ export function Header() {
             navigate({ name: "home" });
           }}
           className="group flex shrink-0 items-center gap-3"
-          aria-label="Football Hub Bangladesh হোমপেজ"
+          aria-label="Football Hub Bangladesh homepage"
         >
           <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
             <LogoMark />
@@ -204,13 +204,13 @@ export function Header() {
               FOOTBALL HUB <span className="text-primary">BD</span>
             </span>
             <span className="mt-1 text-[9.5px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
-              বাংলাদেশের ফুটবল নেটওয়ার্ক
+              Bangladesh's Football Network
             </span>
           </span>
         </Link>
 
         {/* Desktop nav — underline tabs */}
-        <nav className="hidden h-full items-center lg:flex" aria-label="প্রধান মেনু">
+        <nav className="hidden h-full items-center lg:flex" aria-label="Main menu">
           {NAV_ITEMS.map((item) => (
             <button
               key={item.label}
@@ -244,10 +244,10 @@ export function Header() {
             <button
               onClick={() => navigate({ name: "scores" })}
               className="hidden items-center gap-1.5 rounded-full border border-fhb-red/45 bg-fhb-red/10 px-3 py-1.5 font-display text-[11px] font-bold uppercase tracking-wider text-fhb-red transition-all hover:bg-fhb-red/20 sm:flex"
-              aria-label={`এই মুহূর্তে ${toBn(liveCount)} টি ম্যাচ লাইভ — স্কোর দেখুন`}
+              aria-label={`${fmtNum(liveCount)} matches live right now — view scores`}
             >
               <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />
-              লাইভ {toBn(liveCount)}
+              LIVE {fmtNum(liveCount)}
             </button>
           )}
 
@@ -256,7 +256,7 @@ export function Header() {
             className="sheen hidden items-center gap-1.5 rounded-full border border-fhb-gold/45 bg-gradient-to-b from-fhb-gold/20 to-fhb-gold/5 px-3.5 py-1.5 text-[11px] font-bold text-fhb-gold transition-all hover:border-fhb-gold/70 hover:from-fhb-gold/30 sm:flex"
           >
             <Crown className="h-3.5 w-3.5" aria-hidden />
-            প্রিমিয়াম
+            Premium
           </button>
 
           {user ? (
@@ -264,7 +264,7 @@ export function Header() {
               <DropdownMenuTrigger asChild>
                 <button
                   className="flex items-center gap-2 rounded-full border border-border bg-card p-1 pr-2.5 transition-all hover:border-primary/50 hover:shadow-[0_6px_20px_-8px_rgba(0,0,0,0.6)]"
-                  aria-label="অ্যাকাউন্ট মেনু"
+                  aria-label="Account menu"
                 >
                   <Avatar className="h-7 w-7 border border-border/60">
                     <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
@@ -286,49 +286,49 @@ export function Header() {
                   </span>
                   {user.isPremium && (
                     <span className="mt-2 inline-flex items-center gap-1 rounded-md bg-fhb-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-fhb-gold">
-                      <Crown className="h-3 w-3" aria-hidden /> প্রিমিয়াম সদস্য
+                      <Crown className="h-3 w-3" aria-hidden /> Premium Member
                     </span>
                   )}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator className="my-1" />
                 <DropdownMenuItem onClick={() => navigate({ name: "profile" })} className="gap-2.5 rounded-lg text-xs">
-                  <User2 className="h-4 w-4 text-primary" aria-hidden /> আমার প্রোফাইল
+                  <User2 className="h-4 w-4 text-primary" aria-hidden /> My Profile
                 </DropdownMenuItem>
                 {(user.role === "CREATOR" || user.role === "ADMIN") && (
                   <>
                     <DropdownMenuItem onClick={() => navigate({ name: "upload" })} className="gap-2.5 rounded-lg text-xs">
-                      <Upload className="h-4 w-4 text-primary" aria-hidden /> ভিডিও আপলোড
+                      <Upload className="h-4 w-4 text-primary" aria-hidden /> Upload Video
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate({ name: "earnings" })} className="gap-2.5 rounded-lg text-xs">
-                      <Wallet className="h-4 w-4 text-primary" aria-hidden /> আয়ের ড্যাশবোর্ড
+                      <Wallet className="h-4 w-4 text-primary" aria-hidden /> Earnings Dashboard
                     </DropdownMenuItem>
                   </>
                 )}
                 {user.role === "ADMIN" && (
                   <DropdownMenuItem onClick={() => navigate({ name: "admin" })} className="gap-2.5 rounded-lg text-xs">
-                    <LayoutDashboard className="h-4 w-4 text-primary" aria-hidden /> অ্যাডমিন প্যানেল
+                    <LayoutDashboard className="h-4 w-4 text-primary" aria-hidden /> Admin Panel
                   </DropdownMenuItem>
                 )}
                 <DropdownMenuItem onClick={() => navigate({ name: "premium" })} className="gap-2.5 rounded-lg text-xs">
-                  <Crown className="h-4 w-4 text-fhb-gold" aria-hidden /> প্রিমিয়াম সদস্যতা
+                  <Crown className="h-4 w-4 text-fhb-gold" aria-hidden /> Premium Membership
                 </DropdownMenuItem>
                 <DropdownMenuSeparator className="my-1" />
                 <DropdownMenuItem onClick={handleLogout} className="gap-2.5 rounded-lg text-xs text-fhb-red focus:text-fhb-red">
-                  <LogOut className="h-4 w-4" aria-hidden /> লগআউট
+                  <LogOut className="h-4 w-4" aria-hidden /> Log Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
             <>
               <Button variant="ghost" size="sm" onClick={() => navigate({ name: "auth" })} className="text-xs font-semibold">
-                লগইন
+                Log In
               </Button>
               <Button
                 size="sm"
                 onClick={() => navigate({ name: "auth" })}
                 className="sheen gap-1 rounded-full bg-primary px-4 text-xs font-bold text-primary-foreground shadow-[0_8px_22px_-8px_var(--primary)] hover:bg-primary/90"
               >
-                যোগ দিন <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+                Join <ChevronRight className="h-3.5 w-3.5" aria-hidden />
               </Button>
             </>
           )}
@@ -337,7 +337,7 @@ export function Header() {
           <button
             className="tap-target flex items-center justify-center rounded-xl border border-border bg-card text-foreground lg:hidden"
             onClick={() => setMobileOpen((v) => !v)}
-            aria-label={mobileOpen ? "মেনু বন্ধ করুন" : "মেনু খুলুন"}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
             aria-expanded={mobileOpen}
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -357,7 +357,7 @@ export function Header() {
           >
             <div className="px-4 pb-24 pt-5">
               {/* Nav grid */}
-              <nav className="grid grid-cols-2 gap-2.5" aria-label="মোবাইল মেনু">
+              <nav className="grid grid-cols-2 gap-2.5" aria-label="Mobile menu">
                 {NAV_ITEMS.map((item, i) => (
                   <button
                     key={item.label}
@@ -398,10 +398,10 @@ export function Header() {
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-sm font-bold text-foreground">
-                    প্রিমিয়াম <span className="text-fhb-gold">PRO</span>
+                    Premium <span className="text-fhb-gold">PRO</span>
                   </span>
                   <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                    বিজ্ঞাপনমুক্ত + এক্সক্লুসিভ কনটেন্ট
+                    Ad-free + exclusive content
                   </span>
                 </span>
                 <ChevronRight className="h-5 w-5 shrink-0 text-fhb-gold" aria-hidden />
@@ -423,7 +423,7 @@ export function Header() {
                       setMobileOpen(false);
                     }}
                   >
-                    লগইন
+                    Log In
                   </Button>
                   <Button
                     className="sheen h-12 rounded-xl bg-primary text-sm font-bold text-primary-foreground"
@@ -432,7 +432,7 @@ export function Header() {
                       setMobileOpen(false);
                     }}
                   >
-                    ফ্রি যোগ দিন
+                    Join Free
                   </Button>
                 </div>
               )}
@@ -456,7 +456,7 @@ export function Header() {
               </div>
               <p className="menu-item mt-5 flex items-center justify-center gap-1.5 text-center text-[11px] text-muted-foreground" style={{ animationDelay: "520ms" }}>
                 <Heart className="h-3 w-3 text-fhb-red" aria-hidden />
-                বাংলাদেশের ফুটবলপ্রেমীদের জন্য — ঢাকা থেকে
+                Made for the football fans of Bangladesh — from Dhaka
               </p>
             </div>
           </div>,
@@ -471,7 +471,7 @@ export function BottomNav() {
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-50 border-t border-border/70 bg-background/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden"
-      aria-label="মোবাইল নেভিগেশন"
+      aria-label="Mobile navigation"
     >
       <div className="mx-auto grid max-w-lg">
         {MOBILE_NAV.map((item) => {
@@ -505,8 +505,8 @@ export function BottomNav() {
                 {item.icon}
               </span>
               {item.label}
-              {item.label === "প্রোফাইল" && user?.isPremium && (
-                <span className="absolute right-6 top-2 h-1.5 w-1.5 rounded-full bg-fhb-gold" aria-label="প্রিমিয়াম" />
+              {item.label === "Profile" && user?.isPremium && (
+                <span className="absolute right-6 top-2 h-1.5 w-1.5 rounded-full bg-fhb-gold" aria-label="Premium" />
               )}
             </button>
           );

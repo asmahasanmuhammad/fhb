@@ -27,7 +27,7 @@ export async function PUT(req: NextRequest) {
     await requireAdmin();
     const body = await req.json().catch(() => null);
     const parsed = updateSchema.safeParse(body);
-    if (!parsed.success) return fail("ভুল তথ্য", 422);
+    if (!parsed.success) return fail("Invalid input", 422);
 
     const payout = await db.payoutRequest.update({
       where: { id: parsed.data.id },

@@ -6,26 +6,26 @@ import { createSession, setSessionCookie } from "@/lib/auth";
 import { ok, fail, handleError, rateLimit } from "@/lib/api";
 
 const schema = z.object({
-  name: z.string().trim().min(2, "নাম কমপক্ষে ২ অক্ষরের হতে হবে").max(60),
+  name: z.string().trim().min(2, "Name must be at least 2 characters").max(60),
   username: z
     .string()
     .trim()
-    .min(3, "ইউজারনেম কমপক্ষে ৩ অক্ষরের")
+    .min(3, "Username must be at least 3 characters")
     .max(24)
-    .regex(/^[a-zA-Z0-9_]+$/, "ইউজারনেমে শুধু ইংরেজি অক্ষর, সংখ্যা ও _ ব্যবহার করুন"),
-  email: z.string().trim().email("সঠিক ইমেইল দিন"),
-  password: z.string().min(6, "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের"),
+    .regex(/^[a-zA-Z0-9_]+$/, "Username can only contain letters, numbers and _"),
+  email: z.string().trim().email("Enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const ip = req.headers.get("x-forwarded-for") ?? "local";
-    if (!rateLimit(`register:${ip}`, 10, 60_000)) return fail("অনেকবার চেষ্টা হয়েছে, একটু পরে আবার করুন", 429);
+    if (!rateLimit(`register:${ip}`, 10, 60_000)) return fail("Too many attempts — please try again in a moment", 429);
 
     const body = await req.json().catch(() => null);
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
-      return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
+      return fail(parsed.error.issues[0]?.message ?? "Invalid input", 422);
     }
     const { name, username, email, password } = parsed.data;
 
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
       where: { OR: [{ email: email.toLowerCase() }, { username: username.toLowerCase() }] },
     });
     if (exists) {
-      return fail("এই ইমেইল বা ইউজারনেম দিয়ে অ্যাকাউন্ট আছে — লগইন করুন", 409);
+      return fail("An account with this email or username already exists — please log in", 409);
     }
 
     const user = await db.user.create({

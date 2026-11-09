@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { timeAgo, bnCompact } from "@/lib/format";
+import { timeAgo, fmtCompact } from "@/lib/format";
 import { CATEGORY_LABELS } from "@/lib/types";
 import type { NewsArticle } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
@@ -119,7 +119,7 @@ export function NewsCard({
                 <Clock className="h-3 w-3" aria-hidden /> {timeAgo(article.createdAt)}
               </span>
               <span className="flex items-center gap-1">
-                <Eye className="h-3 w-3" aria-hidden /> {bnCompact(article.views)}
+                <Eye className="h-3 w-3" aria-hidden /> {fmtCompact(article.views)}
               </span>
             </div>
           </div>
@@ -138,14 +138,14 @@ export function NewsCard({
             <span className="min-w-0 truncate font-medium">{article.author.name} · {timeAgo(article.createdAt)}</span>
             <span className="flex shrink-0 items-center gap-2.5">
               <span className="flex items-center gap-1">
-                <Eye className="h-3 w-3" aria-hidden /> {bnCompact(article.views)}
+                <Eye className="h-3 w-3" aria-hidden /> {fmtCompact(article.views)}
               </span>
               <span className="flex items-center gap-1">
-                <Heart className="h-3 w-3" aria-hidden /> {bnCompact(article.likeCount)}
+                <Heart className="h-3 w-3" aria-hidden /> {fmtCompact(article.likeCount)}
               </span>
               {article.commentCount > 0 && (
                 <span className="flex items-center gap-1">
-                  <MessageCircle className="h-3 w-3" aria-hidden /> {bnCompact(article.commentCount)}
+                  <MessageCircle className="h-3 w-3" aria-hidden /> {fmtCompact(article.commentCount)}
                 </span>
               )}
             </span>

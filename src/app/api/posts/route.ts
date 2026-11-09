@@ -33,7 +33,7 @@ export async function GET(req: NextRequest) {
 }
 
 const postSchema = z.object({
-  content: z.string().trim().min(2, "পোস্টে কিছু লিখুন").max(600, "৬০০ অক্ষরের মধ্যে লিখুন"),
+  content: z.string().trim().min(2, "Write something in your post").max(600, "Keep it within 600 characters"),
   matchTag: z.string().trim().max(30).optional().nullable(),
 });
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     const user = await requireUser();
     const body = await req.json().catch(() => null);
     const parsed = postSchema.safeParse(body);
-    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input", 422);
 
     const post = await db.post.create({
       data: { authorId: user.id, content: parsed.data.content, matchTag: parsed.data.matchTag ?? null },

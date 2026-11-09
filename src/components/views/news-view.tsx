@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { Newspaper, Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { bnNumber } from "@/lib/format";
+import { fmtLocale } from "@/lib/format";
 
 export function NewsView() {
   const [category, setCategory] = useState("ALL");
@@ -35,9 +35,9 @@ export function NewsView() {
   return (
     <div className="mx-auto w-full max-w-7xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
-        title="ফুটবল নিউজ ও ট্রান্সফার"
+        title="Football News & Transfers"
         kicker="newsroom"
-        subtitle="বিপিএল, জাতীয় দল ও আন্তর্জাতিক — সব আপডেট এক জায়গায়"
+        subtitle="BPL, national team and international — all updates in one place"
         icon={<Newspaper className="h-5 w-5" aria-hidden />}
       />
 
@@ -48,15 +48,15 @@ export function NewsView() {
           <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="নিউজ খুঁজুন..."
+            placeholder="Search news..."
             className="h-11 rounded-full border-border bg-card pl-11 pr-10 text-sm"
-            aria-label="নিউজ সার্চ"
+            aria-label="News search"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
               className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label="সার্চ মুছুন"
+              aria-label="Clear search"
             >
               <X className="h-4 w-4" />
             </button>
@@ -91,13 +91,13 @@ export function NewsView() {
           <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
             <Newspaper className="h-6 w-6" aria-hidden />
           </span>
-          <p className="text-sm text-muted-foreground">এই বিভাগে কোনো নিউজ পাওয়া যায়নি।</p>
+          <p className="text-sm text-muted-foreground">No news found in this category.</p>
         </div>
       ) : (
         <>
           <p className="mb-4 flex items-center gap-2 text-xs text-muted-foreground">
             <span className="h-1.5 w-1.5 rounded-[3px] bg-primary" aria-hidden />
-            মোট {bnNumber(articles.length)} টি নিউজ
+            {fmtLocale(articles.length)} articles total
           </p>
 
           {/* Lead story + grid */}

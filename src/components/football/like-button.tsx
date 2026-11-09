@@ -6,7 +6,7 @@ import { useAppStore } from "@/store/app-store";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { Heart } from "lucide-react";
-import { bnCompact } from "@/lib/format";
+import { fmtCompact } from "@/lib/format";
 
 /**
  * Optimistic like button for NEWS / VIDEO / POST targets.
@@ -67,7 +67,7 @@ export function LikeButton({
       <button
         onClick={handleClick}
         className="tap-target flex flex-col items-center gap-1 text-white"
-        aria-label={liked ? "অপছন্দ করুন" : "পছন্দ করুন"}
+        aria-label={liked ? "Unlike" : "Like"}
         aria-pressed={liked}
       >
         <span
@@ -81,7 +81,7 @@ export function LikeButton({
             aria-hidden
           />
         </span>
-        <span className="tabular font-display text-xs font-semibold drop-shadow">{bnCompact(count)}</span>
+        <span className="tabular font-display text-xs font-semibold drop-shadow">{fmtCompact(count)}</span>
       </button>
     );
   }
@@ -93,10 +93,10 @@ export function LikeButton({
       onClick={handleClick}
       className={cn("gap-1.5", liked && "border-fhb-red/40 text-fhb-red hover:text-fhb-red")}
       aria-pressed={liked}
-      aria-label={liked ? "অপছন্দ করুন" : "পছন্দ করুন"}
+      aria-label={liked ? "Unlike" : "Like"}
     >
       <Heart className={cn("h-4 w-4", liked && "fill-fhb-red")} aria-hidden />
-      {bnCompact(count)}
+      {fmtCompact(count)}
     </Button>
   );
 }

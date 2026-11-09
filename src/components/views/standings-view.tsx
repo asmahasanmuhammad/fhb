@@ -10,7 +10,7 @@ import { PageHeader } from "@/components/football/section-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/store/app-store";
 import { cn } from "@/lib/utils";
-import { toBn } from "@/lib/format";
+import { fmtNum } from "@/lib/format";
 import { Trophy, Goal, Zap, Medal } from "lucide-react";
 
 export function StandingsView() {
@@ -47,9 +47,9 @@ export function StandingsView() {
   return (
     <div className="mx-auto w-full max-w-5xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
-        title="লিগ টেবিল ও পরিসংখ্যান"
+        title="League Table & Stats"
         kicker="standings"
-        subtitle="পয়েন্ট টেবিল, ফর্ম গাইড ও সেরা গোলদাতার তালিকা"
+        subtitle="Points table, form guide and top scorers"
         icon={<Trophy className="h-5 w-5" aria-hidden />}
       />
 
@@ -77,11 +77,11 @@ export function StandingsView() {
       </div>
 
       {/* Table / scorers segmented control */}
-      <div className="mb-7 grid max-w-sm grid-cols-2 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5" role="tablist" aria-label="টেবিল ভিউ">
+      <div className="mb-7 grid max-w-sm grid-cols-2 gap-1 rounded-2xl border border-border bg-muted/40 p-1.5" role="tablist" aria-label="Table view">
         {(
           [
-            ["table", "পয়েন্ট টেবিল", <Trophy key="t" className="h-3.5 w-3.5" aria-hidden />],
-            ["scorers", "সেরা গোলদাতা", <Goal key="g" className="h-3.5 w-3.5" aria-hidden />],
+            ["table", "Points Table", <Trophy key="t" className="h-3.5 w-3.5" aria-hidden />],
+            ["scorers", "Top Scorers", <Goal key="g" className="h-3.5 w-3.5" aria-hidden />],
           ] as const
         ).map(([key, label, icon]) => (
           <button
@@ -108,25 +108,25 @@ export function StandingsView() {
             <StandingsTable standings={data!.standings} />
             <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-2xl border border-border bg-card px-5 py-3.5 text-[11px] text-muted-foreground">
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-1 rounded-sm bg-fhb-gold" /> চ্যাম্পিয়ন জোন
+                <span className="h-2.5 w-1 rounded-sm bg-fhb-gold" /> Championship zone
               </span>
               <span className="flex items-center gap-1.5">
-                <span className="h-2.5 w-1 rounded-sm bg-fhb-red" /> রেলিগেশন জোন
+                <span className="h-2.5 w-1 rounded-sm bg-fhb-red" /> Relegation zone
               </span>
-              <span className="ml-auto border-l border-border pl-4">জ = জয় · ড = ড্র · হ = হার · গড = গোল ব্যবধান</span>
+              <span className="ml-auto border-l border-border pl-4">W = Win · D = Draw · L = Loss · GD = Goal Difference</span>
             </div>
           </div>
         ) : (
           <div className="edge-lit rounded-2xl border border-border bg-card p-12 text-center">
             <p className="text-sm text-muted-foreground">
-              এই টুর্নামেন্টে কাপ ফরম্যাট চলছে — লিগ টেবিল প্রযোজ্য নয়। ম্যাচ দেখুন{" "}
+              This tournament uses a cup format — no league table applies. See the{" "}
               <button
                 onClick={() => navigate({ name: "scores" })}
                 className="font-bold text-primary hover:underline"
               >
-                লাইভ স্কোর
+                Live Scores
               </button>{" "}
-              পেজে।
+              page.
             </p>
           </div>
         )
@@ -146,7 +146,7 @@ export function StandingsView() {
                 >
                   {i === 0 && (
                     <span className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full bg-fhb-gold/20 font-display text-sm font-bold text-fhb-gold">
-                      {toBn(1)}
+                      {fmtNum(1)}
                     </span>
                   )}
                   <span
@@ -155,7 +155,7 @@ export function StandingsView() {
                       i === 0 ? "bg-fhb-gold/20 text-fhb-gold" : i < 3 ? "bg-primary/12 text-primary" : "bg-muted text-muted-foreground"
                     )}
                   >
-                    {toBn(i + 1)}
+                    {fmtNum(i + 1)}
                   </span>
                   <div className="mt-3.5 flex items-center gap-3">
                     {p.team && <TeamBadge team={p.team} size="lg" />}
@@ -168,13 +168,13 @@ export function StandingsView() {
                     <div>
                       <p className="tabular flex items-center gap-1.5 font-display text-2xl font-bold leading-none text-primary">
                         <Goal className="h-4 w-4" aria-hidden />
-                        {toBn(p.goals)}
+                        {fmtNum(p.goals)}
                       </p>
-                      <p className="mt-1 text-[9px] font-medium uppercase tracking-widest text-muted-foreground">গোল</p>
+                      <p className="mt-1 text-[9px] font-medium uppercase tracking-widest text-muted-foreground">Goals</p>
                     </div>
                     <div>
-                      <p className="tabular font-display text-2xl font-bold leading-none text-foreground">{toBn(p.assists)}</p>
-                      <p className="mt-1 text-[9px] font-medium uppercase tracking-widest text-muted-foreground">অ্যাসিস্ট</p>
+                      <p className="tabular font-display text-2xl font-bold leading-none text-foreground">{fmtNum(p.assists)}</p>
+                      <p className="mt-1 text-[9px] font-medium uppercase tracking-widest text-muted-foreground">Assists</p>
                     </div>
                   </div>
                 </button>
@@ -191,7 +191,7 @@ export function StandingsView() {
                   className="group flex w-full items-center gap-3.5 border-b border-border/50 px-4 py-3.5 text-left transition-colors last:border-0 hover:bg-accent/50 sm:gap-4 sm:px-5"
                 >
                   <span className="tabular flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted font-display text-sm font-bold text-muted-foreground group-hover:text-primary">
-                    {toBn(i + 4)}
+                    {fmtNum(i + 4)}
                   </span>
                   {p.team && <TeamBadge team={p.team} size="sm" />}
                   <div className="min-w-0 flex-1">
@@ -202,13 +202,13 @@ export function StandingsView() {
                     <div className="w-12">
                       <p className="tabular flex items-center justify-center gap-1 font-display text-lg font-bold text-primary">
                         <Goal className="h-3.5 w-3.5" aria-hidden />
-                        {toBn(p.goals)}
+                        {fmtNum(p.goals)}
                       </p>
-                      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">গোল</p>
+                      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">Goals</p>
                     </div>
                     <div className="w-12">
-                      <p className="tabular font-display text-lg font-bold text-foreground">{toBn(p.assists)}</p>
-                      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">অ্যাসিস্ট</p>
+                      <p className="tabular font-display text-lg font-bold text-foreground">{fmtNum(p.assists)}</p>
+                      <p className="text-[9px] font-medium uppercase tracking-wider text-muted-foreground">Assists</p>
                     </div>
                   </div>
                 </button>
@@ -224,13 +224,13 @@ export function StandingsView() {
           onClick={() => navigate({ name: "scores" })}
           className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-xs font-bold text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
         >
-          <Zap className="h-4 w-4" aria-hidden /> লাইভ স্কোরে যান
+          <Zap className="h-4 w-4" aria-hidden /> Go to Live Scores
         </button>
         <button
           onClick={() => navigate({ name: "players" })}
           className="flex items-center gap-2 rounded-full border border-border bg-card px-5 py-2.5 text-xs font-bold text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
         >
-          <Medal className="h-4 w-4" aria-hidden /> সব খেলোয়াড়
+          <Medal className="h-4 w-4" aria-hidden /> All Players
         </button>
       </div>
     </div>

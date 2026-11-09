@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
     const sp = req.nextUrl.searchParams;
     const targetType = sp.get("targetType");
     const targetId = sp.get("targetId");
-    if (!targetType || !targetId) return fail("targetType ও targetId প্রয়োজন", 422);
+    if (!targetType || !targetId) return fail("targetType and targetId are required", 422);
 
     const comments = await db.comment.findMany({
       where: { targetType, targetId },
@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 const commentSchema = z.object({
   targetType: z.enum(["NEWS", "VIDEO", "POST"]),
   targetId: z.string().min(1),
-  content: z.string().trim().min(1, "কমেন্ট লিখুন").max(500, "কমেন্ট ৫০০ অক্ষরের মধ্যে রাখুন"),
+  content: z.string().trim().min(1, "Write a comment").max(500, "Keep comments within 500 characters"),
 });
 
 export async function POST(req: NextRequest) {
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     const user = await requireUser();
     const body = await req.json().catch(() => null);
     const parsed = commentSchema.safeParse(body);
-    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input", 422);
 
     const { targetType, targetId, content } = parsed.data;
 

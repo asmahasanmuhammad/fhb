@@ -59,20 +59,20 @@ export async function getSessionUser(): Promise<SafeUser | null> {
 
 export async function requireUser(): Promise<SafeUser> {
   const user = await getSessionUser();
-  if (!user) throw new AuthError("লগইন প্রয়োজন", 401);
+  if (!user) throw new AuthError("Login required", 401);
   return user;
 }
 
 export async function requireAdmin(): Promise<SafeUser> {
   const user = await requireUser();
-  if (user.role !== "ADMIN") throw new AuthError("অ্যাডমিন অনুমতি প্রয়োজন", 403);
+  if (user.role !== "ADMIN") throw new AuthError("Admin permission required", 403);
   return user;
 }
 
 export async function requireCreatorOrAdmin(): Promise<SafeUser> {
   const user = await requireUser();
   if (user.role !== "CREATOR" && user.role !== "ADMIN") {
-    throw new AuthError("ক্রিয়েটর অ্যাকাউন্ট প্রয়োজন", 403);
+    throw new AuthError("Creator account required", 403);
   }
   return user;
 }

@@ -14,7 +14,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         events: { orderBy: [{ minute: "asc" }, { createdAt: "asc" }] },
       },
     });
-    if (!match) return fail("ম্যাচ পাওয়া যায়নি", 404);
+    if (!match) return fail("Match not found", 404);
     return ok({ match });
   } catch (e) {
     return handleError(e);

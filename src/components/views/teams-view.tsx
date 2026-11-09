@@ -9,7 +9,7 @@ import { MatchCard } from "@/components/football/match-card";
 import { SectionHeader, PageHeader } from "@/components/football/section-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/store/app-store";
-import { toBn } from "@/lib/format";
+import { fmtNum } from "@/lib/format";
 import { POSITION_LABELS } from "@/lib/types";
 import { Users, MapPin, CalendarDays, ChevronRight, Trophy, ArrowLeft, Building2, Flag } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -41,9 +41,9 @@ export function TeamsView() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
-        title="ক্লাব ও দলসমূহ"
+        title="Clubs & Teams"
         kicker="clubs & national teams"
-        subtitle="বিপিএল ক্লাব থেকে জাতীয় দল — সবার সম্পূর্ণ প্রোফাইল"
+        subtitle="From BPL clubs to the national team — complete profiles for everyone"
         icon={<Users className="h-5 w-5" aria-hidden />}
       />
 
@@ -55,7 +55,7 @@ export function TeamsView() {
         </div>
       ) : (
         <>
-          <SectionHeader title="বিপিএল ক্লাব" kicker="bangladesh premier league" />
+          <SectionHeader title="BPL Clubs" kicker="bangladesh premier league" />
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {clubs.map((t) => (
               <div key={t.id} className="reveal">
@@ -65,7 +65,7 @@ export function TeamsView() {
           </div>
           {national.length > 0 && (
             <div className="mt-12">
-              <SectionHeader title="জাতীয় দল" kicker="international" accent="red" />
+              <SectionHeader title="National Team" kicker="international" accent="red" />
               <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
                 {national.map((t) => (
                   <div key={t.id} className="reveal">
@@ -120,14 +120,14 @@ function TeamCard({ team, onClick }: { team: TeamItem; onClick: () => void }) {
             <Building2 className="h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden /> {team.stadium}
           </p>
           <p className="flex items-center gap-2">
-            <CalendarDays className="h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden /> প্রতিষ্ঠা {toBn(team.founded)}
+            <CalendarDays className="h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden /> Founded {fmtNum(team.founded)}
           </p>
         </div>
         <div className="mt-4 flex items-center justify-between border-t border-border/60 pt-3.5 text-[11px]">
           <span className="flex items-center gap-1.5 text-muted-foreground">
-            <Users className="h-3.5 w-3.5 text-primary/70" aria-hidden /> স্কোয়াড {toBn(team._count?.players ?? 0)} জন
+            <Users className="h-3.5 w-3.5 text-primary/70" aria-hidden /> Squad of {fmtNum(team._count?.players ?? 0)}
           </span>
-          <span className="font-bold text-primary opacity-0 transition-opacity group-hover:opacity-100">প্রোফাইল →</span>
+          <span className="font-bold text-primary opacity-0 transition-opacity group-hover:opacity-100">Profile →</span>
         </div>
       </div>
     </button>
@@ -175,7 +175,7 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
       <button
         onClick={back}
         className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
-        aria-label="ফিরে যান"
+        aria-label="Go back"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
       </button>
@@ -200,7 +200,7 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
           <div className="min-w-0 flex-1">
             {isNational && (
               <span className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-fhb-red/20 px-3 py-1 text-[10px] font-bold text-fhb-red">
-                <Flag className="h-3 w-3" aria-hidden /> জাতীয় দল
+                <Flag className="h-3 w-3" aria-hidden /> National Team
               </span>
             )}
             <h1 className="display-hero text-2xl text-foreground sm:text-4xl">{team.name}</h1>
@@ -208,7 +208,7 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
               {[
                 { icon: <MapPin className="h-3.5 w-3.5" aria-hidden />, text: team.city },
                 { icon: <Building2 className="h-3.5 w-3.5" aria-hidden />, text: team.stadium },
-                { icon: <CalendarDays className="h-3.5 w-3.5" aria-hidden />, text: `প্রতিষ্ঠা ${toBn(team.founded)}` },
+                { icon: <CalendarDays className="h-3.5 w-3.5" aria-hidden />, text: `Founded ${fmtNum(team.founded)}` },
               ].map((chip) => (
                 <span
                   key={chip.text}
@@ -237,8 +237,8 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
               >
                 <Trophy className="h-3 w-3 text-primary" aria-hidden />
                 {s.competition.shortName}:
-                <span className="text-primary">{toBn(s.position)} তম</span>
-                <span className="text-muted-foreground">· {toBn(s.points)} পয়েন্ট</span>
+                <span className="text-primary">#{fmtNum(s.position)}</span>
+                <span className="text-muted-foreground">· {fmtNum(s.points)} pts</span>
               </span>
             ))}
           </div>
@@ -246,12 +246,12 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
       </div>
 
       {/* Squad */}
-      <section className="reveal mt-10" aria-label="স্কোয়াড">
+      <section className="reveal mt-10" aria-label="Squad">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 className="flex items-center gap-3 font-display-bn text-lg font-bold text-foreground">
-            স্কোয়াড
+            Squad
             <span className="tabular rounded-md bg-muted px-2 py-0.5 text-[11px] font-bold text-muted-foreground">
-              {toBn(players.length)}
+              {fmtNum(players.length)}
             </span>
             <span className="h-px w-10 bg-border" aria-hidden />
           </h2>
@@ -267,14 +267,14 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
                     : "border-border bg-card text-muted-foreground hover:text-foreground"
                 )}
               >
-                {p === "ALL" ? "সব" : POSITION_LABELS[p]}
+                {p === "ALL" ? "All" : POSITION_LABELS[p]}
               </button>
             ))}
           </div>
         </div>
         {filteredPlayers.length === 0 ? (
           <div className="edge-lit rounded-2xl border border-border bg-card p-10 text-center text-sm text-muted-foreground">
-            এই পজিশনে কোনো খেলোয়াড় নেই।
+            No players in this position.
           </div>
         ) : (
           <div className="edge-lit overflow-hidden rounded-2xl border border-border bg-card">
@@ -300,17 +300,17 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
                       {p.name}
                       {p.isNationalTeam && (
                         <span className="rounded-md bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold text-primary">
-                          জাতীয় দল
+                          National Team
                         </span>
                       )}
                     </p>
                     <p className="text-[11px] text-muted-foreground">
-                      {POSITION_LABELS[p.position] ?? p.position} · রেটিং {toBn(p.rating.toFixed(1))}
+                      {POSITION_LABELS[p.position] ?? p.position} · Rating {fmtNum(p.rating.toFixed(1))}
                     </p>
                   </div>
                   <div className="shrink-0 text-center">
-                    <p className="tabular font-display text-base font-bold text-primary">{toBn(p.goals)}</p>
-                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">গোল</p>
+                    <p className="tabular font-display text-base font-bold text-primary">{fmtNum(p.goals)}</p>
+                    <p className="text-[9px] uppercase tracking-wider text-muted-foreground">Goals</p>
                   </div>
                   <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-primary" aria-hidden />
                 </button>
@@ -321,9 +321,9 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
       </section>
 
       {/* Matches */}
-      <section className="reveal mt-10" aria-label="ম্যাচসমূহ">
+      <section className="reveal mt-10" aria-label="Matches">
         <h2 className="mb-5 flex items-center gap-3 font-display-bn text-lg font-bold text-foreground">
-          সাম্প্রতিক ও আসন্ন ম্যাচ
+          Recent & Upcoming Matches
           <span className="h-px w-10 bg-border" aria-hidden />
         </h2>
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
@@ -332,7 +332,7 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-gold/12 text-fhb-gold">
                 <Trophy className="h-3.5 w-3.5" aria-hidden />
               </span>
-              সর্বশেষ
+              Latest
             </p>
             <div className="space-y-3.5">
               {finished.slice(0, 3).map((m) => (
@@ -345,7 +345,7 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/12 text-primary">
                 <CalendarDays className="h-3.5 w-3.5" aria-hidden />
               </span>
-              আসছে
+              Upcoming
             </p>
             <div className="space-y-3.5">
               {upcoming.slice(0, 3).map((m) => (

@@ -33,8 +33,8 @@ export async function PUT(req: NextRequest) {
     const admin = await requireAdmin();
     const body = await req.json().catch(() => null);
     const parsed = updateSchema.safeParse(body);
-    if (!parsed.success) return fail("ভুল তথ্য", 422);
-    if (parsed.data.id === admin.id && parsed.data.isBanned) return fail("নিজেকে ব্যান করা যায় না", 422);
+    if (!parsed.success) return fail("Invalid input", 422);
+    if (parsed.data.id === admin.id && parsed.data.isBanned) return fail("You cannot ban yourself", 422);
 
     const user = await db.user.update({
       where: { id: parsed.data.id },

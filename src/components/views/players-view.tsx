@@ -8,7 +8,7 @@ import { TeamBadge } from "@/components/football/team-badge";
 import { PageHeader } from "@/components/football/section-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/store/app-store";
-import { toBn } from "@/lib/format";
+import { fmtNum } from "@/lib/format";
 import { POSITION_LABELS } from "@/lib/types";
 import { Flame, ChevronRight, Flag, Star, ArrowLeft, Cake, Ruler, Shirt } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -36,9 +36,9 @@ export function PlayersView() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
-        title="খেলোয়াড়"
+        title="Players"
         kicker="player index"
-        subtitle="পরিসংখ্যান, রেটিং ও পারফরম্যান্স — সব এক ভিউতে"
+        subtitle="Stats, ratings and performance — all in one view"
         icon={<Flame className="h-5 w-5" aria-hidden />}
       />
 
@@ -56,7 +56,7 @@ export function PlayersView() {
                   : "border-border bg-card text-muted-foreground hover:text-foreground"
               )}
             >
-              {p === "ALL" ? "সব" : POSITION_LABELS[p]}
+              {p === "ALL" ? "All" : POSITION_LABELS[p]}
             </button>
           ))}
         </div>
@@ -69,7 +69,7 @@ export function PlayersView() {
               : "border-border bg-card text-muted-foreground hover:text-foreground"
           )}
         >
-          <Flag className="h-3 w-3" aria-hidden /> জাতীয় দল
+          <Flag className="h-3 w-3" aria-hidden /> National Team
         </button>
         <div className="ml-auto flex rounded-full border border-border bg-muted/40 p-1">
           {(["goals", "rating"] as const).map((s) => (
@@ -81,7 +81,7 @@ export function PlayersView() {
                 sortBy === s ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {s === "goals" ? "সর্বোচ্চ গোল" : "সেরা রেটিং"}
+              {s === "goals" ? "Top Goals" : "Best Rating"}
             </button>
           ))}
         </div>
@@ -98,7 +98,7 @@ export function PlayersView() {
           <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
             <Flame className="h-6 w-6" aria-hidden />
           </span>
-          <p className="text-sm text-muted-foreground">কোনো খেলোয়াড় পাওয়া যায়নি।</p>
+          <p className="text-sm text-muted-foreground">No players found.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -135,10 +135,10 @@ function PlayerCard({ player, onClick }: { player: Player; onClick: () => void }
         <div className="min-w-0 flex-1">
           <p className="flex items-center gap-1.5 truncate text-sm font-bold text-foreground group-hover:text-primary">
             {player.name}
-            {player.isNationalTeam && <Flag className="h-3 w-3 shrink-0 text-primary" aria-label="জাতীয় দলের খেলোয়াড়" />}
+            {player.isNationalTeam && <Flag className="h-3 w-3 shrink-0 text-primary" aria-label="National team player" />}
           </p>
           <p className="truncate text-[11px] text-muted-foreground">
-            {POSITION_LABELS[player.position] ?? player.position} · {player.team?.name ?? "জাতীয় দল"}
+            {POSITION_LABELS[player.position] ?? player.position} · {player.team?.name ?? "National Team"}
           </p>
         </div>
         <ChevronRight
@@ -148,10 +148,10 @@ function PlayerCard({ player, onClick }: { player: Player; onClick: () => void }
       </div>
       <div className="mt-4 grid grid-cols-4 overflow-hidden rounded-xl border border-border bg-background/50 py-3 text-center">
         {[
-          [toBn(player.goals), "গোল"],
-          [toBn(player.assists), "অ্যাসিস্ট"],
-          [toBn(player.appearances), "ম্যাচ"],
-          [toBn(player.rating.toFixed(1)), "রেটিং"],
+          [fmtNum(player.goals), "Goals"],
+          [fmtNum(player.assists), "Assists"],
+          [fmtNum(player.appearances), "Matches"],
+          [fmtNum(player.rating.toFixed(1)), "Rating"],
         ].map(([v, l], i) => (
           <div key={l} className={cn("px-1", i > 0 && "border-l border-border")}>
             <p className="tabular font-display text-sm font-bold text-foreground">{v}</p>
@@ -195,7 +195,7 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
       <button
         onClick={back}
         className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
-        aria-label="ফিরে যান"
+        aria-label="Go back"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
       </button>
@@ -233,30 +233,30 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
               <h1 className="display-hero text-2xl text-foreground sm:text-4xl">{p.name}</h1>
               {p.isNationalTeam && (
                 <span className="flex items-center gap-1.5 rounded-full bg-primary/20 px-3 py-1 text-[11px] font-bold text-primary">
-                  <Flag className="h-3 w-3" aria-hidden /> জাতীয় দল
+                  <Flag className="h-3 w-3" aria-hidden /> National Team
                 </span>
               )}
               <span className="flex items-center gap-1.5 rounded-full bg-fhb-gold/20 px-3 py-1 text-[11px] font-bold text-fhb-gold">
-                <Star className="h-3 w-3" aria-hidden /> {toBn(p.rating.toFixed(1))}
+                <Star className="h-3 w-3" aria-hidden /> {fmtNum(p.rating.toFixed(1))}
               </span>
             </div>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              {POSITION_LABELS[p.position] ?? p.position} · {p.team ? p.team.name : "জাতীয় দল"} · {p.nationality}
+              {POSITION_LABELS[p.position] ?? p.position} · {p.team ? p.team.name : "National Team"} · {p.nationality}
             </p>
             <div className="mt-3.5 flex flex-wrap gap-2">
               {p.birthYear && (
                 <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[11px] font-semibold text-foreground/90 backdrop-blur-sm">
-                  <Cake className="h-3.5 w-3.5 text-primary" aria-hidden /> জন্ম {toBn(p.birthYear)}
+                  <Cake className="h-3.5 w-3.5 text-primary" aria-hidden /> Born {fmtNum(p.birthYear)}
                 </span>
               )}
               {p.heightCm && (
                 <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[11px] font-semibold text-foreground/90 backdrop-blur-sm">
-                  <Ruler className="h-3.5 w-3.5 text-primary" aria-hidden /> {toBn(p.heightCm)} সেমি
+                  <Ruler className="h-3.5 w-3.5 text-primary" aria-hidden /> {fmtNum(p.heightCm)} cm
                 </span>
               )}
               {p.jerseyNumber != null && (
                 <span className="flex items-center gap-1.5 rounded-full border border-white/10 bg-black/25 px-3 py-1.5 text-[11px] font-semibold text-foreground/90 backdrop-blur-sm">
-                  <Shirt className="h-3.5 w-3.5 text-primary" aria-hidden /> জার্সি #{toBn(p.jerseyNumber)}
+                  <Shirt className="h-3.5 w-3.5 text-primary" aria-hidden /> Jersey #{fmtNum(p.jerseyNumber)}
                 </span>
               )}
             </div>
@@ -265,7 +265,7 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
             <button
               onClick={() => navigate({ name: "team-detail", id: p.team!.id })}
               className="shrink-0 transition-transform hover:scale-105"
-              aria-label={`${p.team.name} দল দেখুন`}
+              aria-label={`View ${p.team.name} team`}
             >
               <TeamBadge team={p.team} size="hero" />
             </button>
@@ -281,11 +281,11 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
       {/* Stats grid */}
       <div className="reveal mt-6 grid grid-cols-2 gap-3.5 sm:grid-cols-3 lg:grid-cols-5">
         {[
-          [toBn(p.appearances), "ম্যাচ খেলেছেন"],
-          [toBn(p.goals), "গোল"],
-          [toBn(p.assists), "অ্যাসিস্ট"],
-          [toBn(isGK ? p.cleanSheets : p.rating.toFixed(1)), isGK ? "ক্লিন-শিট" : "গড় রেটিং"],
-          [toBn(Math.round(p.rating * 10)) + "%", "ফর্ম ইনডেক্স"],
+          [fmtNum(p.appearances), "Appearances"],
+          [fmtNum(p.goals), "Goals"],
+          [fmtNum(p.assists), "Assists"],
+          [fmtNum(isGK ? p.cleanSheets : p.rating.toFixed(1)), isGK ? "Clean Sheets" : "Avg Rating"],
+          [fmtNum(Math.round(p.rating * 10)) + "%", "Form Index"],
         ].map(([v, l]) => (
           <div key={l} className="edge-lit rounded-2xl border border-border bg-card p-4 text-center transition-transform hover:-translate-y-0.5">
             <p className="tabular font-display text-2xl font-bold text-primary sm:text-[1.7rem]">{v}</p>
@@ -296,10 +296,10 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
 
       {/* Similar players */}
       {data.similar.length > 0 && (
-        <section className="reveal mt-10" aria-label="একই পজিশনের খেলোয়াড়">
+        <section className="reveal mt-10" aria-label="Players in the same position">
           <div className="mb-5 flex items-center gap-3">
             <h2 className="font-display-bn text-lg font-bold text-foreground">
-              একই দলের {POSITION_LABELS[p.position] ?? p.position}রা
+              {POSITION_LABELS[p.position] ?? p.position}s from the same team
             </h2>
             <span className="h-px flex-1 bg-border" aria-hidden />
           </div>

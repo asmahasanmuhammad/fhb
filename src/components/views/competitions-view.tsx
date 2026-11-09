@@ -8,7 +8,7 @@ import { StandingsTable } from "@/components/football/standings-table";
 import { PageHeader } from "@/components/football/section-header";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/store/app-store";
-import { toBn } from "@/lib/format";
+import { fmtNum } from "@/lib/format";
 import { Shield, ChevronRight, Trophy, ArrowLeft, CalendarDays, MapPin, Zap } from "lucide-react";
 
 type Competition = CompetitionRef & {
@@ -19,9 +19,9 @@ type Competition = CompetitionRef & {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  LEAGUE: "লিগ",
-  CUP: "কাপ",
-  INTERNATIONAL: "আন্তর্জাতিক",
+  LEAGUE: "League",
+  CUP: "Cup",
+  INTERNATIONAL: "International",
 };
 
 export function CompetitionsView() {
@@ -38,9 +38,9 @@ export function CompetitionsView() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 pb-14 pt-6 sm:px-6">
       <PageHeader
-        title="টুর্নামেন্ট ও কম্পিটিশন"
+        title="Tournaments & Competitions"
         kicker="competitions"
-        subtitle="বিপিএল থেকে সাফ চ্যাম্পিয়নশিপ — সব কম্পিটিশনের কেন্দ্র"
+        subtitle="From the BPL to the SAFF Championship — every competition in one place"
         icon={<Shield className="h-5 w-5" aria-hidden />}
       />
 
@@ -85,14 +85,14 @@ export function CompetitionsView() {
                 </h3>
                 <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
                   <CalendarDays className="h-3.5 w-3.5 text-primary/70" aria-hidden />
-                  সিজন {c.season} · {c.country}
+                  Season {c.season} · {c.country}
                 </p>
                 {c.description && (
                   <p className="mt-3 line-clamp-2 text-xs leading-relaxed text-foreground/70">{c.description}</p>
                 )}
                 <p className="mt-4 flex items-center justify-between border-t border-border/60 pt-3.5 text-[11px] font-bold">
                   <span className="flex items-center gap-1.5 text-primary">
-                    <Zap className="h-3.5 w-3.5" aria-hidden /> {toBn(c._count?.matches ?? 0)} ম্যাচ ট্র্যাক করা হচ্ছে
+                    <Zap className="h-3.5 w-3.5" aria-hidden /> {fmtNum(c._count?.matches ?? 0)} matches tracked
                   </span>
                   <ChevronRight
                     className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-1 group-hover:text-primary"
@@ -144,7 +144,7 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
       <button
         onClick={back}
         className="mb-5 flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
-        aria-label="ফিরে যান"
+        aria-label="Go back"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
       </button>
@@ -180,7 +180,7 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
             <h1 className="display-hero text-2xl text-foreground sm:text-4xl">{competition.name}</h1>
             <p className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
               <CalendarDays className="h-4 w-4 text-primary/70" aria-hidden />
-              সিজন {competition.season} · {toBn(matches.length)} ম্যাচ
+              Season {competition.season} · {fmtNum(matches.length)} matches
             </p>
           </div>
         </div>
@@ -192,9 +192,9 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
       </div>
 
       {standings.length > 0 && (
-        <section className="reveal mt-10" aria-label="স্ট্যান্ডিং">
+        <section className="reveal mt-10" aria-label="Standings">
           <div className="mb-5 flex items-center gap-3">
-            <h2 className="font-display-bn text-lg font-bold text-foreground">পয়েন্ট টেবিল</h2>
+            <h2 className="font-display-bn text-lg font-bold text-foreground">Points Table</h2>
             <span className="rounded-full bg-muted px-2.5 py-0.5 text-[10px] font-bold text-muted-foreground">
               {TYPE_LABELS[competition.type] ?? competition.type}
             </span>
@@ -204,11 +204,11 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
         </section>
       )}
 
-      <section className="reveal mt-10" aria-label="ম্যাচসমূহ">
+      <section className="reveal mt-10" aria-label="Matches">
         <div className="mb-5 flex items-center gap-3">
-          <h2 className="font-display-bn text-lg font-bold text-foreground">ম্যাচসমূহ</h2>
+          <h2 className="font-display-bn text-lg font-bold text-foreground">Matches</h2>
           <span className="tabular rounded-md bg-muted px-2 py-0.5 text-[11px] font-bold text-muted-foreground">
-            {toBn(matches.length)}
+            {fmtNum(matches.length)}
           </span>
           <span className="h-px flex-1 bg-border" aria-hidden />
         </div>
@@ -218,7 +218,7 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-fhb-gold/12 text-fhb-gold">
                 <Trophy className="h-3.5 w-3.5" aria-hidden />
               </span>
-              ফলাফল
+              Results
             </p>
             <div className="space-y-3.5">
               {finished.slice(0, 6).map((m) => (
@@ -231,7 +231,7 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/12 text-primary">
                 <MapPin className="h-3.5 w-3.5" aria-hidden />
               </span>
-              আসন্ন
+              Upcoming
             </p>
             <div className="space-y-3.5">
               {upcoming.slice(0, 6).map((m) => (

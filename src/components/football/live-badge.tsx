@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { toBn } from "@/lib/format";
+import { fmtNum } from "@/lib/format";
 
 /**
  * Broadcast LIVE chip — red square dot + minute, Oswald caps.
@@ -18,7 +18,7 @@ export function LiveBadge({
   size?: "sm" | "md";
 }) {
   const label =
-    period === "HT" ? "হাফ-টাইম" : period === "FT" ? "শেষ" : minute != null ? `${toBn(minute)}′` : "লাইভ";
+    period === "HT" ? "Half-Time" : period === "FT" ? "Full-Time" : minute != null ? `${fmtNum(minute)}′` : "LIVE";
   return (
     <span
       className={cn(
@@ -28,7 +28,7 @@ export function LiveBadge({
       )}
     >
       <span className="live-dot inline-block h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />
-      {period === "HT" || period === "FT" ? label : `লাইভ ${label}`}
+      {period === "HT" || period === "FT" ? label : `LIVE ${label}`}
     </span>
   );
 }
@@ -43,7 +43,7 @@ export function FormDots({ form }: { form: string | null | undefined }) {
     D: "bg-elevated text-muted-foreground ring-1 ring-inset ring-border",
     L: "bg-fhb-red/90 text-white",
   };
-  const labels: Record<string, string> = { W: "জ", D: "ড", L: "হ" };
+  const labels: Record<string, string> = { W: "W", D: "D", L: "L" };
   return (
     <div className="flex items-center gap-1">
       {form.split("").map((c, i) => (
@@ -53,9 +53,9 @@ export function FormDots({ form }: { form: string | null | undefined }) {
             "flex h-[18px] w-[18px] items-center justify-center rounded-[5px] text-[9px] font-bold leading-none",
             styles[c] ?? styles.D
           )}
-          title={{ W: "জয়", D: "ড্র", L: "হার" }[c] ?? ""}
+          title={{ W: "Win", D: "Draw", L: "Loss" }[c] ?? ""}
         >
-          {labels[c] ?? "ড"}
+          {labels[c] ?? "D"}
         </span>
       ))}
     </div>

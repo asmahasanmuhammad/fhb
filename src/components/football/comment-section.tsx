@@ -46,18 +46,18 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
       setContent("");
       queryClient.invalidateQueries({ queryKey: ["comments", targetType, targetId] });
     },
-    onError: (e: Error) => toast({ title: "কমেন্ট ব্যর্থ", description: e.message, variant: "destructive" }),
+    onError: (e: Error) => toast({ title: "Comment failed", description: e.message, variant: "destructive" }),
   });
 
   const comments = data?.comments ?? [];
-  const bnCount = comments.length.toLocaleString("bn-BD");
+  const countStr = comments.length.toLocaleString("en-US");
 
   return (
-    <section aria-label="কমেন্ট" className="space-y-4">
+    <section aria-label="Comments" className="space-y-4">
       <h3 className="flex items-center gap-2 border-b border-border pb-3.5 text-sm font-bold">
         <MessageCircle className="h-4 w-4 text-primary" aria-hidden />
-        কমেন্ট
-        <span className="tabular rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">{bnCount}</span>
+        Comments
+        <span className="tabular rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">{countStr}</span>
       </h3>
 
       {user ? (
@@ -72,14 +72,14 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
             <Textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="আপনার মতামত লিখুন... (সর্বোচ্চ ৫০০ অক্ষর)"
+              placeholder="Write your comment... (max 500 characters)"
               rows={2}
               maxLength={500}
               className="resize-none bg-background text-sm"
-              aria-label="কমেন্ট লিখুন"
+              aria-label="Write a comment"
             />
             <div className="flex items-center justify-between">
-              <span className="tabular text-[10px] text-muted-foreground">{content.length.toString().replace(/\d/g, (d) => "০১২৩৪৫৬৭৮৯"[+d])}/৫০০</span>
+              <span className="tabular text-[10px] text-muted-foreground">{content.length}/500</span>
               <Button
                 size="sm"
                 onClick={() => submit.mutate()}
@@ -87,7 +87,7 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
                 className="gap-1.5"
               >
                 <Send className="h-3.5 w-3.5" aria-hidden />
-                {submit.isPending ? "পাঠানো হচ্ছে..." : "কমেন্ট করুন"}
+                {submit.isPending ? "Posting..." : "Comment"}
               </Button>
             </div>
           </div>
@@ -98,7 +98,7 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
           className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-muted/30 p-3.5 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
         >
           <LogIn className="h-4 w-4" aria-hidden />
-          কমেন্ট করতে <span className="font-semibold text-primary">লগইন</span> করুন
+          To comment, <span className="font-semibold text-primary">log in</span>
         </button>
       )}
 
@@ -106,7 +106,7 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
         {isLoading ? (
           [1, 2].map((i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)
         ) : comments.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">এখনো কোনো কমেন্ট নেই — প্রথম মতামতটি আপনিই দিন।</p>
+          <p className="py-4 text-center text-sm text-muted-foreground">No comments yet — be the first to share your take.</p>
         ) : (
           comments.map((c) => (
             <div key={c.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
@@ -124,7 +124,7 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
                   </button>
                   {c.user.isPremium && (
                     <span className="flex items-center gap-0.5 rounded-sm bg-fhb-gold/15 px-1 py-0.5 text-[9px] font-bold text-fhb-gold">
-                      <Crown className="h-2.5 w-2.5" aria-hidden /> প্রিমিয়াম
+                      <Crown className="h-2.5 w-2.5" aria-hidden /> Premium
                     </span>
                   )}
                   <span className="text-[10px] text-muted-foreground">{timeAgo(c.createdAt)}</span>

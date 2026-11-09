@@ -24,9 +24,9 @@ export async function GET(req: NextRequest) {
 }
 
 const uploadSchema = z.object({
-  title: z.string().trim().min(3, "টাইটেল কমপক্ষে ৩ অক্ষরের").max(120),
+  title: z.string().trim().min(3, "Title must be at least 3 characters").max(120),
   description: z.string().trim().max(500).optional().nullable(),
-  videoUrl: z.string().trim().min(3, "ভিডিও URL দিন"),
+  videoUrl: z.string().trim().min(3, "Enter a video URL"),
   thumbnailUrl: z.string().trim().optional().nullable(),
   tags: z.string().trim().max(120).optional().nullable(),
   monetized: z.boolean().optional(),
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     const user = await requireCreatorOrAdmin();
     const body = await req.json().catch(() => null);
     const parsed = uploadSchema.safeParse(body);
-    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "ভুল তথ্য", 422);
+    if (!parsed.success) return fail(parsed.error.issues[0]?.message ?? "Invalid input", 422);
 
     const video = await db.video.create({
       data: {

@@ -2,7 +2,7 @@
 
 import { TeamBadge } from "./team-badge";
 import { FormDots } from "./live-badge";
-import { toBn } from "@/lib/format";
+import { fmtNum } from "@/lib/format";
 import type { Standing } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
 import { cn } from "@/lib/utils";
@@ -52,7 +52,7 @@ export function StandingsTable({
                     className={cn("absolute inset-y-2 left-0 w-[3px] rounded-r", zoneBar(s.position))}
                   />
                   <span className="tabular block text-center font-display text-xs font-bold text-muted-foreground group-hover:text-primary">
-                    {toBn(s.position)}
+                    {fmtNum(s.position)}
                   </span>
                 </td>
                 <td className="py-3 pr-3">
@@ -69,8 +69,8 @@ export function StandingsTable({
                       </span>
                     )}
                     <span className="flex flex-col items-end leading-none">
-                      <span className="tabular font-display text-base font-bold text-foreground">{toBn(s.points)}</span>
-                      <span className="tabular mt-1 text-[9px] text-muted-foreground">{toBn(s.played)} খেলা</span>
+                      <span className="tabular font-display text-base font-bold text-foreground">{fmtNum(s.points)}</span>
+                      <span className="tabular mt-1 text-[9px] text-muted-foreground">{fmtNum(s.played)} played</span>
                     </span>
                   </div>
                 </td>
@@ -88,15 +88,15 @@ export function StandingsTable({
         <thead>
           <tr className="border-b border-border bg-muted/50">
             <th className="w-10 py-3 pl-4 text-left font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">#</th>
-            <th className="py-3 text-left font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">ক্লাব</th>
-            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">খেলা</th>
-            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">জ</th>
-            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">ড</th>
-            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">হ</th>
-            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">গোল</th>
-            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">গড</th>
-            {showForm && <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">ফর্ম</th>}
-            <th className="py-3 pr-5 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-primary">পয়েন্ট</th>
+            <th className="py-3 text-left font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Club</th>
+            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">P</th>
+            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">W</th>
+            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">D</th>
+            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">L</th>
+            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Goals</th>
+            <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">GD</th>
+            {showForm && <th className="px-2 py-3 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">Form</th>}
+            <th className="py-3 pr-5 text-center font-display text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Pts</th>
           </tr>
         </thead>
         <tbody>
@@ -111,7 +111,7 @@ export function StandingsTable({
                 <td className="relative py-3 pl-4">
                   <span aria-hidden className={cn("absolute inset-y-2 left-0 w-[3px] rounded-r", zoneBar(s.position))} />
                   <span className="tabular block text-center font-display text-xs font-bold text-muted-foreground group-hover:text-primary">
-                    {toBn(s.position)}
+                    {fmtNum(s.position)}
                   </span>
                 </td>
                 <td className="py-3">
@@ -120,16 +120,16 @@ export function StandingsTable({
                     <span className="text-sm font-semibold text-foreground group-hover:text-primary">{s.team.name}</span>
                   </div>
                 </td>
-                <td className="tabular px-2 py-3 text-center text-xs text-muted-foreground">{toBn(s.played)}</td>
-                <td className="tabular px-2 py-3 text-center text-xs font-semibold text-foreground">{toBn(s.won)}</td>
-                <td className="tabular px-2 py-3 text-center text-xs text-muted-foreground">{toBn(s.drawn)}</td>
-                <td className="tabular px-2 py-3 text-center text-xs text-muted-foreground">{toBn(s.lost)}</td>
+                <td className="tabular px-2 py-3 text-center text-xs text-muted-foreground">{fmtNum(s.played)}</td>
+                <td className="tabular px-2 py-3 text-center text-xs font-semibold text-foreground">{fmtNum(s.won)}</td>
+                <td className="tabular px-2 py-3 text-center text-xs text-muted-foreground">{fmtNum(s.drawn)}</td>
+                <td className="tabular px-2 py-3 text-center text-xs text-muted-foreground">{fmtNum(s.lost)}</td>
                 <td className="tabular px-2 py-3 text-center text-xs text-muted-foreground">
-                  {toBn(s.goalsFor)}:{toBn(s.goalsAgainst)}
+                  {fmtNum(s.goalsFor)}:{fmtNum(s.goalsAgainst)}
                 </td>
                 <td className={cn("tabular px-2 py-3 text-center text-xs font-semibold", gd > 0 ? "text-primary" : gd < 0 ? "text-fhb-red" : "text-muted-foreground")}>
                   {gd > 0 ? "+" : ""}
-                  {toBn(gd)}
+                  {fmtNum(gd)}
                 </td>
                 {showForm && (
                   <td className="px-2 py-3">
@@ -139,7 +139,7 @@ export function StandingsTable({
                   </td>
                 )}
                 <td className="tabular py-3 pr-5 text-center font-display text-lg font-bold text-foreground">
-                  {toBn(s.points)}
+                  {fmtNum(s.points)}
                 </td>
               </tr>
             );

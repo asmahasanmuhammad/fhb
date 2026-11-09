@@ -185,17 +185,17 @@ export type MembershipPlan = {
 };
 
 export const CATEGORY_LABELS: Record<string, string> = {
-  ALL: "সব",
-  BPL: "বিপিএল",
-  NATIONAL: "জাতীয় দল",
-  TRANSFER: "ট্রান্সফার",
-  INTERNATIONAL: "আন্তর্জাতিক",
-  OPINION: "মতামত",
+  ALL: "All",
+  BPL: "BPL",
+  NATIONAL: "National Team",
+  TRANSFER: "Transfer",
+  INTERNATIONAL: "International",
+  OPINION: "Opinion",
 };
 
 export const POSITION_LABELS: Record<string, string> = {
-  GK: "গোলরক্ষক",
-  DF: "ডিফেন্ডার",
-  MF: "মিডফিল্ডার",
-  FW: "ফরোয়ার্ড",
+  GK: "Goalkeeper",
+  DF: "Defender",
+  MF: "Midfielder",
+  FW: "Forward",
 };

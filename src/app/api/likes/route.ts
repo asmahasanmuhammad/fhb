@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     const user = await requireUser();
     const body = await req.json().catch(() => null);
     const parsed = likeSchema.safeParse(body);
-    if (!parsed.success) return fail("ভুল অনুরোধ", 422);
+    if (!parsed.success) return fail("Invalid request", 422);
 
     const { targetType, targetId } = parsed.data;
 

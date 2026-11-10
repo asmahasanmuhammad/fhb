@@ -155,23 +155,23 @@ export function ShortsView() {
         {/* ── Desktop queue rail ── */}
         {videos.length > 0 && (
           <aside className="hidden w-[300px] shrink-0 flex-col lg:flex xl:w-[320px]" aria-label="Shorts queue">
-            <div className="edge-lit flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card">
-              <div className="border-b border-border px-4 py-3.5">
-                <p className="eyebrow flex items-center gap-1.5 text-primary">
-                  <AudioLines className="h-3.5 w-3.5" aria-hidden /> Now playing
+            <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-xl">
+              <div className="border-b border-white/15 bg-[#06080f] px-4 py-3.5">
+                <p className="eyebrow flex items-center gap-1.5 text-red-400 font-black">
+                  <AudioLines className="h-3.5 w-3.5" aria-hidden /> NOW PLAYING
                 </p>
-                <p className="mt-1.5 line-clamp-1 text-sm font-bold text-foreground">
+                <p className="mt-1.5 line-clamp-1 text-sm font-black text-white">
                   {activeVideo?.title ?? videos[0].title}
                 </p>
-                <p className="tabular mt-0.5 truncate text-[11px] text-muted-foreground">
+                <p className="tabular mt-0.5 truncate text-[11px] font-semibold text-slate-300">
                   @{activeVideo?.creator.username ?? videos[0].creator.username} ·{" "}
                   {fmtCompact(activeVideo?.views ?? videos[0].views)} views
                 </p>
               </div>
-              <p className="eyebrow border-b border-border bg-muted/30 px-4 py-2.5 text-muted-foreground">
+              <p className="border-b border-white/15 bg-white/[0.03] px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-300">
                 Up next
               </p>
-              <div className="fhb-scroll min-h-0 flex-1 divide-y divide-border/60 overflow-y-auto">
+              <div className="fhb-scroll min-h-0 flex-1 divide-y divide-white/10 overflow-y-auto">
                 {videos.map((v) => {
                   const isActive = v.id === activeId;
                   return (
@@ -180,32 +180,32 @@ export function ShortsView() {
                       onClick={() => scrollToVideo(v.id)}
                       className={cn(
                         "flex w-full items-center gap-3 px-3 py-2.5 text-left transition-colors",
-                        isActive ? "bg-primary/[0.08]" : "hover:bg-white/[0.03]"
+                        isActive ? "bg-red-600/20" : "hover:bg-white/[0.05]"
                       )}
                       aria-current={isActive ? "true" : undefined}
                       aria-label={`Play ${v.title}`}
                     >
-                      <span className="relative h-16 w-10 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-elevated">
+                      <span className="relative h-16 w-10 shrink-0 overflow-hidden rounded-lg border border-white/15 bg-[#06080f]">
                         {v.thumbnailUrl ? (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={v.thumbnailUrl} alt="" loading="lazy" className="h-full w-full object-cover" />
                         ) : (
                           <span className="flex h-full w-full items-center justify-center">
-                            <VideoIcon className="h-4 w-4 text-white/25" aria-hidden />
+                            <VideoIcon className="h-4 w-4 text-slate-400" aria-hidden />
                           </span>
                         )}
-                        {isActive && <span className="absolute inset-0 border-2 border-primary" aria-hidden />}
+                        {isActive && <span className="absolute inset-0 border-2 border-red-500" aria-hidden />}
                       </span>
                       <span className="min-w-0 flex-1">
                         <span
                           className={cn(
-                            "line-clamp-2 block text-xs font-semibold leading-snug",
-                            isActive ? "text-primary" : "text-foreground"
+                            "line-clamp-2 block text-xs font-black leading-snug",
+                            isActive ? "text-red-400" : "text-white"
                           )}
                         >
                           {v.title}
                         </span>
-                        <span className="tabular mt-1 block truncate text-[10px] text-muted-foreground">
+                        <span className="tabular mt-1 block truncate text-[10.5px] font-semibold text-slate-300">
                           @{v.creator.username} · {fmtCompact(v.views)} views · {timeAgo(v.createdAt)}
                         </span>
                       </span>

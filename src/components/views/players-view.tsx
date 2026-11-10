@@ -123,17 +123,17 @@ export function PlayersView() {
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       {/* ── Editorial Header ── */}
-      <div className="mb-6 border-b border-white/[0.07] pb-4">
+      <div className="mb-6 border-b border-white/15 pb-4">
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="h-5 w-1 bg-red-600 shrink-0" aria-hidden />
-          <span className="text-[10px] font-black uppercase tracking-widest text-red-500">
+          <span className="h-5 w-1 bg-red-500 shadow-[0_0_10px_rgba(255,30,70,0.8)] shrink-0" aria-hidden />
+          <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
             OFFICIAL PLAYER LEADERBOARD & STATS
           </span>
         </div>
-        <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight">
+        <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight drop-shadow-sm">
           {language === "bn" ? "খেলোয়াড় সূচি ও পরিসংখ্যান" : "Players & Top Performers"}
         </h1>
-        <p className="text-[12.5px] text-white/40 mt-1">
+        <p className="text-[13px] text-slate-300 font-medium mt-1">
           Top goalscorers, playmakers and national team stars across the Bangladesh Premier League and world football.
         </p>
       </div>
@@ -144,10 +144,10 @@ export function PlayersView() {
       </div>
 
       {/* ── Filters: position tabs + national toggle | search + sort ── */}
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between border-b border-white/[0.07] pb-4 mb-6">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between border-b border-white/15 pb-4 mb-6">
         <div className="flex flex-wrap items-center gap-2">
           <div
-            className="no-scrollbar flex gap-1 overflow-x-auto border border-white/[0.08] bg-[#060608] p-1"
+            className="no-scrollbar flex gap-1 overflow-x-auto border border-white/15 bg-[#06080f] p-1 rounded"
             role="tablist"
             aria-label="Filter by position"
           >
@@ -158,10 +158,10 @@ export function PlayersView() {
                 aria-selected={position === tab.key}
                 onClick={() => setPosition(tab.key)}
                 className={cn(
-                  "shrink-0 px-3 py-1.5 text-[11px] font-black uppercase transition-colors",
+                  "shrink-0 px-3 py-1.5 text-[11px] font-black uppercase rounded transition-colors",
                   position === tab.key
-                    ? "bg-red-600 text-white"
-                    : "text-white/40 hover:text-white"
+                    ? "bg-red-600 text-white shadow-md shadow-red-600/30"
+                    : "text-slate-300 hover:text-white"
                 )}
               >
                 {tab.label}
@@ -172,19 +172,19 @@ export function PlayersView() {
             onClick={() => setNationalOnly((v) => !v)}
             aria-pressed={nationalOnly}
             className={cn(
-              "flex shrink-0 items-center gap-1.5 border px-3 py-2 text-[11px] font-black uppercase transition-colors",
+              "flex shrink-0 items-center gap-1.5 border px-3 py-2 text-[11px] font-black uppercase rounded transition-colors",
               nationalOnly
-                ? "border-red-500 bg-red-600/15 text-red-400"
-                : "border-white/[0.08] bg-white/[0.03] text-white/40 hover:text-white"
+                ? "border-red-500 bg-red-600/25 text-red-300"
+                : "border-white/15 bg-[#0b101d] text-slate-300 hover:text-white"
             )}
           >
-            <Flag className="h-3 w-3" aria-hidden /> National Team
+            <Flag className="h-3 w-3 text-red-400" aria-hidden /> National Team
           </button>
         </div>
         <div className="flex items-center gap-2">
           <div className="relative min-w-0 flex-1 xl:w-64 xl:flex-none">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/40"
+              className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
               aria-hidden
             />
             <input
@@ -193,12 +193,12 @@ export function PlayersView() {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search players..."
               aria-label="Search players"
-              className="h-10 w-full border border-white/[0.1] bg-white/[0.04] pl-9 pr-9 text-xs text-white placeholder:text-white/30 focus:border-red-500/60 focus:outline-none"
+              className="h-10 w-full border border-white/20 bg-[#0b101d] pl-9 pr-9 text-xs font-semibold text-white placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 focus:outline-none rounded"
             />
             {query && (
               <button
                 onClick={() => setQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
                 aria-label="Clear search"
               >
                 <X className="h-3.5 w-3.5" aria-hidden />
@@ -206,7 +206,7 @@ export function PlayersView() {
             )}
           </div>
           <div
-            className="flex shrink-0 border border-white/[0.08] bg-[#060608] p-1"
+            className="flex shrink-0 border border-white/15 bg-[#06080f] p-1 rounded"
             role="group"
             aria-label="Sort players"
           >
@@ -216,8 +216,8 @@ export function PlayersView() {
                 onClick={() => setSortBy(s)}
                 aria-pressed={sortBy === s}
                 className={cn(
-                  "px-3 py-1 text-[11px] font-black uppercase transition-colors",
-                  sortBy === s ? "bg-red-600 text-white" : "text-white/40 hover:text-white"
+                  "px-3 py-1 text-[11px] font-black uppercase rounded transition-colors",
+                  sortBy === s ? "bg-red-600 text-white shadow-md shadow-red-600/30" : "text-slate-300 hover:text-white"
                 )}
               >
                 {s === "goals" ? "Top Goals" : "Top Rating"}
@@ -231,14 +231,14 @@ export function PlayersView() {
       {isLoading ? (
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-hidden>
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-[140px] bg-white/[0.04]" />
+            <Skeleton key={i} className="h-[140px] bg-[#0b101d]" />
           ))}
         </div>
       ) : players.length === 0 ? (
-        <div className="border border-white/[0.07] bg-[#0d0d10] px-6 py-16 text-center">
-          <Users className="mx-auto mb-3 h-10 w-10 text-white/20" />
+        <div className="border border-white/15 bg-[#0b101d] px-6 py-16 text-center rounded">
+          <Users className="mx-auto mb-3 h-10 w-10 text-slate-400" />
           <p className="font-black text-lg text-white">No players found</p>
-          <p className="mt-1 text-xs text-white/40">Try searching with a different name or clear filters.</p>
+          <p className="mt-1 text-xs text-slate-300">Try searching with a different name or clear filters.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -276,41 +276,41 @@ function PlayerCard({
   return (
     <button
       onClick={onClick}
-      className="group relative flex w-full flex-col overflow-hidden border border-white/[0.07] bg-[#0d0d10] text-left transition-all hover:border-white/20 hover:bg-white/[0.02]"
+      className="group relative flex w-full flex-col overflow-hidden border border-white/15 bg-[#0b101d] text-left transition-all hover:border-red-500/60 hover:bg-[#11172a] hover:shadow-[0_4px_20px_rgba(255,30,70,0.15)] rounded"
     >
       <span aria-hidden className={cn("absolute inset-y-0 left-0 w-[3px]", positionEdge(player.position))} />
 
       <div className="flex items-center gap-3 px-4 pb-3 pl-5 pt-4">
-        <span className="tabular font-black text-xs text-white/30 w-5 text-center">
+        <span className="tabular font-black text-xs text-slate-400 w-5 text-center">
           {fmtNum(rank)}
         </span>
         {player.team ? (
           <TeamCrest team={player.team} size="md" />
         ) : (
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center bg-white/[0.05] font-black text-[10px] text-white/40">
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center bg-white/10 rounded font-black text-[10px] text-slate-300">
             NT
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[13.5px] font-black text-white group-hover:text-red-400 transition-colors">
+          <p className="truncate text-[14px] font-black text-white group-hover:text-red-400 transition-colors drop-shadow-sm">
             {player.name}
           </p>
-          <p className="text-[11px] text-white/40 truncate mt-0.5">
+          <p className="text-[11.5px] font-medium text-slate-300 truncate mt-0.5">
             {POSITION_LABELS[player.position] ?? player.position} · {player.team?.name ?? "National Team"}
           </p>
-          <p className="text-[10px] text-white/30 truncate">{player.nationality}</p>
+          <p className="text-[10.5px] font-bold text-slate-400 truncate">{player.nationality}</p>
         </div>
         <div className="shrink-0 text-right">
           <p className="tabular font-black text-xl text-white">{key.value}</p>
-          <p className="text-[9.5px] font-bold text-red-400 uppercase tracking-wider">{key.label}</p>
+          <p className="text-[9.5px] font-black text-red-400 uppercase tracking-wider">{key.label}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 divide-x divide-white/[0.05] border-t border-white/[0.06] bg-[#060608]">
+      <div className="grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 bg-[#06080f]">
         {footer.map((stat) => (
           <div key={stat.label} className="px-2 py-2 text-center">
-            <p className="tabular font-black text-[12px] text-white/80">{stat.value}</p>
-            <p className="text-[9px] font-bold uppercase tracking-wider text-white/30">{stat.label}</p>
+            <p className="tabular font-black text-[12.5px] text-white">{stat.value}</p>
+            <p className="text-[9.5px] font-black uppercase tracking-wider text-slate-300">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -337,14 +337,14 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
   if (isLoading) {
     return (
       <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6" aria-hidden>
-        <Skeleton className="h-5 w-40 rounded-md" />
-        <Skeleton className="mt-4 h-56 rounded-xl" />
+        <Skeleton className="h-5 w-40 rounded-md bg-[#0b101d]" />
+        <Skeleton className="mt-4 h-56 rounded-xl bg-[#0b101d]" />
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-[92px] rounded-xl" />
+            <Skeleton key={i} className="h-[92px] rounded-xl bg-[#0b101d]" />
           ))}
         </div>
-        <Skeleton className="mt-8 h-40 rounded-xl" />
+        <Skeleton className="mt-8 h-40 rounded-xl bg-[#0b101d]" />
       </div>
     );
   }
@@ -354,16 +354,16 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
       <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
         <button
           onClick={() => navigate({ name: "players" })}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary"
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-300 transition-colors hover:text-white"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Players
         </button>
-        <div className="mt-4 flex flex-col items-center justify-center gap-2.5 rounded-xl border border-border bg-card px-6 py-16 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+        <div className="mt-4 flex flex-col items-center justify-center gap-2.5 rounded-xl border border-white/15 bg-[#0b101d] px-6 py-16 text-center">
+          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-slate-300">
             <Users className="h-5 w-5" aria-hidden />
           </span>
-          <p className="text-sm font-semibold text-foreground">Player not found</p>
-          <p className="max-w-[36ch] text-xs leading-relaxed text-muted-foreground">
+          <p className="text-base font-black text-white">Player not found</p>
+          <p className="max-w-[36ch] text-xs font-medium leading-relaxed text-slate-300">
             This player profile is no longer available. Head back to the index to browse all players.
           </p>
         </div>
@@ -372,7 +372,7 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
   }
 
   const p = data.player;
-  const teamColor = p.team?.color ?? "#1E9E50";
+  const teamColor = p.team?.color ?? "#ff1e46";
   const positionLabel = POSITION_LABELS[p.position] ?? p.position;
 
   const tiles = [
@@ -390,17 +390,17 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
       <nav className="flex items-center gap-2 text-xs" aria-label="Breadcrumb">
         <button
           onClick={() => navigate({ name: "players" })}
-          className="flex items-center gap-1.5 font-semibold text-muted-foreground transition-colors hover:text-primary"
+          className="flex items-center gap-1.5 font-bold text-slate-300 transition-colors hover:text-white"
         >
           <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Players
         </button>
-        <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/60" aria-hidden />
-        <span className="font-semibold text-foreground">{p.name}</span>
+        <ChevronRight className="h-3.5 w-3.5 text-slate-400" aria-hidden />
+        <span className="font-bold text-white">{p.name}</span>
       </nav>
 
       {/* ── Player hero ──────────────────────────────────────────── */}
       <section
-        className="stadium-panel pitch-pattern edge-lit relative mt-4 overflow-hidden rounded-xl border border-border"
+        className="relative mt-4 overflow-hidden rounded-xl border border-white/20 bg-[#0b101d] shadow-xl"
         aria-label={`${p.name} profile`}
       >
         {/* Club-colour accent edge */}
@@ -409,7 +409,7 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
           className="absolute inset-y-0 left-0 w-1"
           style={{ backgroundColor: teamColor }}
         />
-        {/* Watermark jersey number (desktop only — keeps the mobile hero clean) */}
+        {/* Watermark jersey number */}
         {p.jerseyNumber != null && (
           <span
             aria-hidden
@@ -423,45 +423,45 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
           {/* Jersey tile — big tabular number */}
           <span
             aria-hidden
-            className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-white/10 sm:h-24 sm:w-24"
-            style={{ backgroundColor: `color-mix(in oklab, ${teamColor} 20%, transparent)` }}
+            className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/5 sm:h-24 sm:w-24 shadow-inner"
+            style={{ backgroundColor: `color-mix(in oklab, ${teamColor} 25%, transparent)` }}
           >
-            <span className="tabular font-display text-4xl font-bold leading-none text-foreground sm:text-5xl">
+            <span className="tabular font-display text-4xl font-black leading-none text-white sm:text-5xl">
               {p.jerseyNumber != null ? fmtNum(p.jerseyNumber) : "–"}
             </span>
           </span>
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md bg-primary/12 px-2 py-1 text-[10.5px] font-bold uppercase tracking-[0.08em] text-primary">
+              <span className="rounded-md bg-red-600/25 border border-red-500/40 px-2.5 py-1 text-[10.5px] font-black uppercase tracking-[0.08em] text-red-300">
                 {positionLabel}
               </span>
               {p.isNationalTeam && (
-                <span className="flex items-center gap-1.5 rounded-md border border-border bg-card/70 px-2 py-1 text-[10.5px] font-bold uppercase tracking-[0.08em] text-foreground/85">
-                  <Flag className="h-3 w-3 text-primary" aria-hidden /> National Team
+                <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[10.5px] font-black uppercase tracking-[0.08em] text-white">
+                  <Flag className="h-3 w-3 text-red-400" aria-hidden /> National Team
                 </span>
               )}
             </div>
-            <h1 className="display-hero mt-2 text-[1.7rem] leading-tight text-foreground sm:text-4xl">
+            <h1 className="mt-2 text-[1.8rem] font-black leading-tight text-white drop-shadow-sm sm:text-4xl">
               {p.name}
             </h1>
-            <p className="mt-1.5 text-[13px] text-muted-foreground">
+            <p className="mt-1.5 text-[13.5px] font-semibold text-slate-300">
               {p.nationality}
               {p.team ? ` · ${p.team.name}` : ""}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               {p.birthYear != null && (
-                <span className="flex items-center gap-1.5 rounded-md border border-border bg-card/60 px-2.5 py-1 text-[11px] font-semibold text-foreground/85">
-                  <Cake className="h-3 w-3 text-primary/80" aria-hidden /> Born {fmtNum(p.birthYear)}
+                <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">
+                  <Cake className="h-3 w-3 text-red-400" aria-hidden /> Born {fmtNum(p.birthYear)}
                 </span>
               )}
               {p.heightCm != null && (
-                <span className="flex items-center gap-1.5 rounded-md border border-border bg-card/60 px-2.5 py-1 text-[11px] font-semibold text-foreground/85">
-                  <Ruler className="h-3 w-3 text-primary/80" aria-hidden /> {fmtNum(p.heightCm)} cm
+                <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">
+                  <Ruler className="h-3 w-3 text-red-400" aria-hidden /> {fmtNum(p.heightCm)} cm
                 </span>
               )}
-              <span className="flex items-center gap-1.5 rounded-md border border-border bg-card/60 px-2.5 py-1 text-[11px] font-semibold text-foreground/85">
-                <span className="tabular text-primary/80">{fmtNum(p.rating.toFixed(1))}</span>
+              <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">
+                <span className="tabular font-black text-emerald-400">{fmtNum(p.rating.toFixed(1))}</span>
                 Avg rating
               </span>
             </div>
@@ -471,20 +471,20 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
           {p.team && (
             <button
               onClick={() => navigate({ name: "team-detail", id: p.team!.id })}
-              className="group flex shrink-0 flex-col items-center gap-2 rounded-lg border border-border bg-card/60 p-3.5 transition-colors hover:border-primary/40"
+              className="group flex shrink-0 flex-col items-center gap-2 rounded-lg border border-white/15 bg-[#06080f] p-3.5 transition-colors hover:border-red-500/50"
               aria-label={`View ${p.team.name}`}
             >
               <TeamCrest team={p.team} size="lg" />
-              <span className="flex items-center gap-1 text-[11px] font-bold text-foreground/90 transition-colors group-hover:text-primary">
+              <span className="flex items-center gap-1 text-[11.5px] font-black text-white transition-colors group-hover:text-red-400">
                 {p.team.shortName ?? p.team.name}
-                <ChevronRight className="h-3 w-3" aria-hidden />
+                <ChevronRight className="h-3 w-3 text-slate-300" aria-hidden />
               </span>
             </button>
           )}
         </div>
 
         {p.bio && (
-          <p className="relative max-w-[65ch] border-t border-border/60 px-5 py-4 pl-6 text-[13px] leading-relaxed text-muted-foreground sm:px-7 sm:pl-8">
+          <p className="relative max-w-[65ch] border-t border-white/10 px-5 py-4 pl-6 text-[13px] leading-relaxed text-slate-300 sm:px-7 sm:pl-8">
             {p.bio}
           </p>
         )}
@@ -495,9 +495,9 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
         <SectionHeader title="Season Stats" kicker="current campaign" />
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {tiles.map((tile) => (
-            <div key={tile.label} className="edge-lit rounded-xl border border-border bg-card p-4 text-center">
-              <p className="tabular font-display text-2xl font-bold leading-none text-foreground">{tile.value}</p>
-              <p className="mt-2 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted-foreground">
+            <div key={tile.label} className="rounded-xl border border-white/15 bg-[#0b101d] p-4 text-center shadow">
+              <p className="tabular font-display text-2xl font-black leading-none text-white">{tile.value}</p>
+              <p className="mt-2 text-[10.5px] font-black uppercase tracking-[0.06em] text-slate-300">
                 {tile.label}
               </p>
             </div>
@@ -517,7 +517,7 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
               <button
                 key={s.id}
                 onClick={() => navigate({ name: "player-detail", id: s.id })}
-                className="card-lift group flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 text-left"
+                className="group flex items-center gap-3 rounded-xl border border-white/15 bg-[#0b101d] px-4 py-3 text-left transition-colors hover:border-red-500/50 hover:bg-[#11172a]"
               >
                 <span
                   aria-hidden
@@ -527,42 +527,42 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
                   <TeamCrest team={s.team} size="sm" />
                 ) : (
                   <span
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-muted text-[9px] font-bold text-muted-foreground"
+                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/10 text-[9px] font-bold text-slate-300"
                     aria-hidden
                   >
                     NT
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13px] font-semibold leading-tight text-foreground transition-colors group-hover:text-primary">
+                  <p className="truncate text-[13.5px] font-black leading-tight text-white transition-colors group-hover:text-red-400">
                     {s.name}
                   </p>
-                  <p className="mt-0.5 truncate text-[11px] leading-tight text-muted-foreground">
+                  <p className="mt-0.5 truncate text-[11px] font-medium leading-tight text-slate-300">
                     {POSITION_LABELS[s.position] ?? s.position} · #{s.jerseyNumber != null ? fmtNum(s.jerseyNumber) : "–"}
                   </p>
                 </div>
                 <div className="flex shrink-0 items-center gap-3.5 text-right">
                   <div>
-                    <p className="tabular font-display text-[13px] font-bold leading-none text-foreground">
+                    <p className="tabular font-display text-[13.5px] font-black leading-none text-white">
                       {fmtNum(s.goals)}
                     </p>
-                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">Gls</p>
+                    <p className="mt-1 text-[10px] font-black uppercase tracking-[0.04em] text-slate-400">Gls</p>
                   </div>
                   <div>
-                    <p className="tabular font-display text-[13px] font-bold leading-none text-foreground">
+                    <p className="tabular font-display text-[13.5px] font-black leading-none text-white">
                       {fmtNum(s.assists)}
                     </p>
-                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">Ast</p>
+                    <p className="mt-1 text-[10px] font-black uppercase tracking-[0.04em] text-slate-400">Ast</p>
                   </div>
                   <div>
-                    <p className="tabular font-display text-[13px] font-bold leading-none text-primary">
+                    <p className="tabular font-display text-[13.5px] font-black leading-none text-emerald-400">
                       {fmtNum(s.rating.toFixed(1))}
                     </p>
-                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">Rtg</p>
+                    <p className="mt-1 text-[10px] font-black uppercase tracking-[0.04em] text-slate-400">Rtg</p>
                   </div>
                 </div>
                 <ChevronRight
-                  className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                  className="h-4 w-4 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100"
                   aria-hidden
                 />
               </button>

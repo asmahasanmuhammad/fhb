@@ -54,17 +54,17 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
 
   return (
     <section aria-label="Comments" className="space-y-4">
-      <h3 className="flex items-center gap-2 border-b border-border pb-3.5 text-sm font-bold">
-        <MessageCircle className="h-4 w-4 text-primary" aria-hidden />
+      <h3 className="flex items-center gap-2 border-b border-white/15 pb-3.5 text-sm font-black text-white">
+        <MessageCircle className="h-4 w-4 text-red-500" aria-hidden />
         Comments
-        <span className="tabular rounded-md bg-muted px-1.5 py-0.5 text-[10px] font-bold text-muted-foreground">{countStr}</span>
+        <span className="tabular rounded-md bg-white/10 px-2 py-0.5 text-[10px] font-black text-slate-300">{countStr}</span>
       </h3>
 
       {user ? (
         <div className="flex items-start gap-3">
-          <Avatar className="h-8 w-8 border">
+          <Avatar className="h-8 w-8 border border-white/20">
             <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
-            <AvatarFallback className="bg-primary/15 text-xs font-bold text-primary">
+            <AvatarFallback className="bg-red-600/30 text-xs font-black text-red-400">
               {user.name.slice(0, 2)}
             </AvatarFallback>
           </Avatar>
@@ -75,16 +75,16 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
               placeholder="Write your comment... (max 500 characters)"
               rows={2}
               maxLength={500}
-              className="resize-none bg-background text-sm"
+              className="resize-none bg-[#06080f] border-white/20 text-white text-sm font-medium placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50"
               aria-label="Write a comment"
             />
             <div className="flex items-center justify-between">
-              <span className="tabular text-[10px] text-muted-foreground">{content.length}/500</span>
+              <span className="tabular text-[10.5px] font-semibold text-slate-400">{content.length}/500</span>
               <Button
                 size="sm"
                 onClick={() => submit.mutate()}
                 disabled={!content.trim() || submit.isPending}
-                className="gap-1.5"
+                className="gap-1.5 bg-red-600 hover:bg-red-500 text-white font-black shadow-md shadow-red-600/30"
               >
                 <Send className="h-3.5 w-3.5" aria-hidden />
                 {submit.isPending ? "Posting..." : "Comment"}
@@ -95,41 +95,41 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
       ) : (
         <button
           onClick={() => navigate({ name: "auth" })}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-muted/30 p-3.5 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-white/15 bg-white/5 p-3.5 text-sm font-medium text-slate-300 transition-colors hover:border-red-500/50 hover:text-white"
         >
           <LogIn className="h-4 w-4" aria-hidden />
-          To comment, <span className="font-semibold text-primary">log in</span>
+          To comment, <span className="font-bold text-red-400">log in</span>
         </button>
       )}
 
       <div className="space-y-2.5">
         {isLoading ? (
-          [1, 2].map((i) => <Skeleton key={i} className="h-16 w-full rounded-lg" />)
+          [1, 2].map((i) => <Skeleton key={i} className="h-16 w-full rounded-lg bg-[#0b101d]" />)
         ) : comments.length === 0 ? (
-          <p className="py-4 text-center text-sm text-muted-foreground">No comments yet — be the first to share your take.</p>
+          <p className="py-4 text-center text-xs font-semibold text-slate-400">No comments yet — be the first to share your take.</p>
         ) : (
           comments.map((c) => (
-            <div key={c.id} className="flex items-start gap-3 rounded-xl border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
-              <Avatar className="h-8 w-8 border">
+            <div key={c.id} className="flex items-start gap-3 rounded-xl border border-white/15 bg-[#0b101d] p-3.5 transition-colors hover:border-red-500/40">
+              <Avatar className="h-8 w-8 border border-white/15">
                 <AvatarImage src={c.user.avatarUrl ?? undefined} alt={c.user.name} />
-                <AvatarFallback className="bg-primary/15 text-xs font-bold text-primary">{c.user.name.slice(0, 2)}</AvatarFallback>
+                <AvatarFallback className="bg-red-600/30 text-xs font-black text-red-400">{c.user.name.slice(0, 2)}</AvatarFallback>
               </Avatar>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <button
                     onClick={() => navigate({ name: "profile", username: c.user.username })}
-                    className="text-xs font-bold transition-colors hover:text-primary"
+                    className="text-xs font-black text-white transition-colors hover:text-red-400"
                   >
                     {c.user.name}
                   </button>
                   {c.user.isPremium && (
-                    <span className="flex items-center gap-0.5 rounded-sm bg-fhb-gold/15 px-1 py-0.5 text-[9px] font-bold text-fhb-gold">
+                    <span className="flex items-center gap-0.5 rounded-sm bg-amber-400/20 border border-amber-400/30 px-1.5 py-0.5 text-[9px] font-black text-amber-300">
                       <Crown className="h-2.5 w-2.5" aria-hidden /> Premium
                     </span>
                   )}
-                  <span className="text-[10px] text-muted-foreground">{timeAgo(c.createdAt)}</span>
+                  <span className="text-[10px] font-semibold text-slate-400">{timeAgo(c.createdAt)}</span>
                 </div>
-                <p className="mt-1 whitespace-pre-line break-words text-sm leading-relaxed">{c.content}</p>
+                <p className="mt-1 whitespace-pre-line break-words text-sm font-medium leading-relaxed text-slate-100">{c.content}</p>
               </div>
             </div>
           ))

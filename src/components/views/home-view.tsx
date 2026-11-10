@@ -31,22 +31,25 @@ function SectionLabel({
 }) {
   const language = useAppStore((s) => s.language);
   const colors = {
-    red: "bg-red-600", gold: "bg-amber-500", blue: "bg-blue-600", green: "bg-emerald-600",
+    red: "bg-[#ff1e46] shadow-[0_0_8px_#ff1e46]",
+    gold: "bg-amber-400 shadow-[0_0_8px_#fbbf24]",
+    blue: "bg-[#00e5ff] shadow-[0_0_8px_#00e5ff]",
+    green: "bg-[#00e676] shadow-[0_0_8px_#00e676]",
   };
   return (
     <div className={cn("flex items-center justify-between mb-4", className)}>
-      <div className="flex items-center gap-2.5">
-        <div className={cn("h-5 w-1 shrink-0", colors[accent])} aria-hidden />
-        <h2 className="text-[14px] font-black uppercase tracking-[0.06em] text-white">
+      <div className="flex items-center gap-3">
+        <div className={cn("h-5 w-1.5 rounded-full shrink-0", colors[accent])} aria-hidden />
+        <h2 className="text-[16px] font-black uppercase tracking-[0.06em] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
           {language === "bn" && labelBn ? labelBn : label}
         </h2>
       </div>
       {action && onAction && (
         <button
           onClick={onAction}
-          className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-white/40 transition-colors hover:text-red-400"
+          className="flex items-center gap-1.5 text-[12px] font-extrabold uppercase tracking-wider text-white transition-all hover:text-[#00e5ff]"
         >
-          {action} <ChevronRight className="h-3.5 w-3.5" />
+          {action} <ChevronRight className="h-4 w-4" />
         </button>
       )}
     </div>
@@ -128,12 +131,12 @@ export function HomeView() {
 
       {/* ══════════ HERO SECTION — Full editorial lead ══════════ */}
       <section className="reveal mb-8" aria-label="Featured">
-        <div className="grid gap-3 lg:grid-cols-12">
+        <div className="grid gap-4 lg:grid-cols-12">
           {/* Lead Story — Full image hero */}
           {leadStory && (
             <button
               onClick={() => navigate({ name: "news-detail", id: leadStory.id })}
-              className="group relative lg:col-span-7 overflow-hidden border border-white/[0.07] bg-[#0d0d10] min-h-[340px] text-left"
+              className="group relative lg:col-span-7 overflow-hidden rounded-md border border-white/15 bg-[#090d19] min-h-[360px] text-left shadow-2xl transition-all hover:border-white/35"
               aria-label={leadStory.title}
             >
               {leadStory.coverUrl ? (
@@ -143,7 +146,7 @@ export function HomeView() {
                   fill
                   priority
                   sizes="(max-width: 1024px) 100vw, 60vw"
-                  className="object-cover brightness-[0.65] transition-transform duration-700 group-hover:scale-[1.03]"
+                  className="object-cover brightness-[0.7] transition-transform duration-700 group-hover:scale-[1.03]"
                   unoptimized
                 />
               ) : (
@@ -151,22 +154,22 @@ export function HomeView() {
               )}
               <div className="photo-scrim absolute inset-0" />
               {/* Category badge */}
-              <span className="absolute left-4 top-4 z-10 px-2 py-1 text-[9.5px] font-black uppercase tracking-widest text-white bg-red-600">
+              <span className="absolute left-4 top-4 z-10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest text-white bg-[#ff1e46] rounded-sm shadow-[0_0_10px_rgba(255,30,70,0.5)]">
                 {leadStory.category}
               </span>
               {/* Content */}
-              <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7">
-                <h2 className="mb-2.5 font-black text-white leading-tight text-[22px] sm:text-[28px] lg:text-[26px] drop-shadow-lg line-clamp-3">
+              <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7 bg-gradient-to-t from-black/95 via-black/60 to-transparent">
+                <h2 className="mb-2.5 font-black text-white leading-tight text-[24px] sm:text-[30px] lg:text-[28px] drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)] line-clamp-3">
                   {leadStory.title}
                 </h2>
-                <p className="mb-4 line-clamp-2 text-[13px] text-white/70 leading-relaxed hidden sm:block">
+                <p className="mb-4 line-clamp-2 text-[14px] text-[#f1f5f9] font-medium leading-relaxed hidden sm:block">
                   {leadStory.excerpt}
                 </p>
-                <div className="flex items-center gap-3 text-[11px] text-white/50">
-                  <span className="font-semibold text-white/80">{leadStory.author.name}</span>
-                  <span>·</span>
-                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {timeAgo(leadStory.createdAt)}</span>
-                  <span>·</span>
+                <div className="flex items-center gap-3.5 text-[12px] text-white font-bold">
+                  <span className="text-[#00e5ff]">{leadStory.author.name}</span>
+                  <span className="text-white/40">·</span>
+                  <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-[#ff1e46]" /> {timeAgo(leadStory.createdAt)}</span>
+                  <span className="text-white/40">·</span>
                   <span>{fmtCompact(leadStory.views)} views</span>
                 </div>
               </div>
@@ -174,10 +177,10 @@ export function HomeView() {
           )}
 
           {/* Right column — featured match + 2 secondary news */}
-          <div className="lg:col-span-5 flex flex-col gap-3">
+          <div className="lg:col-span-5 flex flex-col gap-3.5">
             {heroMatch && <MatchCard match={heroMatch} className="flex-shrink-0" />}
             {secondaryNews.slice(0, 2).map((a) => (
-              <NewsCard key={a.id} article={a} size="compact" className="border border-white/[0.07] bg-[#0d0d10]" />
+              <NewsCard key={a.id} article={a} size="compact" className="border border-white/12 bg-[#090d19] shadow-md" />
             ))}
           </div>
         </div>
@@ -200,9 +203,9 @@ export function HomeView() {
             onAction={() => navigate({ name: "scores" })}
           />
 
-          <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
+          <div className="rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden">
             {/* Date pill rail */}
-            <div className="flex items-center gap-0 border-b border-white/[0.07] bg-[#060608] px-0">
+            <div className="flex items-center gap-0 border-b border-white/12 bg-[#050812] px-0">
               {[
                 { label: "Yesterday", offset: -1 },
                 { label: "Today", offset: 0 },
@@ -212,18 +215,18 @@ export function HomeView() {
                   key={d.label}
                   onClick={() => setDayOffset(d.offset)}
                   className={cn(
-                    "flex-1 py-2.5 text-[11px] font-black uppercase tracking-wider transition-colors",
+                    "flex-1 py-3 text-[12px] font-black uppercase tracking-wider transition-all",
                     dayOffset === d.offset
-                      ? "bg-red-600 text-white"
-                      : "text-white/35 hover:text-white/70 hover:bg-white/[0.03]"
+                      ? "bg-[#ff1e46] text-white shadow-[0_0_12px_rgba(255,30,70,0.5)]"
+                      : "text-white font-extrabold hover:text-white hover:bg-white/10"
                   )}
                 >
                   {d.label}
                 </button>
               ))}
               {liveNow.length > 0 && (
-                <div className="flex shrink-0 items-center gap-1.5 px-4 text-[10px] font-black text-red-400 uppercase tracking-widest">
-                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+                <div className="flex shrink-0 items-center gap-1.5 px-4 text-[11px] font-black text-white bg-red-600/30 uppercase tracking-widest">
+                  <span className="live-dot h-2 w-2 rounded-full bg-[#ff1e46]" />
                   {fmtNum(liveNow.length)} LIVE
                 </div>
               )}
@@ -237,14 +240,14 @@ export function HomeView() {
                 ))}
               </div>
             ) : dayMatches.length > 0 ? (
-              <div className="divide-y divide-white/[0.04]">
+              <div className="divide-y divide-white/10">
                 {dayMatches.map((m) => <MatchRow key={m.id} match={m} showCompetition />)}
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
-                <CalendarDays className="h-8 w-8 text-white/15" />
-                <p className="text-[13px] font-bold text-white/40">No matches scheduled</p>
-                <p className="text-[11px] text-white/25">
+                <CalendarDays className="h-9 w-9 text-white/30" />
+                <p className="text-[14px] font-extrabold text-white">No matches scheduled</p>
+                <p className="text-[12px] text-[#cbd5e1] font-medium">
                   {dayOffset === -1 ? "Yesterday" : dayOffset === 1 ? "Tomorrow" : "Today"} has no fixtures.
                 </p>
               </div>
@@ -252,9 +255,9 @@ export function HomeView() {
 
             <button
               onClick={() => navigate({ name: "scores" })}
-              className="flex w-full items-center justify-center gap-1.5 border-t border-white/[0.06] py-3 text-[11px] font-black uppercase tracking-widest text-white/35 transition-colors hover:bg-white/[0.03] hover:text-white/70"
+              className="flex w-full items-center justify-center gap-1.5 border-t border-white/10 py-3 text-[12px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 hover:text-[#00e5ff]"
             >
-              View all fixtures <ChevronRight className="h-3.5 w-3.5" />
+              View all fixtures <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
@@ -263,39 +266,39 @@ export function HomeView() {
         <div className="space-y-5 lg:col-span-4">
           {/* Live now */}
           {liveNow.length > 0 && (
-            <div className="border border-red-600/30 bg-[#0d0d10] overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-red-600/20 bg-red-600/10 px-4 py-2.5">
-                <span className="live-dot h-2 w-2 rounded-full bg-red-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
+            <div className="rounded-md border border-[#ff1e46]/40 bg-[#0c1224] shadow-xl overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-[#ff1e46]/30 bg-[#ff1e46]/20 px-4 py-2.5">
+                <span className="live-dot h-2 w-2 rounded-full bg-[#ff1e46]" />
+                <span className="text-[11px] font-black uppercase tracking-widest text-white">
                   Live Now · {fmtNum(liveNow.length)} Match{liveNow.length !== 1 ? "es" : ""}
                 </span>
               </div>
-              <div className="divide-y divide-white/[0.04]">
+              <div className="divide-y divide-white/10">
                 {liveNow.slice(0, 4).map((m) => <MatchRow key={m.id} match={m} showCompetition={false} />)}
               </div>
               <button
                 onClick={() => navigate({ name: "scores" })}
-                className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-red-400 transition-colors hover:bg-red-600/5"
+                className="flex w-full items-center justify-center gap-1 border-t border-white/10 py-2.5 text-[11px] font-black uppercase tracking-widest text-white bg-red-600/20 transition-colors hover:bg-red-600/40"
               >
-                All live <ChevronRight className="h-3 w-3" />
+                All live <ChevronRight className="h-3.5 w-3.5" />
               </button>
             </div>
           )}
 
           {/* Next Up */}
-          <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
-            <div className="flex items-center gap-2 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5">
-              <CalendarDays className="h-3.5 w-3.5 text-white/40" />
-              <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Next Up</span>
+          <div className="rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-white/12 bg-[#050812] px-4 py-2.5">
+              <CalendarDays className="h-4 w-4 text-[#ff1e46]" />
+              <span className="text-[11px] font-black uppercase tracking-widest text-white">Next Up</span>
             </div>
-            <div className="divide-y divide-white/[0.04]">
+            <div className="divide-y divide-white/10">
               {upcoming.slice(0, 5).map((m) => <MatchRow key={m.id} match={m} showCompetition />)}
             </div>
             <button
               onClick={() => navigate({ name: "scores" })}
-              className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-white/35 transition-colors hover:bg-white/[0.03] hover:text-white/60"
+              className="flex w-full items-center justify-center gap-1 border-t border-white/10 py-2.5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 hover:text-[#00e5ff]"
             >
-              Full fixture list <ChevronRight className="h-3 w-3" />
+              Full fixture list <ChevronRight className="h-3.5 w-3.5" />
             </button>
           </div>
 
@@ -315,21 +318,21 @@ export function HomeView() {
         />
 
         {/* Category filter tabs */}
-        <div className="mb-5 flex items-center gap-0 border-b border-white/[0.07] overflow-x-auto no-scrollbar">
+        <div className="mb-5 flex items-center gap-0 border-b border-white/12 overflow-x-auto no-scrollbar">
           {[
-            { key: "all", label: "All" },
-            { key: "bd", label: "Bangladesh" },
-            { key: "world", label: "World" },
-            { key: "transfers", label: "Transfers" },
+            { key: "all", label: "All News" },
+            { key: "bd", label: "Bangladesh Football" },
+            { key: "world", label: "World Football" },
+            { key: "transfers", label: "Transfer Radar" },
           ].map((tab) => (
             <button
               key={tab.key}
               onClick={() => setNewsTab(tab.key as typeof newsTab)}
               className={cn(
-                "shrink-0 pb-2.5 pt-1 px-4 text-[11.5px] font-bold uppercase tracking-wider border-b-2 transition-colors",
+                "shrink-0 pb-3 pt-1.5 px-5 text-[12.5px] font-extrabold uppercase tracking-wider border-b-2 transition-all",
                 newsTab === tab.key
-                  ? "border-red-500 text-white"
-                  : "border-transparent text-white/35 hover:text-white/70"
+                  ? "border-[#ff1e46] text-white shadow-[0_2px_8px_rgba(255,30,70,0.5)]"
+                  : "border-transparent text-[#cbd5e1] hover:text-white hover:bg-white/10"
               )}
             >
               {tab.label}
@@ -347,30 +350,30 @@ export function HomeView() {
 
           {/* Most Read rail */}
           <aside className="lg:col-span-4 space-y-4">
-            <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5">
-                <Flame className="h-3.5 w-3.5 text-red-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Most Read</span>
+            <div className="rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-white/12 bg-[#050812] px-4 py-2.5">
+                <Flame className="h-4 w-4 text-[#ff1e46]" />
+                <span className="text-[11px] font-black uppercase tracking-widest text-white">Most Read</span>
               </div>
-              <div className="divide-y divide-white/[0.04]">
+              <div className="divide-y divide-white/10">
                 {mostRead.map((a, i) => (
                   <button
                     key={a.id}
                     onClick={() => navigate({ name: "news-detail", id: a.id })}
-                    className="group flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/[0.03]"
+                    className="group flex w-full items-start gap-3.5 px-4 py-3.5 text-left transition-all hover:bg-white/10"
                   >
                     <span className={cn(
                       "tabular w-7 shrink-0 font-black text-[22px] leading-none",
-                      i === 0 ? "text-red-500" : "text-white/15"
+                      i === 0 ? "text-[#ff1e46] drop-shadow-[0_0_8px_rgba(255,30,70,0.5)]" : "text-white"
                     )}>
                       {i + 1}
                     </span>
                     <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 text-[12.5px] font-bold leading-snug text-white/80 transition-colors group-hover:text-white">
+                      <span className="line-clamp-2 text-[13px] font-extrabold leading-snug text-white transition-colors group-hover:text-[#00e5ff]">
                         {a.title}
                       </span>
-                      <span className="mt-1.5 flex items-center gap-2 text-[10px] text-white/30">
-                        <Clock className="h-2.5 w-2.5" /> {timeAgo(a.createdAt)}
+                      <span className="mt-1.5 flex items-center gap-2 text-[11px] font-semibold text-[#cbd5e1]">
+                        <Clock className="h-3 w-3 text-[#ff1e46]" /> {timeAgo(a.createdAt)}
                         <span>·</span>
                         {fmtCompact(a.views)} reads
                       </span>
@@ -566,31 +569,31 @@ function TopScorersMini() {
   if (scorers.length === 0) return null;
 
   return (
-    <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
-      <div className="flex items-center gap-2 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5">
-        <span className="flex h-5 w-5 items-center justify-center bg-amber-500/15 text-amber-400">
-          <Goal className="h-3.5 w-3.5" />
+    <div className="rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden">
+      <div className="flex items-center gap-2 border-b border-white/12 bg-[#050812] px-4 py-2.5">
+        <span className="flex h-5 w-5 items-center justify-center rounded bg-amber-400/20 text-amber-300">
+          <Goal className="h-3.5 w-3.5 text-amber-300" />
         </span>
-        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Top Scorers</span>
+        <span className="text-[11px] font-black uppercase tracking-widest text-white">Top Scorers</span>
       </div>
-      <div className="divide-y divide-white/[0.04]">
+      <div className="divide-y divide-white/10">
         {scorers.map((p, i) => (
           <button
             key={p.id}
             onClick={() => navigate({ name: "player-detail", id: p.id })}
-            className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+            className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-white/10"
           >
             <span className={cn(
-              "tabular flex h-6 w-6 shrink-0 items-center justify-center font-black text-[11px]",
-              i === 0 ? "bg-amber-500/20 text-amber-400" : i < 3 ? "bg-red-600/15 text-red-400" : "bg-white/[0.05] text-white/30"
+              "tabular flex h-6 w-6 shrink-0 items-center justify-center rounded font-black text-[12px]",
+              i === 0 ? "bg-amber-400 text-black shadow-sm" : i < 3 ? "bg-[#ff1e46] text-white shadow-sm" : "bg-white/10 text-white"
             )}>
               {i + 1}
             </span>
             {p.team && <TeamCrest team={p.team} size="xs" />}
-            <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-white/70 transition-colors group-hover:text-white">
+            <span className="min-w-0 flex-1 truncate text-[13px] font-extrabold text-white transition-colors group-hover:text-[#00e5ff]">
               {p.name}
             </span>
-            <span className="tabular shrink-0 font-black text-[14px] text-white/80">
+            <span className="tabular shrink-0 font-black text-[15px] text-white px-2 py-0.5 rounded bg-white/10">
               {fmtNum(p.goals)}
             </span>
           </button>
@@ -598,9 +601,9 @@ function TopScorersMini() {
       </div>
       <button
         onClick={() => navigate({ name: "standings" })}
-        className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-white/30 transition-colors hover:bg-white/[0.03] hover:text-white/60"
+        className="flex w-full items-center justify-center gap-1.5 border-t border-white/10 py-2.5 text-[11px] font-black uppercase tracking-widest text-white transition-all hover:bg-white/10 hover:text-[#00e5ff]"
       >
-        Full list <ChevronRight className="h-3 w-3" />
+        Full list <ChevronRight className="h-3.5 w-3.5" />
       </button>
     </div>
   );

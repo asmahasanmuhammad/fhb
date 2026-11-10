@@ -6,8 +6,10 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-body);
-  --font-display: var(--font-display);
+  --font-antipasto: var(--font-antipasto);
+  --font-sans: var(--font-antipasto), var(--font-body), var(--font-bangla), system-ui, sans-serif;
+  --font-display: var(--font-antipasto), system-ui, sans-serif;
+  --font-condensed: var(--font-antipasto), var(--font-condensed), sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -49,93 +51,91 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* ═══ FHB 3.0 — Sky Sports / ESPN FC Level Broadcast Design ═══ */
-/* Deep carbon base, editorial white foreground, single crimson accent */
+/* ═══ FHB 4.0 — Ultra-Luxury International Sports Broadcast System ═══ */
 
 :root {
-  --radius: 0.25rem;
-  /* Light theme (secondary — site is dark-first) */
-  --background: oklch(0.97 0.002 265);
-  --foreground: oklch(0.12 0.01 265);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.12 0.01 265);
-  --elevated: oklch(0.98 0.002 265);
-  --elevated-foreground: oklch(0.12 0.01 265);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.12 0.01 265);
-  --primary: oklch(0.5 0.22 25); /* Crimson */
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.945 0.004 265);
-  --secondary-foreground: oklch(0.2 0.01 265);
-  --muted: oklch(0.945 0.004 265);
-  --muted-foreground: oklch(0.5 0.01 265);
-  --accent: oklch(0.935 0.004 265);
-  --accent-foreground: oklch(0.2 0.01 265);
-  --destructive: oklch(0.5 0.22 25);
-  --border: oklch(0.88 0.004 265);
-  --input: oklch(0.88 0.004 265);
-  --ring: oklch(0.5 0.22 25);
-  --chart-1: oklch(0.5 0.22 25);
-  --chart-2: oklch(0.72 0.14 85);
-  --chart-3: oklch(0.6 0.15 220);
-  --chart-4: oklch(0.5 0.01 265);
-  --chart-5: oklch(0.65 0.1 160);
-  --sidebar: oklch(0.97 0.002 265);
-  --sidebar-foreground: oklch(0.12 0.01 265);
-  --sidebar-primary: oklch(0.5 0.22 25);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.935 0.004 265);
-  --sidebar-accent-foreground: oklch(0.2 0.01 265);
-  --sidebar-border: oklch(0.88 0.004 265);
-  --sidebar-ring: oklch(0.5 0.22 25);
-  --fhb-red: oklch(0.52 0.235 25);
-  --fhb-gold: oklch(0.78 0.14 85);
-  --fhb-green: oklch(0.52 0.165 152);
-  --fhb-blue: oklch(0.52 0.18 220);
+  --radius: 0.375rem;
+  --background: #f8fafc;
+  --foreground: #090d16;
+  --card: #ffffff;
+  --card-foreground: #090d16;
+  --elevated: #f1f5f9;
+  --elevated-foreground: #090d16;
+  --popover: #ffffff;
+  --popover-foreground: #090d16;
+  --primary: #ff1e46;
+  --primary-foreground: #ffffff;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #090d16;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #e2e8f0;
+  --accent-foreground: #090d16;
+  --destructive: #ef4444;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: rgba(0, 0, 0, 0.12);
+  --ring: #ff1e46;
+  --chart-1: #ff1e46;
+  --chart-2: #fbbf24;
+  --chart-3: #00d2ff;
+  --chart-4: #64748b;
+  --chart-5: #00e676;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #090d16;
+  --sidebar-primary: #ff1e46;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e2e8f0;
+  --sidebar-accent-foreground: #090d16;
+  --sidebar-border: rgba(0, 0, 0, 0.1);
+  --sidebar-ring: #ff1e46;
+  --fhb-red: #ff1e46;
+  --fhb-gold: #fbbf24;
+  --fhb-green: #00e676;
+  --fhb-blue: #00d2ff;
 }
 
 .dark {
-  /* ═══ FHB 3.0 — Carbon Black Broadcast Editorial ═══
-     Pure carbon base, no blue/green cast.
-     Typography-first: sharp white on deep black.
-     Red accent only where it counts. */
-  --background: oklch(0.082 0.004 265);     /* Near-black carbon #0d0d0f */
-  --foreground: oklch(0.96 0.003 265);      /* Editorial white */
-  --card: oklch(0.108 0.004 265);           /* Card surface #161619 */
-  --card-foreground: oklch(0.96 0.003 265);
-  --elevated: oklch(0.135 0.004 265);       /* Elevated surface #1c1c20 */
-  --elevated-foreground: oklch(0.96 0.003 265);
-  --popover: oklch(0.12 0.004 265);
-  --popover-foreground: oklch(0.96 0.003 265);
-  --primary: oklch(0.6 0.235 25);           /* Sky Sports crimson */
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.145 0.004 265);
-  --secondary-foreground: oklch(0.96 0.003 265);
-  --muted: oklch(0.138 0.004 265);
-  --muted-foreground: oklch(0.58 0.008 265);
-  --accent: oklch(0.148 0.004 265);
-  --accent-foreground: oklch(0.96 0.003 265);
-  --destructive: oklch(0.62 0.235 25);
-  --border: oklch(1 0 0 / 7%);
-  --input: oklch(1 0 0 / 10%);
-  --ring: oklch(0.6 0.235 25);
-  --chart-1: oklch(0.6 0.235 25);
-  --chart-2: oklch(0.78 0.14 85);
-  --chart-3: oklch(0.6 0.15 220);
-  --chart-4: oklch(0.55 0.01 265);
-  --chart-5: oklch(0.65 0.12 152);
-  --sidebar: oklch(0.095 0.004 265);
-  --sidebar-foreground: oklch(0.96 0.003 265);
-  --sidebar-primary: oklch(0.6 0.235 25);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.148 0.004 265);
-  --sidebar-accent-foreground: oklch(0.96 0.003 265);
-  --sidebar-border: oklch(1 0 0 / 7%);
-  --sidebar-ring: oklch(0.6 0.235 25);
-  --fhb-red: oklch(0.62 0.24 25);
-  --fhb-gold: oklch(0.8 0.14 86);
-  --fhb-green: oklch(0.65 0.165 152);
-  --fhb-blue: oklch(0.62 0.18 222);
+  /* ═══ FHB 4.0 — Stadium Sapphire Midnight & Pure Luminous White ═══
+     Crystal-clear luminous pure white typography throughout.
+     Rich deepest stadium sapphire obsidian (#06080f).
+     Hyper-vibrant electric stadium crimson (#ff1e46) & pitch neon green (#00e676). */
+  --background: #06080f;              /* Deep rich midnight stadium canvas */
+  --foreground: #ffffff;              /* 100% PURE LUMINOUS BRILLIANT WHITE */
+  --card: #0b101d;                    /* Luxury midnight sapphire-titanium card */
+  --card-foreground: #ffffff;         /* Pure bright white */
+  --elevated: #11172a;                /* Elevated glass surface */
+  --elevated-foreground: #ffffff;
+  --popover: #0d1324;
+  --popover-foreground: #ffffff;
+  --primary: #ff1e46;                 /* Hyper-vibrant electric crimson */
+  --primary-foreground: #ffffff;
+  --secondary: #141c32;
+  --secondary-foreground: #ffffff;
+  --muted: #10162a;
+  --muted-foreground: #cbd5e1;        /* Crisp bright silver-white — high readability! */
+  --accent: #162038;
+  --accent-foreground: #ffffff;
+  --destructive: #ff2d55;
+  --border: rgba(255, 255, 255, 0.13);   /* High-clarity crisp hairline edge */
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: #ff1e46;
+  --chart-1: #ff1e46;
+  --chart-2: #fbbf24;
+  --chart-3: #00e5ff;
+  --chart-4: #cbd5e1;
+  --chart-5: #00e676;
+  --sidebar: #060913;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ff1e46;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #162038;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.13);
+  --sidebar-ring: #ff1e46;
+  --fhb-red: #ff1e46;                 /* Electric stadium neon red */
+  --fhb-gold: #fbbf24;                /* Championship Gold */
+  --fhb-green: #00e676;               /* Pitch electric green */
+  --fhb-blue: #00e5ff;                /* Stadium floodlight cyan */
 }
 
 /* ═══ BASE RESET ═══ */
@@ -148,17 +148,21 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-body), system-ui, sans-serif;
+    font-family: var(--font-antipasto), var(--font-body), var(--font-bangla), system-ui, -apple-system, sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color: #ffffff;
   }
-  h1, h2, h3, h4, h5 {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-antipasto), var(--font-display), sans-serif;
+    color: #ffffff !important;
     text-wrap: balance;
+    letter-spacing: -0.01em;
   }
   ::selection {
-    background: oklch(0.6 0.235 25 / 0.3);
-    color: #fff;
+    background: #ff1e46;
+    color: #ffffff;
   }
 }
 
@@ -208,20 +212,21 @@
 
 /* ── Surfaces & Panels ────────────────────────────────────────────────── */
 
-/* Frosted glass nav — backdrop */
+/* Ultra-luxury Frosted Glass Nav */
 .glass {
-  background: oklch(0.082 0.004 265 / 0.92);
-  backdrop-filter: blur(20px) saturate(1.4);
-  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  background: rgba(6, 8, 15, 0.88);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .glass-light {
-  background: oklch(1 0 0 / 0.92);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(16px) saturate(1.2);
   -webkit-backdrop-filter: blur(16px) saturate(1.2);
 }
 
-/* Top hairline on dark surfaces */
+/* Hairline glass edge */
 .edge-lit {
   position: relative;
 }
@@ -230,36 +235,72 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 12%), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.22), transparent);
   pointer-events: none;
 }
 
-/* Carbon panel — deep base used for hero sections */
+/* Luxury Obsidian panel */
 .carbon-panel {
   background:
-    radial-gradient(130% 160% at 85% -15%, oklch(0.6 0.235 25 / 0.12), transparent 55%),
-    linear-gradient(170deg, oklch(0.14 0.005 265), oklch(0.08 0.004 265) 65%);
+    radial-gradient(130% 160% at 85% -15%, rgba(255, 30, 70, 0.18), transparent 55%),
+    linear-gradient(170deg, #10162a 0%, #06080f 70%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
 }
 
-/* Match card broadcast panel */
+/* Match card broadcast stadium panel */
 .stadium-panel {
   background:
-    radial-gradient(110% 130% at 88% -8%, oklch(0.6 0.235 25 / 0.1), transparent 52%),
-    linear-gradient(165deg, oklch(0.145 0.006 265), oklch(0.1 0.004 265) 60%);
+    radial-gradient(110% 130% at 88% -8%, rgba(255, 30, 70, 0.12), transparent 52%),
+    linear-gradient(165deg, #0e1526 0%, #070b16 100%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
 }
 
-/* Gold/premium surface */
+/* Gold/VIP surface */
 .gold-panel {
   background:
-    radial-gradient(110% 140% at 88% -10%, oklch(0.8 0.14 86 / 0.14), transparent 55%),
-    linear-gradient(165deg, oklch(0.155 0.016 86), oklch(0.105 0.01 85) 62%);
+    radial-gradient(110% 140% at 88% -10%, rgba(251, 191, 36, 0.18), transparent 55%),
+    linear-gradient(165deg, #1a1708 0%, #0c0a04 100%);
+  border: 1px solid rgba(251, 191, 36, 0.28);
 }
 
-/* Sky blue/UEFA panel */
+/* Sky blue / UEFA Champions panel */
 .blue-panel {
   background:
-    radial-gradient(100% 150% at 90% -5%, oklch(0.62 0.18 222 / 0.14), transparent 55%),
-    linear-gradient(170deg, oklch(0.14 0.01 222), oklch(0.095 0.005 265) 65%);
+    radial-gradient(100% 150% at 90% -5%, rgba(0, 229, 255, 0.18), transparent 55%),
+    linear-gradient(170deg, #0a1b2d 0%, #060e18 100%);
+  border: 1px solid rgba(0, 229, 255, 0.25);
+}
+
+/* Ultra-bright white typography */
+.text-bright-white {
+  color: #ffffff !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+.text-silver {
+  color: #e2e8f0 !important;
+}
+
+.glow-white {
+  text-shadow: 0 0 12px rgba(255, 255, 255, 0.7);
+}
+
+.glow-red {
+  text-shadow: 0 0 14px rgba(255, 30, 70, 0.8);
+}
+
+.glow-cyan {
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.8);
+}
+
+.glow-box-red {
+  box-shadow: 0 0 25px rgba(255, 30, 70, 0.25);
+}
+
+.glow-box-cyan {
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.25);
 }
 
 /* Fine pitch grass texture */

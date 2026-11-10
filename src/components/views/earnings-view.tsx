@@ -44,13 +44,13 @@ const SOURCE_META: Record<string, { label: string; Icon: LucideIcon; cls: string
 const METHOD_LABEL: Record<string, string> = { BKASH: "bKash", NAGAD: "Nagad", BANK: "Bank" };
 
 const inputCls =
-  "h-10 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-2 focus:ring-primary/15";
+  "h-10 w-full rounded-lg border border-white/20 bg-[#06080f] px-3 text-sm font-semibold text-white outline-none transition-colors placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50";
 
 /** Consistent 11px uppercase card header with hairline rule. */
 function CardHead({ label, right }: { label: string; right?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
-      <h3 className="eyebrow text-muted-foreground">{label}</h3>
+    <div className="flex items-center justify-between gap-3 border-b border-white/15 bg-[#06080f] px-4 py-3 sm:px-5">
+      <h3 className="text-[11px] font-black uppercase tracking-wider text-white">{label}</h3>
       {right != null && <div className="min-w-0 text-right">{right}</div>}
     </div>
   );
@@ -61,8 +61,8 @@ function StatusChip({ status }: { status: string }) {
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center rounded-md border px-1.5 py-0.5 text-[10px] font-bold",
-        meta?.cls ?? "border-border bg-muted text-muted-foreground"
+        "inline-flex shrink-0 items-center rounded-md border px-2 py-0.5 text-[10px] font-black uppercase tracking-wide",
+        meta?.cls ?? "border-white/15 bg-white/5 text-slate-300"
       )}
     >
       {meta?.label ?? status}
@@ -77,17 +77,17 @@ function StatTile({
   label: string; value: string; sub?: React.ReactNode; icon: React.ReactNode; iconCls: string;
 }) {
   return (
-    <div className="edge-lit card-lift rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-white/15 bg-[#0b101d] p-4 shadow-lg">
       <div className="flex items-center gap-2">
         <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md", iconCls)}>
           <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
         </span>
-        <p className="eyebrow truncate text-muted-foreground">{label}</p>
+        <p className="text-[11px] font-black uppercase tracking-wider text-slate-300 truncate">{label}</p>
       </div>
-      <p className="tabular mt-3 font-display text-[1.4rem] font-bold leading-none tracking-[-0.01em] text-foreground">
+      <p className="tabular mt-3 font-display text-[1.4rem] font-black leading-none tracking-[-0.01em] text-white drop-shadow-sm">
         {value}
       </p>
-      {sub != null && <p className="mt-2 truncate text-[11px] text-muted-foreground">{sub}</p>}
+      {sub != null && <p className="mt-2 truncate text-[11.5px] font-medium text-slate-300">{sub}</p>}
     </div>
   );
 }
@@ -230,12 +230,12 @@ export function EarningsView() {
         {/* ═══ Main column ═══ */}
         <div className="space-y-6 lg:col-span-8">
           {/* ── Earnings performance ── */}
-          <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card">
+          <section className="reveal overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-lg">
             <CardHead
               label="Earnings by month"
               right={
-                <span className="tabular text-[11px] font-semibold text-muted-foreground">
-                  6-month total <span className="font-bold text-foreground">{formatMoney(monthlyTotal)}</span>
+                <span className="tabular text-[11px] font-semibold text-slate-300">
+                  6-month total <span className="font-black text-white">{formatMoney(monthlyTotal)}</span>
                 </span>
               }
             />
@@ -245,16 +245,16 @@ export function EarningsView() {
                   const h = (m.amount / maxMonthly) * 100;
                   return (
                     <div key={m.month} className="group relative flex h-full min-w-0 flex-1 flex-col">
-                      <div className="relative flex flex-1 items-end border-b border-border/70">
-                        <span className="tabular pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md border border-border bg-elevated px-2 py-1 text-[10px] font-bold text-foreground opacity-0 transition-opacity group-hover:opacity-100">
+                      <div className="relative flex flex-1 items-end border-b border-white/10">
+                        <span className="tabular pointer-events-none absolute bottom-full left-1/2 z-10 mb-1.5 -translate-x-1/2 whitespace-nowrap rounded-md border border-white/20 bg-[#06080f] px-2 py-1 text-[10px] font-bold text-white opacity-0 transition-opacity group-hover:opacity-100 shadow">
                           {formatMoney(m.amount)}
                         </span>
                         <div
-                          className="w-full rounded-t-[3px] bg-primary/55 transition-colors group-hover:bg-primary"
+                          className="w-full rounded-t-[3px] bg-red-500/80 transition-colors group-hover:bg-red-400"
                           style={{ height: `${Math.max(h, m.amount > 0 ? 3 : 1)}%` }}
                         />
                       </div>
-                      <span className="mt-2 text-center text-[10px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+                      <span className="mt-2 text-center text-[10px] font-black uppercase tracking-[0.08em] text-slate-300">
                         {m.month}
                       </span>
                     </div>
@@ -263,28 +263,28 @@ export function EarningsView() {
               </div>
 
               {/* Secondary metrics — hairline strip */}
-              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-border/70 pt-4 sm:grid-cols-4">
+              <div className="mt-5 grid grid-cols-2 gap-4 border-t border-white/10 pt-4 sm:grid-cols-4">
                 <div>
-                  <p className="eyebrow text-muted-foreground/80">Total views</p>
-                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                  <p className="text-[10.5px] font-black uppercase tracking-wider text-slate-400">Total views</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-black text-white">
                     {fmtCompact(stats.totalViews)}
                   </p>
                 </div>
                 <div>
-                  <p className="eyebrow text-muted-foreground/80">Avg. RPM</p>
-                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                  <p className="text-[10.5px] font-black uppercase tracking-wider text-slate-400">Avg. RPM</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-black text-white">
                     Tk {stats.rpm.toFixed(1)}
                   </p>
                 </div>
                 <div>
-                  <p className="eyebrow text-muted-foreground/80">Paid out</p>
-                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                  <p className="text-[10.5px] font-black uppercase tracking-wider text-slate-400">Paid out</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-black text-white">
                     {formatMoney(stats.paidOut)}
                   </p>
                 </div>
                 <div>
-                  <p className="eyebrow text-muted-foreground/80">Pending</p>
-                  <p className="tabular mt-1.5 font-display text-[15px] font-bold text-foreground">
+                  <p className="text-[10.5px] font-black uppercase tracking-wider text-slate-400">Pending</p>
+                  <p className="tabular mt-1.5 font-display text-[15px] font-black text-emerald-400">
                     {formatMoney(stats.pending)}
                   </p>
                 </div>
@@ -293,10 +293,10 @@ export function EarningsView() {
           </section>
 
           {/* ── Revenue by video ── */}
-          <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card">
+          <section className="reveal overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-lg">
             <CardHead
               label="Revenue by video"
-              right={<span className="text-[11px] font-semibold text-muted-foreground">{fmtNum(videos.length)} shorts</span>}
+              right={<span className="text-[11px] font-bold text-slate-300">{fmtNum(videos.length)} shorts</span>}
             />
             {videos.length === 0 ? (
               <div className="flex flex-col items-center gap-2 px-5 py-12 text-center">

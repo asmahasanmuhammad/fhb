@@ -57,7 +57,7 @@ const METHOD_LABEL: Record<string, string> = { BKASH: "bKash", NAGAD: "Nagad", B
 const ROLE_LABEL: Record<string, string> = { USER: "Fan", CREATOR: "Creator", ADMIN: "Admin" };
 
 const inputCls =
-  "w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-2 focus:ring-primary/15";
+  "w-full rounded-lg border border-white/20 bg-[#06080f] px-3 py-2.5 text-sm font-semibold text-white outline-none transition-colors placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50";
 
 function placementLabel(p: string): string {
   const map: Record<string, string> = {
@@ -83,23 +83,23 @@ function initials(name: string): string {
 /** Consistent 11px uppercase card header with hairline rule. */
 function CardHead({ label, right }: { label: string; right?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
-      <h3 className="eyebrow text-muted-foreground">{label}</h3>
+    <div className="flex items-center justify-between gap-3 border-b border-white/15 bg-[#06080f] px-4 py-3 sm:px-5">
+      <h3 className="text-[11px] font-black uppercase tracking-wider text-white">{label}</h3>
       {right != null && <div className="min-w-0 text-right">{right}</div>}
     </div>
   );
 }
 
 function ColHead({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <span className={cn("eyebrow text-muted-foreground/70", className)}>{children}</span>;
+  return <span className={cn("text-[10.5px] font-black uppercase tracking-wider text-slate-300", className)}>{children}</span>;
 }
 
 function Chip({ children, cls }: { children: React.ReactNode; cls?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded-md border px-1.5 py-0.5 text-[10px] font-bold",
-        cls ?? "border-border bg-muted text-muted-foreground"
+        "inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 text-[10.5px] font-bold",
+        cls ?? "border-white/15 bg-white/5 text-slate-300"
       )}
     >
       {children}
@@ -114,17 +114,17 @@ function StatTile({
   label: string; value: string; sub?: React.ReactNode; icon: React.ReactNode; iconCls: string;
 }) {
   return (
-    <div className="edge-lit card-lift rounded-xl border border-border bg-card p-4">
+    <div className="rounded-xl border border-white/15 bg-[#0b101d] p-4 shadow-lg">
       <div className="flex items-center gap-2">
         <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md", iconCls)}>
           <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
         </span>
-        <p className="eyebrow truncate text-muted-foreground">{label}</p>
+        <p className="text-[11px] font-black uppercase tracking-wider text-slate-300 truncate">{label}</p>
       </div>
-      <p className="tabular mt-3 font-display text-[1.35rem] font-bold leading-none tracking-[-0.01em] text-foreground">
+      <p className="tabular mt-3 font-display text-[1.4rem] font-black leading-none tracking-[-0.01em] text-white drop-shadow-sm">
         {value}
       </p>
-      {sub != null && <p className="mt-2 truncate text-[11px] text-muted-foreground">{sub}</p>}
+      {sub != null && <p className="mt-2 truncate text-[11.5px] font-medium text-slate-300">{sub}</p>}
     </div>
   );
 }
@@ -133,8 +133,8 @@ function StatTile({
 function SectionTitle({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-4">
-      <h2 className="font-display text-[1.35rem] font-bold leading-tight tracking-[-0.01em] text-foreground">{title}</h2>
-      {sub && <p className="mt-1 text-[13px] text-muted-foreground">{sub}</p>}
+      <h2 className="font-display text-[1.4rem] font-black leading-tight text-white drop-shadow-sm">{title}</h2>
+      {sub && <p className="mt-1 text-[13px] font-medium text-slate-300">{sub}</p>}
     </div>
   );
 }
@@ -269,10 +269,10 @@ export function AdminView() {
               aria-selected={section === id}
               onClick={() => setSection(id)}
               className={cn(
-                "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border px-3 py-2 text-[12px] font-bold transition-colors",
+                "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border px-3 py-2 text-[12px] font-black transition-colors",
                 section === id
-                  ? "border-primary/40 bg-primary/12 text-primary"
-                  : "border-border bg-card text-muted-foreground hover:text-foreground"
+                  ? "border-red-500 bg-red-600 text-white shadow-md shadow-red-600/30"
+                  : "border-white/15 bg-[#0b101d] text-slate-300 hover:text-white"
               )}
             >
               <Icon className="h-3.5 w-3.5" aria-hidden />
@@ -285,7 +285,7 @@ export function AdminView() {
           {/* Sidebar nav — desktop */}
           <nav className="hidden lg:block" aria-label="Admin sections">
             <div
-              className="edge-lit rounded-xl border border-border bg-card p-1.5 lg:sticky lg:top-[76px]"
+              className="rounded-xl border border-white/15 bg-[#0b101d] p-1.5 shadow-xl lg:sticky lg:top-[76px]"
               style={headerH != null ? { top: `${headerH + 12}px` } : undefined}
             >
               {SECTIONS.map(({ id, label, Icon }) => (
@@ -295,10 +295,10 @@ export function AdminView() {
                   onClick={() => setSection(id)}
                   aria-current={section === id}
                   className={cn(
-                    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-semibold transition-colors",
+                    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-black transition-colors",
                     section === id
-                      ? "bg-primary/12 text-primary"
-                      : "text-muted-foreground hover:bg-white/[0.03] hover:text-foreground"
+                      ? "bg-red-600 text-white shadow-md shadow-red-600/30"
+                      : "text-slate-300 hover:bg-white/5 hover:text-white"
                   )}
                 >
                   <Icon className="h-4 w-4 shrink-0" aria-hidden />

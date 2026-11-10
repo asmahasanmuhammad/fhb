@@ -45,35 +45,35 @@ function LeaderPanel({
 }) {
   const navigate = useAppStore((s) => s.navigate);
   return (
-    <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
-      <div className="flex items-center justify-between gap-3 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5">
+    <div className="rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden">
+      <div className="flex items-center justify-between gap-3 border-b border-white/12 bg-[#050812] px-4 py-2.5">
         <h3 className="flex items-center gap-2 font-black text-xs uppercase tracking-wider text-white">
-          <span className="text-red-500">{icon}</span>
+          <span className="text-[#ff1e46]">{icon}</span>
           {title}
         </h3>
-        {meta && <span className="text-[10px] font-bold text-white/30 uppercase">{meta}</span>}
+        {meta && <span className="text-[10px] font-black text-white uppercase px-1.5 py-0.5 rounded bg-white/10">{meta}</span>}
       </div>
-      <div className="divide-y divide-white/[0.04]">
+      <div className="divide-y divide-white/10">
         {leaders.slice(0, 6).map((p, i) => (
           <button
             key={p.id}
             onClick={() => navigate({ name: "player-detail", id: p.id })}
-            className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+            className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-white/10"
           >
             <span className={cn(
-              "tabular w-5 shrink-0 text-center font-black text-xs leading-none",
-              i === 0 ? "text-amber-400" : i < 3 ? "text-red-400" : "text-white/20"
+              "tabular w-6 shrink-0 text-center font-black text-xs leading-none",
+              i === 0 ? "text-amber-400 font-black text-[13px]" : i < 3 ? "text-[#ff1e46] font-black text-[13px]" : "text-white"
             )}>
               {i + 1}
             </span>
             {p.team && <TeamCrest team={p.team} size="sm" />}
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[12.5px] font-bold text-white/80 group-hover:text-white">
+              <span className="block truncate text-[13px] font-extrabold text-white transition-colors group-hover:text-[#00e5ff]">
                 {p.name}
               </span>
-              <span className="block truncate text-[10px] text-white/30">{p.team?.name ?? "—"}</span>
+              <span className="block truncate text-[10.5px] font-semibold text-[#cbd5e1]">{p.team?.name ?? "—"}</span>
             </span>
-            <span className="tabular shrink-0 font-black text-sm text-white">{fmtNum(p[valueKey])}</span>
+            <span className="tabular shrink-0 font-black text-sm text-white px-2 py-0.5 rounded bg-white/10 border border-white/20">{fmtNum(p[valueKey])}</span>
           </button>
         ))}
       </div>
@@ -121,44 +121,44 @@ export function StandingsView() {
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       {/* ── Editorial Header ── */}
-      <div className="mb-6 border-b border-white/[0.07] pb-4">
+      <div className="mb-6 border-b border-white/12 pb-4">
         <div className="flex items-center gap-2 mb-1.5">
-          <span className="h-5 w-1 bg-red-600 shrink-0" aria-hidden />
-          <span className="text-[10px] font-black uppercase tracking-widest text-red-500">
+          <span className="h-5 w-1.5 bg-[#ff1e46] rounded-full shrink-0 shadow-[0_0_8px_#ff1e46]" aria-hidden />
+          <span className="text-[10.5px] font-black uppercase tracking-widest text-[#ff1e46]">
             OFFICIAL LEAGUE TABLES & STANDINGS
           </span>
         </div>
-        <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight">
+        <h1 className="font-black text-[28px] sm:text-[36px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]">
           {language === "bn" ? "পয়েন্ট টেবিল ও গোলস্কোরার" : "Points Table & Standings"}
         </h1>
-        <p className="text-[12.5px] text-white/40 mt-1">
+        <p className="text-[14px] text-[#cbd5e1] font-medium mt-1">
           Real-time standings, form guide, goal difference and golden boot races across all leagues.
         </p>
       </div>
 
       {/* ── Competition selector tabs ── */}
-      <div className="reveal mb-6 flex items-center gap-0 border-b border-white/[0.07] overflow-x-auto no-scrollbar">
+      <div className="reveal mb-6 flex items-center gap-1 border-b border-white/12 overflow-x-auto no-scrollbar pb-1">
         {compsData ? (
           comps.map((c) => (
             <button
               key={c.id}
               onClick={() => setCompId(c.id)}
               className={cn(
-                "shrink-0 pb-3 pt-1 px-4 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-colors flex items-center gap-2",
+                "shrink-0 pb-3 pt-1.5 px-4 text-[13px] font-extrabold uppercase tracking-wider border-b-2 transition-all flex items-center gap-2",
                 activeId === c.id
-                  ? "border-red-500 text-white"
-                  : "border-transparent text-white/40 hover:text-white/80"
+                  ? "border-[#ff1e46] text-white shadow-[0_2px_8px_rgba(255,30,70,0.4)]"
+                  : "border-transparent text-[#cbd5e1] hover:text-white hover:bg-white/5 rounded-t"
               )}
             >
               <span
-                className="h-2 w-2 rounded-full"
-                style={{ backgroundColor: c.accentColor ?? "#dc2626" }}
+                className="h-2.5 w-2.5 rounded-full shadow-sm"
+                style={{ backgroundColor: c.accentColor ?? "#ff1e46" }}
               />
               {c.shortName || c.name}
             </button>
           ))
         ) : (
-          [1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-8 w-24 bg-white/[0.04]" />)
+          [1, 2, 3, 4].map((i) => <Skeleton key={i} className="h-8 w-24 bg-white/10" />)
         )}
       </div>
 
@@ -172,18 +172,18 @@ export function StandingsView() {
         <div className="lg:col-span-8 space-y-4">
           {/* Competition detail ribbon */}
           {activeComp && (
-            <div className="border border-white/[0.07] bg-[#0d0d10] p-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="rounded-md border border-white/12 bg-[#090d19] p-4 flex flex-wrap items-center justify-between gap-3 shadow-md">
               <div>
-                <span className="text-[9.5px] font-black uppercase tracking-widest text-red-400">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#ff1e46]">
                   {activeComp.country} · {activeComp.type}
                 </span>
-                <h2 className="text-lg font-black text-white">{activeComp.name}</h2>
+                <h2 className="text-xl font-black text-white">{activeComp.name}</h2>
               </div>
               <div className="flex items-center gap-2 text-xs">
-                <span className="border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-white/50">
+                <span className="rounded border border-white/15 bg-white/10 px-3 py-1 text-white font-bold">
                   Season {activeComp.season}
                 </span>
-                <span className="border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-white/50">
+                <span className="rounded border border-white/15 bg-white/10 px-3 py-1 text-white font-bold">
                   {fmtNum(activeComp._count?.matches ?? 0)} Matches
                 </span>
               </div>
@@ -191,17 +191,17 @@ export function StandingsView() {
           )}
 
           {booting ? (
-            <Skeleton className="h-[460px] bg-white/[0.04]" />
+            <Skeleton className="h-[460px] bg-white/10 rounded-md" />
           ) : standings.length > 0 ? (
             <StandingsTable standings={standings} />
           ) : activeComp ? (
-            <div className="border border-white/[0.07] bg-[#0d0d10] p-12 text-center">
-              <Trophy className="mx-auto mb-3 h-10 w-10 text-white/20" />
-              <p className="font-black text-white text-base">Cup Knockout Tournament</p>
-              <p className="mt-1 text-xs text-white/40">This competition is played as knockout rounds. View ties in Live Scores.</p>
+            <div className="rounded-md border border-white/12 bg-[#090d19] p-12 text-center shadow-lg">
+              <Trophy className="mx-auto mb-3 h-12 w-12 text-amber-400" />
+              <p className="font-black text-white text-lg">Cup Knockout Tournament</p>
+              <p className="mt-1 text-sm text-[#cbd5e1] font-medium">This competition is played as knockout rounds. View ties in Live Scores.</p>
               <button
                 onClick={() => navigate({ name: "scores" })}
-                className="mt-4 bg-red-600 px-4 py-2 text-xs font-black uppercase text-white"
+                className="mt-5 rounded bg-[#ff1e46] px-5 py-2.5 text-xs font-black uppercase text-white hover:bg-[#e01438] shadow-[0_0_12px_rgba(255,30,70,0.4)]"
               >
                 Go to Scores
               </button>

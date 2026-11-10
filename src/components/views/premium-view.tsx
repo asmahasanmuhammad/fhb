@@ -236,31 +236,31 @@ export function PremiumView() {
               <div
                 key={plan.id}
                 className={cn(
-                  "reveal card-lift flex h-full flex-col rounded-xl border p-5 sm:p-6",
-                  plan.popular ? "gold-panel border-fhb-gold/45" : "edge-lit border-border bg-card"
+                  "reveal flex h-full flex-col rounded-xl border p-5 sm:p-6 shadow-xl",
+                  plan.popular ? "border-amber-400/60 bg-[#10172c] shadow-amber-500/10" : "border-white/15 bg-[#0b101d]"
                 )}
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
-                    <p className="font-display text-lg font-bold text-foreground">{plan.name}</p>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{meta.desc}</p>
+                    <p className="font-display text-lg font-black text-white">{plan.name}</p>
+                    <p className="mt-0.5 text-xs font-semibold text-slate-300">{meta.desc}</p>
                   </div>
                   {plan.popular ? (
-                    <span className="flex shrink-0 items-center gap-1 rounded-md bg-fhb-gold/15 px-2.5 py-1 text-[9.5px] font-bold uppercase tracking-[0.1em] text-fhb-gold">
+                    <span className="flex shrink-0 items-center gap-1 rounded-md bg-amber-400/20 border border-amber-400/40 px-2.5 py-1 text-[9.5px] font-black uppercase tracking-[0.1em] text-amber-300">
                       <Sparkles className="h-3 w-3" aria-hidden /> Most Popular
                     </span>
                   ) : (
-                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", plan.popular ? "bg-fhb-gold/15" : "bg-muted text-muted-foreground")}>
+                    <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", plan.popular ? "bg-amber-400/20" : "bg-white/10 text-slate-300")}>
                       {meta.icon}
                     </span>
                   )}
                 </div>
 
-                <div className="mt-5 flex items-baseline gap-1.5 border-b border-border/70 pb-5">
-                  <span className="tabular font-display text-[2.1rem] font-bold leading-none text-foreground sm:text-4xl">
+                <div className="mt-5 flex items-baseline gap-1.5 border-b border-white/10 pb-5">
+                  <span className="tabular font-display text-[2.1rem] font-black leading-none text-white sm:text-4xl">
                     {isFree ? "Free" : formatMoney(plan.price)}
                   </span>
-                  {!isFree && <span className="text-xs font-medium text-muted-foreground">/{plan.period}</span>}
+                  {!isFree && <span className="text-xs font-bold text-slate-300">/{plan.period}</span>}
                 </div>
 
                 <ul className="mt-5 flex-1 space-y-2.5">
@@ -269,20 +269,20 @@ export function PremiumView() {
                       <span
                         className={cn(
                           "mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded",
-                          plan.popular ? "bg-fhb-gold/20 text-fhb-gold" : "bg-primary/15 text-primary"
+                          plan.popular ? "bg-amber-400/25 text-amber-300" : "bg-red-600/25 text-red-400"
                         )}
                       >
                         <Check className="h-3 w-3" aria-hidden />
                       </span>
-                      <span className="leading-relaxed text-foreground/85">{f}</span>
+                      <span className="leading-relaxed text-slate-200 font-medium">{f}</span>
                     </li>
                   ))}
                   {isFree && freeMissing.map((f) => (
                     <li key={f} className="flex items-start gap-2.5 text-xs">
-                      <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded bg-muted text-muted-foreground/70">
+                      <span className="mt-0.5 flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded bg-white/10 text-slate-400">
                         <X className="h-3 w-3" aria-hidden />
                       </span>
-                      <span className="leading-relaxed text-muted-foreground/70 line-through decoration-border">{f}</span>
+                      <span className="leading-relaxed text-slate-400 line-through decoration-white/20">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -299,8 +299,8 @@ export function PremiumView() {
                   disabled={subscribe.isPending && busy === plan.code}
                   variant={plan.popular ? "default" : "outline"}
                   className={cn(
-                    "mt-6 w-full py-3 text-sm font-bold",
-                    plan.popular && "sheen bg-fhb-gold text-black hover:bg-fhb-gold/90"
+                    "mt-6 w-full py-3 text-sm font-black rounded-lg",
+                    plan.popular ? "sheen bg-amber-400 text-black hover:bg-amber-300 shadow-lg shadow-amber-400/30" : "border-white/20 bg-white/5 text-white hover:bg-white/15"
                   )}
                 >
                   {subscribe.isPending && busy === plan.code

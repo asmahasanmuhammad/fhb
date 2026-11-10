@@ -187,36 +187,36 @@ export function TeamsView() {
   return (
     <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       {/* ── Editorial Header ── */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/[0.07] pb-4">
+      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/15 pb-4">
         <div>
           <div className="flex items-center gap-2 mb-1.5">
-            <span className="h-5 w-1 bg-red-600 shrink-0" aria-hidden />
-            <span className="text-[10px] font-black uppercase tracking-widest text-red-500">
+            <span className="h-5 w-1 bg-red-500 shadow-[0_0_10px_rgba(255,30,70,0.8)] shrink-0" aria-hidden />
+            <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
               OFFICIAL CLUB DIRECTORY
             </span>
           </div>
-          <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight">
+          <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight drop-shadow-sm">
             {language === "bn" ? "ক্লাব ও দলসমূহ" : "Teams & Clubs Hub"}
           </h1>
-          <p className="text-[12.5px] text-white/40 mt-1">
+          <p className="text-[13px] text-slate-300 font-medium mt-1">
             Official profiles for {fmtNum(teams.length)} domestic BFL clubs, European giants and national teams.
           </p>
         </div>
 
         {/* Search */}
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/40" />
+          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search clubs, cities, stadiums..."
-            className="w-full h-10 border border-white/[0.1] bg-white/[0.04] pl-9 pr-8 text-xs text-white placeholder:text-white/30 focus:border-red-500/60 focus:outline-none"
+            className="w-full h-10 border border-white/20 bg-[#0b101d] pl-9 pr-8 text-xs font-semibold text-white placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 focus:outline-none rounded"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -225,20 +225,20 @@ export function TeamsView() {
       </div>
 
       {/* ── League Filter Tabs ── */}
-      <div className="reveal mb-6 flex items-center gap-0 border-b border-white/[0.07] overflow-x-auto no-scrollbar">
+      <div className="reveal mb-6 flex items-center gap-0 border-b border-white/15 overflow-x-auto no-scrollbar">
         {chips.map((chip) => (
           <button
             key={chip.key}
             onClick={() => setFilter(chip.key)}
             className={cn(
-              "shrink-0 pb-3 pt-1 px-4 text-[12px] font-bold uppercase tracking-wider border-b-2 transition-colors",
+              "shrink-0 pb-3 pt-1 px-4 text-[12px] font-black uppercase tracking-wider border-b-2 transition-colors",
               filter === chip.key
-                ? "border-red-500 text-white"
-                : "border-transparent text-white/40 hover:text-white/80"
+                ? "border-red-500 text-white shadow-[0_4px_12px_rgba(255,30,70,0.3)]"
+                : "border-transparent text-slate-300 hover:text-white"
             )}
           >
             {chip.label}
-            <span className="ml-1.5 text-[10px] text-white/30">({fmtNum(chip.count)})</span>
+            <span className="ml-1.5 text-[10.5px] font-bold text-slate-400">({fmtNum(chip.count)})</span>
           </button>
         ))}
       </div>
@@ -252,26 +252,26 @@ export function TeamsView() {
       {isLoading ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 12 }).map((_, i) => (
-            <Skeleton key={i} className="h-[140px] bg-white/[0.04]" />
+            <Skeleton key={i} className="h-[140px] bg-[#0b101d]" />
           ))}
         </div>
       ) : visibleSections.length === 0 ? (
-        <div className="border border-white/[0.07] bg-[#0d0d10] px-6 py-16 text-center">
-          <Shield className="mx-auto mb-3 h-10 w-10 text-white/20" />
+        <div className="border border-white/15 bg-[#0b101d] px-6 py-16 text-center rounded">
+          <Shield className="mx-auto mb-3 h-10 w-10 text-slate-400" />
           <p className="font-black text-lg text-white">No teams match your search</p>
-          <p className="mt-1 text-xs text-white/40">Try searching with a different spelling or clear the filter.</p>
+          <p className="mt-1 text-xs text-slate-300">Try searching with a different spelling or clear the filter.</p>
         </div>
       ) : (
         <div className="space-y-10">
           {visibleSections.map((section) => (
             <section key={section.id} className="reveal">
               {/* Section title with red bar */}
-              <div className="flex items-center gap-2.5 mb-4 border-b border-white/[0.07] pb-2.5">
-                <span className="h-4 w-1 bg-red-600" />
+              <div className="flex items-center gap-2.5 mb-4 border-b border-white/15 pb-2.5">
+                <span className="h-4 w-1 bg-red-500 shadow-[0_0_8px_rgba(255,30,70,0.8)]" />
                 <h2 className="font-black text-[15px] uppercase tracking-wider text-white">
                   {section.title}
                 </h2>
-                <span className="ml-auto text-[11px] font-bold text-white/30 uppercase tracking-widest">
+                <span className="ml-auto text-[11px] font-black text-slate-300 uppercase tracking-widest">
                   {section.kicker}
                 </span>
               </div>
@@ -302,24 +302,24 @@ function TeamCard({ team, onClick }: { team: TeamListItem; onClick: () => void }
   return (
     <button
       onClick={onClick}
-      className="group relative flex flex-col justify-between border border-white/[0.07] bg-[#0d0d10] p-4 text-left transition-all hover:border-white/20 hover:bg-white/[0.03]"
+      className="group relative flex flex-col justify-between border border-white/15 bg-[#0b101d] p-4 text-left transition-all hover:border-red-500/60 hover:bg-[#11172a] hover:shadow-[0_4px_20px_rgba(255,30,70,0.15)] rounded"
     >
       {/* Club color left accent */}
       <span
         aria-hidden
         className="absolute inset-y-0 left-0 w-[3px]"
-        style={{ backgroundColor: team.color || "#dc2626" }}
+        style={{ backgroundColor: team.color || "#ff1e46" }}
       />
 
       {/* Top crest + badge */}
       <div className="flex items-start justify-between gap-2 mb-3">
         <TeamCrest team={team} size="md" />
         {position != null ? (
-          <span className="px-1.5 py-0.5 text-[9px] font-black uppercase text-red-400 bg-red-600/15">
+          <span className="px-2 py-0.5 text-[9.5px] font-black uppercase text-red-300 bg-red-600/30 border border-red-500/40 rounded">
             {ordinal(position)}
           </span>
         ) : (
-          <span className="text-[9.5px] font-bold text-white/30">
+          <span className="text-[10px] font-bold text-slate-300">
             Est. {team.founded}
           </span>
         )}
@@ -327,18 +327,18 @@ function TeamCard({ team, onClick }: { team: TeamListItem; onClick: () => void }
 
       {/* Name + stadium info */}
       <div>
-        <p className="font-black text-[14px] text-white leading-tight group-hover:text-red-400 transition-colors line-clamp-1">
+        <p className="font-black text-[14.5px] text-white leading-tight group-hover:text-red-400 transition-colors line-clamp-1 drop-shadow-sm">
           {team.name}
         </p>
-        <p className="mt-1 text-[11px] text-white/40 truncate">
+        <p className="mt-1 text-[11.5px] text-slate-300 font-medium truncate">
           {team.city} · {team.stadium}
         </p>
       </div>
 
       {/* Footer league */}
-      <div className="mt-3 flex items-center justify-between border-t border-white/[0.05] pt-2 text-[10px] font-bold uppercase tracking-wider text-white/30">
+      <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[10.5px] font-black uppercase tracking-wider text-slate-300">
         <span>{national ? "National Team" : (league?.shortName ?? "BFL")}</span>
-        <ChevronRight className="h-3 w-3 text-white/20 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+        <ChevronRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
       </div>
     </button>
   );
@@ -360,10 +360,10 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
   if (isLoading) {
     return (
       <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-        <Skeleton className="h-56 bg-white/[0.04]" />
+        <Skeleton className="h-56 bg-[#0b101d]" />
         <div className="mt-6 grid gap-6 lg:grid-cols-12">
-          <Skeleton className="h-[400px] lg:col-span-8 bg-white/[0.04]" />
-          <Skeleton className="h-[400px] lg:col-span-4 bg-white/[0.04]" />
+          <Skeleton className="h-[400px] lg:col-span-8 bg-[#0b101d]" />
+          <Skeleton className="h-[400px] lg:col-span-4 bg-[#0b101d]" />
         </div>
       </div>
     );
@@ -374,11 +374,11 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
       <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
         <button
           onClick={() => navigate({ name: "teams" })}
-          className="flex items-center gap-1.5 text-xs font-bold text-white/50 hover:text-white mb-4"
+          className="flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white mb-4"
         >
           <ArrowLeft className="h-3.5 w-3.5" /> Back to Teams
         </button>
-        <div className="border border-white/[0.07] bg-[#0d0d10] px-6 py-16 text-center">
+        <div className="border border-white/15 bg-[#0b101d] px-6 py-16 text-center rounded">
           <p className="font-black text-white text-base">Club profile not found</p>
         </div>
       </div>
@@ -406,18 +406,18 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
       {/* Breadcrumb */}
       <button
         onClick={() => navigate({ name: "teams" })}
-        className="flex items-center gap-1.5 text-[11px] font-bold text-white/40 hover:text-white mb-4 uppercase tracking-wider"
+        className="flex items-center gap-1.5 text-[11px] font-black text-slate-300 hover:text-white mb-4 uppercase tracking-wider"
       >
         <ArrowLeft className="h-3.5 w-3.5" /> Teams Directory
       </button>
 
       {/* ── Club Hero Banner ── */}
-      <div className="relative border border-white/[0.08] bg-[#0d0d10] p-6 sm:p-8 overflow-hidden mb-8">
+      <div className="relative border border-white/20 bg-[#0b101d] p-6 sm:p-8 overflow-hidden mb-8 rounded shadow-xl">
         {/* Accent strip */}
         <span
           aria-hidden
           className="absolute inset-y-0 left-0 w-1.5"
-          style={{ backgroundColor: team.color || "#dc2626" }}
+          style={{ backgroundColor: team.color || "#ff1e46" }}
         />
 
         {/* Ambient glow */}
@@ -427,23 +427,23 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
           <TeamCrest team={team} size="match" />
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-red-600/15 text-red-400">
+              <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 bg-red-600/25 border border-red-500/40 text-red-300 rounded">
                 {national ? "National Football Team" : (standings[0]?.competition.name ?? "Official Club")}
               </span>
-              <span className="text-white/30 text-[11px]">·</span>
-              <span className="text-white/40 text-[11px] font-bold">Est. {team.founded}</span>
+              <span className="text-slate-400 text-[11px]">·</span>
+              <span className="text-slate-300 text-[11px] font-bold">Est. {team.founded}</span>
             </div>
-            <h1 className="font-black text-2xl sm:text-4xl text-white leading-tight">
+            <h1 className="font-black text-2xl sm:text-4xl text-white leading-tight drop-shadow-sm">
               {team.name}
             </h1>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs text-white/50">
-              <span className="flex items-center gap-1 border border-white/[0.08] bg-white/[0.03] px-2.5 py-1">
+            <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-200">
+              <span className="flex items-center gap-1 border border-white/15 bg-white/[0.05] px-3 py-1 font-semibold rounded">
                 <MapPin className="h-3 w-3 text-red-400" /> {team.city}
               </span>
-              <span className="flex items-center gap-1 border border-white/[0.08] bg-white/[0.03] px-2.5 py-1">
+              <span className="flex items-center gap-1 border border-white/15 bg-white/[0.05] px-3 py-1 font-semibold rounded">
                 <Building2 className="h-3 w-3 text-red-400" /> {team.stadium}
               </span>
-              <span className="flex items-center gap-1 border border-white/[0.08] bg-white/[0.03] px-2.5 py-1">
+              <span className="flex items-center gap-1 border border-white/15 bg-white/[0.05] px-3 py-1 font-semibold rounded">
                 <Users className="h-3 w-3 text-red-400" /> {fmtNum(players.length)} Registered Players
               </span>
             </div>
@@ -451,7 +451,7 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
         </div>
 
         {team.description && (
-          <p className="mt-5 pt-4 border-t border-white/[0.06] text-[12.5px] text-white/60 leading-relaxed max-w-3xl">
+          <p className="mt-5 pt-4 border-t border-white/10 text-[13px] text-slate-200 font-medium leading-relaxed max-w-3xl">
             {team.description}
           </p>
         )}
@@ -462,23 +462,23 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
         {/* Squad list */}
         <div className="lg:col-span-8 space-y-6">
           <div>
-            <div className="flex items-center justify-between mb-4 border-b border-white/[0.07] pb-2.5">
+            <div className="flex items-center justify-between mb-4 border-b border-white/15 pb-2.5">
               <div className="flex items-center gap-2">
-                <span className="h-4 w-1 bg-red-600" />
+                <span className="h-4 w-1 bg-red-500 shadow-[0_0_8px_rgba(255,30,70,0.8)]" />
                 <h2 className="font-black text-[15px] uppercase tracking-wider text-white">First Team Squad</h2>
               </div>
-              <span className="text-[11px] font-bold text-white/30">{fmtNum(players.length)} Players</span>
+              <span className="text-[11px] font-black text-slate-300">{fmtNum(players.length)} Players</span>
             </div>
 
             {/* Position filter */}
-            <div className="flex gap-1 mb-4 overflow-x-auto no-scrollbar">
+            <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar">
               {["ALL", ...groups.map((g) => g.pos)].map((key) => (
                 <button
                   key={key}
                   onClick={() => setSquadFilter(key)}
                   className={cn(
-                    "px-3 py-1 text-[11px] font-bold uppercase transition-colors",
-                    squadFilter === key ? "bg-red-600 text-white" : "border border-white/[0.08] text-white/40 hover:text-white"
+                    "px-3 py-1 text-[11px] font-black uppercase rounded transition-colors",
+                    squadFilter === key ? "bg-red-600 text-white shadow-md shadow-red-600/30" : "border border-white/15 bg-[#0b101d] text-slate-300 hover:text-white"
                   )}
                 >
                   {key === "ALL" ? "All" : key}
@@ -487,8 +487,8 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
             </div>
 
             {/* Squad Table */}
-            <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
-              <div className="flex items-center gap-3 border-b border-white/[0.07] bg-[#060608] px-4 py-2 text-[9.5px] font-black uppercase tracking-widest text-white/30">
+            <div className="border border-white/15 bg-[#0b101d] rounded overflow-hidden shadow-lg">
+              <div className="flex items-center gap-3 border-b border-white/15 bg-[#06080f] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-300">
                 <span className="w-8">#</span>
                 <span className="flex-1">Player</span>
                 <span className="w-12 text-center">Pos</span>
@@ -496,26 +496,26 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
                 <span className="w-12 text-center">Goals</span>
                 <span className="w-12 text-right">Rating</span>
               </div>
-              <div className="divide-y divide-white/[0.04]">
+              <div className="divide-y divide-white/10">
                 {visibleGroups.flatMap((g) => g.items).map((p) => (
                   <button
                     key={p.id}
                     onClick={() => navigate({ name: "player-detail", id: p.id })}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
+                    className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.05]"
                   >
-                    <span className="w-8 tabular font-mono font-bold text-[12px] text-white/30">
+                    <span className="w-8 tabular font-mono font-black text-[12px] text-slate-400">
                       {p.jerseyNumber ?? "–"}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-[13px] text-white/80 hover:text-white truncate">
+                      <p className="font-black text-[13.5px] text-white hover:text-red-400 truncate">
                         {p.name}
                       </p>
-                      <p className="text-[10px] text-white/30">{p.nationality}</p>
+                      <p className="text-[11px] font-semibold text-slate-300">{p.nationality}</p>
                     </div>
-                    <span className="w-12 text-center text-[11px] font-bold text-red-400">{p.position}</span>
-                    <span className="w-12 text-center text-[12px] text-white/40">{p.appearances}</span>
-                    <span className="w-12 text-center text-[12px] font-bold text-white/70">{p.goals}</span>
-                    <span className="w-12 text-right tabular font-bold text-[13px] text-white">
+                    <span className="w-12 text-center text-[11.5px] font-black text-red-400">{p.position}</span>
+                    <span className="w-12 text-center text-[12px] font-bold text-slate-200">{p.appearances}</span>
+                    <span className="w-12 text-center text-[12px] font-black text-white">{p.goals}</span>
+                    <span className="w-12 text-right tabular font-black text-[13px] text-emerald-400">
                       {p.rating.toFixed(1)}
                     </span>
                   </button>
@@ -526,32 +526,32 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
 
           {/* Fixtures */}
           <div>
-            <div className="flex items-center gap-2 mb-4 border-b border-white/[0.07] pb-2.5">
-              <span className="h-4 w-1 bg-red-600" />
+            <div className="flex items-center gap-2 mb-4 border-b border-white/15 pb-2.5">
+              <span className="h-4 w-1 bg-red-500 shadow-[0_0_8px_rgba(255,30,70,0.8)]" />
               <h2 className="font-black text-[15px] uppercase tracking-wider text-white">Fixtures & Results</h2>
             </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="border border-white/[0.07] bg-[#0d0d10]">
-                <p className="border-b border-white/[0.07] bg-[#060608] px-4 py-2 text-[10px] font-black uppercase text-white/50">
+              <div className="border border-white/15 bg-[#0b101d] rounded overflow-hidden shadow">
+                <p className="border-b border-white/15 bg-[#06080f] px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-300">
                   Recent Results
                 </p>
-                <div className="divide-y divide-white/[0.04]">
+                <div className="divide-y divide-white/10">
                   {recent.length > 0 ? (
                     recent.map((m) => <MatchRow key={m.id} match={m} showCompetition={false} />)
                   ) : (
-                    <p className="p-4 text-xs text-white/30 text-center">No recent matches</p>
+                    <p className="p-4 text-xs font-semibold text-slate-400 text-center">No recent matches</p>
                   )}
                 </div>
               </div>
-              <div className="border border-white/[0.07] bg-[#0d0d10]">
-                <p className="border-b border-white/[0.07] bg-[#060608] px-4 py-2 text-[10px] font-black uppercase text-white/50">
+              <div className="border border-white/15 bg-[#0b101d] rounded overflow-hidden shadow">
+                <p className="border-b border-white/15 bg-[#06080f] px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-300">
                   Upcoming Fixtures
                 </p>
-                <div className="divide-y divide-white/[0.04]">
+                <div className="divide-y divide-white/10">
                   {upcoming.length > 0 ? (
                     upcoming.map((m) => <MatchRow key={m.id} match={m} showCompetition={false} />)
                   ) : (
-                    <p className="p-4 text-xs text-white/30 text-center">No upcoming fixtures</p>
+                    <p className="p-4 text-xs font-semibold text-slate-400 text-center">No upcoming fixtures</p>
                   )}
                 </div>
               </div>
@@ -562,20 +562,20 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
         {/* Sidebar */}
         <div className="lg:col-span-4 space-y-5">
           {standings[0] && (
-            <div className="border border-white/[0.07] bg-[#0d0d10] p-5">
+            <div className="border border-white/15 bg-[#0b101d] p-5 rounded shadow-lg">
               <div className="flex items-center gap-2 mb-3">
-                <Trophy className="h-4 w-4 text-amber-500" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">League Standing</span>
+                <Trophy className="h-4 w-4 text-amber-400" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">League Standing</span>
               </div>
-              <p className="text-[13px] font-bold text-white mb-2">{standings[0].competition.name}</p>
+              <p className="text-[13.5px] font-black text-white mb-2">{standings[0].competition.name}</p>
               <div className="flex items-baseline justify-between mb-3">
-                <span className="font-black text-4xl text-red-500">{ordinal(standings[0].position)}</span>
-                <span className="text-xl font-black text-white">{standings[0].points} <span className="text-xs text-white/40">pts</span></span>
+                <span className="font-black text-4xl text-red-500 drop-shadow-[0_0_12px_rgba(255,30,70,0.4)]">{ordinal(standings[0].position)}</span>
+                <span className="text-xl font-black text-white">{standings[0].points} <span className="text-xs font-bold text-slate-300">pts</span></span>
               </div>
-              <p className="text-xs text-white/40">{standings[0].won}W · {standings[0].drawn}D · {standings[0].lost}L</p>
+              <p className="text-xs font-semibold text-slate-300">{standings[0].won}W · {standings[0].drawn}D · {standings[0].lost}L</p>
               {standings[0].form && (
-                <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-white/40 uppercase">Form</span>
+                <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-[10.5px] font-black text-slate-300 uppercase tracking-wider">Form</span>
                   <FormDots form={standings[0].form} />
                 </div>
               )}

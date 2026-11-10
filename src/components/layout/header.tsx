@@ -181,40 +181,40 @@ export function Header() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all duration-200",
         scrolled
-          ? "shadow-[0_4px_24px_-8px_rgba(0,0,0,0.9)]"
+          ? "shadow-[0_4px_30px_rgba(0,0,0,0.95)]"
           : ""
       )}
     >
-      {/* ── Top utility bar: Sky Sports-grade broadcast strip ── */}
-      <div className="bg-[#0a0a0c] border-b border-white/[0.06] px-4 sm:px-6 py-1 text-[10.5px]">
+      {/* ── Top utility bar: International broadcast strip ── */}
+      <div className="bg-[#04060b] border-b border-white/10 px-4 sm:px-6 py-1.5 text-[11px]">
         <div className="mx-auto max-w-[1440px] flex items-center justify-between gap-4">
           {/* Left: BST Clock + FIFA Rank */}
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-1.5 font-mono text-emerald-400 font-bold tracking-tight">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+            <div className="flex items-center gap-1.5 font-mono text-emerald-300 font-extrabold tracking-tight">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#00e676]" />
               </span>
-              <span className="text-emerald-300">{bstTime || "00:00:00"}</span>
-              <span className="text-white/30 hidden sm:inline">|</span>
-              <span className="text-white/50 hidden sm:inline">{bstDate}</span>
+              <span className="text-emerald-300 drop-shadow-[0_0_6px_rgba(0,230,118,0.4)]">{bstTime || "00:00:00"}</span>
+              <span className="text-white/40 hidden sm:inline">|</span>
+              <span className="text-white font-semibold hidden sm:inline">{bstDate}</span>
             </div>
-            <div className="hidden sm:flex items-center gap-1.5 text-white/40">
-              <span className="w-px h-3 bg-white/15" />
-              <span className="text-[9px] uppercase font-black tracking-widest text-white/40">FIFA BD</span>
-              <span className="font-mono font-bold text-white">#183</span>
-              <span className="text-emerald-400 font-bold text-[9px]">▲2</span>
+            <div className="hidden sm:flex items-center gap-1.5">
+              <span className="w-px h-3.5 bg-white/20" />
+              <span className="text-[10px] uppercase font-black tracking-widest text-[#94a3b8]">FIFA BD</span>
+              <span className="font-mono font-black text-white px-1.5 py-0.5 rounded bg-white/10">#183</span>
+              <span className="text-emerald-400 font-black text-[10px] drop-shadow-[0_0_6px_rgba(0,230,118,0.5)]">▲2</span>
             </div>
           </div>
 
           {/* Center: Breaking News Ticker */}
           {liveCount === 0 && (
             <div className="hidden lg:flex items-center gap-2 flex-1 justify-center max-w-lg">
-              <span className="shrink-0 px-2 py-0.5 bg-red-600 text-[9px] font-black uppercase tracking-widest text-white rounded-sm">
-                LIVE
+              <span className="shrink-0 px-2 py-0.5 bg-[#ff1e46] text-[9.5px] font-black uppercase tracking-widest text-white rounded shadow-[0_0_10px_rgba(255,30,70,0.5)]">
+                LIVE DESK
               </span>
-              <span className="text-white/50 text-[10.5px] truncate">
-                Bangladesh Premier League • Matchday 15 Underway
+              <span className="text-white font-bold text-[11px] truncate">
+                Bangladesh Premier League • Matchday 15 Broadcast Live
               </span>
             </div>
           )}
@@ -222,13 +222,13 @@ export function Header() {
           {/* Right: Radio + Language */}
           <div className="flex items-center gap-2.5">
             {/* FHB Radio */}
-            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-0.5 rounded-sm bg-red-950/50 border border-red-800/40 text-red-300 cursor-pointer hover:bg-red-950/70 transition-colors">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
-                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+            <div className="hidden md:flex items-center gap-2 px-3 py-0.5 rounded bg-red-950/60 border border-red-500/40 text-white cursor-pointer hover:bg-red-950/80 transition-all shadow-[0_0_10px_rgba(255,30,70,0.2)]">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shadow-[0_0_8px_#ff1e46]" />
               </span>
-              <span className="font-bold text-[9.5px] tracking-widest uppercase text-red-300">FHB Radio</span>
-              <div className="flex items-end gap-[2px] h-3 ml-0.5">
+              <span className="font-black text-[10px] tracking-widest uppercase text-white">FHB Radio</span>
+              <div className="flex items-end gap-[2px] h-3.5 ml-0.5">
                 <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-1" style={{ minHeight: "3px" }} />
                 <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-2" style={{ minHeight: "3px" }} />
                 <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-3" style={{ minHeight: "3px" }} />
@@ -240,7 +240,7 @@ export function Header() {
             {/* Edition / Language Toggle */}
             <button
               onClick={() => setLanguage(language === "bn" ? "en" : "bn")}
-              className="flex items-center gap-1 px-2 py-0.5 rounded-sm bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-[9.5px] font-bold text-white/70 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/20 text-[10px] font-black text-white transition-all cursor-pointer shadow-sm"
             >
               {language === "bn" ? "🇧🇩 বাংলা" : "🇬🇧 English"}
             </button>
@@ -250,10 +250,10 @@ export function Header() {
 
       {/* ── Live score ticker ── */}
       {liveCount > 0 && (
-        <div className="relative flex h-[30px] items-center overflow-hidden border-b border-white/[0.06] bg-[#0d0d10]">
+        <div className="relative flex h-[34px] items-center overflow-hidden border-b border-white/15 bg-[#090d19]">
           {/* LIVE badge — angled cut */}
-          <span className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-red-600 px-3 pr-5 text-[9.5px] font-black uppercase tracking-[0.15em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-8px)_100%,0_100%)]">
-            <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
+          <span className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-[#ff1e46] px-3.5 pr-5 text-[10px] font-black uppercase tracking-[0.15em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-8px)_100%,0_100%)] shadow-[0_0_15px_rgba(255,30,70,0.5)]">
+            <span className="live-dot h-2 w-2 rounded-full bg-white shadow-[0_0_6px_#ffffff]" aria-hidden />
             LIVE {fmtNum(liveCount)}
           </span>
           <div className="relative flex-1 overflow-hidden">
@@ -265,25 +265,25 @@ export function Header() {
                       <button
                         key={`${dup}-${rep}-${m.id}`}
                         onClick={() => navigate({ name: "match-detail", id: m.id })}
-                        className="mx-5 flex items-center gap-2 text-[10.5px] font-semibold tracking-wide text-white/70 transition-colors hover:text-white"
+                        className="mx-5 flex items-center gap-2 text-[11px] font-bold tracking-wide text-white transition-all hover:text-[#00e5ff]"
                       >
-                        <span className="text-white/60">{m.homeTeam.name}</span>
-                        <span className="tabular font-mono font-black text-white px-1.5 py-0.5 bg-red-600/20 rounded text-[11px]">
+                        <span className="text-white font-extrabold">{m.homeTeam.name}</span>
+                        <span className="tabular font-mono font-black text-white px-2 py-0.5 bg-[#ff1e46]/30 border border-[#ff1e46]/60 rounded text-[12px] shadow-[0_0_8px_rgba(255,30,70,0.3)]">
                           {fmtNum(m.homeScore)} – {fmtNum(m.awayScore)}
                         </span>
-                        <span className="text-white/60">{m.awayTeam.name}</span>
-                        <span className="text-red-400 text-[9.5px] font-bold">
+                        <span className="text-white font-extrabold">{m.awayTeam.name}</span>
+                        <span className="text-emerald-400 text-[10px] font-black px-1 rounded bg-emerald-950/50">
                           {m.period === "HT" ? "HT" : `${fmtNum(m.minute)}'`}
                         </span>
-                        <span className="text-white/20 ml-2">|</span>
+                        <span className="text-white/30 ml-2 font-light">|</span>
                       </button>
                     ))
                   )}
                 </div>
               ))}
             </div>
-            <span className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-gradient-to-r from-[#0d0d10] to-transparent" aria-hidden />
-            <span className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-8 bg-gradient-to-l from-[#0d0d10] to-transparent" aria-hidden />
+            <span className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-gradient-to-r from-[#090d19] to-transparent" aria-hidden />
+            <span className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-8 bg-gradient-to-l from-[#090d19] to-transparent" aria-hidden />
           </div>
         </div>
       )}
@@ -291,33 +291,33 @@ export function Header() {
       {/* ── Main brand bar ── */}
       <div
         className={cn(
-          "w-full border-b border-white/[0.07] transition-all duration-200",
-          scrolled ? "bg-[#0d0d10]/96 backdrop-blur-xl" : "bg-[#0d0d10]"
+          "w-full border-b border-white/12 transition-all duration-200",
+          scrolled ? "bg-[#06080f]/95 backdrop-blur-2xl" : "bg-[#06080f]"
         )}
       >
-        <div className="mx-auto flex h-[58px] max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6">
+        <div className="mx-auto flex h-[62px] max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6">
           {/* Logo + wordmark */}
           <Link
             href="/"
             onClick={(e) => { e.preventDefault(); navigate({ name: "home" }); }}
-            className="group flex shrink-0 items-center gap-2.5"
+            className="group flex shrink-0 items-center gap-3"
             aria-label="Football Hub Bangladesh homepage"
           >
             <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
               <LogoMark />
             </span>
             <span className="hidden flex-col leading-none sm:flex">
-              <span className="font-black text-[17px] tracking-[-0.01em] text-white leading-none">
+              <span className="font-black text-[19px] tracking-tight text-white leading-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
                 FOOTBALL HUB
               </span>
-              <span className="text-[10px] font-black tracking-[0.12em] uppercase" style={{ color: "oklch(0.6 0.235 25)" }}>
-                BANGLADESH · BFL OFFICIAL
+              <span className="text-[10.5px] font-black tracking-[0.14em] uppercase text-[#ff1e46] mt-0.5 drop-shadow-[0_0_8px_rgba(255,30,70,0.4)]">
+                BANGLADESH · BFL BROADCAST
               </span>
             </span>
           </Link>
 
-          {/* Desktop nav — Sky Sports underline style */}
-          <nav className="hidden h-full items-center gap-0.5 lg:flex" aria-label="Main navigation">
+          {/* Desktop nav — Sky Sports & Antipasto Pro style */}
+          <nav className="hidden h-full items-center gap-1 lg:flex" aria-label="Main navigation">
             {NAV_ITEMS.map((item) => {
               const active = isActive(item.view);
               return (
@@ -325,26 +325,26 @@ export function Header() {
                   key={item.label}
                   onClick={() => navigate(item.view)}
                   className={cn(
-                    "relative flex h-[58px] items-center px-3 text-[12px] font-bold tracking-wide transition-colors xl:px-3.5",
-                    active ? "text-white" : "text-white/55 hover:text-white/90"
+                    "relative flex h-[62px] items-center px-3.5 text-[13px] font-extrabold tracking-wide transition-all xl:px-4",
+                    active ? "text-white" : "text-[#e2e8f0] hover:text-white"
                   )}
                   aria-current={active ? "page" : undefined}
                 >
                   {language === "bn" ? item.labelBn : item.label}
                   {item.badge && item.badge === "LIVE" && liveCount > 0 && (
-                    <span className="ml-1.5 live-dot inline-block h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden />
+                    <span className="ml-1.5 live-dot inline-block h-2 w-2 rounded-full bg-[#ff1e46] shadow-[0_0_6px_#ff1e46]" aria-hidden />
                   )}
                   {item.badge && item.badge === "NEW" && (
-                    <span className="ml-1.5 inline-block px-1 py-px text-[7.5px] font-black uppercase tracking-wider bg-emerald-500 text-white rounded-sm">
-                      NEW
+                    <span className="ml-1.5 inline-block px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-400 text-white rounded shadow-[0_0_8px_rgba(16,185,129,0.5)]">
+                      LIVE TV
                     </span>
                   )}
-                  {/* Active underline — solid red bar, flush bottom */}
+                  {/* Active underline — solid glowing red bar */}
                   <span
                     aria-hidden
                     className={cn(
                       "absolute inset-x-2 bottom-0 h-[3px] transition-all duration-200",
-                      active ? "bg-red-500 opacity-100" : "opacity-0"
+                      active ? "bg-[#ff1e46] opacity-100 shadow-[0_0_10px_#ff1e46]" : "opacity-0"
                     )}
                   />
                 </button>
@@ -353,11 +353,11 @@ export function Header() {
           </nav>
 
           {/* Right cluster */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             {/* Search */}
             <button
               onClick={() => navigate({ name: "teams" })}
-              className="tap-target hidden h-9 w-9 items-center justify-center rounded text-white/50 transition-colors hover:bg-white/[0.06] hover:text-white md:flex"
+              className="tap-target hidden h-9 w-9 items-center justify-center rounded border border-white/10 bg-white/5 text-white transition-all hover:bg-white/15 hover:border-white/30 md:flex"
               aria-label="Search"
             >
               <Search className="h-4.5 w-4.5" aria-hidden />
@@ -367,9 +367,9 @@ export function Header() {
             {liveCount > 0 && (
               <button
                 onClick={() => navigate({ name: "scores" })}
-                className="hidden items-center gap-1.5 rounded-sm border border-red-600/50 bg-red-600/15 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-red-400 transition-all hover:bg-red-600/25 sm:flex"
+                className="hidden items-center gap-1.5 rounded border border-[#ff1e46]/60 bg-[#ff1e46]/20 px-3 py-1.5 text-[10.5px] font-black uppercase tracking-widest text-white shadow-[0_0_12px_rgba(255,30,70,0.35)] transition-all hover:bg-[#ff1e46]/35 sm:flex"
               >
-                <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden />
+                <span className="live-dot h-2 w-2 rounded-full bg-white shadow-[0_0_6px_#ffffff]" aria-hidden />
                 LIVE {fmtNum(liveCount)}
               </button>
             )}
@@ -377,10 +377,10 @@ export function Header() {
             {/* Premium */}
             <button
               onClick={() => navigate({ name: "premium" })}
-              className="hidden items-center gap-1.5 rounded-sm border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-amber-400 transition-all hover:border-amber-500/60 hover:bg-amber-500/18 sm:flex"
+              className="hidden items-center gap-1.5 rounded border border-amber-400/50 bg-amber-400/15 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.25)] transition-all hover:border-amber-400 hover:bg-amber-400/25 hover:text-white sm:flex"
             >
-              <Crown className="h-3 w-3" aria-hidden />
-              Premium
+              <Crown className="h-3.5 w-3.5 text-amber-300" aria-hidden />
+              VIP PASS
             </button>
 
             {/* User menu */}
@@ -388,60 +388,60 @@ export function Header() {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button
-                    className="flex items-center gap-2 rounded border border-white/10 bg-white/[0.05] p-1 pr-2.5 transition-all hover:border-white/20 hover:bg-white/[0.08]"
+                    className="flex items-center gap-2 rounded border border-white/15 bg-white/10 p-1 pr-3 transition-all hover:border-white/30 hover:bg-white/20"
                     aria-label="Account menu"
                   >
                     <Avatar className="h-7 w-7">
                       <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
-                      <AvatarFallback className="bg-red-600/20 text-[11px] font-black text-red-400">
+                      <AvatarFallback className="bg-red-600/30 text-[11px] font-black text-white">
                         {user.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden max-w-[90px] truncate text-xs font-semibold text-white/80 sm:block">{user.name}</span>
-                    <ChevronDown className="h-3 w-3 text-white/40" aria-hidden />
+                    <span className="hidden max-w-[90px] truncate text-xs font-bold text-white sm:block">{user.name}</span>
+                    <ChevronDown className="h-3 w-3 text-white" aria-hidden />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-60 rounded border border-white/10 bg-[#161619] p-1.5 shadow-2xl">
-                  <DropdownMenuLabel className="rounded py-2.5 text-xs text-white/50">
+                <DropdownMenuContent align="end" className="w-60 rounded border border-white/20 bg-[#0d1324] p-1.5 shadow-2xl">
+                  <DropdownMenuLabel className="rounded py-2.5 text-xs text-white/80">
                     <span className="flex items-center gap-2">
-                      <span className="flex h-9 w-9 items-center justify-center rounded bg-red-600/20 font-black text-sm text-red-400">
+                      <span className="flex h-9 w-9 items-center justify-center rounded bg-red-600 font-black text-sm text-white">
                         {user.name.slice(0, 2).toUpperCase()}
                       </span>
                       <span className="min-w-0 flex-col">
                         <span className="block truncate font-bold text-white">{user.name}</span>
-                        <span className="block truncate text-[10px] text-white/40">{user.email}</span>
+                        <span className="block truncate text-[10px] text-white/70">{user.email}</span>
                       </span>
                     </span>
                     {user.isPremium && (
-                      <span className="mt-2 inline-flex items-center gap-1 rounded bg-amber-500/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-amber-400">
+                      <span className="mt-2 inline-flex items-center gap-1 rounded bg-amber-400/20 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-amber-300">
                         <Crown className="h-3 w-3" aria-hidden /> Premium
                       </span>
                     )}
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="my-1 bg-white/[0.06]" />
-                  <DropdownMenuItem onClick={() => navigate({ name: "profile" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                  <DropdownMenuSeparator className="my-1 bg-white/10" />
+                  <DropdownMenuItem onClick={() => navigate({ name: "profile" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
                     <User2 className="h-4 w-4 text-red-400" aria-hidden /> My Profile
                   </DropdownMenuItem>
                   {(user.role === "CREATOR" || user.role === "ADMIN") && (
                     <>
-                      <DropdownMenuItem onClick={() => navigate({ name: "upload" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                      <DropdownMenuItem onClick={() => navigate({ name: "upload" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
                         <Upload className="h-4 w-4 text-red-400" aria-hidden /> Upload Video
                       </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate({ name: "earnings" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                      <DropdownMenuItem onClick={() => navigate({ name: "earnings" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
                         <Wallet className="h-4 w-4 text-red-400" aria-hidden /> Earnings Dashboard
                       </DropdownMenuItem>
                     </>
                   )}
                   {user.role === "ADMIN" && (
-                    <DropdownMenuItem onClick={() => navigate({ name: "admin" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                    <DropdownMenuItem onClick={() => navigate({ name: "admin" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
                       <LayoutDashboard className="h-4 w-4 text-red-400" aria-hidden /> Admin Panel
                     </DropdownMenuItem>
                   )}
-                  <DropdownMenuItem onClick={() => navigate({ name: "premium" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                  <DropdownMenuItem onClick={() => navigate({ name: "premium" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
                     <Crown className="h-4 w-4 text-amber-400" aria-hidden /> Premium Membership
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator className="my-1 bg-white/[0.06]" />
-                  <DropdownMenuItem onClick={handleLogout} className="gap-2.5 rounded text-xs text-red-400 focus:bg-red-600/10 focus:text-red-400">
+                  <DropdownMenuSeparator className="my-1 bg-white/10" />
+                  <DropdownMenuItem onClick={handleLogout} className="gap-2.5 rounded text-xs text-red-400 font-bold focus:bg-red-600/20 focus:text-red-400">
                     <LogOut className="h-4 w-4" aria-hidden /> Log Out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -450,13 +450,13 @@ export function Header() {
               <>
                 <button
                   onClick={() => navigate({ name: "auth" })}
-                  className="hidden h-9 items-center px-4 text-[11px] font-bold text-white/60 transition-colors hover:text-white lg:flex"
+                  className="hidden h-9 items-center px-4 text-[12px] font-extrabold text-white transition-colors hover:text-[#ff1e46] lg:flex"
                 >
                   Log In
                 </button>
                 <button
                   onClick={() => navigate({ name: "auth" })}
-                  className="flex h-9 items-center rounded-sm bg-red-600 px-4 text-[11px] font-black text-white transition-colors hover:bg-red-500 sheen"
+                  className="flex h-9 items-center rounded bg-[#ff1e46] px-4 text-[12px] font-black text-white transition-all hover:bg-[#e01438] shadow-[0_0_15px_rgba(255,30,70,0.4)] sheen"
                 >
                   Join Free
                 </button>
@@ -465,7 +465,7 @@ export function Header() {
 
             {/* Mobile menu */}
             <button
-              className="tap-target flex h-9 w-9 items-center justify-center rounded border border-white/10 bg-white/[0.05] text-white/70 lg:hidden"
+              className="tap-target flex h-9 w-9 items-center justify-center rounded border border-white/20 bg-white/10 text-white lg:hidden"
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? "Close menu" : "Open menu"}
             >
@@ -476,17 +476,17 @@ export function Header() {
       </div>
 
       {/* ── League quick-rail ── */}
-      <div className="hidden border-b border-white/[0.06] bg-[#101013] lg:block">
+      <div className="hidden border-b border-white/12 bg-[#0a0e1c] lg:block">
         <div className="no-scrollbar mx-auto flex max-w-[1440px] items-center gap-0 overflow-x-auto px-4 sm:px-6">
           {LEAGUE_RAIL.map((l) => (
             <button
               key={l.label}
               onClick={() => navigate(l.view)}
-              className="group flex shrink-0 items-center gap-1.5 border-r border-white/[0.05] px-3 py-2 text-[11px] font-bold text-white/45 transition-colors hover:bg-white/[0.03] hover:text-white/90 first:pl-0"
+              className="group flex shrink-0 items-center gap-2 border-r border-white/10 px-3.5 py-2 text-[12px] font-extrabold text-white transition-all hover:bg-white/10 hover:text-[#00e5ff] first:pl-0"
             >
-              {l.flag && <span className="text-[11px]">{l.flag}</span>}
+              {l.flag && <span className="text-[12px]">{l.flag}</span>}
               <span
-                className="h-[6px] w-[6px] rounded-[1px] shrink-0"
+                className="h-[7px] w-[7px] rounded-full shrink-0 shadow-sm"
                 style={{ backgroundColor: l.color }}
                 aria-hidden
               />
@@ -497,9 +497,9 @@ export function Header() {
           {liveCount > 0 && (
             <button
               onClick={() => navigate({ name: "scores" })}
-              className="ml-auto flex shrink-0 items-center gap-1.5 px-3 py-2 text-[10.5px] font-black text-red-400 uppercase tracking-wider"
+              className="ml-auto flex shrink-0 items-center gap-1.5 px-3 py-2 text-[11px] font-black text-white uppercase tracking-wider bg-red-600/30 rounded"
             >
-              <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+              <span className="live-dot h-2 w-2 rounded-full bg-[#ff1e46]" />
               {fmtNum(liveCount)} Live Now
             </button>
           )}

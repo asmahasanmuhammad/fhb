@@ -435,7 +435,7 @@ export function LiveTvView() {
         {/* ═══ Player + channel rail ═══ */}
         <div className="min-w-0 space-y-6 lg:col-span-8">
           <section ref={playerSectionRef} className="reveal" aria-label="Live stream player">
-            <div className="overflow-hidden border border-white/[0.08] bg-[#0d0d10]">
+            <div className="overflow-hidden rounded-md border border-white/15 bg-[#090d19] shadow-2xl">
               {/* Video area */}
               <div className="relative aspect-video w-full bg-black">
                 <video
@@ -455,43 +455,43 @@ export function LiveTvView() {
                     className="group absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center"
                     aria-label={`Play ${active.name}`}
                     style={{
-                      background: `radial-gradient(75% 100% at 50% 0%, ${active.color}2e, transparent 60%), radial-gradient(90% 120% at 50% 115%, #000000f0, #000000dd 60%)`,
+                      background: `radial-gradient(75% 100% at 50% 0%, ${active.color}35, transparent 60%), radial-gradient(90% 120% at 50% 115%, #000000f0, #000000dd 60%)`,
                     }}
                   >
                     <span
-                      className="flex h-16 w-16 items-center justify-center font-black text-xl text-white shadow-2xl"
+                      className="flex h-16 w-16 items-center justify-center rounded font-black text-xl text-white shadow-2xl"
                       style={{ backgroundColor: active.color }}
                     >
                       {active.monogram}
                     </span>
                     <div>
-                      <span className="flex items-center justify-center gap-2 text-lg font-black tracking-tight text-white sm:text-xl">
+                      <span className="flex items-center justify-center gap-2 text-xl font-black tracking-tight text-white sm:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
                         {active.name}
-                        <span className="flex items-center gap-1.5 bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white">
+                        <span className="flex items-center gap-1.5 bg-[#ff1e46] px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white rounded shadow-sm">
                           <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden /> Live
                         </span>
                       </span>
-                      <span className="mt-1 block text-xs text-white/60 sm:text-[13px]">{active.nowPlaying}</span>
+                      <span className="mt-1 block text-sm font-semibold text-[#f1f5f9] sm:text-base">{active.nowPlaying}</span>
                     </div>
-                    <span className="flex h-14 w-14 items-center justify-center bg-red-600 text-white shadow-xl transition-transform duration-300 group-hover:scale-110 sheen">
-                      <Play className="ml-0.5 h-6 w-6 fill-white text-white" />
+                    <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#ff1e46] text-white shadow-[0_0_20px_rgba(255,30,70,0.6)] transition-transform duration-300 group-hover:scale-110 sheen">
+                      <Play className="ml-1 h-7 w-7 fill-white text-white" />
                     </span>
-                    <span className="text-[10.5px] font-bold text-white/40 uppercase tracking-widest">Click to Start Stream</span>
+                    <span className="text-[11px] font-black text-white uppercase tracking-widest">Click to Start HD Broadcast</span>
                   </button>
                 )}
                 {/* Loading */}
                 {loading && (
                   <span className="absolute inset-0 flex items-center justify-center bg-black/60">
-                    <RefreshCw className="h-10 w-10 animate-spin text-red-500" aria-hidden />
+                    <RefreshCw className="h-10 w-10 animate-spin text-[#ff1e46]" aria-hidden />
                   </span>
                 )}
                 {/* Error */}
                 {error && (
                   <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/85 px-6 text-center">
-                    <AlertTriangle className="h-10 w-10 text-red-400" aria-hidden />
+                    <AlertTriangle className="h-10 w-10 text-[#ff1e46]" aria-hidden />
                     <p className="max-w-sm text-sm font-bold text-white">{error}</p>
                     <div className="flex gap-2">
-                      <button onClick={() => void loadStream(src)} className="bg-red-600 px-4 py-2 text-xs font-black uppercase text-white hover:bg-red-500">
+                      <button onClick={() => void loadStream(src)} className="bg-[#ff1e46] px-4 py-2 text-xs font-black uppercase text-white hover:bg-[#e01438] rounded">
                         <RefreshCw className="mr-1.5 h-3.5 w-3.5 inline" aria-hidden /> Retry
                       </button>
                       {active.servers.length > 1 && (
@@ -499,7 +499,7 @@ export function LiveTvView() {
                           onClick={() => {
                             setServerIdx((i) => (i + 1) % active.servers.length);
                           }}
-                          className="border border-white/20 bg-white/10 px-4 py-2 text-xs font-black uppercase text-white hover:bg-white/20"
+                          className="border border-white/20 bg-white/10 px-4 py-2 text-xs font-black uppercase text-white hover:bg-white/20 rounded"
                         >
                           Switch Server
                         </button>
@@ -509,47 +509,47 @@ export function LiveTvView() {
                 )}
                 {/* Top overlay: channel chip */}
                 {playing && (
-                  <span className="absolute left-3 top-3 flex items-center gap-2 bg-black/70 px-3 py-1.5 backdrop-blur-md border border-white/10">
+                  <span className="absolute left-3 top-3 flex items-center gap-2 bg-black/80 px-3 py-1.5 backdrop-blur-md border border-white/20 rounded">
                     <span
-                      className="flex h-6 w-6 items-center justify-center text-[10px] font-black text-white"
+                      className="flex h-6 w-6 items-center justify-center text-[10px] font-black text-white rounded"
                       style={{ backgroundColor: active.color }}
                       aria-hidden
                     >
                       {active.monogram}
                     </span>
-                    <span className="text-xs font-bold text-white">{active.name}</span>
-                    <span className="flex items-center gap-1 bg-red-600 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-white">
+                    <span className="text-xs font-extrabold text-white">{active.name}</span>
+                    <span className="flex items-center gap-1 bg-[#ff1e46] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-white rounded">
                       <span className="live-dot h-1 w-1 rounded-full bg-white" aria-hidden /> Live
                     </span>
                   </span>
                 )}
                 {/* Controls */}
-                <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-black/90 via-black/40 to-transparent px-3 pb-3 pt-10 sm:px-4">
+                <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-black/95 via-black/50 to-transparent px-3 pb-3 pt-10 sm:px-4">
                   <button
                     onClick={() => void togglePlay()}
-                    className="flex h-9 w-9 items-center justify-center bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
+                    className="flex h-9 w-9 items-center justify-center rounded bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
                     aria-label={playing ? "Pause" : "Play"}
                   >
                     {playing ? <Pause className="h-4 w-4" aria-hidden /> : <Play className="ml-0.5 h-4 w-4 fill-white" aria-hidden />}
                   </button>
                   <button
                     onClick={toggleMute}
-                    className="flex h-9 w-9 items-center justify-center bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
+                    className="flex h-9 w-9 items-center justify-center rounded bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
                     aria-label={muted ? "Unmute" : "Mute"}
                   >
                     {muted ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />}
                   </button>
                   <div className="ml-1 min-w-0 flex-1">
-                    <p className="truncate text-[11px] font-bold text-white/90">{active.nowPlaying}</p>
-                    <p className="truncate text-[10px] text-white/50">
-                      <span className="live-dot mr-1 inline-block h-1.5 w-1.5 rounded-full bg-red-500 align-middle" aria-hidden />
+                    <p className="truncate text-[12px] font-extrabold text-white">{active.nowPlaying}</p>
+                    <p className="truncate text-[10.5px] text-[#cbd5e1] font-semibold">
+                      <span className="live-dot mr-1 inline-block h-1.5 w-1.5 rounded-full bg-[#ff1e46] align-middle" aria-hidden />
                       {currentServer.label} · 1080p HD
                       {active.demo ? " · live test feed" : " · free-to-air"}
                     </p>
                   </div>
                   <button
                     onClick={goFullscreen}
-                    className="flex h-9 w-9 items-center justify-center bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
+                    className="flex h-9 w-9 items-center justify-center rounded bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
                     aria-label="Fullscreen"
                   >
                     <Maximize className="h-4 w-4" aria-hidden />
@@ -558,12 +558,12 @@ export function LiveTvView() {
               </div>
 
               {/* Info bar + servers */}
-              <div className="border-t border-white/[0.08] p-4 sm:p-5">
+              <div className="border-t border-white/12 p-4 sm:p-5 bg-[#090d19]">
                 {/* Channel identity */}
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-3.5">
                     <span
-                      className="flex h-12 w-12 shrink-0 items-center justify-center font-black text-sm text-white shadow-md"
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded font-black text-sm text-white shadow-md"
                       style={{ backgroundColor: active.color }}
                       aria-hidden
                     >
@@ -571,45 +571,45 @@ export function LiveTvView() {
                     </span>
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="font-black text-lg text-white">{active.name}</h2>
-                        <span className="flex items-center gap-1.5 bg-red-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white">
+                        <h2 className="font-black text-xl text-white">{active.name}</h2>
+                        <span className="flex items-center gap-1.5 bg-[#ff1e46] px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white rounded shadow-sm">
                           <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden /> Live
                         </span>
-                        <span className="border border-white/15 bg-white/[0.05] px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white/60">
+                        <span className="border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white rounded">
                           {CATEGORY_LABEL[active.category]}
                         </span>
                       </div>
-                      <p className="mt-0.5 truncate text-xs text-white/40">{active.tagline}</p>
+                      <p className="mt-0.5 truncate text-[12.5px] text-[#cbd5e1] font-medium">{active.tagline}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-[11px] text-white/40">
+                  <div className="flex items-center gap-4 text-[12px] text-white font-bold">
                     <span className="tabular flex items-center gap-1.5">
-                      <Users className="h-3.5 w-3.5 text-red-400" aria-hidden />
+                      <Users className="h-4 w-4 text-[#ff1e46]" aria-hidden />
                       {fmtNum(active.viewers)} viewers
                     </span>
-                    <span className="flex items-center gap-1.5">
-                      <Signal className="h-3.5 w-3.5 text-emerald-400" aria-hidden /> 1080p 60fps
+                    <span className="flex items-center gap-1.5 text-emerald-400">
+                      <Signal className="h-4 w-4" aria-hidden /> 1080p 60fps
                     </span>
                   </div>
                 </div>
 
                 {/* EPG */}
-                <div className="mt-4 grid gap-2 sm:grid-cols-2">
-                  <div className="border border-white/[0.07] bg-[#060608] px-3.5 py-2.5">
-                    <p className="eyebrow text-[9px] text-red-400">Now playing</p>
-                    <p className="mt-1 text-[13px] font-bold text-white">{active.nowPlaying}</p>
+                <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
+                  <div className="rounded border border-white/12 bg-[#050812] px-4 py-3">
+                    <p className="eyebrow text-[10px] text-[#ff1e46] font-black uppercase tracking-widest">Now playing</p>
+                    <p className="mt-1 text-[14px] font-extrabold text-white">{active.nowPlaying}</p>
                   </div>
-                  <div className="border border-white/[0.07] bg-[#060608] px-3.5 py-2.5">
-                    <p className="eyebrow text-[9px] text-white/30">Up next</p>
-                    <p className="mt-1 text-[13px] font-bold text-white/60">{active.next}</p>
+                  <div className="rounded border border-white/12 bg-[#050812] px-4 py-3">
+                    <p className="eyebrow text-[10px] text-[#94a3b8] font-black uppercase tracking-widest">Up next</p>
+                    <p className="mt-1 text-[14px] font-extrabold text-[#f1f5f9]">{active.next}</p>
                   </div>
                 </div>
 
                 {/* Server switcher */}
-                <div className="mt-4 pt-3 border-t border-white/[0.06]">
+                <div className="mt-4 pt-4 border-t border-white/10">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-white/40 flex items-center gap-1.5">
-                      <Server className="h-3.5 w-3.5 text-red-400" aria-hidden /> Servers:
+                    <span className="text-[11px] font-black uppercase tracking-widest text-white flex items-center gap-1.5">
+                      <Server className="h-4 w-4 text-[#ff1e46]" aria-hidden /> Servers:
                     </span>
                     {active.servers.map((s, i) => (
                       <button
@@ -619,19 +619,19 @@ export function LiveTvView() {
                           setPlaying(true);
                         }}
                         className={cn(
-                          "flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-black uppercase tracking-wider transition-colors",
+                          "flex items-center gap-1.5 rounded px-3 py-1.5 text-[11.5px] font-black uppercase tracking-wider transition-all",
                           i === serverIdx
-                            ? "bg-red-600 text-white"
-                            : "border border-white/[0.08] bg-white/[0.03] text-white/50 hover:text-white hover:border-white/20"
+                            ? "bg-[#ff1e46] text-white shadow-[0_0_10px_rgba(255,30,70,0.5)]"
+                            : "border border-white/15 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
                         )}
                         aria-pressed={i === serverIdx}
                       >
                         {s.label}
-                        {s.note && <span className="text-[9px] font-normal opacity-70">({s.note})</span>}
+                        {s.note && <span className="text-[9.5px] font-normal opacity-80">({s.note})</span>}
                       </button>
                     ))}
                   </div>
-                  <p className="mt-2 text-[10.5px] text-white/30">
+                  <p className="mt-2 text-[11.5px] text-[#cbd5e1] font-medium">
                     BDIX Dhaka 60FPS Low-Latency Relay · Singapore CDN Backup · Instant Source Failover.
                   </p>
                 </div>
@@ -644,18 +644,18 @@ export function LiveTvView() {
             <SectionHeader
               title="Channel Directory"
               kicker={`${filtered.length} of ${CHANNELS.length} channels live`}
-              icon={<Radio className="h-3.5 w-3.5" aria-hidden />}
+              icon={<Radio className="h-4 w-4" aria-hidden />}
             />
-            <div className="no-scrollbar -mx-1 mb-4 flex gap-1 overflow-x-auto px-1">
+            <div className="no-scrollbar -mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1">
               {CATEGORIES.map((c) => (
                 <button
                   key={c.key}
                   onClick={() => setCategory(c.key)}
                   className={cn(
-                    "shrink-0 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition-colors",
+                    "shrink-0 rounded px-4 py-1.5 text-[11.5px] font-black uppercase tracking-wider transition-all",
                     category === c.key
-                      ? "bg-red-600 text-white"
-                      : "border border-white/[0.08] bg-white/[0.03] text-white/40 hover:text-white"
+                      ? "bg-[#ff1e46] text-white shadow-[0_0_8px_rgba(255,30,70,0.4)]"
+                      : "border border-white/12 bg-white/5 text-white hover:bg-white/15 hover:text-white"
                   )}
                   aria-pressed={category === c.key}
                 >
@@ -671,34 +671,34 @@ export function LiveTvView() {
                     key={ch.id}
                     onClick={() => watchChannel(ch, 0)}
                     className={cn(
-                      "group w-[140px] shrink-0 overflow-hidden border text-left transition-colors",
+                      "group w-[150px] shrink-0 overflow-hidden rounded-md border text-left transition-all",
                       isChActive
-                        ? "border-red-600 bg-red-600/10"
-                        : "border-white/[0.07] bg-[#0d0d10] hover:border-white/20 hover:bg-white/[0.02]"
+                        ? "border-[#ff1e46] bg-red-600/20 shadow-[0_0_15px_rgba(255,30,70,0.3)]"
+                        : "border-white/12 bg-[#090d19] hover:border-white/30 hover:bg-[#0f1629]"
                     )}
                     aria-current={isChActive ? "true" : undefined}
                     aria-label={`Watch ${ch.name}`}
                   >
                     {/* Logo tile */}
-                    <span className="relative flex h-[72px] items-center justify-center" style={{ backgroundColor: ch.color }}>
-                      <span className="text-xl font-black text-white drop-shadow" aria-hidden>
+                    <span className="relative flex h-[76px] items-center justify-center" style={{ backgroundColor: ch.color }}>
+                      <span className="text-2xl font-black text-white drop-shadow" aria-hidden>
                         {ch.monogram}
                       </span>
-                      <span className="live-dot absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
-                      <span className="tabular absolute bottom-1.5 left-2 flex items-center gap-1 bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-white backdrop-blur">
-                        <Users className="h-2.5 w-2.5" aria-hidden />
+                      <span className="live-dot absolute right-2 top-2 h-2 w-2 rounded-full bg-white shadow-sm" aria-hidden />
+                      <span className="tabular absolute bottom-1.5 left-2 flex items-center gap-1 rounded bg-black/80 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
+                        <Users className="h-3 w-3" aria-hidden />
                         {fmtCompact(ch.viewers)}
                       </span>
                     </span>
                     {/* Meta */}
                     <span className="block px-3 py-2.5">
-                      <span className={cn("block truncate text-[12px] font-black", isChActive ? "text-red-400" : "text-white")}>
+                      <span className={cn("block truncate text-[13px] font-black", isChActive ? "text-[#ff1e46]" : "text-white")}>
                         {ch.name}
                       </span>
-                      <span className="mt-0.5 block truncate text-[9.5px] uppercase font-bold text-white/30">
+                      <span className="mt-0.5 block truncate text-[10px] uppercase font-bold text-[#94a3b8]">
                         {CATEGORY_LABEL[ch.category]}
                       </span>
-                      <span className="mt-1 block truncate text-[10px] text-white/50">{ch.nowPlaying}</span>
+                      <span className="mt-1 block truncate text-[11px] font-medium text-[#cbd5e1]">{ch.nowPlaying}</span>
                     </span>
                   </button>
                 );
@@ -763,51 +763,51 @@ export function LiveTvView() {
         <aside className="min-w-0 lg:col-span-4" aria-label="Live TV information">
           <div className="space-y-6 lg:sticky lg:top-[76px]">
             {/* Watch on TV */}
-            <section className="edge-lit reveal rounded-xl border border-border bg-card" aria-label="Watch on TV">
-              <header className="border-b border-border px-5 py-4">
-                <p className="eyebrow flex items-center gap-1.5 text-primary">
-                  <MonitorPlay className="h-3.5 w-3.5" aria-hidden /> Big screen
+            <section className="reveal rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden" aria-label="Watch on TV">
+              <header className="border-b border-white/12 px-5 py-4 bg-[#050812]">
+                <p className="eyebrow flex items-center gap-1.5 text-[#ff1e46] font-black uppercase tracking-widest text-[10px]">
+                  <MonitorPlay className="h-4 w-4 text-[#ff1e46]" aria-hidden /> Big Screen
                 </p>
-                <h2 className="mt-1 font-display text-base font-bold tracking-[-0.01em] text-foreground">Watch on TV</h2>
+                <h2 className="mt-1 text-base font-black tracking-tight text-white">Watch on TV</h2>
               </header>
               <div className="px-5 py-4">
-                <ol className="space-y-3">
+                <ol className="space-y-3.5">
                   {[
                     {
                       title: "Use fullscreen",
-                      body: "Tap the expand control on the player for the cinematic view.",
+                      body: "Tap the expand control on the player for the cinematic 1080p view.",
                     },
                     {
                       title: "Smart TV browser",
-                      body: "Open the site on your TV browser and sign in with the same account.",
+                      body: "Open footballhub.com.bd on your Smart TV browser and stream directly.",
                     },
                     {
                       title: "Switch servers",
-                      body: "Streams are HLS multi-bitrate — if one source buffers, jump to another instantly.",
+                      body: "Streams are HLS multi-bitrate — if one source buffers, jump to Server 2 or 3 instantly.",
                     },
                   ].map((step, i) => (
                     <li key={step.title} className="flex gap-3">
-                      <span className="tabular flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-[11px] font-bold text-primary">
+                      <span className="tabular flex h-7 w-7 shrink-0 items-center justify-center rounded bg-[#ff1e46]/20 border border-[#ff1e46]/40 text-[12px] font-black text-white shadow-sm">
                         {i + 1}
                       </span>
-                      <p className="text-xs leading-relaxed text-muted-foreground">
-                        <span className="font-semibold text-foreground">{step.title}.</span> {step.body}
+                      <p className="text-xs leading-relaxed text-[#cbd5e1] font-medium">
+                        <span className="font-extrabold text-white">{step.title}:</span> {step.body}
                       </p>
                     </li>
                   ))}
                 </ol>
-                <div className="mt-4 grid grid-cols-3 divide-x divide-border/60 rounded-lg border border-border bg-background/50">
+                <div className="mt-5 grid grid-cols-3 divide-x divide-white/10 rounded border border-white/12 bg-[#050812]">
                   <div className="px-2 py-3 text-center">
-                    <p className="tabular font-display text-lg font-bold text-foreground">{CHANNELS.length}</p>
-                    <p className="mt-0.5 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Channels</p>
+                    <p className="tabular text-xl font-black text-white">{CHANNELS.length}</p>
+                    <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[#94a3b8]">Channels</p>
                   </div>
                   <div className="px-2 py-3 text-center">
-                    <p className="tabular font-display text-lg font-bold text-foreground">{totalServers}</p>
-                    <p className="mt-0.5 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Sources</p>
+                    <p className="tabular text-xl font-black text-white">{totalServers}</p>
+                    <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[#94a3b8]">Sources</p>
                   </div>
                   <div className="px-2 py-3 text-center">
-                    <p className="tabular font-display text-lg font-bold text-foreground">{freeToAir}</p>
-                    <p className="mt-0.5 text-[10px] uppercase tracking-[0.1em] text-muted-foreground">Free-to-air</p>
+                    <p className="tabular text-xl font-black text-white">{freeToAir}</p>
+                    <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[#94a3b8]">Free-to-air</p>
                   </div>
                 </div>
               </div>

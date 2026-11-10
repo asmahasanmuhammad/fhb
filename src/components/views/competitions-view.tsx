@@ -32,19 +32,19 @@ const TYPE_LABELS: Record<string, string> = {
 /** Zone legend — mirrors the colour bars rendered by StandingsTable. */
 function ZoneLegend() {
   const items = [
-    { cls: "bg-fhb-gold", label: "Champion" },
-    { cls: "bg-primary", label: "Championship places" },
-    { cls: "bg-fhb-red", label: "Relegation zone" },
+    { cls: "bg-amber-400", label: "Champion" },
+    { cls: "bg-red-500", label: "Championship places" },
+    { cls: "bg-rose-600", label: "Relegation zone" },
   ];
   return (
-    <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-border bg-card px-4 py-3 text-[11px] text-muted-foreground">
+    <div className="mt-3 flex flex-wrap items-center gap-x-5 gap-y-2 rounded-lg border border-white/15 bg-[#0b101d] px-4 py-3 text-[11px] font-semibold text-slate-300 shadow">
       {items.map((z) => (
         <span key={z.label} className="flex items-center gap-1.5">
-          <span className={cn("h-2 w-2 rounded-[2px]", z.cls)} aria-hidden />
+          <span className={cn("h-2.5 w-2.5 rounded-[2px]", z.cls)} aria-hidden />
           {z.label}
         </span>
       ))}
-      <span className="ml-auto hidden pl-4 sm:block">P Played · W Won · D Drawn · L Lost · GD Goal difference</span>
+      <span className="ml-auto hidden pl-4 sm:block text-slate-400">P Played · W Won · D Drawn · L Lost · GD Goal difference</span>
     </div>
   );
 }
@@ -108,50 +108,50 @@ export function CompetitionsView() {
               <div key={c.id} className="reveal h-full">
                 <button
                   onClick={() => navigate({ name: "competition-detail", id: c.id })}
-                  className="group relative flex h-full w-full flex-col justify-between border border-white/[0.07] bg-[#0d0d10] p-5 text-left transition-all hover:border-white/20 hover:bg-white/[0.02]"
+                  className="group relative flex h-full w-full flex-col justify-between border border-white/15 bg-[#0b101d] p-5 text-left transition-all hover:border-red-500/60 hover:bg-[#11172a] hover:shadow-[0_4px_20px_rgba(255,30,70,0.15)] rounded"
                   aria-label={`View ${c.name} table and fixtures`}
                 >
                   {/* Accent edge bar */}
                   <span
                     aria-hidden
                     className="absolute inset-y-0 left-0 w-[3px]"
-                    style={{ backgroundColor: c.accentColor ?? "#dc2626" }}
+                    style={{ backgroundColor: c.accentColor ?? "#ff1e46" }}
                   />
 
                   <div>
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="flex items-center gap-3">
                         <span
-                          className="flex h-11 w-11 shrink-0 items-center justify-center font-black text-sm text-white"
-                          style={{ backgroundColor: c.accentColor ?? "#dc2626" }}
+                          className="flex h-11 w-11 shrink-0 items-center justify-center font-black text-sm text-white rounded shadow"
+                          style={{ backgroundColor: c.accentColor ?? "#ff1e46" }}
                         >
                           {(c.shortName || c.name).slice(0, 3).toUpperCase()}
                         </span>
                         <div>
-                          <h3 className="font-black text-[15px] text-white transition-colors group-hover:text-red-400">
+                          <h3 className="font-black text-[15.5px] text-white transition-colors group-hover:text-red-400 drop-shadow-sm">
                             {c.name}
                           </h3>
-                          <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider mt-0.5">
+                          <p className="text-[11.5px] font-black text-slate-300 uppercase tracking-wider mt-0.5">
                             {c.country} · {TYPE_LABELS[c.type] ?? c.type}
                           </p>
                         </div>
                       </div>
-                      <span className="border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[9px] font-black uppercase text-white/60">
+                      <span className="border border-white/20 bg-white/10 px-2 py-0.5 text-[9.5px] font-black uppercase text-white rounded">
                         {c.season}
                       </span>
                     </div>
 
                     {c.description && (
-                      <p className="line-clamp-2 text-xs text-white/50 leading-relaxed">{c.description}</p>
+                      <p className="line-clamp-2 text-xs font-medium text-slate-300 leading-relaxed">{c.description}</p>
                     )}
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between text-[11px] font-bold text-white/40">
+                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-black text-slate-300">
                     <span className="flex items-center gap-1.5">
                       <CalendarDays className="h-3.5 w-3.5 text-red-500" />
                       {fmtNum(c._count?.matches ?? 0)} Matches
                     </span>
-                    <span className="flex items-center gap-1 text-red-400 group-hover:translate-x-0.5 transition-transform">
+                    <span className="flex items-center gap-1 text-red-400 group-hover:translate-x-0.5 transition-transform font-black">
                       Standings &amp; Fixtures <ChevronRight className="h-3.5 w-3.5" />
                     </span>
                   </div>
@@ -227,22 +227,22 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
     list: Match[],
     emptyNote: string,
   ) => (
-    <div className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
-      <header className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3">
-        <h3 className="flex items-center gap-2.5 font-display text-sm font-bold tracking-[-0.01em] text-foreground">
-          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary/12 text-primary">{icon}</span>
+    <div className="overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-lg">
+      <header className="flex items-center justify-between gap-3 border-b border-white/15 bg-[#06080f] px-4 py-3">
+        <h3 className="flex items-center gap-2.5 font-display text-sm font-black text-white">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-red-600/20 text-red-400">{icon}</span>
           {title}
         </h3>
-        <span className="tabular text-[11px] font-semibold text-muted-foreground">{fmtNum(list.length)}</span>
+        <span className="tabular text-[11px] font-black text-slate-300">{fmtNum(list.length)}</span>
       </header>
       {list.length > 0 ? (
-        <div className="divide-y divide-border/60">
+        <div className="divide-y divide-white/10">
           {list.slice(0, 10).map((m) => (
             <MatchRow key={m.id} match={m} showCompetition={false} />
           ))}
         </div>
       ) : (
-        <p className="px-4 py-8 text-center text-xs text-muted-foreground">{emptyNote}</p>
+        <p className="px-4 py-8 text-center text-xs font-semibold text-slate-400">{emptyNote}</p>
       )}
     </div>
   );
@@ -253,26 +253,26 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
       <nav aria-label="Breadcrumb" className="mb-4 flex items-center gap-2 text-xs">
         <button
           onClick={() => navigate({ name: "competitions" })}
-          className="flex items-center gap-1 font-semibold text-muted-foreground transition-colors hover:text-primary"
+          className="flex items-center gap-1 font-bold text-slate-300 transition-colors hover:text-white"
         >
           <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
           Competitions
         </button>
-        <span className="text-muted-foreground/40" aria-hidden>
+        <span className="text-slate-400" aria-hidden>
           /
         </span>
-        <span className="truncate font-semibold text-foreground">{shortLabel}</span>
+        <span className="truncate font-bold text-white">{shortLabel}</span>
       </nav>
 
       {/* ── Hero band ── */}
       <section
-        className="reveal noise stadium-panel pitch-pattern edge-lit relative overflow-hidden rounded-xl border border-border/70"
+        className="reveal relative overflow-hidden rounded-xl border border-white/20 bg-[#0b101d] shadow-xl"
         aria-label="Competition header"
       >
         <span
           aria-hidden
-          className="absolute inset-0"
-          style={{ background: `linear-gradient(115deg, color-mix(in oklab, ${accent} 22%, transparent), transparent 58%)` }}
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: `linear-gradient(115deg, color-mix(in oklab, ${accent} 25%, transparent), transparent 58%)` }}
         />
         <span
           aria-hidden
@@ -284,7 +284,7 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
         <div className="relative flex flex-wrap items-center gap-4 p-5 sm:gap-5 sm:p-7">
           <span
             aria-hidden
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-16 sm:w-16"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl sm:h-16 sm:w-16 shadow-lg"
             style={{
               backgroundColor: accent,
               boxShadow: "inset 0 0 0 2px rgba(255,255,255,0.24), inset 0 -4px 8px rgba(0,0,0,0.3)",
@@ -293,18 +293,18 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
             <Trophy className="h-7 w-7 text-white sm:h-8 sm:w-8" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="eyebrow flex items-center gap-2 text-primary">
+            <p className="eyebrow flex items-center gap-2 text-red-400 font-black">
               {typeLabel}
-              <span className="h-1 w-1 rounded-full bg-border" aria-hidden />
+              <span className="h-1 w-1 rounded-full bg-white/20" aria-hidden />
               {competition.country}
             </p>
-            <h1 className="display-hero mt-1.5 text-[1.7rem] text-foreground sm:text-3xl">{competition.name}</h1>
-            <p className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5">
-                <CalendarDays className="h-3.5 w-3.5 text-primary/80" aria-hidden /> Season {competition.season}
+            <h1 className="mt-1.5 text-[1.8rem] font-black text-white drop-shadow-sm sm:text-3xl">{competition.name}</h1>
+            <p className="mt-2.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-200">
+              <span className="flex items-center gap-1.5 font-semibold">
+                <CalendarDays className="h-3.5 w-3.5 text-red-400" aria-hidden /> Season {competition.season}
               </span>
-              <span className="tabular flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5 text-primary/80" aria-hidden /> {fmtNum(matches.length)} matches
+              <span className="tabular flex items-center gap-1.5 font-semibold">
+                <Zap className="h-3.5 w-3.5 text-red-400" aria-hidden /> {fmtNum(matches.length)} matches
               </span>
             </p>
           </div>
@@ -312,8 +312,8 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
 
         {competition.description && (
           <p
-            className="relative mx-5 mb-5 max-w-2xl border-l-2 pl-4 text-[13px] leading-relaxed text-foreground/75 sm:mx-7 sm:mb-7"
-            style={{ borderColor: `color-mix(in oklab, ${accent} 60%, transparent)` }}
+            className="relative mx-5 mb-5 max-w-2xl border-l-2 pl-4 text-[13px] leading-relaxed text-slate-200 font-medium sm:mx-7 sm:mb-7"
+            style={{ borderColor: `color-mix(in oklab, ${accent} 80%, transparent)` }}
           >
             {competition.description}
           </p>
@@ -325,7 +325,7 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
         <div className="min-w-0 lg:col-span-8">
           {hasTable && (
             <div
-              className="mb-5 grid w-full max-w-sm grid-cols-2 gap-1 rounded-xl border border-border bg-muted/40 p-1"
+              className="mb-5 grid w-full max-w-sm grid-cols-2 gap-1 rounded-xl border border-white/15 bg-[#06080f] p-1"
               role="tablist"
               aria-label="Competition sections"
             >
@@ -341,10 +341,10 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
                   aria-selected={tab === key}
                   onClick={() => setUserTab(key)}
                   className={cn(
-                    "rounded-lg py-2 text-xs font-bold transition-colors",
+                    "rounded-lg py-2 text-xs font-black uppercase tracking-wider transition-colors",
                     tab === key
-                      ? "bg-elevated text-foreground shadow-[0_6px_16px_-10px_rgba(0,0,0,0.7)]"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-red-600 text-white shadow-md shadow-red-600/30"
+                      : "text-slate-300 hover:text-white"
                   )}
                 >
                   {label}
@@ -369,32 +369,32 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
         {/* Stat rail */}
         <aside className="min-w-0 space-y-6 lg:col-span-4" aria-label="Statistics">
           {topScorers.length > 0 && (
-            <section className="reveal edge-lit overflow-hidden rounded-xl border border-border bg-card" aria-label="Top scorers">
-              <header className="flex items-center justify-between gap-3 border-b border-border bg-muted/40 px-4 py-3">
-                <h3 className="flex items-center gap-2 font-display text-sm font-bold tracking-[-0.01em] text-foreground">
-                  <Goal className="h-4 w-4 text-primary" aria-hidden />
+            <section className="reveal overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-lg" aria-label="Top scorers">
+              <header className="flex items-center justify-between gap-3 border-b border-white/15 bg-[#06080f] px-4 py-3">
+                <h3 className="flex items-center gap-2 font-display text-sm font-black text-white">
+                  <Goal className="h-4 w-4 text-red-500" aria-hidden />
                   Top scorers
                 </h3>
-                <span className="eyebrow shrink-0 text-muted-foreground">{shortLabel}</span>
+                <span className="eyebrow shrink-0 text-slate-300 font-bold">{shortLabel}</span>
               </header>
-              <div className="divide-y divide-border/60">
+              <div className="divide-y divide-white/10">
                 {topScorers.slice(0, 8).map((p, i) => (
                   <button
                     key={p.id}
                     onClick={() => navigate({ name: "player-detail", id: p.id })}
-                    className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+                    className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.05]"
                   >
-                    <span className="tabular w-4 shrink-0 text-center font-display text-xs font-bold text-muted-foreground transition-colors group-hover:text-primary">
+                    <span className="tabular w-4 shrink-0 text-center font-display text-xs font-black text-slate-400 transition-colors group-hover:text-red-400">
                       {fmtNum(i + 1)}
                     </span>
                     {p.team && <TeamCrest team={p.team} size="sm" />}
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13px] font-semibold text-foreground transition-colors group-hover:text-primary">
+                      <span className="block truncate text-[13.5px] font-black text-white transition-colors group-hover:text-red-400">
                         {p.name}
                       </span>
-                      <span className="block truncate text-[11px] text-muted-foreground">{p.team?.name ?? "—"}</span>
+                      <span className="block truncate text-[11px] font-semibold text-slate-300">{p.team?.name ?? "—"}</span>
                     </span>
-                    <span className="tabular shrink-0 font-display text-base font-bold text-primary">{fmtNum(p.goals)}</span>
+                    <span className="tabular shrink-0 font-display text-base font-black text-emerald-400">{fmtNum(p.goals)}</span>
                   </button>
                 ))}
               </div>

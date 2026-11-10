@@ -40,47 +40,47 @@ export function StandingsTable({
   /* ── Compact widget ── */
   if (compact) {
     return (
-      <div className="overflow-hidden border border-white/[0.07] bg-[#0d0d10]">
+      <div className="overflow-hidden rounded-md border border-white/12 bg-[#0a0e1c] shadow-lg">
         {/* Table header */}
-        <div className="grid grid-cols-[2rem_1fr_auto] gap-0 border-b border-white/[0.07] bg-[#060608] px-4 py-2">
-          <span className="text-[9.5px] font-black uppercase tracking-widest text-white/30">#</span>
-          <span className="text-[9.5px] font-black uppercase tracking-widest text-white/30">Club</span>
-          <span className="text-[9.5px] font-black uppercase tracking-widest text-white/30 text-right">Pts</span>
+        <div className="grid grid-cols-[2rem_1fr_auto] gap-0 border-b border-white/15 bg-[#060914] px-4 py-2.5">
+          <span className="text-[10px] font-black uppercase tracking-widest text-white">#</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-white">Club</span>
+          <span className="text-[10px] font-black uppercase tracking-widest text-white text-right">Pts</span>
         </div>
         <table className="w-full">
           <tbody>
-            {rows.map((s, i) => (
+            {rows.map((s) => (
               <tr
                 key={s.id}
                 onClick={() => navigate({ name: "team-detail", id: s.team.id })}
-                className="group cursor-pointer border-b border-white/[0.04] transition-colors last:border-0 hover:bg-white/[0.03]"
+                className="group cursor-pointer border-b border-white/10 transition-colors last:border-0 hover:bg-white/10"
               >
-                <td className="relative w-10 py-2.5 pl-4">
+                <td className="relative w-10 py-3 pl-4">
                   <span
                     aria-hidden
-                    className="absolute inset-y-0 left-0 w-[2px]"
+                    className="absolute inset-y-0 left-0 w-[3px]"
                     style={{ backgroundColor: zoneColor(s.position) }}
                   />
-                  <span className="tabular block text-center font-black text-[11px] text-white/35 group-hover:text-red-400">
+                  <span className="tabular block text-center font-black text-[12px] text-white group-hover:text-[#ff1e46]">
                     {fmtNum(s.position)}
                   </span>
                 </td>
-                <td className="py-2.5 pr-3">
-                  <div className="flex items-center gap-2">
+                <td className="py-3 pr-3">
+                  <div className="flex items-center gap-2.5">
                     <TeamCrest team={s.team} size="sm" />
-                    <span className="truncate text-[12.5px] font-bold text-white/75 group-hover:text-white">
+                    <span className="truncate text-[13px] font-extrabold text-white group-hover:text-[#00e5ff]">
                       {s.team.shortName ?? s.team.name}
                     </span>
                   </div>
                 </td>
-                <td className="py-2.5 pr-4">
+                <td className="py-3 pr-4">
                   <div className="flex items-center justify-end gap-3">
                     {showForm && s.form && (
                       <span className="hidden sm:block">
                         <FormDots form={s.form} />
                       </span>
                     )}
-                    <span className="tabular font-black text-[14px] text-white">
+                    <span className="tabular font-black text-[15px] text-white px-2 py-0.5 rounded bg-white/10 border border-white/20">
                       {fmtNum(s.points)}
                     </span>
                   </div>
@@ -95,20 +95,20 @@ export function StandingsTable({
 
   /* ── Full table ── */
   return (
-    <div className="overflow-x-auto border border-white/[0.07] bg-[#0d0d10] fhb-scroll">
+    <div className="overflow-x-auto rounded-md border border-white/12 bg-[#0a0e1c] shadow-xl fhb-scroll">
       <table className="w-full min-w-[700px]">
         <thead>
-          <tr className="border-b border-white/[0.07] bg-[#060608]">
-            <th className="w-10 py-2.5 pl-4 text-left text-[9.5px] font-black uppercase tracking-widest text-white/30">#</th>
-            <th className="py-2.5 text-left text-[9.5px] font-black uppercase tracking-widest text-white/30">Club</th>
-            <th className="px-3 py-2.5 text-center text-[9.5px] font-black uppercase tracking-widest text-white/30">P</th>
-            <th className="px-3 py-2.5 text-center text-[9.5px] font-black uppercase tracking-widest text-white/30">W</th>
-            <th className="px-3 py-2.5 text-center text-[9.5px] font-black uppercase tracking-widest text-white/30">D</th>
-            <th className="px-3 py-2.5 text-center text-[9.5px] font-black uppercase tracking-widest text-white/30">L</th>
-            <th className="px-3 py-2.5 text-center text-[9.5px] font-black uppercase tracking-widest text-white/30">GF:GA</th>
-            <th className="px-3 py-2.5 text-center text-[9.5px] font-black uppercase tracking-widest text-white/30">GD</th>
-            {showForm && <th className="px-3 py-2.5 text-center text-[9.5px] font-black uppercase tracking-widest text-white/30">Form</th>}
-            <th className="py-2.5 pr-5 text-center text-[9.5px] font-black uppercase tracking-widest text-red-500">Pts</th>
+          <tr className="border-b border-white/15 bg-[#060914]">
+            <th className="w-12 py-3 pl-4 text-left text-[10.5px] font-black uppercase tracking-widest text-white">#</th>
+            <th className="py-3 text-left text-[10.5px] font-black uppercase tracking-widest text-white">Club</th>
+            <th className="px-3 py-3 text-center text-[10.5px] font-black uppercase tracking-widest text-white">P</th>
+            <th className="px-3 py-3 text-center text-[10.5px] font-black uppercase tracking-widest text-white">W</th>
+            <th className="px-3 py-3 text-center text-[10.5px] font-black uppercase tracking-widest text-white">D</th>
+            <th className="px-3 py-3 text-center text-[10.5px] font-black uppercase tracking-widest text-white">L</th>
+            <th className="px-3 py-3 text-center text-[10.5px] font-black uppercase tracking-widest text-white">GF:GA</th>
+            <th className="px-3 py-3 text-center text-[10.5px] font-black uppercase tracking-widest text-white">GD</th>
+            {showForm && <th className="px-3 py-3 text-center text-[10.5px] font-black uppercase tracking-widest text-white">Form</th>}
+            <th className="py-3 pr-5 text-center text-[11px] font-black uppercase tracking-widest text-[#ff1e46]">Pts</th>
           </tr>
         </thead>
         <tbody>
@@ -118,36 +118,36 @@ export function StandingsTable({
               <tr
                 key={s.id}
                 onClick={() => navigate({ name: "team-detail", id: s.team.id })}
-                className="group cursor-pointer border-b border-white/[0.04] transition-colors last:border-0 hover:bg-white/[0.03]"
+                className="group cursor-pointer border-b border-white/10 transition-colors last:border-0 hover:bg-white/10"
               >
                 <td className="relative py-3 pl-4">
                   <span
                     aria-hidden
-                    className="absolute inset-y-0 left-0 w-[2px]"
+                    className="absolute inset-y-0 left-0 w-[3px]"
                     style={{ backgroundColor: zoneColor(s.position) }}
                   />
-                  <span className="tabular block text-center font-black text-[11px] text-white/35 group-hover:text-red-400">
+                  <span className="tabular block text-center font-black text-[12px] text-white group-hover:text-[#ff1e46]">
                     {fmtNum(s.position)}
                   </span>
                 </td>
                 <td className="py-3">
                   <div className="flex items-center gap-2.5">
                     <TeamCrest team={s.team} size="sm" />
-                    <span className="text-[13px] font-bold text-white/80 group-hover:text-white">
+                    <span className="text-[13.5px] font-extrabold text-white group-hover:text-[#00e5ff]">
                       {s.team.name}
                     </span>
                   </div>
                 </td>
-                <td className="tabular px-3 py-3 text-center text-[12px] text-white/40">{fmtNum(s.played)}</td>
-                <td className="tabular px-3 py-3 text-center text-[12px] font-bold text-white/70">{fmtNum(s.won)}</td>
-                <td className="tabular px-3 py-3 text-center text-[12px] text-white/40">{fmtNum(s.drawn)}</td>
-                <td className="tabular px-3 py-3 text-center text-[12px] text-white/40">{fmtNum(s.lost)}</td>
-                <td className="tabular px-3 py-3 text-center text-[12px] text-white/40">
+                <td className="tabular px-3 py-3 text-center text-[13px] font-bold text-[#cbd5e1]">{fmtNum(s.played)}</td>
+                <td className="tabular px-3 py-3 text-center text-[13px] font-extrabold text-white">{fmtNum(s.won)}</td>
+                <td className="tabular px-3 py-3 text-center text-[13px] font-bold text-[#cbd5e1]">{fmtNum(s.drawn)}</td>
+                <td className="tabular px-3 py-3 text-center text-[13px] font-bold text-[#cbd5e1]">{fmtNum(s.lost)}</td>
+                <td className="tabular px-3 py-3 text-center text-[13px] font-bold text-[#cbd5e1]">
                   {fmtNum(s.goalsFor)}:{fmtNum(s.goalsAgainst)}
                 </td>
                 <td className={cn(
-                  "tabular px-3 py-3 text-center text-[12px] font-bold",
-                  gd > 0 ? "text-emerald-400" : gd < 0 ? "text-red-400" : "text-white/40"
+                  "tabular px-3 py-3 text-center text-[13px] font-black",
+                  gd > 0 ? "text-emerald-400" : gd < 0 ? "text-[#ff1e46]" : "text-white"
                 )}>
                   {gd > 0 ? "+" : ""}{fmtNum(gd)}
                 </td>
@@ -159,7 +159,9 @@ export function StandingsTable({
                   </td>
                 )}
                 <td className="tabular py-3 pr-5 text-center font-black text-[16px] text-white">
-                  {fmtNum(s.points)}
+                  <span className="inline-block px-2.5 py-0.5 rounded bg-[#ff1e46]/25 border border-[#ff1e46]/50 shadow-sm">
+                    {fmtNum(s.points)}
+                  </span>
                 </td>
               </tr>
             );
@@ -168,15 +170,15 @@ export function StandingsTable({
       </table>
 
       {/* Zone legend */}
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 border-t border-white/[0.06] px-5 py-2.5">
+      <div className="flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-white/10 px-5 py-3 bg-[#060914]">
         {[
           { color: "#F59E0B", label: "Champions" },
           { color: "#22C55E", label: "UCL Qualification" },
           { color: "#3B82F6", label: "UEL Qualification" },
           { color: "#EF4444", label: "Relegation" },
         ].map(({ color, label }) => (
-          <span key={label} className="flex items-center gap-1.5 text-[10px] text-white/35">
-            <span className="h-2 w-2 rounded-full" style={{ backgroundColor: color }} />
+          <span key={label} className="flex items-center gap-2 text-[11px] font-bold text-white">
+            <span className="h-2.5 w-2.5 rounded-full shadow-sm" style={{ backgroundColor: color }} />
             {label}
           </span>
         ))}

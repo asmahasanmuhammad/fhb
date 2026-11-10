@@ -114,11 +114,11 @@ export function CommunityView() {
         <div className="min-w-0 space-y-4 lg:col-span-8">
           {/* Composer / login prompt */}
           {user ? (
-            <div className="reveal edge-lit rounded-xl border border-border bg-card p-4 sm:p-5">
+            <div className="reveal rounded-xl border border-white/15 bg-[#0b101d] p-4 sm:p-5 shadow-lg">
               <div className="flex gap-3">
-                <Avatar className="h-10 w-10 shrink-0 border">
+                <Avatar className="h-10 w-10 shrink-0 border border-white/20">
                   <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
-                  <AvatarFallback className="bg-primary/15 text-sm font-bold text-primary">
+                  <AvatarFallback className="bg-red-600/30 text-sm font-black text-red-400">
                     {user.name.slice(0, 2)}
                   </AvatarFallback>
                 </Avatar>
@@ -129,7 +129,7 @@ export function CommunityView() {
                     placeholder={`${user.name}, what is your take on today's football?`}
                     rows={3}
                     maxLength={600}
-                    className="w-full resize-none rounded-lg border border-border bg-background p-3 text-sm leading-relaxed outline-none transition-colors placeholder:text-muted-foreground focus:border-primary/60 focus:ring-2 focus:ring-primary/20"
+                    className="w-full resize-none rounded-lg border border-white/20 bg-[#06080f] p-3 text-sm font-medium text-white leading-relaxed outline-none transition-colors placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50"
                     aria-label="Write a post"
                   />
                   <div className="mt-3 flex flex-wrap items-center justify-between gap-2.5">
@@ -139,10 +139,10 @@ export function CommunityView() {
                           key={tag}
                           onClick={() => setMatchTag((t) => (t === tag ? null : tag))}
                           className={cn(
-                            "rounded-md border px-2.5 py-1 text-[10.5px] font-bold transition-colors",
+                            "rounded-md border px-2.5 py-1 text-[11px] font-black transition-colors",
                             matchTag === tag
-                              ? "border-primary/50 bg-primary/15 text-primary"
-                              : "border-border text-muted-foreground hover:border-primary/35 hover:text-foreground"
+                              ? "border-red-500 bg-red-600/25 text-red-300 shadow-sm"
+                              : "border-white/15 bg-white/5 text-slate-300 hover:border-red-500/50 hover:text-white"
                           )}
                           aria-pressed={matchTag === tag}
                         >
@@ -151,12 +151,12 @@ export function CommunityView() {
                       ))}
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="tabular text-[10.5px] text-muted-foreground">{fmtNum(content.length)}/600</span>
+                      <span className="tabular text-[11px] font-semibold text-slate-400">{fmtNum(content.length)}/600</span>
                       <Button
                         size="sm"
                         onClick={() => createPost.mutate()}
                         disabled={!content.trim() || createPost.isPending}
-                        className="sheen gap-1.5 bg-primary px-5 font-bold"
+                        className="sheen gap-1.5 bg-red-600 hover:bg-red-500 text-white px-5 font-black shadow-md shadow-red-600/30"
                       >
                         <PenLine className="h-3.5 w-3.5" aria-hidden />
                         {createPost.isPending ? "Posting..." : "Post"}
@@ -167,17 +167,17 @@ export function CommunityView() {
               </div>
             </div>
           ) : (
-            <div className="reveal flex flex-wrap items-center gap-4 rounded-xl border border-dashed border-primary/35 bg-primary/[0.05] p-5">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+            <div className="reveal flex flex-wrap items-center gap-4 rounded-xl border border-dashed border-red-500/40 bg-[#0b101d] p-5 shadow-lg">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-red-600/20 text-red-400 border border-red-500/30">
                 <LogIn className="h-5 w-5" aria-hidden />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-foreground">Join the conversation</p>
-                <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+                <p className="text-sm font-black text-white">Join the conversation</p>
+                <p className="mt-0.5 text-xs font-medium leading-relaxed text-slate-300">
                   Log in to post your take, like matchday reactions and reply to other fans.
                 </p>
               </div>
-              <Button onClick={() => navigate({ name: "auth" })} className="sheen shrink-0 gap-1.5 bg-primary font-bold">
+              <Button onClick={() => navigate({ name: "auth" })} className="sheen shrink-0 gap-1.5 bg-red-600 hover:bg-red-500 text-white font-black shadow-md shadow-red-600/30">
                 <LogIn className="h-4 w-4" aria-hidden /> Log In
               </Button>
             </div>
@@ -237,7 +237,7 @@ export function CommunityView() {
             <div className="space-y-4">
               {visiblePosts.map((post, i) => (
                 <div key={post.id} className="space-y-4">
-                  <article className="reveal card-lift overflow-hidden rounded-xl border border-border bg-card">
+                  <article className="reveal overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-lg">
                     <div className="p-4 sm:p-5">
                       {/* Author row */}
                       <div className="flex items-center gap-3">
@@ -246,31 +246,31 @@ export function CommunityView() {
                           aria-label={`${post.author.name} profile`}
                           className="shrink-0"
                         >
-                          <Avatar className="h-10 w-10 border">
+                          <Avatar className="h-10 w-10 border border-white/20">
                             <AvatarImage src={post.author.avatarUrl ?? undefined} alt={post.author.name} />
-                            <AvatarFallback className="bg-primary/15 text-sm font-bold text-primary">
+                            <AvatarFallback className="bg-red-600/30 text-sm font-black text-red-400">
                               {post.author.name.slice(0, 2)}
                             </AvatarFallback>
                           </Avatar>
                         </button>
                         <div className="min-w-0 flex-1">
-                          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-bold">
+                          <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-sm font-black text-white">
                             <button
                               onClick={() => navigate({ name: "profile", username: post.author.username })}
-                              className="truncate transition-colors hover:text-primary"
+                              className="truncate transition-colors hover:text-red-400"
                             >
                               {post.author.name}
                             </button>
                             {post.author.isPremium && (
-                              <Crown className="h-3.5 w-3.5 shrink-0 text-fhb-gold" aria-label="Premium member" />
+                              <Crown className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-label="Premium member" />
                             )}
                             {post.author.role === "CREATOR" && (
-                              <span className="rounded bg-fhb-red/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.06em] text-fhb-red">
+                              <span className="rounded bg-red-600/25 border border-red-500/40 px-1.5 py-0.5 text-[9px] font-black uppercase tracking-[0.06em] text-red-300">
                                 Creator
                               </span>
                             )}
                           </p>
-                          <p className="truncate text-[11px] text-muted-foreground">
+                          <p className="truncate text-[11px] font-semibold text-slate-400">
                             @{post.author.username}
                             <span className="mx-1.5" aria-hidden>
                               ·
@@ -279,41 +279,41 @@ export function CommunityView() {
                           </p>
                         </div>
                         {post.matchTag && (
-                          <span className="hidden shrink-0 rounded-md border border-primary/25 bg-primary/10 px-2 py-1 text-[10.5px] font-bold text-primary sm:inline-block">
+                          <span className="hidden shrink-0 rounded-md border border-red-500/40 bg-red-600/20 px-2 py-1 text-[11px] font-black text-red-300 sm:inline-block">
                             #{post.matchTag}
                           </span>
                         )}
                       </div>
 
                       {/* Content */}
-                      <p className="mt-3.5 whitespace-pre-line break-words text-sm leading-relaxed text-foreground/90">
+                      <p className="mt-3.5 whitespace-pre-line break-words text-[14px] font-medium leading-relaxed text-white">
                         {post.content}
                       </p>
                       {post.matchTag && (
-                        <span className="mt-3 inline-block rounded-md border border-primary/25 bg-primary/10 px-2 py-1 text-[10.5px] font-bold text-primary sm:hidden">
+                        <span className="mt-3 inline-block rounded-md border border-red-500/40 bg-red-600/20 px-2 py-1 text-[10.5px] font-black text-red-300 sm:hidden">
                           #{post.matchTag}
                         </span>
                       )}
                     </div>
 
                     {/* Engagement row */}
-                    <div className="flex items-center gap-1.5 border-t border-border/60 px-3 py-2">
+                    <div className="flex items-center gap-1.5 border-t border-white/10 bg-[#06080f] px-3 py-2">
                       <LikeButton targetType="POST" targetId={post.id} initialCount={post.likeCount} variant="inline" />
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setOpenComments(openComments === post.id ? null : post.id)}
                         aria-expanded={openComments === post.id}
-                        className={cn("gap-1.5", openComments === post.id && "text-primary")}
+                        className={cn("gap-1.5 text-slate-300 hover:text-white hover:bg-white/5", openComments === post.id && "text-red-400 bg-red-600/10")}
                       >
                         <MessageCircle className="h-4 w-4" aria-hidden />
-                        <span className="tabular">{fmtCompact(post.commentCount)}</span>
-                        <span className="hidden sm:inline">{post.commentCount === 1 ? "comment" : "comments"}</span>
+                        <span className="tabular font-black">{fmtCompact(post.commentCount)}</span>
+                        <span className="hidden sm:inline font-bold">{post.commentCount === 1 ? "comment" : "comments"}</span>
                       </Button>
                     </div>
 
                     {openComments === post.id && (
-                      <div className="border-t border-border/60 bg-background/40 p-4 sm:p-5">
+                      <div className="border-t border-white/10 bg-[#080c16] p-4 sm:p-5">
                         <CommentSection targetType="POST" targetId={post.id} />
                       </div>
                     )}
@@ -335,12 +335,12 @@ export function CommunityView() {
         <aside className="min-w-0 space-y-4 lg:col-span-4" aria-label="Community side rail">
           {/* Creators to follow */}
           {suggested.length > 0 && (
-            <div className="reveal overflow-hidden rounded-xl border border-border bg-card">
-              <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-                <Sparkles className="h-3.5 w-3.5 text-fhb-gold" aria-hidden />
+            <div className="reveal overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-lg">
+              <p className="flex items-center gap-2 border-b border-white/15 bg-[#06080f] px-4 py-3 text-[11px] font-black uppercase tracking-[0.1em] text-white">
+                <Sparkles className="h-3.5 w-3.5 text-amber-400" aria-hidden />
                 Creators to follow
               </p>
-              <div className="divide-y divide-border/60">
+              <div className="divide-y divide-white/10">
                 {suggested.map((s) => (
                   <SuggestedCreator key={s.id} creator={s} />
                 ))}
@@ -349,31 +349,31 @@ export function CommunityView() {
           )}
 
           {/* Trending hashtags */}
-          <div className="reveal overflow-hidden rounded-xl border border-border bg-card">
-            <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-              <Hash className="h-3.5 w-3.5 text-primary" aria-hidden />
+          <div className="reveal overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-lg">
+            <p className="flex items-center gap-2 border-b border-white/15 bg-[#06080f] px-4 py-3 text-[11px] font-black uppercase tracking-[0.1em] text-white">
+              <Hash className="h-3.5 w-3.5 text-red-500" aria-hidden />
               Trending hashtags
             </p>
-            <div className="divide-y divide-border/60">
+            <div className="divide-y divide-white/10">
               {trending.map((t) => (
                 <button
                   key={t.tag}
                   onClick={() => setActiveTag((cur) => (cur === t.tag ? null : t.tag))}
                   aria-pressed={activeTag === t.tag}
                   className={cn(
-                    "flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]",
-                    activeTag === t.tag && "bg-primary/[0.07]"
+                    "flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.05]",
+                    activeTag === t.tag && "bg-red-600/15"
                   )}
                 >
                   <span
                     className={cn(
-                      "min-w-0 flex-1 truncate text-xs font-bold",
-                      activeTag === t.tag ? "text-primary" : "text-foreground/90"
+                      "min-w-0 flex-1 truncate text-xs font-black",
+                      activeTag === t.tag ? "text-red-400" : "text-white"
                     )}
                   >
                     #{t.tag}
                   </span>
-                  <span className="tabular shrink-0 text-[10.5px] font-semibold text-muted-foreground">
+                  <span className="tabular shrink-0 text-[10.5px] font-semibold text-slate-400">
                     {fmtNum(t.count)} {t.count === 1 ? "post" : "posts"}
                   </span>
                 </button>
@@ -387,27 +387,27 @@ export function CommunityView() {
           </div>
 
           {/* Community guidelines */}
-          <div className="reveal edge-lit rounded-xl border border-border bg-card p-5">
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-              <ShieldCheck className="h-4 w-4 text-primary" aria-hidden />
+          <div className="reveal rounded-xl border border-white/15 bg-[#0b101d] p-5 shadow-lg">
+            <p className="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.1em] text-white">
+              <ShieldCheck className="h-4 w-4 text-emerald-400" aria-hidden />
               Community guidelines
             </p>
             <ul className="mt-3.5 space-y-3">
               {GUIDELINES.map((g) => (
                 <li key={g.title}>
-                  <p className="text-xs font-bold text-foreground/90">{g.title}</p>
-                  <p className="mt-0.5 text-[11.5px] leading-relaxed text-muted-foreground">{g.body}</p>
+                  <p className="text-xs font-black text-white">{g.title}</p>
+                  <p className="mt-0.5 text-[11.5px] font-medium leading-relaxed text-slate-300">{g.body}</p>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Become a creator */}
-          <div className="reveal gold-panel rounded-xl border border-fhb-gold/25 p-5">
-            <p className="flex items-center gap-2 text-sm font-bold text-fhb-gold">
+          <div className="reveal rounded-xl border border-amber-500/30 bg-[#0b101d] p-5 shadow-lg">
+            <p className="flex items-center gap-2 text-sm font-black text-amber-400">
               <Megaphone className="h-4 w-4" aria-hidden /> Become a creator
             </p>
-            <p className="mt-1.5 text-[11.5px] leading-relaxed text-muted-foreground">
+            <p className="mt-1.5 text-[12px] font-medium leading-relaxed text-slate-300">
               Upload shorts, grow your following and earn from views. The creator role is granted from the admin panel in
               this demo.
             </p>
@@ -451,21 +451,21 @@ function SuggestedCreator({ creator }: { creator: SafeUser }) {
   const following = data?.following ?? false;
 
   return (
-    <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/[0.03]">
+    <div className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/[0.05]">
       <button onClick={() => navigate({ name: "profile", username: creator.username })} aria-label={`${creator.name} profile`}>
-        <Avatar className="h-10 w-10 border">
+        <Avatar className="h-10 w-10 border border-white/15">
           <AvatarImage src={creator.avatarUrl ?? undefined} alt={creator.name} />
-          <AvatarFallback className="bg-primary/15 text-sm font-bold text-primary">{creator.name.slice(0, 2)}</AvatarFallback>
+          <AvatarFallback className="bg-red-600/30 text-sm font-black text-red-400">{creator.name.slice(0, 2)}</AvatarFallback>
         </Avatar>
       </button>
       <div className="min-w-0 flex-1">
         <button
           onClick={() => navigate({ name: "profile", username: creator.username })}
-          className="block max-w-full truncate text-xs font-bold text-foreground transition-colors hover:text-primary"
+          className="block max-w-full truncate text-xs font-black text-white transition-colors hover:text-red-400"
         >
           {creator.name}
         </button>
-        <p className="tabular truncate text-[10.5px] text-muted-foreground">
+        <p className="tabular truncate text-[11px] font-semibold text-slate-400">
           {fmtCompact(creator.followerCount ?? 0)} followers
         </p>
       </div>
@@ -475,7 +475,10 @@ function SuggestedCreator({ creator }: { creator: SafeUser }) {
           variant={following ? "secondary" : "outline"}
           onClick={() => followMutation.mutate()}
           disabled={followMutation.isPending}
-          className="h-8 gap-1.5 px-3 text-[11px] font-bold"
+          className={cn(
+            "h-8 gap-1.5 px-3 text-[11px] font-black rounded",
+            following ? "bg-white/10 text-white border-white/20" : "bg-red-600 text-white border-transparent hover:bg-red-500"
+          )}
         >
           {following ? <UserCheck className="h-3 w-3" aria-hidden /> : <UserPlus className="h-3 w-3" aria-hidden />}
           {following ? "Following" : "Follow"}

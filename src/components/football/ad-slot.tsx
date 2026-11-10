@@ -179,28 +179,28 @@ function LeaderboardAd({ ad, className }: { ad: typeof DEMO_ADS.HEADER_BANNER[0]
     <div
       role="complementary"
       aria-label="Advertisement"
-      className={cn("relative overflow-hidden border border-white/[0.07] ad-creative", className)}
-      style={{ background: ad.bg || "linear-gradient(135deg, #0d0d10, #1a1a1e)" }}
+      className={cn("relative overflow-hidden border border-white/15 rounded-md shadow-lg shadow-black/40 ad-creative", className)}
+      style={{ background: ad.bg || "linear-gradient(135deg, #070a14, #101728)" }}
     >
       {/* Ad label */}
-      <span className="absolute left-2 top-1 z-20 text-[8px] font-bold uppercase tracking-widest text-white/25">
+      <span className="absolute left-2.5 top-1 z-20 text-[9px] font-black uppercase tracking-widest text-slate-300">
         Ad · Sponsored
       </span>
       {ad.badge && (
-        <span className="absolute right-2 top-1.5 z-20 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-widest text-white rounded-sm"
+        <span className="absolute right-2.5 top-1.5 z-20 px-2 py-0.5 text-[8.5px] font-black uppercase tracking-widest text-white rounded shadow-sm"
           style={{ backgroundColor: ad.color }}>
           {ad.badge}
         </span>
       )}
 
-      <div className="flex h-full items-center gap-4 px-5 py-2">
+      <div className="flex h-full items-center gap-4 px-5 py-2.5">
         <AdMonogram brand={ad.brand} color={ad.color} size="md" />
         <div className="min-w-0 flex-1">
-          <p className="text-[13px] font-black text-white truncate">{ad.tagline}</p>
-          <p className="text-[11px] text-white/50 truncate mt-0.5">{ad.body}</p>
+          <p className="text-[13.5px] font-black text-white truncate drop-shadow-sm">{ad.tagline}</p>
+          <p className="text-[11.5px] text-slate-300 font-medium truncate mt-0.5">{ad.body}</p>
         </div>
         <button
-          className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-[11px] font-black text-white transition-all hover:brightness-110 sheen"
+          className="shrink-0 flex items-center gap-1.5 px-4 py-2 text-[11px] font-black text-white transition-all hover:brightness-110 sheen rounded shadow"
           style={{ backgroundColor: ad.color }}
         >
           {ad.cta} <ArrowUpRight className="h-3.5 w-3.5" />
@@ -216,27 +216,27 @@ function SidebarAd({ ad, tall, className }: { ad: typeof DEMO_ADS.SIDEBAR[0]; ta
     <div
       role="complementary"
       aria-label="Advertisement"
-      className={cn("relative overflow-hidden border border-white/[0.07] ad-creative flex flex-col items-center justify-center text-center", tall ? "min-h-[400px]" : "min-h-[220px]", className)}
-      style={{ background: ad.bg || "linear-gradient(170deg, #0d0d10, #1a1a1e)" }}
+      className={cn("relative overflow-hidden border border-white/15 rounded-md shadow-xl ad-creative flex flex-col items-center justify-center text-center", tall ? "min-h-[400px]" : "min-h-[220px]", className)}
+      style={{ background: ad.bg || "linear-gradient(170deg, #070a14, #101728)" }}
     >
-      <span className="absolute left-2 top-1.5 z-20 text-[8px] font-bold uppercase tracking-widest text-white/25">Sponsored</span>
+      <span className="absolute left-2.5 top-2 z-20 text-[9px] font-black uppercase tracking-widest text-slate-300">Sponsored</span>
 
       {/* Brand glow */}
       <div className="absolute inset-0 pointer-events-none" style={{
-        background: `radial-gradient(60% 50% at 50% 0%, ${ad.color}20, transparent 70%)`,
+        background: `radial-gradient(60% 50% at 50% 0%, ${ad.color}25, transparent 70%)`,
       }} />
 
       <div className="relative z-10 flex flex-col items-center px-6 py-6">
         <AdMonogram brand={ad.brand} color={ad.color} size="lg" />
-        <p className="mt-4 text-[15px] font-black text-white leading-tight">{ad.tagline}</p>
-        <p className="mt-2 text-[11.5px] text-white/50 leading-relaxed">{ad.body}</p>
+        <p className="mt-4 text-[15px] font-black text-white leading-tight drop-shadow-sm">{ad.tagline}</p>
+        <p className="mt-2 text-[12px] text-slate-200 font-medium leading-relaxed">{ad.body}</p>
         <button
-          className="mt-5 flex items-center gap-1.5 px-6 py-2.5 text-[12px] font-black text-white transition-all hover:brightness-110 sheen"
+          className="mt-5 flex items-center gap-1.5 px-6 py-2.5 text-[12px] font-black text-white transition-all hover:brightness-110 sheen rounded shadow-lg"
           style={{ backgroundColor: ad.color }}
         >
           {ad.cta} <ArrowUpRight className="h-3.5 w-3.5" />
         </button>
-        <p className="mt-3 text-[9px] text-white/20 uppercase tracking-widest">Advertisement</p>
+        <p className="mt-3 text-[9.5px] text-slate-400 uppercase tracking-widest font-semibold">Advertisement</p>
       </div>
     </div>
   );
@@ -248,15 +248,15 @@ function MobileBannerAd({ ad, className }: { ad: typeof DEMO_ADS.MOBILE_BANNER[0
     <div
       role="complementary"
       aria-label="Advertisement"
-      className={cn("relative overflow-hidden border border-white/[0.07] ad-creative flex items-center", className)}
-      style={{ background: "linear-gradient(90deg, #0d0d10, #1a1a1e)" }}
+      className={cn("relative overflow-hidden border border-white/15 rounded-md shadow ad-creative flex items-center", className)}
+      style={{ background: "linear-gradient(90deg, #070a14, #101728)" }}
     >
-      <span className="absolute left-1 top-0.5 z-10 text-[7px] font-bold uppercase tracking-widest text-white/20">Ad</span>
+      <span className="absolute left-1.5 top-0.5 z-10 text-[8px] font-black uppercase tracking-widest text-slate-300">Ad</span>
       <div className="flex flex-1 items-center gap-3 px-4 py-2">
         <AdMonogram brand={ad.brand} color={ad.color} size="sm" />
         <p className="flex-1 text-[12px] font-bold text-white truncate">{ad.tagline}</p>
         <button
-          className="shrink-0 px-3 py-1 text-[10px] font-black text-white"
+          className="shrink-0 px-3 py-1 text-[10px] font-black text-white rounded"
           style={{ backgroundColor: ad.color }}
         >
           {ad.cta}
@@ -272,30 +272,30 @@ function NativeAd({ ad, className }: { ad: typeof DEMO_ADS.IN_FEED[0]; className
     <div
       role="complementary"
       aria-label="Advertisement"
-      className={cn("relative overflow-hidden border border-white/[0.07] ad-creative", className)}
-      style={{ background: "linear-gradient(135deg, #0d0d10, #161619)" }}
+      className={cn("relative overflow-hidden border border-white/15 rounded-md shadow-md ad-creative", className)}
+      style={{ background: "linear-gradient(135deg, #070a14, #101728)" }}
     >
       {/* Left accent */}
-      <div className="absolute inset-y-0 left-0 w-[3px]" style={{ backgroundColor: ad.color }} />
+      <div className="absolute inset-y-0 left-0 w-[4px]" style={{ backgroundColor: ad.color }} />
 
-      <span className="absolute right-2 top-2 text-[8.5px] font-bold uppercase tracking-widest text-white/25">
+      <span className="absolute right-3 top-2.5 text-[9px] font-black uppercase tracking-widest text-slate-300">
         Sponsored
       </span>
       {ad.badge && (
-        <span className="absolute left-4 top-2 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide text-white"
+        <span className="absolute left-4 top-2 px-2 py-0.5 text-[8.5px] font-black uppercase tracking-wide text-white rounded"
           style={{ backgroundColor: ad.color }}>
           {ad.badge}
         </span>
       )}
 
-      <div className="flex items-center gap-4 px-5 py-3.5">
+      <div className="flex items-center gap-4 px-5 py-4">
         <AdMonogram brand={ad.brand} color={ad.color} size="md" />
         <div className="min-w-0 flex-1">
-          <p className="text-[13.5px] font-black text-white leading-tight">{ad.tagline}</p>
-          {ad.body && <p className="mt-0.5 text-[11.5px] text-white/45 truncate">{ad.body}</p>}
+          <p className="text-[14px] font-black text-white leading-tight drop-shadow-sm">{ad.tagline}</p>
+          {ad.body && <p className="mt-1 text-[12px] text-slate-300 font-medium truncate">{ad.body}</p>}
         </div>
         <button
-          className="shrink-0 flex items-center gap-1 px-3 py-1.5 text-[11px] font-black text-white"
+          className="shrink-0 flex items-center gap-1 px-3.5 py-1.5 text-[11px] font-black text-white rounded shadow"
           style={{ backgroundColor: ad.color }}
         >
           {ad.cta}
@@ -313,23 +313,23 @@ function StickyFooterAd({ ad }: { ad: typeof DEMO_ADS.STICKY_FOOTER[0] }) {
     <div
       role="complementary"
       aria-label="Advertisement"
-      className="fixed bottom-14 inset-x-0 z-40 border-t border-white/[0.1] bg-[#0d0d10]/96 backdrop-blur-xl lg:hidden ad-creative"
+      className="fixed bottom-14 inset-x-0 z-40 border-t border-white/20 bg-[#070a14]/98 backdrop-blur-xl lg:hidden ad-creative shadow-2xl"
     >
       <div className="flex items-center gap-3 px-4 py-2.5">
         <AdMonogram brand={ad.brand} color={ad.color} size="sm" />
         <div className="min-w-0 flex-1">
           <p className="text-[12px] font-black text-white truncate">{ad.tagline}</p>
-          <p className="text-[10px] text-white/40 truncate">{ad.body}</p>
+          <p className="text-[10px] text-slate-300 truncate">{ad.body}</p>
         </div>
         <button
-          className="shrink-0 px-3 py-1.5 text-[11px] font-black text-white"
+          className="shrink-0 px-3 py-1.5 text-[11px] font-black text-white rounded"
           style={{ backgroundColor: ad.color }}
         >
           {ad.cta}
         </button>
         <button
           onClick={() => setDismissed(true)}
-          className="ml-1 text-white/30 hover:text-white/70 text-xs font-bold"
+          className="ml-1 text-white hover:text-white/80 text-xs font-bold p-1"
           aria-label="Dismiss ad"
         >
           ✕

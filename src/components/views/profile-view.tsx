@@ -166,34 +166,34 @@ export function ProfileView({ username }: { username?: string }) {
   return (
     <div className="mx-auto w-full max-w-[1080px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       {/* ═══ Profile header card ═══ */}
-      <header className="reveal noise stadium-panel relative overflow-hidden rounded-xl border border-border/70">
+      <header className="reveal relative overflow-hidden rounded-xl border border-white/15 bg-[#0b101d] shadow-xl">
         <span
           aria-hidden
           className={cn(
             "block h-1 w-full",
             user.isPremium
-              ? "bg-gradient-to-r from-fhb-gold/60 via-fhb-gold to-fhb-gold/60"
-              : "bg-gradient-to-r from-primary/50 via-primary to-primary/50"
+              ? "bg-gradient-to-r from-amber-400 via-amber-300 to-amber-500 shadow-[0_0_12px_rgba(251,191,36,0.5)]"
+              : "bg-gradient-to-r from-red-600 via-red-500 to-red-600 shadow-[0_0_12px_rgba(255,30,70,0.5)]"
           )}
         />
-        <div className="pitch-pattern p-5 sm:p-7">
+        <div className="p-5 sm:p-7">
           <div className="flex flex-wrap items-start gap-5">
             {/* Avatar */}
             <div className="relative shrink-0">
               <Avatar
                 className={cn(
-                  "h-20 w-20 border-2 sm:h-24 sm:w-24",
-                  user.isPremium ? "border-fhb-gold/70" : "border-primary/40"
+                  "h-20 w-20 border-2 sm:h-24 sm:w-24 shadow-md",
+                  user.isPremium ? "border-amber-400" : "border-red-500"
                 )}
               >
                 <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
-                <AvatarFallback className="bg-primary/15 font-display text-2xl font-bold text-primary">
+                <AvatarFallback className="bg-red-600/30 font-display text-2xl font-black text-red-400">
                   {user.name.slice(0, 2)}
                 </AvatarFallback>
               </Avatar>
               {user.isPremium && (
                 <span
-                  className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-fhb-gold text-black"
+                  className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-2 border-[#0b101d] bg-amber-400 text-black shadow"
                   title="Premium member"
                 >
                   <Crown className="h-3.5 w-3.5" aria-hidden />
@@ -209,7 +209,7 @@ export function ProfileView({ username }: { username?: string }) {
                     value={editForm.name}
                     onChange={(e) => setEditForm((f) => ({ ...f, name: e.target.value }))}
                     placeholder="Name"
-                    className="w-full max-w-xs rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
+                    className="w-full max-w-xs rounded-lg border border-white/20 bg-[#06080f] px-3 py-2 text-sm font-semibold text-white outline-none transition-colors focus:border-red-500"
                     aria-label="Edit name"
                   />
                   <textarea
@@ -217,7 +217,7 @@ export function ProfileView({ username }: { username?: string }) {
                     onChange={(e) => setEditForm((f) => ({ ...f, bio: e.target.value }))}
                     placeholder="Bio..."
                     rows={2}
-                    className="w-full max-w-md resize-none rounded-lg border border-border bg-background px-3 py-2 text-sm outline-none transition-colors focus:border-primary"
+                    className="w-full max-w-md resize-none rounded-lg border border-white/20 bg-[#06080f] px-3 py-2 text-sm font-semibold text-white outline-none transition-colors focus:border-red-500"
                     aria-label="Edit bio"
                   />
                   <div className="flex gap-2">
@@ -228,11 +228,11 @@ export function ProfileView({ username }: { username?: string }) {
                         setEditing(false);
                         toast({ title: "Profile updated" });
                       }}
-                      className="gap-1.5 font-semibold"
+                      className="gap-1.5 font-black bg-red-600 hover:bg-red-500 text-white"
                     >
                       <Check className="h-3.5 w-3.5" aria-hidden /> Save
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => setEditing(false)} className="gap-1.5 font-semibold">
+                    <Button size="sm" variant="outline" onClick={() => setEditing(false)} className="gap-1.5 font-bold border-white/20 text-slate-300">
                       <X className="h-3.5 w-3.5" aria-hidden /> Cancel
                     </Button>
                   </div>
@@ -240,36 +240,36 @@ export function ProfileView({ username }: { username?: string }) {
               ) : (
                 <>
                   <div className="flex flex-wrap items-center gap-2">
-                    <h1 className="font-display text-2xl font-bold leading-tight tracking-[-0.015em] text-foreground sm:text-[1.7rem]">
+                    <h1 className="font-display text-2xl font-black leading-tight text-white drop-shadow-sm sm:text-[1.8rem]">
                       {user.name}
                     </h1>
                     {user.isPremium && (
-                      <span className="flex items-center gap-1 rounded-md bg-fhb-gold/15 px-2 py-0.5 text-[10px] font-bold text-fhb-gold">
+                      <span className="flex items-center gap-1 rounded-md bg-amber-400/20 border border-amber-400/40 px-2 py-0.5 text-[10.5px] font-black text-amber-300">
                         <Crown className="h-3 w-3" aria-hidden /> Premium
                       </span>
                     )}
                     {user.role === "ADMIN" && (
-                      <span className="rounded-md bg-fhb-red/15 px-2 py-0.5 text-[10px] font-bold text-fhb-red">Admin</span>
+                      <span className="rounded-md bg-red-600/25 border border-red-500/40 px-2 py-0.5 text-[10.5px] font-black text-red-300">Admin</span>
                     )}
                     {user.role === "CREATOR" && (
-                      <span className="flex items-center gap-1 rounded-md bg-primary/15 px-2 py-0.5 text-[10px] font-bold text-primary">
+                      <span className="flex items-center gap-1 rounded-md bg-emerald-600/25 border border-emerald-500/40 px-2 py-0.5 text-[10.5px] font-black text-emerald-300">
                         <BadgeCheck className="h-3 w-3" aria-hidden /> Creator
                       </span>
                     )}
                   </div>
-                  <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs text-muted-foreground">
+                  <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs font-semibold text-slate-300">
                     <span>@{user.username}</span>
                     {joinedLine && (
                       <>
                         <span aria-hidden>·</span>
                         <span className="flex items-center gap-1">
-                          <CalendarDays className="h-3 w-3" aria-hidden />
+                          <CalendarDays className="h-3 w-3 text-red-400" aria-hidden />
                           Member since {joinedLine}
                         </span>
                       </>
                     )}
                   </p>
-                  {user.bio && <p className="mt-2.5 max-w-lg text-sm leading-relaxed text-foreground/85">{user.bio}</p>}
+                  {user.bio && <p className="mt-2.5 max-w-lg text-[13.5px] font-medium leading-relaxed text-slate-200">{user.bio}</p>}
                 </>
               )}
             </div>
@@ -286,23 +286,23 @@ export function ProfileView({ username }: { username?: string }) {
                         setEditForm({ name: user.name, bio: user.bio ?? "" });
                         setEditing(true);
                       }}
-                      className="gap-1.5 font-semibold"
+                      className="gap-1.5 font-black border-white/20 bg-white/5 text-white hover:bg-white/10"
                     >
                       <Pencil className="h-3.5 w-3.5" aria-hidden /> Edit Profile
                     </Button>
                   )}
                   {canManageContent && (
-                    <Button variant="outline" size="sm" onClick={() => navigate({ name: "upload" })} className="gap-1.5 font-semibold">
+                    <Button variant="outline" size="sm" onClick={() => navigate({ name: "upload" })} className="gap-1.5 font-black border-white/20 bg-white/5 text-white hover:bg-white/10">
                       <Upload className="h-3.5 w-3.5" aria-hidden /> Upload Short
                     </Button>
                   )}
                   {canManageContent && (
-                    <Button variant="outline" size="sm" onClick={() => navigate({ name: "earnings" })} className="gap-1.5 font-semibold">
+                    <Button variant="outline" size="sm" onClick={() => navigate({ name: "earnings" })} className="gap-1.5 font-black border-white/20 bg-white/5 text-white hover:bg-white/10">
                       <Wallet className="h-3.5 w-3.5" aria-hidden /> Earnings Dashboard
                     </Button>
                   )}
                   {me?.role === "ADMIN" && (
-                    <Button size="sm" onClick={() => navigate({ name: "admin" })} className="sheen gap-1.5 bg-primary font-bold">
+                    <Button size="sm" onClick={() => navigate({ name: "admin" })} className="sheen gap-1.5 bg-red-600 hover:bg-red-500 text-white font-black shadow-md shadow-red-600/30">
                       <LayoutGrid className="h-3.5 w-3.5" aria-hidden /> Admin Panel
                     </Button>
                   )}
@@ -312,7 +312,7 @@ export function ProfileView({ username }: { username?: string }) {
                   onClick={() => followMutation.mutate()}
                   disabled={followMutation.isPending}
                   variant={following ? "secondary" : "default"}
-                  className={cn("gap-1.5 px-5 font-bold", !following && "sheen bg-primary")}
+                  className={cn("gap-1.5 px-5 font-black", following ? "border border-white/20 bg-white/10 text-white" : "sheen bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-600/30")}
                 >
                   {following ? <UserCheck className="h-4 w-4" aria-hidden /> : <UserPlus className="h-4 w-4" aria-hidden />}
                   {following ? "Following" : "Follow"}
@@ -322,11 +322,11 @@ export function ProfileView({ username }: { username?: string }) {
           </div>
 
           {/* Stats strip */}
-          <dl className="mt-6 grid grid-cols-2 divide-x divide-border overflow-hidden rounded-lg border border-border bg-background/50 sm:grid-cols-4">
+          <dl className="mt-6 grid grid-cols-2 divide-x divide-white/10 overflow-hidden rounded-lg border border-white/15 bg-[#06080f] sm:grid-cols-4 shadow-inner">
             {stats.map(([v, l], i) => (
               <div key={l} className={cn("py-3.5 text-center", i === 0 && "sm:border-l-0")}>
-                <dd className="tabular font-display text-xl font-bold text-foreground">{v}</dd>
-                <dt className="mt-0.5 text-[10.5px] font-medium uppercase tracking-[0.08em] text-muted-foreground">{l}</dt>
+                <dd className="tabular font-display text-xl font-black text-white">{v}</dd>
+                <dt className="mt-0.5 text-[10.5px] font-black uppercase tracking-[0.08em] text-slate-300">{l}</dt>
               </div>
             ))}
           </dl>

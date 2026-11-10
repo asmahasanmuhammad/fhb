@@ -127,32 +127,32 @@ export function TacticalPitch({
         ];
 
   return (
-    <div className="w-full rounded-2xl border border-white/[0.08] bg-[#0c1220] p-4 sm:p-5 shadow-2xl overflow-hidden">
+    <div className="w-full rounded-2xl border border-white/15 bg-[#0b101d] p-4 sm:p-5 shadow-2xl overflow-hidden">
       {/* Tactical Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-white/[0.06]">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-white/10">
         <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-xs">
+          <div className="w-7 h-7 rounded-lg bg-red-600/20 border border-red-500/40 flex items-center justify-center text-xs">
             📐
           </div>
           <div>
             <h4 className="text-xs sm:text-sm font-black text-white tracking-wide uppercase font-condensed">
-              2D Tactical Pitch & Formation Board
+              2D Tactical Pitch &amp; Formation Board
             </h4>
-            <p className="text-[10px] text-slate-400">
+            <p className="text-[11px] text-slate-300 font-medium">
               {homeTeam.name} ({homeFormation}) vs {awayTeam.name} ({awayFormation})
             </p>
           </div>
         </div>
 
         {/* View Mode Switches */}
-        <div className="flex items-center gap-1.5 bg-slate-900/90 border border-white/[0.08] p-1 rounded-xl text-[11px] font-bold">
+        <div className="flex items-center gap-1.5 bg-[#06080f] border border-white/15 p-1 rounded-xl text-[11px] font-bold">
           <button
             onClick={() => setPitchMode("both")}
             className={cn(
               "px-2.5 py-1 rounded-lg transition-all cursor-pointer",
               pitchMode === "both"
-                ? "bg-emerald-500 text-slate-950 font-black shadow-sm"
-                : "text-slate-400 hover:text-white"
+                ? "bg-red-600 text-white font-black shadow-md shadow-red-600/30"
+                : "text-slate-300 hover:text-white"
             )}
           >
             22-Man (H2H)
@@ -162,8 +162,8 @@ export function TacticalPitch({
             className={cn(
               "px-2.5 py-1 rounded-lg transition-all cursor-pointer",
               pitchMode === "home"
-                ? "bg-rose-600 text-white font-black shadow-sm"
-                : "text-slate-400 hover:text-white"
+                ? "bg-red-600 text-white font-black shadow-md shadow-red-600/30"
+                : "text-slate-300 hover:text-white"
             )}
           >
             {homeTeam.shortName || homeTeam.initials || "HOME"}
@@ -174,7 +174,7 @@ export function TacticalPitch({
               "px-2.5 py-1 rounded-lg transition-all cursor-pointer",
               pitchMode === "away"
                 ? "bg-sky-500 text-slate-950 font-black shadow-sm"
-                : "text-slate-400 hover:text-white"
+                : "text-slate-300 hover:text-white"
             )}
           >
             {awayTeam.shortName || awayTeam.initials || "AWAY"}
@@ -183,7 +183,7 @@ export function TacticalPitch({
             onClick={() => setShowHeatmap(!showHeatmap)}
             className={cn(
               "px-2.5 py-1 rounded-lg transition-all flex items-center gap-1 cursor-pointer",
-              showHeatmap ? "bg-amber-500 text-slate-950 font-black" : "text-slate-400 hover:text-amber-400"
+              showHeatmap ? "bg-amber-400 text-slate-950 font-black" : "text-slate-300 hover:text-amber-400"
             )}
             title="Toggle Tactical Heatmap"
           >

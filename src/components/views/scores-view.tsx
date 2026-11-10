@@ -227,13 +227,13 @@ export function ScoresView() {
 
       {/* ── Sticky sub-nav: date rail + status tabs ─────────────── */}
       <div
-        className="sticky top-14 z-30 -mx-4 border-b border-white/[0.08] bg-[#0d0d10]/95 backdrop-blur-xl sm:-mx-6 sm:top-[60px] lg:top-[90px]"
+        className="sticky top-14 z-30 -mx-4 border-b border-white/15 bg-[#06080f]/95 backdrop-blur-2xl sm:-mx-6 sm:top-[60px] lg:top-[90px] shadow-lg"
         style={headerH != null ? { top: `${headerH}px` } : undefined}
       >
         <div className="flex flex-col gap-2 px-4 py-2 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
           {/* Date rail */}
           <div
-            className="no-scrollbar -mx-1 flex items-center gap-0.5 overflow-x-auto px-1"
+            className="no-scrollbar -mx-1 flex items-center gap-1 overflow-x-auto px-1"
             role="group"
             aria-label="Match date"
           >
@@ -244,25 +244,25 @@ export function ScoresView() {
                 aria-pressed={dayOffset === chip.offset}
                 title={chip.fullLabel}
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 px-3 py-2 text-[11px] font-black uppercase tracking-wider transition-colors",
+                  "flex shrink-0 items-center gap-1.5 rounded px-3 py-2 text-[11.5px] font-black uppercase tracking-wider transition-all",
                   dayOffset === chip.offset
-                    ? "bg-red-600 text-white"
-                    : "text-white/40 hover:bg-white/[0.04] hover:text-white"
+                    ? "bg-[#ff1e46] text-white shadow-[0_0_12px_rgba(255,30,70,0.5)]"
+                    : "text-white font-extrabold hover:bg-white/10 hover:text-white"
                 )}
               >
                 {chip.label}
                 {chip.count > 0 && (
                   <span
                     className={cn(
-                      "tabular px-1 text-[9px] font-mono",
-                      dayOffset === chip.offset ? "text-white/90" : "text-white/30"
+                      "tabular px-1.5 py-0.2 rounded text-[10px] font-mono font-bold",
+                      dayOffset === chip.offset ? "bg-black/30 text-white" : "bg-white/10 text-white"
                     )}
                   >
                     {fmtNum(chip.count)}
                   </span>
                 )}
                 {chip.offset === 0 && liveCount > 0 && (
-                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-400" aria-hidden />
+                  <span className="live-dot h-2 w-2 rounded-full bg-white shadow-[0_0_6px_#ffffff]" aria-hidden />
                 )}
               </button>
             ))}
@@ -270,7 +270,7 @@ export function ScoresView() {
 
           {/* Status filter tabs */}
           <div
-            className="no-scrollbar flex shrink-0 items-center gap-0 self-start overflow-x-auto border border-white/[0.08] bg-[#060608] lg:self-auto"
+            className="no-scrollbar flex shrink-0 items-center gap-1 self-start overflow-x-auto rounded border border-white/15 bg-[#050812] p-1 lg:self-auto"
             role="tablist"
             aria-label="Match status filter"
           >
@@ -281,21 +281,23 @@ export function ScoresView() {
                 aria-selected={tab === key}
                 onClick={() => setUserTab(key)}
                 className={cn(
-                  "flex shrink-0 items-center justify-center gap-1.5 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition-colors",
-                  tab === key ? "bg-red-600 text-white" : "text-white/40 hover:text-white"
+                  "flex shrink-0 items-center justify-center gap-1.5 rounded px-3.5 py-1.5 text-[11.5px] font-black uppercase tracking-wider transition-all",
+                  tab === key
+                    ? "bg-[#ff1e46] text-white shadow-[0_0_10px_rgba(255,30,70,0.5)]"
+                    : "text-white font-extrabold hover:text-[#00e5ff] hover:bg-white/10"
                 )}
               >
                 {key === "live" && liveCount > 0 && (
                   <span
-                    className={cn("h-1.5 w-1.5 shrink-0 rounded-full bg-white", tab !== "live" && "live-dot")}
+                    className={cn("h-2 w-2 shrink-0 rounded-full bg-white shadow-[0_0_6px_#ffffff]", tab !== "live" && "live-dot")}
                     aria-hidden
                   />
                 )}
                 {TAB_LABELS[key]}
                 <span
                   className={cn(
-                    "tabular text-[9.5px] font-mono",
-                    tab === key ? "text-white/90" : "text-white/30"
+                    "tabular text-[10px] font-mono font-bold ml-1",
+                    tab === key ? "text-white" : "text-[#cbd5e1]"
                   )}
                 >
                   ({fmtNum(counts[key])})
@@ -312,17 +314,17 @@ export function ScoresView() {
           {isLoading ? (
             <div className="space-y-4" aria-hidden>
               {[0, 1].map((i) => (
-                <div key={i} className="overflow-hidden rounded-xl border border-border bg-card">
-                  <div className="border-b border-border bg-muted/40 px-3.5 py-3">
-                    <Skeleton className="h-4 w-44 rounded-md" />
+                <div key={i} className="overflow-hidden rounded-md border border-white/10 bg-[#090d19]">
+                  <div className="border-b border-white/10 bg-[#050812] px-3.5 py-3">
+                    <Skeleton className="h-4 w-44 rounded-md bg-white/10" />
                   </div>
-                  <div className="divide-y divide-border/60">
+                  <div className="divide-y divide-white/10">
                     {[0, 1, 2].map((j) => (
                       <div key={j} className="flex items-center gap-3 px-4 py-3">
-                        <Skeleton className="h-9 w-10 rounded-md" />
+                        <Skeleton className="h-9 w-10 rounded-md bg-white/10" />
                         <div className="flex-1 space-y-2">
-                          <Skeleton className="h-3.5 w-2/3 rounded-md" />
-                          <Skeleton className="h-3.5 w-1/2 rounded-md" />
+                          <Skeleton className="h-3.5 w-2/3 rounded-md bg-white/10" />
+                          <Skeleton className="h-3.5 w-1/2 rounded-md bg-white/10" />
                         </div>
                       </div>
                     ))}
@@ -331,16 +333,16 @@ export function ScoresView() {
               ))}
             </div>
           ) : grouped.length === 0 ? (
-            <div className="reveal flex flex-col items-center justify-center gap-2.5 rounded-xl border border-border bg-card px-6 py-14 text-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+            <div className="reveal flex flex-col items-center justify-center gap-2.5 rounded-md border border-white/12 bg-[#090d19] px-6 py-14 text-center shadow-lg">
+              <span className="flex h-12 w-12 items-center justify-center rounded bg-white/10 text-white">
                 {tab === "live" ? (
-                  <Activity className="h-5 w-5" aria-hidden />
+                  <Activity className="h-6 w-6 text-[#ff1e46]" aria-hidden />
                 ) : (
-                  <CalendarX className="h-5 w-5" aria-hidden />
+                  <CalendarX className="h-6 w-6 text-white" aria-hidden />
                 )}
               </span>
-              <p className="text-sm font-semibold text-foreground">{emptyCopy.title}</p>
-              <p className="max-w-[36ch] text-xs leading-relaxed text-muted-foreground">{emptyCopy.hint}</p>
+              <p className="text-base font-extrabold text-white">{emptyCopy.title}</p>
+              <p className="max-w-[36ch] text-xs leading-relaxed text-[#cbd5e1] font-medium">{emptyCopy.hint}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -351,44 +353,44 @@ export function ScoresView() {
                 return (
                   <section
                     key={g.comp.id}
-                    className="reveal overflow-hidden border border-white/[0.07] bg-[#0d0d10]"
+                    className="reveal overflow-hidden rounded-md border border-white/12 bg-[#090d19] shadow-xl"
                     aria-label={g.comp.name}
                   >
                     {/* Competition group header */}
                     <button
                       onClick={() => navigate({ name: "competition-detail", id: g.comp.id })}
-                      className="group flex w-full items-center gap-2.5 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+                      className="group flex w-full items-center gap-2.5 border-b border-white/12 bg-[#050812] px-4 py-3 text-left transition-all hover:bg-white/10"
                       aria-label={`View competition: ${g.comp.name}`}
                     >
                       <span
-                        className="h-2 w-2 shrink-0 rounded-full"
-                        style={{ backgroundColor: g.comp.accentColor ?? "#dc2626" }}
+                        className="h-2.5 w-2.5 shrink-0 rounded-full shadow-sm"
+                        style={{ backgroundColor: g.comp.accentColor ?? "#ff1e46" }}
                         aria-hidden
                       />
-                      <span className="min-w-0 truncate text-[12px] font-black uppercase tracking-wider text-white" title={g.comp.name}>
+                      <span className="min-w-0 truncate text-[13px] font-black uppercase tracking-wider text-white" title={g.comp.name}>
                         {g.comp.name}
                       </span>
                       {round && (
-                        <span className="hidden min-w-0 truncate text-[11px] font-bold text-white/30 md:inline">
+                        <span className="hidden min-w-0 truncate text-[11.5px] font-bold text-[#cbd5e1] md:inline">
                           · {round}
                         </span>
                       )}
                       {hasLive && (
-                        <span className="flex shrink-0 items-center gap-1 bg-red-600/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-red-400">
-                          <span className="live-dot h-1 w-1 rounded-full bg-red-500" aria-hidden />
+                        <span className="flex shrink-0 items-center gap-1.5 rounded bg-red-600/30 border border-red-500/50 px-2.5 py-0.5 text-[9.5px] font-black uppercase tracking-widest text-white shadow-sm">
+                          <span className="live-dot h-1.5 w-1.5 rounded-full bg-[#ff1e46]" aria-hidden />
                           Live
                         </span>
                       )}
-                      <span className="tabular ml-auto shrink-0 text-[10.5px] font-bold text-white/30 uppercase tracking-widest">
+                      <span className="tabular ml-auto shrink-0 text-[11px] font-bold text-white uppercase tracking-widest">
                         {fmtNum(g.list.length)} {g.list.length === 1 ? "match" : "matches"}
                       </span>
                       <ChevronRight
-                        className="h-3.5 w-3.5 shrink-0 text-white/30 transition-transform group-hover:translate-x-0.5"
+                        className="h-4 w-4 shrink-0 text-white transition-transform group-hover:translate-x-1"
                         aria-hidden
                       />
                     </button>
                     {/* Dense match rows */}
-                    <div className="divide-y divide-white/[0.04]">
+                    <div className="divide-y divide-white/10">
                       {g.list.map((m) => (
                         <MatchRow key={m.id} match={m} showCompetition={false} />
                       ))}
@@ -408,19 +410,19 @@ export function ScoresView() {
         {/* ── Side rail ─────────────────────────────────────────── */}
         <aside className="min-w-0 space-y-5 lg:col-span-4" aria-label="Scores side rail">
           {liveCount > 0 && (
-            <div className="reveal overflow-hidden border border-red-600/30 bg-[#0d0d10]">
-              <p className="flex items-center gap-2 border-b border-red-600/20 bg-red-600/10 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-red-400">
-                <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden />
+            <div className="reveal overflow-hidden rounded-md border border-[#ff1e46]/40 bg-[#0c1224] shadow-xl">
+              <p className="flex items-center gap-2 border-b border-[#ff1e46]/30 bg-[#ff1e46]/20 px-4 py-2.5 text-[11px] font-black uppercase tracking-widest text-white">
+                <span className="live-dot h-2 w-2 rounded-full bg-[#ff1e46]" aria-hidden />
                 Live Now — {fmtNum(liveCount)}
               </p>
-              <div className="divide-y divide-white/[0.04]">
+              <div className="divide-y divide-white/10">
                 {liveMatches.slice(0, 4).map((m) => (
                   <MatchRow key={m.id} match={m} showCompetition />
                 ))}
               </div>
               <button
                 onClick={() => setUserTab("live")}
-                className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-red-400 transition-colors hover:bg-red-600/5"
+                className="flex w-full items-center justify-center gap-1 border-t border-white/10 py-2.5 text-[10.5px] font-black uppercase tracking-widest text-red-400 transition-colors hover:bg-red-600/10"
               >
                 All live matches <ChevronRight className="h-3 w-3" aria-hidden />
               </button>

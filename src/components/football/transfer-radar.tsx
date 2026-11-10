@@ -126,23 +126,23 @@ export function TransferRadar() {
   return (
     <div className="space-y-6">
       {/* Transfer Radar Header */}
-      <div className="rounded-2xl border border-white/[0.08] bg-[#0c1220] p-5 sm:p-7 shadow-2xl">
+      <div className="rounded-2xl border border-white/15 bg-[#0b101d] p-5 sm:p-7 shadow-2xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-rose-500 text-xs font-black uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-red-400 text-xs font-black uppercase tracking-wider mb-1">
               <TrendingUp className="w-4 h-4" />
-              <span>FHB Transfer Desk & Reliability Meter</span>
+              <span>FHB Transfer Desk &amp; Reliability Meter</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight">
-              Domestic & Global Transfer Radar
+            <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight drop-shadow-sm">
+              Domestic &amp; Global Transfer Radar
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 max-w-xl leading-relaxed">
               5-Tier source reliability calibration covering Bangladesh Premier League (BPL), diaspora stars, and international verified valuations.
             </p>
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900 border border-white/[0.08] text-xs font-bold self-start md:self-auto overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#06080f] border border-white/15 text-xs font-bold self-start md:self-auto overflow-x-auto no-scrollbar">
             {[
               { id: "all", label: "All Deals" },
               { id: "confirmed", label: "Confirmed" },
@@ -153,10 +153,10 @@ export function TransferRadar() {
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id as typeof statusFilter)}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg whitespace-nowrap transition-all cursor-pointer text-xs font-bold tracking-wider",
+                  "px-3 py-1.5 rounded-lg whitespace-nowrap transition-all cursor-pointer text-xs font-black tracking-wider",
                   statusFilter === tab.id
-                    ? "bg-emerald-600 text-white shadow-md font-black"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-red-600 text-white shadow-md font-black shadow-red-600/30"
+                    : "text-slate-300 hover:text-white"
                 )}
               >
                 {tab.label}
@@ -175,7 +175,7 @@ export function TransferRadar() {
           return (
             <div
               key={item.id}
-              className="rounded-2xl border border-white/[0.08] bg-[#0c1220] hover:border-white/[0.18] p-5 shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="rounded-2xl border border-white/15 bg-[#0b101d] hover:border-red-500/50 hover:bg-[#11172a] p-5 shadow-xl transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 {/* Player & Status */}
@@ -184,14 +184,14 @@ export function TransferRadar() {
                     <img
                       src={item.playerPhoto}
                       alt={item.playerName}
-                      className="w-12 h-12 rounded-2xl object-cover ring-2 ring-white/[0.08] p-0.5 bg-slate-900 shadow-md"
+                      className="w-12 h-12 rounded-2xl object-cover ring-2 ring-white/15 p-0.5 bg-[#06080f] shadow-md"
                     />
                     <div>
-                      <h3 className="font-black text-sm sm:text-base text-white uppercase tracking-tight">
+                      <h3 className="font-black text-sm sm:text-base text-white uppercase tracking-tight drop-shadow-sm">
                         {item.playerName}
                       </h3>
-                      <p className="text-[11px] text-slate-400 font-medium">
-                        Contract: <strong className="text-slate-200">{item.contractUntil}</strong>
+                      <p className="text-[11.5px] text-slate-300 font-semibold">
+                        Contract: <strong className="text-white font-bold">{item.contractUntil}</strong>
                       </p>
                     </div>
                   </div>
@@ -200,10 +200,10 @@ export function TransferRadar() {
                     className={cn(
                       "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
                       isConfirmed
-                        ? "bg-emerald-950 text-emerald-400 border border-emerald-500/40"
+                        ? "bg-emerald-950 text-emerald-300 border border-emerald-500/40"
                         : isAdvanced
-                        ? "bg-blue-950 text-blue-400 border border-blue-500/40"
-                        : "bg-amber-950 text-amber-400 border border-amber-500/40"
+                        ? "bg-blue-950 text-blue-300 border border-blue-500/40"
+                        : "bg-amber-950 text-amber-300 border border-amber-500/40"
                     )}
                   >
                     {item.status.replace("_", " ")}
@@ -211,41 +211,41 @@ export function TransferRadar() {
                 </div>
 
                 {/* Club to Club Badge Flow */}
-                <div className="rounded-xl bg-[#070b14] p-3.5 border border-white/[0.06] mb-3.5 flex items-center justify-between gap-3">
+                <div className="rounded-xl bg-[#06080f] p-3.5 border border-white/10 mb-3.5 flex items-center justify-between gap-3">
                   <div className="flex-1 text-left min-w-0">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block truncate">FROM</span>
+                    <span className="text-[10px] uppercase font-black text-slate-400 block truncate">FROM</span>
                     <span className="text-xs sm:text-sm font-black text-white truncate block">{item.fromTeam}</span>
                   </div>
 
-                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-slate-800 text-emerald-400 border border-white/[0.08]">
+                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-[#11172a] text-red-400 border border-white/15">
                     <ArrowRight className="w-4 h-4" />
                   </div>
 
                   <div className="flex-1 text-right min-w-0">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block truncate">TO</span>
+                    <span className="text-[10px] uppercase font-black text-slate-400 block truncate">TO</span>
                     <span className="text-xs sm:text-sm font-black text-emerald-400 truncate block">{item.toTeam}</span>
                   </div>
                 </div>
 
                 {/* Transfer Financial Valuation */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="bg-slate-900/60 p-2.5 rounded-xl border border-white/[0.06]">
-                    <span className="text-[10px] font-bold uppercase text-slate-400 block">Fee (BDT)</span>
+                  <div className="bg-[#06080f] p-2.5 rounded-xl border border-white/10">
+                    <span className="text-[10px] font-black uppercase text-slate-400 block">Fee (BDT)</span>
                     <span className="font-mono font-black text-emerald-400 text-sm sm:text-base">{item.feeBDT}</span>
                   </div>
-                  <div className="bg-slate-900/60 p-2.5 rounded-xl border border-white/[0.06]">
-                    <span className="text-[10px] font-bold uppercase text-slate-400 block">Fee (EUR)</span>
+                  <div className="bg-[#06080f] p-2.5 rounded-xl border border-white/10">
+                    <span className="text-[10px] font-black uppercase text-slate-400 block">Fee (EUR)</span>
                     <span className="font-mono font-black text-white text-sm sm:text-base">{item.feeEUR}</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-300 leading-relaxed mb-4">{item.summary}</p>
+                <p className="text-xs text-slate-200 font-medium leading-relaxed mb-4">{item.summary}</p>
               </div>
 
               {/* Source Reliability Meter (5-Tier) */}
-              <div className="pt-3 border-t border-white/[0.08] flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
                 <div>
-                  <span className="text-[10px] font-bold uppercase text-slate-400 block mb-0.5">
+                  <span className="text-[10px] font-black uppercase text-slate-400 block mb-0.5">
                     Source Reliability ({item.tier === 1 ? "Tier 1: Confirmed" : item.tier === 2 ? "Tier 2: High" : "Tier 3: Moderate"})
                   </span>
                   <div className="flex items-center gap-1">
@@ -263,7 +263,7 @@ export function TransferRadar() {
                 </div>
 
                 <div className="text-right">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">Probability</span>
+                  <span className="text-[10px] uppercase font-black text-slate-400 block">Probability</span>
                   <span className="font-mono font-black text-emerald-400 text-sm">{item.probability}%</span>
                 </div>
               </div>

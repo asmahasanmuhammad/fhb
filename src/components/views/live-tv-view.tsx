@@ -1,14 +1,16 @@
 "use client";
 
 /**
- * FHB Live TV — multi-server HLS streaming hub (DAZN-class).
+ * FHB Live TV — multi-server HLS streaming hub.
  *
- * Cinematic hero player with Server 1/2/3 source switching, EPG info bar,
- * horizontal channel rail with category filters, custom stream loader and
- * a broadcast-grade right rail (Watch on TV + SIDEBAR ad). Demo streams
- * are legal, publicly available HLS feeds (Red Bull TV, DW, France 24,
- * TRT World, NASA TV and standard test streams). The architecture accepts
- * any m3u8 URL — plug in licensed feeds at deployment.
+ * Theater layout: native-controls HLS player (hls.js with native HLS
+ * fallback on Safari/iOS), channel info strip with EPG + server
+ * switching, category-filtered channel grid, custom stream loader and
+ * a broadcast rail (Up-next schedule, sidebar ad, Watch on TV).
+ * Demo streams are legal, publicly available HLS feeds (Red Bull TV,
+ * DW, France 24, Al Jazeera, TRT World, NASA TV and standard test
+ * streams). The architecture accepts any m3u8 URL — plug in licensed
+ * feeds at deployment.
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -16,14 +18,14 @@ import type Hls from "hls.js";
 import { useReveal } from "@/hooks/use-reveal";
 import { AdSlot } from "@/components/football/ad-slot";
 import { PageHeader, SectionHeader } from "@/components/football/section-header";
+import { PageLayout, RailCard } from "@/components/layout/page-layout";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { fmtCompact, fmtNum } from "@/lib/format";
+import { fmtCompact, fmtLocale, fmtNum } from "@/lib/format";
 import {
-  Tv, Radio, Play, Pause, Volume2, VolumeX, Maximize, Server, Link2,
-  Signal, ShieldCheck, Users, ChevronRight, RefreshCw, AlertTriangle,
-  MonitorPlay,
+  Tv, Radio, Play, Server, Link2, ShieldCheck, Users, ChevronRight,
+  RefreshCw, AlertTriangle,
 } from "lucide-react";
 
 type Server = { label: string; url: string; note?: string };
@@ -273,7 +275,9 @@ const CATEGORY_LABEL: Record<Channel["category"], string> = {
 export function LiveTvView() {
   useReveal();
   const [category, setCategory] = useState<string>("all");
-  const [active, setActive] = useState<Channel>(CHANNELS[0]);
+  // Autoplay lands on the first channel with a real, licensed stream so the
+  // player never opens on a cartoon demo feed. T Sports stays first in the grid.
+  const [active, setActive] = useState<Channel>(CHANNELS.find((c) => !c.demo) ?? CHANNELS[0]);
   const [serverIdx, setServerIdx] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [muted, setMuted] = useState(true);
@@ -349,6 +353,15 @@ export function LiveTvView() {
     if (playing || error) void loadStream(src);
   }, [src]);
 
+  // Attempt muted autoplay once on mount — if the browser blocks it the
+  // poster state stays up and the user can tap play.
+  const autoTriedRef = useRef(false);
+  useEffect(() => {
+    if (autoTriedRef.current) return;
+    autoTriedRef.current = true;
+    void loadStream(src);
+  }, [loadStream, src]);
+
   useEffect(() => () => destroyHls(), [destroyHls]);
 
   const startPlayback = (ch: Channel, idx = 0) => {
@@ -362,34 +375,6 @@ export function LiveTvView() {
   const watchChannel = (ch: Channel, idx = 0) => {
     startPlayback(ch, idx);
     playerSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-  };
-
-  const togglePlay = async () => {
-    const video = videoRef.current;
-    if (!video) return;
-    if (!playing && !hlsRef.current && !video.src) {
-      await loadStream(src);
-      return;
-    }
-    if (video.paused) {
-      await video.play().catch(() => {});
-      setPlaying(true);
-    } else {
-      video.pause();
-      setPlaying(false);
-    }
-  };
-
-  const toggleMute = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.muted = !video.muted;
-    setMuted(video.muted);
-  };
-
-  const goFullscreen = () => {
-    const el = videoRef.current?.parentElement;
-    if (el?.requestFullscreen) void el.requestFullscreen();
   };
 
   const playCustom = () => {
@@ -412,414 +397,416 @@ export function LiveTvView() {
     startPlayback(ch, 0);
   };
 
+  /* ── Right rail (xl+) ── */
+  const rail = (
+    <>
+      <RailCard title="Up next">
+        <div className="divide-y divide-border/40">
+          {CHANNELS.map((ch) => (
+            <button
+              key={ch.id}
+              onClick={() => watchChannel(ch, 0)}
+              className="row-hover flex w-full items-start gap-3 px-4 py-3 text-left"
+              aria-label={`Watch ${ch.name}`}
+            >
+              <span
+                aria-hidden
+                className="mt-1 h-[10px] w-[10px] shrink-0 rounded-[3px]"
+                style={{ backgroundColor: ch.color }}
+              />
+              <span className="min-w-0 flex-1">
+                <span className="label-cond block truncate text-[12px] font-bold tracking-[0.06em] text-foreground/90">
+                  {ch.name}
+                </span>
+                <span className="mt-0.5 line-clamp-2 block text-[11px] leading-snug text-muted-foreground">
+                  {ch.next}
+                </span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </RailCard>
+
+      <AdSlot placement="SIDEBAR" />
+
+      <RailCard title="Watch on TV">
+        <div className="px-5 py-4">
+          <ol className="space-y-3">
+            {[
+              {
+                title: "Use fullscreen",
+                body: "Expand the player with the fullscreen control for the big-screen view.",
+              },
+              {
+                title: "Smart TV browser",
+                body: "Open the site on your TV browser and sign in with the same account.",
+              },
+              {
+                title: "Switch servers",
+                body: "Streams are HLS multi-bitrate — if one source buffers, jump to another instantly.",
+              },
+            ].map((step, i) => (
+              <li key={step.title} className="flex gap-3">
+                <span className="tabular flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-primary/12 text-[11px] font-bold text-primary">
+                  {i + 1}
+                </span>
+                <p className="text-xs leading-relaxed text-muted-foreground">
+                  <span className="font-semibold text-foreground">{step.title}.</span> {step.body}
+                </p>
+              </li>
+            ))}
+          </ol>
+          <div className="mt-4 grid grid-cols-3 divide-x divide-border/50 rounded-md border border-border bg-elevated/50">
+            <div className="px-2 py-3 text-center">
+              <p className="score-num text-lg text-foreground">{CHANNELS.length}</p>
+              <p className="kicker mt-1 text-[9px] text-muted-foreground">Channels</p>
+            </div>
+            <div className="px-2 py-3 text-center">
+              <p className="score-num text-lg text-foreground">{totalServers}</p>
+              <p className="kicker mt-1 text-[9px] text-muted-foreground">Sources</p>
+            </div>
+            <div className="px-2 py-3 text-center">
+              <p className="score-num text-lg text-foreground">{freeToAir}</p>
+              <p className="kicker mt-1 text-[9px] text-muted-foreground">Free-to-air</p>
+            </div>
+          </div>
+        </div>
+      </RailCard>
+    </>
+  );
+
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+    <PageLayout rail={rail} width="wide">
       <PageHeader
-        title="Live TV Broadcasts"
-        kicker="multi-server live streaming · 1080p hd"
-        subtitle="Live football and sports channels streaming across BDIX Dhaka and global CDNs — switch servers instantly without buffering"
+        title="Live TV"
+        kicker="watch live"
+        subtitle="Sports and football channels streamed from multiple servers — switch sources instantly, never miss kick-off."
         icon={<Tv className="h-3.5 w-3.5" aria-hidden />}
       >
-        <span className="flex items-center gap-1.5 border border-red-600/40 bg-red-600/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-red-400">
-          <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden />
-          {fmtNum(CHANNELS.length)} Channels Online
+        <span className="flex items-center gap-1.5 rounded-[4px] border border-fhb-red/45 bg-fhb-red/10 px-3 py-1.5 text-[11px] font-bold text-fhb-red">
+          <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />
+          {fmtNum(CHANNELS.length)} channels online
         </span>
       </PageHeader>
 
-      {/* Leaderboard Ad */}
-      <div className="reveal mb-6">
-        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-12">
-        {/* ═══ Player + channel rail ═══ */}
-        <div className="min-w-0 space-y-6 lg:col-span-8">
-          <section ref={playerSectionRef} className="reveal" aria-label="Live stream player">
-            <div className="overflow-hidden rounded-md border border-white/15 bg-[#090d19] shadow-2xl">
-              {/* Video area */}
-              <div className="relative aspect-video w-full bg-black">
-                <video
-                  ref={videoRef}
-                  className="h-full w-full max-w-full object-contain"
-                  playsInline
-                  controls={false}
-                  onError={() => {
-                    if (playing) setError("This stream is currently unavailable. Try another server or channel.");
-                  }}
-                  aria-label={`Live stream: ${active.name}`}
-                />
-                {/* Idle state — cinematic poster */}
-                {!playing && !error && (
-                  <button
-                    onClick={() => void loadStream(src)}
-                    className="group absolute inset-0 flex flex-col items-center justify-center gap-4 px-6 text-center"
-                    aria-label={`Play ${active.name}`}
-                    style={{
-                      background: `radial-gradient(75% 100% at 50% 0%, ${active.color}35, transparent 60%), radial-gradient(90% 120% at 50% 115%, #000000f0, #000000dd 60%)`,
-                    }}
-                  >
-                    <span
-                      className="flex h-16 w-16 items-center justify-center rounded font-black text-xl text-white shadow-2xl"
-                      style={{ backgroundColor: active.color }}
-                    >
-                      {active.monogram}
-                    </span>
-                    <div>
-                      <span className="flex items-center justify-center gap-2 text-xl font-black tracking-tight text-white sm:text-2xl drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-                        {active.name}
-                        <span className="flex items-center gap-1.5 bg-[#ff1e46] px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white rounded shadow-sm">
-                          <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden /> Live
-                        </span>
-                      </span>
-                      <span className="mt-1 block text-sm font-semibold text-[#f1f5f9] sm:text-base">{active.nowPlaying}</span>
-                    </div>
-                    <span className="flex h-16 w-16 items-center justify-center rounded-full bg-[#ff1e46] text-white shadow-[0_0_20px_rgba(255,30,70,0.6)] transition-transform duration-300 group-hover:scale-110 sheen">
-                      <Play className="ml-1 h-7 w-7 fill-white text-white" />
-                    </span>
-                    <span className="text-[11px] font-black text-white uppercase tracking-widest">Click to Start HD Broadcast</span>
-                  </button>
-                )}
-                {/* Loading */}
-                {loading && (
-                  <span className="absolute inset-0 flex items-center justify-center bg-black/60">
-                    <RefreshCw className="h-10 w-10 animate-spin text-[#ff1e46]" aria-hidden />
-                  </span>
-                )}
-                {/* Error */}
-                {error && (
-                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/85 px-6 text-center">
-                    <AlertTriangle className="h-10 w-10 text-[#ff1e46]" aria-hidden />
-                    <p className="max-w-sm text-sm font-bold text-white">{error}</p>
-                    <div className="flex gap-2">
-                      <button onClick={() => void loadStream(src)} className="bg-[#ff1e46] px-4 py-2 text-xs font-black uppercase text-white hover:bg-[#e01438] rounded">
-                        <RefreshCw className="mr-1.5 h-3.5 w-3.5 inline" aria-hidden /> Retry
-                      </button>
-                      {active.servers.length > 1 && (
-                        <button
-                          onClick={() => {
-                            setServerIdx((i) => (i + 1) % active.servers.length);
-                          }}
-                          className="border border-white/20 bg-white/10 px-4 py-2 text-xs font-black uppercase text-white hover:bg-white/20 rounded"
-                        >
-                          Switch Server
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {/* Top overlay: channel chip */}
-                {playing && (
-                  <span className="absolute left-3 top-3 flex items-center gap-2 bg-black/80 px-3 py-1.5 backdrop-blur-md border border-white/20 rounded">
-                    <span
-                      className="flex h-6 w-6 items-center justify-center text-[10px] font-black text-white rounded"
-                      style={{ backgroundColor: active.color }}
-                      aria-hidden
-                    >
-                      {active.monogram}
-                    </span>
-                    <span className="text-xs font-extrabold text-white">{active.name}</span>
-                    <span className="flex items-center gap-1 bg-[#ff1e46] px-1.5 py-0.5 text-[9px] font-black uppercase tracking-widest text-white rounded">
-                      <span className="live-dot h-1 w-1 rounded-full bg-white" aria-hidden /> Live
-                    </span>
-                  </span>
-                )}
-                {/* Controls */}
-                <div className="absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-black/95 via-black/50 to-transparent px-3 pb-3 pt-10 sm:px-4">
-                  <button
-                    onClick={() => void togglePlay()}
-                    className="flex h-9 w-9 items-center justify-center rounded bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
-                    aria-label={playing ? "Pause" : "Play"}
-                  >
-                    {playing ? <Pause className="h-4 w-4" aria-hidden /> : <Play className="ml-0.5 h-4 w-4 fill-white" aria-hidden />}
-                  </button>
-                  <button
-                    onClick={toggleMute}
-                    className="flex h-9 w-9 items-center justify-center rounded bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
-                    aria-label={muted ? "Unmute" : "Mute"}
-                  >
-                    {muted ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />}
-                  </button>
-                  <div className="ml-1 min-w-0 flex-1">
-                    <p className="truncate text-[12px] font-extrabold text-white">{active.nowPlaying}</p>
-                    <p className="truncate text-[10.5px] text-[#cbd5e1] font-semibold">
-                      <span className="live-dot mr-1 inline-block h-1.5 w-1.5 rounded-full bg-[#ff1e46] align-middle" aria-hidden />
-                      {currentServer.label} · 1080p HD
-                      {active.demo ? " · live test feed" : " · free-to-air"}
-                    </p>
-                  </div>
-                  <button
-                    onClick={goFullscreen}
-                    className="flex h-9 w-9 items-center justify-center rounded bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20"
-                    aria-label="Fullscreen"
-                  >
-                    <Maximize className="h-4 w-4" aria-hidden />
-                  </button>
-                </div>
-              </div>
-
-              {/* Info bar + servers */}
-              <div className="border-t border-white/12 p-4 sm:p-5 bg-[#090d19]">
-                {/* Channel identity */}
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-3.5">
-                    <span
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded font-black text-sm text-white shadow-md"
-                      style={{ backgroundColor: active.color }}
-                      aria-hidden
-                    >
-                      {active.monogram}
-                    </span>
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="font-black text-xl text-white">{active.name}</h2>
-                        <span className="flex items-center gap-1.5 bg-[#ff1e46] px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white rounded shadow-sm">
-                          <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden /> Live
-                        </span>
-                        <span className="border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-widest text-white rounded">
-                          {CATEGORY_LABEL[active.category]}
-                        </span>
-                      </div>
-                      <p className="mt-0.5 truncate text-[12.5px] text-[#cbd5e1] font-medium">{active.tagline}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-4 text-[12px] text-white font-bold">
-                    <span className="tabular flex items-center gap-1.5">
-                      <Users className="h-4 w-4 text-[#ff1e46]" aria-hidden />
-                      {fmtNum(active.viewers)} viewers
-                    </span>
-                    <span className="flex items-center gap-1.5 text-emerald-400">
-                      <Signal className="h-4 w-4" aria-hidden /> 1080p 60fps
-                    </span>
-                  </div>
-                </div>
-
-                {/* EPG */}
-                <div className="mt-4 grid gap-2.5 sm:grid-cols-2">
-                  <div className="rounded border border-white/12 bg-[#050812] px-4 py-3">
-                    <p className="eyebrow text-[10px] text-[#ff1e46] font-black uppercase tracking-widest">Now playing</p>
-                    <p className="mt-1 text-[14px] font-extrabold text-white">{active.nowPlaying}</p>
-                  </div>
-                  <div className="rounded border border-white/12 bg-[#050812] px-4 py-3">
-                    <p className="eyebrow text-[10px] text-[#94a3b8] font-black uppercase tracking-widest">Up next</p>
-                    <p className="mt-1 text-[14px] font-extrabold text-[#f1f5f9]">{active.next}</p>
-                  </div>
-                </div>
-
-                {/* Server switcher */}
-                <div className="mt-4 pt-4 border-t border-white/10">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-[11px] font-black uppercase tracking-widest text-white flex items-center gap-1.5">
-                      <Server className="h-4 w-4 text-[#ff1e46]" aria-hidden /> Servers:
-                    </span>
-                    {active.servers.map((s, i) => (
-                      <button
-                        key={s.label}
-                        onClick={() => {
-                          setServerIdx(i);
-                          setPlaying(true);
-                        }}
-                        className={cn(
-                          "flex items-center gap-1.5 rounded px-3 py-1.5 text-[11.5px] font-black uppercase tracking-wider transition-all",
-                          i === serverIdx
-                            ? "bg-[#ff1e46] text-white shadow-[0_0_10px_rgba(255,30,70,0.5)]"
-                            : "border border-white/15 bg-white/10 text-white hover:bg-white/20 hover:border-white/30"
-                        )}
-                        aria-pressed={i === serverIdx}
-                      >
-                        {s.label}
-                        {s.note && <span className="text-[9.5px] font-normal opacity-80">({s.note})</span>}
-                      </button>
-                    ))}
-                  </div>
-                  <p className="mt-2 text-[11.5px] text-[#cbd5e1] font-medium">
-                    BDIX Dhaka 60FPS Low-Latency Relay · Singapore CDN Backup · Instant Source Failover.
-                  </p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Channel rail */}
-          <section className="reveal min-w-0" aria-label="Channel guide">
-            <SectionHeader
-              title="Channel Directory"
-              kicker={`${filtered.length} of ${CHANNELS.length} channels live`}
-              icon={<Radio className="h-4 w-4" aria-hidden />}
+      {/* ═══ Theater player ═══ */}
+      <section ref={playerSectionRef} className="reveal" aria-label="Live stream player">
+        <div className="overflow-hidden rounded-xl border border-border bg-card">
+          {/* ── Video area — native controls ── */}
+          <div className="relative aspect-video w-full overflow-hidden bg-black">
+            <video
+              ref={videoRef}
+              className="h-full w-full object-contain"
+              controls
+              playsInline
+              onPlay={() => setPlaying(true)}
+              onPause={() => setPlaying(false)}
+              onVolumeChange={() => setMuted(!!videoRef.current?.muted)}
+              onError={() => {
+                if (playing) setError("This stream is currently unavailable. Try another server or channel.");
+              }}
+              aria-label={`Live stream: ${active.name}`}
             />
-            <div className="no-scrollbar -mx-1 mb-4 flex gap-1.5 overflow-x-auto px-1">
-              {CATEGORIES.map((c) => (
-                <button
-                  key={c.key}
-                  onClick={() => setCategory(c.key)}
-                  className={cn(
-                    "shrink-0 rounded px-4 py-1.5 text-[11.5px] font-black uppercase tracking-wider transition-all",
-                    category === c.key
-                      ? "bg-[#ff1e46] text-white shadow-[0_0_8px_rgba(255,30,70,0.4)]"
-                      : "border border-white/12 bg-white/5 text-white hover:bg-white/15 hover:text-white"
-                  )}
-                  aria-pressed={category === c.key}
-                >
-                  {c.label}
-                </button>
-              ))}
-            </div>
-            <div className="no-scrollbar -mx-1 flex gap-3 overflow-x-auto px-1 pb-1.5">
-              {filtered.map((ch) => {
-                const isChActive = ch.id === active.id;
-                return (
-                  <button
-                    key={ch.id}
-                    onClick={() => watchChannel(ch, 0)}
-                    className={cn(
-                      "group w-[150px] shrink-0 overflow-hidden rounded-md border text-left transition-all",
-                      isChActive
-                        ? "border-[#ff1e46] bg-red-600/20 shadow-[0_0_15px_rgba(255,30,70,0.3)]"
-                        : "border-white/12 bg-[#090d19] hover:border-white/30 hover:bg-[#0f1629]"
-                    )}
-                    aria-current={isChActive ? "true" : undefined}
-                    aria-label={`Watch ${ch.name}`}
-                  >
-                    {/* Logo tile */}
-                    <span className="relative flex h-[76px] items-center justify-center" style={{ backgroundColor: ch.color }}>
-                      <span className="text-2xl font-black text-white drop-shadow" aria-hidden>
-                        {ch.monogram}
-                      </span>
-                      <span className="live-dot absolute right-2 top-2 h-2 w-2 rounded-full bg-white shadow-sm" aria-hidden />
-                      <span className="tabular absolute bottom-1.5 left-2 flex items-center gap-1 rounded bg-black/80 px-2 py-0.5 text-[10px] font-bold text-white backdrop-blur">
-                        <Users className="h-3 w-3" aria-hidden />
-                        {fmtCompact(ch.viewers)}
-                      </span>
-                    </span>
-                    {/* Meta */}
-                    <span className="block px-3 py-2.5">
-                      <span className={cn("block truncate text-[13px] font-black", isChActive ? "text-[#ff1e46]" : "text-white")}>
-                        {ch.name}
-                      </span>
-                      <span className="mt-0.5 block truncate text-[10px] uppercase font-bold text-[#94a3b8]">
-                        {CATEGORY_LABEL[ch.category]}
-                      </span>
-                      <span className="mt-1 block truncate text-[11px] font-medium text-[#cbd5e1]">{ch.nowPlaying}</span>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </section>
 
-          {/* Custom stream */}
-          <section className="reveal rounded-xl border border-dashed border-border bg-card/60" aria-label="Custom stream">
-            <button
-              onClick={() => setShowCustom((v) => !v)}
-              className="flex w-full items-center gap-3.5 px-4 py-4 text-left sm:px-5"
-              aria-expanded={showCustom}
-            >
-              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-primary">
-                <Link2 className="h-5 w-5" aria-hidden />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-sm font-bold text-foreground">Play any stream URL</span>
-                <span className="mt-0.5 block text-xs text-muted-foreground">
-                  Connect external servers or licensed feeds — paste any .m3u8 link
+            {/* Idle state — flat poster */}
+            {!playing && !error && !loading && (
+              <button
+                onClick={() => void loadStream(src)}
+                className="group absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black px-6 text-center"
+                aria-label={`Play ${active.name}`}
+              >
+                <span
+                  className="flex h-14 w-14 items-center justify-center rounded-[10px] font-display text-lg font-bold tracking-wide text-white ring-1 ring-inset ring-white/20"
+                  style={{ backgroundColor: active.color }}
+                >
+                  {active.monogram}
                 </span>
+                <span>
+                  <span className="label-cond flex items-center justify-center gap-2.5 text-lg font-bold tracking-[0.05em] text-white sm:text-xl">
+                    {active.name}
+                    <span className="flex items-center gap-1.5 rounded-[4px] bg-fhb-red px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.12em] text-white">
+                      <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden /> Live
+                    </span>
+                  </span>
+                  <span className="mt-1.5 block text-xs text-white/70 sm:text-[13px]">{active.nowPlaying}</span>
+                </span>
+                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground transition-transform group-hover:scale-105 group-active:scale-95">
+                  <Play className="ml-0.5 h-6 w-6 fill-current" aria-hidden />
+                </span>
+                <span className="text-[11px] font-medium text-white/55">Tap to start the stream</span>
+              </button>
+            )}
+
+            {/* Buffering / connecting */}
+            {loading && (
+              <span className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/55">
+                <RefreshCw className="h-9 w-9 animate-spin text-white/85" aria-hidden />
+                <span className="label-cond text-[11px] font-semibold uppercase tracking-[0.14em] text-white/60">
+                  Connecting to {currentServer.label}
+                </span>
+                <span className="sr-only">Stream loading</span>
               </span>
-              <ChevronRight
-                className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", showCustom && "rotate-90")}
-                aria-hidden
-              />
-            </button>
-            {showCustom && (
-              <div className="grid gap-2 border-t border-border px-4 py-4 sm:grid-cols-[1fr_170px_auto] sm:px-5">
-                <Input
-                  value={customUrl}
-                  onChange={(e) => setCustomUrl(e.target.value)}
-                  placeholder="https://your-server.com/stream/index.m3u8"
-                  className="h-11 rounded-lg bg-background"
-                  aria-label="Stream URL"
-                />
-                <Input
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
-                  placeholder="Channel name (optional)"
-                  className="h-11 rounded-lg bg-background"
-                  aria-label="Channel name"
-                />
-                <Button onClick={playCustom} className="h-11 rounded-lg px-5 text-xs font-bold">
-                  <Play className="h-3.5 w-3.5 fill-current" aria-hidden /> Play
-                </Button>
+            )}
+
+            {/* Error — retry / next server */}
+            {error && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-black/85 px-6 text-center">
+                <AlertTriangle className="h-9 w-9 text-white/80" aria-hidden />
+                <p className="max-w-sm text-sm font-semibold text-white">{error}</p>
+                <div className="flex gap-2">
+                  <Button size="sm" onClick={() => void loadStream(src)} className="rounded-[6px] bg-primary text-primary-foreground">
+                    <RefreshCw className="h-3.5 w-3.5" aria-hidden /> Retry
+                  </Button>
+                  {active.servers.length > 1 && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setServerIdx((i) => (i + 1) % active.servers.length);
+                      }}
+                      className="rounded-[6px] border-white/30 bg-white/10 text-white hover:bg-white/20 hover:text-white"
+                    >
+                      Try next server
+                    </Button>
+                  )}
+                </div>
               </div>
             )}
-          </section>
 
-          {/* Legal note */}
-          <p className="reveal flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
-            <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden />
-            Demo preview: channels marked &ldquo;demo feed&rdquo; play public sample streams. At deployment,
-            licensed broadcast URLs can be plugged into each server slot — the player, server switching
-            and multi-bitrate HLS engine are production-ready.
-          </p>
-        </div>
+            {/* LIVE chip while playing */}
+            {playing && !loading && (
+              <span className="pointer-events-none absolute left-3 top-3 flex items-center gap-1.5 rounded-[4px] bg-black/60 px-2 py-1">
+                <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+                <span className="label-cond text-[10px] font-bold uppercase tracking-[0.14em] text-white">Live</span>
+                <span className="text-[10px] font-medium text-white/60">{currentServer.label}</span>
+              </span>
+            )}
+          </div>
 
-        {/* ═══ Right rail ═══ */}
-        <aside className="min-w-0 lg:col-span-4" aria-label="Live TV information">
-          <div className="space-y-6 lg:sticky lg:top-[76px]">
-            {/* Watch on TV */}
-            <section className="reveal rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden" aria-label="Watch on TV">
-              <header className="border-b border-white/12 px-5 py-4 bg-[#050812]">
-                <p className="eyebrow flex items-center gap-1.5 text-[#ff1e46] font-black uppercase tracking-widest text-[10px]">
-                  <MonitorPlay className="h-4 w-4 text-[#ff1e46]" aria-hidden /> Big Screen
-                </p>
-                <h2 className="mt-1 text-base font-black tracking-tight text-white">Watch on TV</h2>
-              </header>
-              <div className="px-5 py-4">
-                <ol className="space-y-3.5">
-                  {[
-                    {
-                      title: "Use fullscreen",
-                      body: "Tap the expand control on the player for the cinematic 1080p view.",
-                    },
-                    {
-                      title: "Smart TV browser",
-                      body: "Open footballhub.com.bd on your Smart TV browser and stream directly.",
-                    },
-                    {
-                      title: "Switch servers",
-                      body: "Streams are HLS multi-bitrate — if one source buffers, jump to Server 2 or 3 instantly.",
-                    },
-                  ].map((step, i) => (
-                    <li key={step.title} className="flex gap-3">
-                      <span className="tabular flex h-7 w-7 shrink-0 items-center justify-center rounded bg-[#ff1e46]/20 border border-[#ff1e46]/40 text-[12px] font-black text-white shadow-sm">
-                        {i + 1}
-                      </span>
-                      <p className="text-xs leading-relaxed text-[#cbd5e1] font-medium">
-                        <span className="font-extrabold text-white">{step.title}:</span> {step.body}
-                      </p>
-                    </li>
-                  ))}
-                </ol>
-                <div className="mt-5 grid grid-cols-3 divide-x divide-white/10 rounded border border-white/12 bg-[#050812]">
-                  <div className="px-2 py-3 text-center">
-                    <p className="tabular text-xl font-black text-white">{CHANNELS.length}</p>
-                    <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[#94a3b8]">Channels</p>
+          {/* ── Channel info strip ── */}
+          <div className="border-t border-border p-4 sm:p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-3.5">
+                <span
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[8px] font-display text-sm font-bold text-white ring-1 ring-inset ring-white/15"
+                  style={{ backgroundColor: active.color }}
+                  aria-hidden
+                >
+                  {active.monogram}
+                </span>
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h2 className="label-cond text-[18px] font-bold leading-none tracking-[0.04em] text-foreground">
+                      {active.name}
+                    </h2>
+                    <span className="flex items-center gap-1.5 rounded-[4px] border border-fhb-red/35 bg-fhb-red/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-fhb-red">
+                      <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden /> Live
+                    </span>
+                    <span className="rounded-[4px] border border-primary/25 bg-primary/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-primary">
+                      {CATEGORY_LABEL[active.category]}
+                    </span>
                   </div>
-                  <div className="px-2 py-3 text-center">
-                    <p className="tabular text-xl font-black text-white">{totalServers}</p>
-                    <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[#94a3b8]">Sources</p>
-                  </div>
-                  <div className="px-2 py-3 text-center">
-                    <p className="tabular text-xl font-black text-white">{freeToAir}</p>
-                    <p className="mt-0.5 text-[10px] font-black uppercase tracking-widest text-[#94a3b8]">Free-to-air</p>
-                  </div>
+                  <p className="mt-1 truncate text-xs text-muted-foreground">{active.tagline}</p>
                 </div>
               </div>
-            </section>
+              <div className="flex items-center gap-4 text-[11px] text-muted-foreground">
+                <span className="tabular flex items-center gap-1.5">
+                  <Users className="h-3.5 w-3.5 text-primary/80" aria-hidden />
+                  {active.demo ? (
+                    <span className="font-semibold text-muted-foreground">Demo preview feed</span>
+                  ) : (
+                    `${fmtLocale(active.viewers)} watching`
+                  )}
+                </span>
+                <span className="label-cond hidden font-semibold tracking-[0.08em] sm:flex">HD</span>
+              </div>
+            </div>
 
-            {/* Sidebar ad */}
-            <div className="reveal">
-              <AdSlot placement="SIDEBAR" className="w-full" />
+            {/* EPG */}
+            <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <div className="rounded-md border border-border bg-elevated/50 px-3.5 py-2.5">
+                <p className="kicker text-fhb-red">Now playing</p>
+                <p className="mt-1 text-[13px] font-semibold leading-snug text-foreground">{active.nowPlaying}</p>
+              </div>
+              <div className="rounded-md border border-border bg-elevated/50 px-3.5 py-2.5">
+                <p className="kicker text-muted-foreground">Up next</p>
+                <p className="mt-1 text-[13px] font-semibold leading-snug text-foreground/75">{active.next}</p>
+              </div>
+            </div>
+
+            {/* Server switcher */}
+            <div className="mt-4">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="kicker flex items-center gap-1.5 text-muted-foreground">
+                  <Server className="h-3.5 w-3.5 text-primary/80" aria-hidden /> Servers
+                </span>
+                {active.servers.map((s, i) => (
+                  <button
+                    key={s.label}
+                    onClick={() => {
+                      setServerIdx(i);
+                      setPlaying(true);
+                    }}
+                    className={cn(
+                      "flex items-center gap-1.5 rounded-[4px] border px-3.5 py-1.5 text-[11px] font-bold transition-colors",
+                      i === serverIdx
+                        ? "border-primary/50 bg-primary/15 text-primary"
+                        : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                    )}
+                    aria-pressed={i === serverIdx}
+                  >
+                    {s.label}
+                    {s.note && <span className="text-[10px] font-medium opacity-70">· {s.note}</span>}
+                  </button>
+                ))}
+              </div>
+              <p className="mt-2 text-[11px] text-muted-foreground">
+                Stream stutters? Switch to another server — playback resumes from the live edge.
+              </p>
             </div>
           </div>
-        </aside>
+        </div>
+      </section>
+
+      {/* ── In-feed ad between player and guide ── */}
+      <div className="reveal mt-6">
+        <AdSlot placement="IN_FEED" />
       </div>
-    </div>
+
+      {/* ═══ Channel guide ═══ */}
+      <section className="reveal mt-10" aria-label="Channel guide">
+        <SectionHeader
+          title="Channel Guide"
+          kicker={`${filtered.length} of ${CHANNELS.length} channels`}
+          icon={<Radio className="h-3.5 w-3.5" aria-hidden />}
+        />
+        <div className="no-scrollbar -mx-1 mb-4 flex gap-2 overflow-x-auto px-1" role="tablist" aria-label="Channel categories">
+          {CATEGORIES.map((c) => (
+            <button
+              key={c.key}
+              onClick={() => setCategory(c.key)}
+              role="tab"
+              aria-selected={category === c.key}
+              className={cn(
+                "flex h-8 shrink-0 items-center rounded-full border px-3.5 text-[12px] font-semibold transition-colors",
+                category === c.key
+                  ? "border-primary/50 bg-primary/10 text-primary"
+                  : "border-border bg-card text-foreground/75 hover:border-white/20"
+              )}
+            >
+              {c.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4">
+          {filtered.map((ch) => {
+            const isActive = ch.id === active.id;
+            return (
+              <button
+                key={ch.id}
+                onClick={() => watchChannel(ch, 0)}
+                className={cn(
+                  "card-lift overflow-hidden rounded-lg border text-left",
+                  isActive ? "border-primary/50 bg-primary/[0.04]" : "border-border bg-card"
+                )}
+                aria-current={isActive ? "true" : undefined}
+                aria-label={`Watch ${ch.name}`}
+              >
+                {/* Flat thumbnail tile — brand monogram on elevated surface */}
+                <span className="relative flex h-[76px] items-center justify-center border-b border-border/50 bg-elevated">
+                  <span
+                    aria-hidden
+                    className="flex h-11 w-11 items-center justify-center rounded-[8px] font-display text-[14px] font-bold uppercase tracking-tight text-white ring-1 ring-inset ring-white/20"
+                    style={{ backgroundColor: ch.color }}
+                  >
+                    {ch.monogram}
+                  </span>
+                  <span className="live-dot absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-fhb-red" aria-label="Live" />
+                  <span className="tabular absolute bottom-1.5 left-2 flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+                    <Users className="h-3 w-3" aria-hidden />
+                    {fmtCompact(ch.viewers)}
+                  </span>
+                  {ch.servers.length > 1 && (
+                    <span className="tabular absolute bottom-1.5 right-2 flex items-center gap-1 text-[10px] font-semibold text-muted-foreground">
+                      <Server className="h-3 w-3" aria-hidden />
+                      {ch.servers.length}
+                    </span>
+                  )}
+                </span>
+                <span className="block px-3 py-2.5">
+                  <span className={cn("block truncate text-[13px] font-bold", isActive ? "text-primary" : "text-foreground")}>
+                    {ch.name}
+                  </span>
+                  <span className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                    <span className="rounded-[4px] bg-secondary px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+                      {CATEGORY_LABEL[ch.category]}
+                    </span>
+                    {isActive && (
+                      <span className="rounded-[4px] bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.1em] text-primary">
+                        Watching
+                      </span>
+                    )}
+                  </span>
+                  <span className="mt-1.5 line-clamp-1 block text-[10.5px] text-muted-foreground/85">{ch.nowPlaying}</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* ── Custom stream loader ── */}
+      <section className="reveal mt-10 rounded-lg border border-dashed border-border bg-card" aria-label="Custom stream">
+        <button
+          onClick={() => setShowCustom((v) => !v)}
+          className="flex w-full items-center gap-3.5 px-4 py-4 text-left sm:px-5"
+          aria-expanded={showCustom}
+        >
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/12 text-primary">
+            <Link2 className="h-5 w-5" aria-hidden />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-sm font-bold text-foreground">Play any stream URL</span>
+            <span className="mt-0.5 block text-xs text-muted-foreground">
+              Connect external servers or licensed feeds — paste any .m3u8 link
+            </span>
+          </span>
+          <ChevronRight
+            className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", showCustom && "rotate-90")}
+            aria-hidden
+          />
+        </button>
+        {showCustom && (
+          <div className="grid gap-2 border-t border-border px-4 py-4 sm:grid-cols-[1fr_170px_auto] sm:px-5">
+            <Input
+              value={customUrl}
+              onChange={(e) => setCustomUrl(e.target.value)}
+              placeholder="https://your-server.com/stream/index.m3u8"
+              className="h-11 rounded-lg bg-background"
+              aria-label="Stream URL"
+            />
+            <Input
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)}
+              placeholder="Channel name (optional)"
+              className="h-11 rounded-lg bg-background"
+              aria-label="Channel name"
+            />
+            <Button onClick={playCustom} className="h-11 rounded-lg px-5 text-xs font-bold">
+              <Play className="h-3.5 w-3.5 fill-current" aria-hidden /> Play
+            </Button>
+          </div>
+        )}
+      </section>
+
+      {/* Legal note */}
+      <p className="reveal mt-6 flex items-start gap-2 text-[11px] leading-relaxed text-muted-foreground">
+        <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary/70" aria-hidden />
+        Demo preview — channels marked “demo feed” play public sample streams. At deployment, licensed broadcast
+        URLs can be plugged into each server slot — the player, server switching and multi-bitrate HLS engine are
+        production-ready.
+      </p>
+    </PageLayout>
   );
 }

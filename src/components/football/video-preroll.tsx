@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
 import type { AdSlotData } from "@/lib/types";
-import { AdMonogram } from "@/components/football/ad-slot";
+import { AdBrandLogo, ensureVisible } from "@/components/football/ad-slot";
 import { Megaphone, SkipForward } from "lucide-react";
 
 /**
@@ -13,7 +13,7 @@ import { Megaphone, SkipForward } from "lucide-react";
  * Premium members never see it (ad-free benefit).
  */
 
-const PREROLL_SECONDS = 5;
+const PREROLL_SECONDS = 4;
 const SESSION_KEY = "fhb_preroll_shown";
 
 export function VideoPreroll() {
@@ -57,7 +57,7 @@ export function VideoPreroll() {
     return () => clearTimeout(t);
   }, [active, remaining]);
 
-  // Mark session on finish
+  // Mark session on finish + auto-start the video when the countdown ends
   useEffect(() => {
     if (remaining <= 0) {
       try {
@@ -65,6 +65,9 @@ export function VideoPreroll() {
       } catch {
         /* noop */
       }
+      // Brief beat on "Your video is starting…", then reveal the feed
+      const t = setTimeout(() => setDismissed(true), 700);
+      return () => clearTimeout(t);
     }
   }, [remaining]);
 
@@ -82,7 +85,7 @@ export function VideoPreroll() {
 
   if (!active || !ad) return null;
 
-  const brandColor = ad.brandColor || "#1E9E50";
+  const brandColor = ensureVisible(ad.brandColor || "#1E9E50");
   const headline = ad.headline || ad.name;
   const body = ad.bodyText;
   const cta = ad.ctaLabel || "Learn More";
@@ -114,19 +117,17 @@ export function VideoPreroll() {
         Ad · AdSense
       </div>
 
-      {/* Brand-tinted ambience */}
+      {/* Quiet brand ambience (flat wash, no glow) */}
       <span
         aria-hidden
         className="absolute inset-0"
-        style={{
-          background: `radial-gradient(75% 60% at 50% 22%, ${brandColor}2e, transparent 70%), radial-gradient(60% 55% at 85% 95%, ${brandColor}1a, transparent 65%)`,
-        }}
+        style={{ backgroundColor: `${brandColor}14` }}
       />
 
       {/* Creative */}
       <div className="relative z-[5] flex flex-1 flex-col items-center justify-center gap-4 px-9 text-center">
         <div className="ad-creative flex flex-col items-center">
-          <AdMonogram brand={ad} size="lg" />
+          <AdBrandLogo brand={ad} size="lg" />
           <p className="mt-5 font-display text-xl font-bold leading-snug text-white">{headline}</p>
           {body && <p className="mt-2.5 max-w-[300px] text-[13px] leading-relaxed text-white/70">{body}</p>}
           <button
@@ -137,7 +138,7 @@ export function VideoPreroll() {
                 body: JSON.stringify({ adId: ad.id, event: "click" }),
               }).catch(() => {});
             }}
-            className="mt-6 flex h-12 items-center rounded-full px-8 text-sm font-bold text-white shadow-lg transition-transform active:scale-95"
+            className="mt-6 flex h-11 items-center rounded-full px-7 text-[13px] font-bold text-white transition-transform active:scale-95"
             style={{ backgroundColor: brandColor }}
           >
             {cta}
@@ -146,17 +147,18 @@ export function VideoPreroll() {
       </div>
 
       {/* Skip control */}
-      <div className="relative z-[5] flex items-center justify-between px-4 pb-5">
-        <span className="text-[10px] tabular text-white/50">
-          {skippable ? "Video starting..." : `Skippable in ${remaining}s`}
+      <div className="relative z-[5] flex items-center justify-between gap-3 px-4 pb-5">
+        <span className="flex items-center gap-1.5 text-[10.5px] font-semibold text-white/55">
+          <span className="h-1.5 w-1.5 rounded-full bg-fhb-gold" aria-hidden />
+          {skippable ? "Your video is starting…" : "Ad — video starts after this"}
         </span>
         <button
           onClick={skip}
           disabled={!skippable}
-          className="flex h-10 items-center gap-1.5 rounded-full border border-white/25 bg-white/10 px-4 text-xs font-bold text-white backdrop-blur transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40"
+          className="flex h-9 shrink-0 items-center gap-1.5 rounded-full border border-white/25 bg-black/45 px-4 text-[11.5px] font-bold text-white backdrop-blur transition-all hover:border-white/50 active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
         >
           <SkipForward className="h-3.5 w-3.5" aria-hidden />
-          {skippable ? "Skip" : `${remaining}`}
+          {skippable ? "Skip Ad" : `Skip in ${remaining}s`}
         </button>
       </div>
     </div>

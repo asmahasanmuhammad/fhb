@@ -45,7 +45,7 @@ export function AdMonogram({
         "ring-1 ring-inset ring-white/20",
         size === "sm" && "h-8 w-8 text-[12px]",
         size === "md" && "h-10 w-10 text-[14px]",
-        size === "lg" && "h-[52px] w-[52px] text-[17px]"
+        size === "lg" && "h-13 w-13 h-[52px] w-[52px] text-[17px]"
       )}
       style={{ backgroundColor: color }}
     >
@@ -155,7 +155,7 @@ export function ensureVisible(color: string): string {
   if (!/^#[0-9a-fA-F]{6}$/.test(color)) return color;
   const lum = luminance(color);
   if (lum >= 0.24) return color;
-  const lift = Math.min(0.62, ((0.24 - lum) / 0.24) * 0.45 + 0.18);
+  const lift = Math.min(0.62, 0.45 * (0.24 - lum) / 0.24 + 0.18);
   const mix = (channel: number) => Math.round(channel + (255 - channel) * lift);
   const r = mix(parseInt(color.slice(1, 3), 16));
   const g = mix(parseInt(color.slice(3, 5), 16));
@@ -209,6 +209,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
   if (!ad || user?.isPremium) return null;
 
   const rawBrand = ad.brandColor || FALLBACK_BRAND;
+  // Dark brand palettes are lifted so every brand surface stays visible
   const brandColor = ensureVisible(rawBrand);
 
   const trackClick = () => {
@@ -246,6 +247,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
       role="complementary"
       aria-label="Advertisement"
     >
+      {/* brand-tinted left rule + quiet tint wash */}
       <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ backgroundColor: brandColor }} />
       <span
         key={`bg-${ad.id}`}
@@ -277,6 +279,7 @@ export function AdSlot({ placement, className }: { placement: string; className?
         </span>
       )}
 
+      {/* ── Creative ── */}
       {variant === "sidebar" ? (
         <button
           key={ad.id}

@@ -31,8 +31,6 @@ interface AppState {
   history: View[];
   user: SafeUser | null;
   authLoading: boolean;
-  language: "en";
-  setLanguage: (lang: "en") => void;
   navigate: (view: View) => void;
   back: () => void;
   setUser: (user: SafeUser | null) => void;
@@ -46,8 +44,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   history: [],
   user: null,
   authLoading: true,
-  language: "en",
-  setLanguage: (lang) => set({ language: "en" }),
 
   navigate: (view) => {
     const { view: current, history } = get();
@@ -55,15 +51,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ view, history: [...history, current].slice(-15) });
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-      const sp = new URLSearchParams();
-      if (view.name !== "home") {
-        sp.set("view", view.name);
-        if ("id" in view && view.id) sp.set("id", view.id);
-        if ("username" in view && view.username) sp.set("username", view.username);
-      }
-      const qs = sp.toString();
-      const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
-      window.history.pushState({ view }, "", url);
     }
   },
 

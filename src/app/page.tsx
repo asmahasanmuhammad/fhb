@@ -2,8 +2,10 @@
 
 import { useEffect } from "react";
 import { useAppStore } from "@/store/app-store";
-import { Header, BottomNav } from "@/components/layout/header";
+import { Header, BottomNav, LeftRailNav } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { ScoreTicker } from "@/components/layout/ticker";
+import { StickyMobileAd } from "@/components/football/ad-slot";
 import { HomeView } from "@/components/views/home-view";
 import { ScoresView, MatchDetailView } from "@/components/views/scores-view";
 import { StandingsView } from "@/components/views/standings-view";
@@ -28,35 +30,15 @@ export default function Page() {
     refreshUser();
   }, [refreshUser]);
 
-  // Deep-link and history popstate support: /?view=live-tv, /?view=scores, /?view=news, etc.
+  // Deep-link support: /?view=scores, /?view=shorts, /?view=live-tv etc.
   useEffect(() => {
-    const parseUrl = () => {
-      const sp = new URLSearchParams(window.location.search);
-      const v = sp.get("view");
-      const id = sp.get("id");
-      const username = sp.get("username");
-      if (v) {
-        if (id) {
-          useAppStore.setState({ view: { name: v as any, id } });
-        } else if (username) {
-          useAppStore.setState({ view: { name: v as any, username } });
-        } else {
-          useAppStore.setState({ view: { name: v as any } });
-        }
-      }
-    };
-
-    parseUrl();
-
-    const onPop = (e: PopStateEvent) => {
-      if (e.state?.view) {
-        useAppStore.setState({ view: e.state.view });
-      } else {
-        parseUrl();
-      }
-    };
-    window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
+    const sp = new URLSearchParams(window.location.search);
+    const v = sp.get("view");
+    const valid = [
+      "home", "scores", "live-tv", "standings", "news", "teams",
+      "players", "competitions", "shorts", "community", "premium", "auth",
+    ];
+    if (v && valid.includes(v)) useAppStore.getState().navigate({ name: v } as never);
   }, []);
 
   const renderView = () => {
@@ -108,7 +90,8 @@ export default function Page() {
     }
   };
 
-  const isFullscreenView = view.name === "shorts";
+  /** Immersive views drop the side rails / footer / bottom chrome. */
+  const isImmersive = view.name === "shorts";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -119,26 +102,35 @@ export default function Page() {
         Skip to main content
       </a>
 
+      {!isImmersive && <ScoreTicker />}
       <Header />
 
-      <main id="main" className={`flex-1 ${isFullscreenView ? "" : "pb-16 lg:pb-0"}`} aria-live="polite">
-        {authLoading && !user ? (
-          <div className="flex min-h-[60vh] items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-              <span className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary font-display text-xl font-bold text-primary-foreground">
-                F<span className="text-fhb-red">H</span>
-                <span className="absolute -inset-1.5 animate-ping rounded-[14px] border border-primary/30" aria-hidden />
-              </span>
-              <p className="animate-pulse text-xs font-medium text-muted-foreground">Loading FHB…</p>
+      <div className="flex flex-1">
+        {!isImmersive && <LeftRailNav />}
+        <main
+          id="main"
+          className={`min-w-0 flex-1 ${isImmersive ? "" : "pb-16 lg:pb-0"}`}
+          aria-live="polite"
+        >
+          {authLoading && !user ? (
+            <div className="flex min-h-[60vh] items-center justify-center">
+              <div className="flex flex-col items-center gap-4">
+                <span className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary font-display text-xl font-bold text-primary-foreground">
+                  F<span className="text-fhb-red">·</span>
+                  <span className="absolute -inset-1.5 animate-ping rounded-[14px] border border-primary/30" aria-hidden />
+                </span>
+                <p className="animate-pulse text-xs font-medium text-muted-foreground">Loading FHB…</p>
+              </div>
             </div>
-          </div>
-        ) : (
-          renderView()
-        )}
-      </main>
+          ) : (
+            renderView()
+          )}
+        </main>
+      </div>
 
-      {!isFullscreenView && <Footer />}
-      <BottomNav />
+      {!isImmersive && <Footer />}
+      {!isImmersive && <BottomNav />}
+      {!isImmersive && <StickyMobileAd />}
     </div>
   );
 }

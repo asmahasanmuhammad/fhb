@@ -7,8 +7,10 @@ import type { TeamRef } from "@/lib/types";
 export type BadgeTeam = TeamRef | { name: string; initials: string; color: string; color2?: string; logoUrl?: string | null };
 
 /**
- * Club crest — real logo (transparent PNG) when available,
- * flat single-colour monogram chip as disciplined fallback.
+ * FHB 4.0 — Club crest.
+ * Real logo on a soft white tile (Sofascore-style rounded square);
+ * flat club-colour monogram tile as fallback. No drop shadows —
+ * a 1px inset ring provides the edge.
  */
 export function TeamCrest({
   team,
@@ -19,17 +21,19 @@ export function TeamCrest({
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "hero" | "match";
   className?: string;
 }) {
+  const pxMap = { xs: 18, sm: 22, md: 28, lg: 36, xl: 48, hero: 60, match: 88 }[size];
+  const radiusMap = { xs: 4, sm: 5, md: 6, lg: 8, xl: 10, hero: 12, match: 16 }[size];
+
   if (team.logoUrl) {
-    const chipPx = { xs: 20, sm: 26, md: 34, lg: 42, xl: 58, hero: 76, match: 100 }[size];
-    const logoPx = Math.round(chipPx * 0.82);
+    const logoPx = Math.round(pxMap * 0.78);
     return (
       <span
         className={cn(
-          "relative inline-flex shrink-0 select-none items-center justify-center rounded-full",
-          "bg-[oklch(0.955_0.005_255)] shadow-[inset_0_0_0_1px_rgba(0,0,0,0.08),0_2px_5px_-2px_rgba(0,0,0,0.5)]",
+          "relative inline-flex shrink-0 select-none items-center justify-center overflow-hidden bg-[oklch(0.955_0.005_255)]",
+          "ring-1 ring-inset ring-black/10",
           className
         )}
-        style={{ width: chipPx, height: chipPx }}
+        style={{ width: pxMap, height: pxMap, borderRadius: radiusMap }}
         title={team.name}
       >
         <span className="relative block" style={{ width: logoPx, height: logoPx }}>
@@ -46,23 +50,21 @@ export function TeamCrest({
     );
   }
 
-  // Fallback — flat club-colour monogram chip
-  const fallbackPx = { xs: 18, sm: 24, md: 30, lg: 38, xl: 52, hero: 68, match: 88 }[size];
+  // Fallback — flat club-colour monogram tile
   return (
     <span
       aria-hidden
       className={cn(
-        "flex shrink-0 select-none items-center justify-center font-display font-bold uppercase tracking-wide leading-none",
+        "flex shrink-0 select-none items-center justify-center font-display font-bold uppercase leading-none tracking-wide text-white",
+        "ring-1 ring-inset ring-white/12",
         className
       )}
       style={{
-        width: fallbackPx,
-        height: fallbackPx,
-        fontSize: Math.max(9, Math.round(fallbackPx * 0.34)),
-        borderRadius: Math.round(fallbackPx * 0.22),
-        background: `color-mix(in oklab, ${team.color ?? "#2f9e64"} 78%, black 22%)`,
-        color: "#ffffff",
-        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.14), 0 2px 6px -2px rgba(0,0,0,0.5)",
+        width: pxMap,
+        height: pxMap,
+        fontSize: Math.max(9, Math.round(pxMap * 0.38)),
+        borderRadius: radiusMap,
+        background: `color-mix(in oklab, ${team.color ?? "#2f9e64"} 72%, black 28%)`,
       }}
       title={team.name}
     >

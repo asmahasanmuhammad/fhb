@@ -1,13 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
-import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppStore, type View } from "@/store/app-store";
 import { useLiveScores } from "@/components/providers/live-score-provider";
-import { AdSlot } from "@/components/football/ad-slot";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,635 +20,713 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
-import { fmtNum } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import type { TeamRef, Player, NewsArticle } from "@/lib/types";
+import { TeamCrest } from "@/components/football/team-badge";
+import { fmtNum } from "@/lib/format";
 import {
-  Trophy, Calendar, Newspaper, Users, Video, Shield, LayoutDashboard, LogOut, User2,
-  Crown, Upload, Wallet, Menu, X, ChevronRight, Radio, Facebook, Youtube,
-  Twitter, Instagram, Zap, Flame, Tv, Search, Bell, TrendingUp, Globe,
-  ChevronDown, Wifi,
+  Home, Zap, Table2, Newspaper, Shield, Users, User, Trophy, Video, Tv,
+  MessageSquare, Crown, Upload, Wallet, LayoutDashboard, LogOut, Search,
+  Menu, X, ChevronRight, MoreHorizontal, Radio,
 } from "lucide-react";
 
-const NAV_ITEMS: Array<{ label: string; view: View; badge?: string }> = [
-  { label: "Live Scores", view: { name: "scores" }, badge: "LIVE" },
-  { label: "Live TV", view: { name: "live-tv" }, badge: "NEW" },
-  { label: "Tables", view: { name: "standings" } },
-  { label: "News", view: { name: "news" } },
-  { label: "Teams", view: { name: "teams" } },
-  { label: "Players", view: { name: "players" } },
-  { label: "Competitions", view: { name: "competitions" } },
-  { label: "Shorts", view: { name: "shorts" } },
-  { label: "Community", view: { name: "community" } },
-];
+/* ════════════════════════════════════════════════════════════════
+   FHB 4.0 — App chrome: brand mark, quick search, header bar,
+   desktop left rail nav, mobile sheet menu, mobile bottom nav.
+   Flat, dense, institutional — FotMob/Sofascore shell pattern.
+   ════════════════════════════════════════════════════════════════ */
 
-const LEAGUE_RAIL: Array<{ label: string; abbr: string; view: View; color: string; flag?: string }> = [
-  { label: "BFL", abbr: "BFL", view: { name: "competitions" }, color: "#006A4E", flag: "🇧🇩" },
-  { label: "Premier League", abbr: "EPL", view: { name: "competitions" }, color: "#3D195B" },
-  { label: "Champions League", abbr: "UCL", view: { name: "competitions" }, color: "#0B1F3F" },
-  { label: "La Liga", abbr: "LaLiga", view: { name: "competitions" }, color: "#E5322D" },
-  { label: "Serie A", abbr: "SerieA", view: { name: "competitions" }, color: "#0A2240" },
-  { label: "Bundesliga", abbr: "BL", view: { name: "competitions" }, color: "#D20515" },
-  { label: "Ligue 1", abbr: "L1", view: { name: "competitions" }, color: "#DBE00A" },
-  { label: "SAFF", abbr: "SAFF", view: { name: "competitions" }, color: "#005AAB" },
-  { label: "World Cup 2026", abbr: "WC26", view: { name: "competitions" }, color: "#7A1F3D" },
-];
-
-const MOBILE_NAV: Array<{ label: string; view: View; icon: React.ReactNode }> = [
-  { label: "Home", view: { name: "home" }, icon: <Trophy className="h-5 w-5" aria-hidden /> },
-  { label: "Scores", view: { name: "scores" }, icon: <Zap className="h-5 w-5" aria-hidden /> },
-  { label: "Shorts", view: { name: "shorts" }, icon: <Video className="h-5 w-5" aria-hidden /> },
-  { label: "News", view: { name: "news" }, icon: <Newspaper className="h-5 w-5" aria-hidden /> },
-  { label: "Profile", view: { name: "profile" }, icon: <User2 className="h-5 w-5" aria-hidden /> },
-];
-
-/** Sky Sports–grade shield crest */
-export function LogoMark({ size = 9 }: { size?: number }) {
-  const w = size === 9 ? 32 : 38;
-  const h = size === 9 ? 36 : 42;
+/* ── Brand mark — green tile, condensed F, national red dot ── */
+export function LogoMark({ size = 32 }: { size?: number }) {
   return (
-    <svg
-      width={w}
-      height={h}
-      viewBox="0 0 44 49"
-      fill="none"
+    <span
+      className="relative flex shrink-0 select-none items-center justify-center rounded-[7px] bg-primary"
+      style={{ width: size, height: size }}
       aria-hidden
-      className="shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
     >
-      <defs>
-        <linearGradient id="fhb-sh" x1="4" y1="2" x2="40" y2="47" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#1a1a1e" />
-          <stop offset="0.6" stopColor="#141418" />
-          <stop offset="1" stopColor="#0d0d10" />
-        </linearGradient>
-        <linearGradient id="fhb-g2" x1="22" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-          <stop stopColor="rgba(255,255,255,0.18)" />
-          <stop offset="1" stopColor="rgba(255,255,255,0)" />
-        </linearGradient>
-      </defs>
-      {/* Shield base */}
-      <path
-        d="M22 1.5 L41.5 7.5 V23.5 C41.5 35.5 33.5 43.5 22 47.5 C10.5 43.5 2.5 35.5 2.5 23.5 V7.5 Z"
-        fill="url(#fhb-sh)"
-        stroke="oklch(0.6 0.235 25 / 0.8)"
-        strokeWidth="1.5"
-      />
-      <path
-        d="M22 1.5 L41.5 7.5 V23.5 C41.5 35.5 33.5 43.5 22 47.5 C10.5 43.5 2.5 35.5 2.5 23.5 V7.5 Z"
-        fill="url(#fhb-g2)"
-      />
-      {/* Red stripe */}
-      <path
-        d="M2.5 30 C8.5 32.8 15 34.2 22 34.2 C29 34.2 35.5 32.8 41.5 30 V24 C35.5 26.8 29 28.2 22 28.2 C15 28.2 8.5 26.8 2.5 24 Z"
-        fill="oklch(0.6 0.235 25)"
-        opacity="0.95"
-      />
-      {/* FHB Text */}
-      <text
-        x="22" y="20"
-        textAnchor="middle"
-        fontFamily="Arial Black, sans-serif"
-        fontWeight="900"
-        fontSize="13"
-        letterSpacing="0.8"
-        fill="white"
+      <span
+        className="font-display font-extrabold leading-none text-primary-foreground"
+        style={{ fontSize: Math.round(size * 0.58) }}
       >
-        FHB
-      </text>
-      {/* Star */}
-      <path
-        d="M22 36 l1 2.5 2.7 .4 -1.95 1.9 .46 2.7 -2.21 -1.16 -2.21 1.16 .46 -2.7 -1.95 -1.9 2.7 -.4 Z"
-        fill="oklch(0.8 0.14 86)"
+        F
+      </span>
+      <span
+        className="absolute rounded-full bg-fhb-red"
+        style={{ width: Math.max(4, size * 0.16), height: Math.max(4, size * 0.16), right: size * 0.14, bottom: size * 0.14 }}
       />
-    </svg>
+    </span>
   );
 }
 
-export function Header() {
-  const { view, navigate, user, logout } = useAppStore();
+function Wordmark({ compact = false }: { compact?: boolean }) {
+  return (
+    <span className="flex items-center gap-2.5">
+      <LogoMark size={compact ? 28 : 30} />
+      <span className="hidden leading-none sm:block">
+        <span className="label-cond block text-[15px] font-bold tracking-[0.06em] text-foreground">
+          FOOTBALL HUB
+        </span>
+        <span className="mt-[3px] block text-[8.5px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
+          Bangladesh
+        </span>
+      </span>
+    </span>
+  );
+}
+
+/* ── Navigation model (single source of truth) ── */
+type NavItem = { label: string; icon: React.ElementType; view: View; premium?: boolean };
+
+const NAV_SECTIONS: Array<{ title?: string; items: NavItem[] }> = [
+  {
+    items: [{ label: "Home", icon: Home, view: { name: "home" } }],
+  },
+  {
+    title: "Match Centre",
+    items: [
+      { label: "Live Scores", icon: Zap, view: { name: "scores" } },
+      { label: "Tables", icon: Table2, view: { name: "standings" } },
+      { label: "News", icon: Newspaper, view: { name: "news" } },
+    ],
+  },
+  {
+    title: "Discover",
+    items: [
+      { label: "Teams", icon: Shield, view: { name: "teams" } },
+      { label: "Players", icon: Users, view: { name: "players" } },
+      { label: "Competitions", icon: Trophy, view: { name: "competitions" } },
+    ],
+  },
+  {
+    title: "Watch",
+    items: [
+      { label: "Shorts", icon: Video, view: { name: "shorts" } },
+      { label: "Live TV", icon: Tv, view: { name: "live-tv" } },
+    ],
+  },
+  {
+    title: "Community",
+    items: [{ label: "Fan Community", icon: MessageSquare, view: { name: "community" } }],
+  },
+  {
+    title: "Creator",
+    items: [
+      { label: "Upload", icon: Upload, view: { name: "upload" } },
+      { label: "Earnings", icon: Wallet, view: { name: "earnings" } },
+    ],
+  },
+  {
+    items: [{ label: "Premium", icon: Crown, view: { name: "premium" }, premium: true }],
+  },
+];
+
+/** Map detail/sub views back to their parent nav item for active states. */
+const PARENT_MAP: Record<string, string> = {
+  "match-detail": "scores",
+  "news-detail": "news",
+  "team-detail": "teams",
+  "player-detail": "players",
+  "competition-detail": "competitions",
+};
+
+function useActiveNav() {
+  const view = useAppStore((s) => s.view);
+  const name = PARENT_MAP[view.name] ?? view.name;
+  return (item: NavItem) => item.view.name === name;
+}
+
+/* ── Live count badge for Live Scores nav item ── */
+function useLiveCount() {
   const live = useLiveScores();
-  const { toast } = useToast();
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [bstTime, setBstTime] = useState("");
-  const [bstDate, setBstDate] = useState("");
+  return live.matches.length;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   QuickSearch — global fuzzy search across teams / players / news.
+   Debounced, keyboard-dismissible, result-grouped.
+   ════════════════════════════════════════════════════════════════ */
+type SearchResults = { teams: TeamRef[]; players: Player[]; articles: NewsArticle[] };
+
+function QuickSearch({ onNavigate }: { onNavigate?: () => void }) {
+  const navigate = useAppStore((s) => s.navigate);
+  const [q, setQ] = useState("");
+  const [open, setOpen] = useState(false);
+  const [results, setResults] = useState<SearchResults>({ teams: [], players: [], articles: [] });
+  const [loading, setLoading] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setBstTime(
-        now.toLocaleTimeString("en-GB", {
-          timeZone: "Asia/Dhaka",
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        })
-      );
-      setBstDate(
-        now.toLocaleDateString("en-GB", {
-          timeZone: "Asia/Dhaka",
-          weekday: "short",
-          day: "numeric",
-          month: "short",
-        })
-      );
+    const term = q.trim();
+    if (term.length < 2) {
+      setResults({ teams: [], players: [], articles: [] });
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    const t = setTimeout(async () => {
+      try {
+        const [tm, pl, nw] = await Promise.all([
+          fetch(`/api/teams?q=${encodeURIComponent(term)}`).then((r) => r.json()),
+          fetch(`/api/players?q=${encodeURIComponent(term)}&sort=name`).then((r) => r.json()),
+          fetch(`/api/news?limit=40`).then((r) => r.json()),
+        ]);
+        const termLower = term.toLowerCase();
+        const articles = (nw?.data?.articles ?? []) as NewsArticle[];
+        setResults({
+          teams: (tm?.data?.teams ?? []).slice(0, 4),
+          players: (pl?.data?.players ?? []).slice(0, 4),
+          articles: articles
+            .filter((a) => a.title.toLowerCase().includes(termLower) || a.excerpt.toLowerCase().includes(termLower))
+            .slice(0, 4),
+        });
+      } catch {
+        setResults({ teams: [], players: [], articles: [] });
+      } finally {
+        setLoading(false);
+      }
+    }, 260);
+    return () => clearTimeout(t);
+  }, [q]);
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
     };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("mousedown", onDown);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onDown);
+      document.removeEventListener("keydown", onKey);
+    };
   }, []);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 4);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [mobileOpen]);
-
-  const isActive = (v: View) => view.name === v.name;
-  const liveCount = live.matches.length;
-
-  const handleLogout = async () => {
-    await logout();
-    toast({ title: "Logged out", description: "See you next match!" });
-    navigate({ name: "home" });
+  const go = (view: View) => {
+    navigate(view);
+    setOpen(false);
+    setQ("");
+    onNavigate?.();
   };
 
-  return (
-    <header
-      className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-200",
-        scrolled
-          ? "shadow-[0_4px_30px_rgba(0,0,0,0.95)]"
-          : ""
-      )}
-    >
-      {/* ── Top utility bar: International broadcast strip ── */}
-      <div className="bg-[#04060b] border-b border-white/10 px-4 sm:px-6 py-1.5 text-[11px]">
-        <div className="mx-auto max-w-[1440px] flex items-center justify-between gap-4">
-          {/* Left: BST Clock + FIFA Rank */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className="flex items-center gap-1.5 font-mono text-emerald-300 font-extrabold tracking-tight">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400 shadow-[0_0_8px_#00e676]" />
-              </span>
-              <span className="text-emerald-300 drop-shadow-[0_0_6px_rgba(0,230,118,0.4)]">{bstTime || "00:00:00"}</span>
-              <span className="text-white/40 hidden sm:inline">|</span>
-              <span className="text-white font-semibold hidden sm:inline">{bstDate}</span>
-            </div>
-            <div className="hidden sm:flex items-center gap-1.5">
-              <span className="w-px h-3.5 bg-white/20" />
-              <span className="text-[10px] uppercase font-black tracking-widest text-[#94a3b8]">FIFA BD</span>
-              <span className="font-mono font-black text-white px-1.5 py-0.5 rounded bg-white/10">#183</span>
-              <span className="text-emerald-400 font-black text-[10px] drop-shadow-[0_0_6px_rgba(0,230,118,0.5)]">▲2</span>
-            </div>
-          </div>
+  const total = results.teams.length + results.players.length + results.articles.length;
+  const showPanel = open && q.trim().length >= 2;
 
-          {/* Center: Breaking News Ticker */}
-          {liveCount === 0 && (
-            <div className="hidden lg:flex items-center gap-2 flex-1 justify-center max-w-lg">
-              <span className="shrink-0 px-2 py-0.5 bg-[#ff1e46] text-[9.5px] font-black uppercase tracking-widest text-white rounded shadow-[0_0_10px_rgba(255,30,70,0.5)]">
-                LIVE DESK
-              </span>
-              <span className="text-white font-bold text-[11px] truncate">
-                Bangladesh Premier League • Matchday 15 Broadcast Live
-              </span>
+  return (
+    <div ref={boxRef} className="relative w-full max-w-[420px]">
+      <label className="flex h-9 w-full items-center gap-2.5 rounded-[7px] border border-input bg-white/[0.03] px-3 transition-colors focus-within:border-primary/50 focus-within:bg-white/[0.05]">
+        <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
+        <input
+          value={q}
+          onChange={(e) => {
+            setQ(e.target.value);
+            setOpen(true);
+          }}
+          onFocus={() => setOpen(true)}
+          placeholder="Search teams, players, news…"
+          className="h-full w-full bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground/70"
+          aria-label="Search Football Hub"
+        />
+        {q && (
+          <button
+            onClick={() => {
+              setQ("");
+            }}
+            className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] text-muted-foreground hover:bg-white/10 hover:text-foreground"
+            aria-label="Clear search"
+          >
+            <X className="h-3 w-3" aria-hidden />
+          </button>
+        )}
+      </label>
+
+      {showPanel && (
+        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-lg border border-border bg-popover shadow-[0_16px_48px_-12px_rgba(0,0,0,0.7)]">
+          {loading && (
+            <p className="px-4 py-5 text-[12px] text-muted-foreground">Searching…</p>
+          )}
+          {!loading && total === 0 && (
+            <p className="px-4 py-5 text-[12px] text-muted-foreground">
+              No results for “{q.trim()}”. Try a team, player or keyword.
+            </p>
+          )}
+          {!loading && total > 0 && (
+            <div className="max-h-[min(70vh,480px)] overflow-y-auto fhb-scroll py-1.5">
+              {results.teams.length > 0 && (
+                <SearchGroup title="Teams">
+                  {results.teams.map((t) => (
+                    <SearchRow key={t.id} onClick={() => go({ name: "team-detail", id: t.id })}>
+                      <TeamCrest team={t} size="xs" />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[13px] font-medium text-foreground">{t.name}</span>
+                        {t.city && <span className="block truncate text-[11px] text-muted-foreground">{t.city}</span>}
+                      </span>
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
+                    </SearchRow>
+                  ))}
+                </SearchGroup>
+              )}
+              {results.players.length > 0 && (
+                <SearchGroup title="Players">
+                  {results.players.map((p) => (
+                    <SearchRow key={p.id} onClick={() => go({ name: "player-detail", id: p.id })}>
+                      <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[5px] bg-elevated text-[9px] font-bold text-muted-foreground">
+                        {p.position}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[13px] font-medium text-foreground">{p.name}</span>
+                        <span className="block truncate text-[11px] text-muted-foreground">
+                          {p.team?.name ?? "Free agent"} · {fmtNum(p.goals)} goals
+                        </span>
+                      </span>
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
+                    </SearchRow>
+                  ))}
+                </SearchGroup>
+              )}
+              {results.articles.length > 0 && (
+                <SearchGroup title="News">
+                  {results.articles.map((a) => (
+                    <SearchRow key={a.id} onClick={() => go({ name: "news-detail", id: a.id })}>
+                      <Newspaper className="h-[18px] w-[18px] shrink-0 text-muted-foreground/70" aria-hidden />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[13px] font-medium text-foreground">{a.title}</span>
+                      </span>
+                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
+                    </SearchRow>
+                  ))}
+                </SearchGroup>
+              )}
             </div>
           )}
+        </div>
+      )}
+    </div>
+  );
+}
 
-          {/* Right: Radio + Language */}
-          <div className="flex items-center gap-2.5">
-            {/* FHB Radio */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-0.5 rounded bg-red-950/60 border border-red-500/40 text-white cursor-pointer hover:bg-red-950/80 transition-all shadow-[0_0_10px_rgba(255,30,70,0.2)]">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500 shadow-[0_0_8px_#ff1e46]" />
-              </span>
-              <span className="font-black text-[10px] tracking-widest uppercase text-white">FHB Radio</span>
-              <div className="flex items-end gap-[2px] h-3.5 ml-0.5">
-                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-1" style={{ minHeight: "3px" }} />
-                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-2" style={{ minHeight: "3px" }} />
-                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-3" style={{ minHeight: "3px" }} />
-                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-4" style={{ minHeight: "3px" }} />
-                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-5" style={{ minHeight: "3px" }} />
-              </div>
-            </div>
+function SearchGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="mb-1">
+      <p className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/70">
+        {title}
+      </p>
+      <div>{children}</div>
+    </div>
+  );
+}
 
-            {/* Official Edition Badge */}
-            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-white/10 border border-white/20 text-[10px] font-black text-white tracking-wider shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
-              GLOBAL EDITION
-            </div>
-          </div>
+function SearchRow({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-white/[0.05]"
+    >
+      {children}
+    </button>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Account menu — avatar dropdown (signed in) / Sign in CTA.
+   ════════════════════════════════════════════════════════════════ */
+function AccountControl({ onNavigate }: { onNavigate?: () => void }) {
+  const { user, logout, navigate } = useAppStore();
+  const { toast } = useToast();
+
+  if (!user) {
+    return (
+      <button
+        onClick={() => {
+          navigate({ name: "auth" });
+          onNavigate?.();
+        }}
+        className="flex h-9 items-center gap-2 rounded-[7px] bg-primary px-3.5 text-[12.5px] font-semibold text-primary-foreground transition-all hover:brightness-110 active:scale-[0.97]"
+      >
+        <User className="h-3.5 w-3.5" aria-hidden />
+        <span className="hidden sm:inline">Sign in</span>
+      </button>
+    );
+  }
+
+  const initials = user.name
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="flex h-9 items-center gap-2 rounded-[7px] border border-border bg-white/[0.02] pr-2.5 pl-1.5 transition-colors hover:border-white/20"
+          aria-label="Account menu"
+        >
+          <Avatar className="h-6.5 w-6.5 h-[26px] w-[26px]">
+            {user.avatarUrl ? (
+              <AvatarImage src={user.avatarUrl} alt={user.name} />
+            ) : null}
+            <AvatarFallback className="bg-primary/15 text-[10px] font-bold text-primary">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <span className="hidden max-w-[90px] truncate text-[12.5px] font-medium text-foreground/90 sm:block">
+            {user.name.split(" ")[0]}
+          </span>
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel className="min-w-0">
+          <p className="truncate text-[13px] font-semibold text-foreground">{user.name}</p>
+          <p className="truncate text-[11px] font-normal text-muted-foreground">@{user.username}</p>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => navigate({ name: "profile", username: user.username })} className="gap-2.5 text-[13px]">
+          <User className="h-4 w-4 text-muted-foreground" aria-hidden /> My Profile
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate({ name: "upload" })} className="gap-2.5 text-[13px]">
+          <Upload className="h-4 w-4 text-muted-foreground" aria-hidden /> Upload Content
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate({ name: "earnings" })} className="gap-2.5 text-[13px]">
+          <Wallet className="h-4 w-4 text-muted-foreground" aria-hidden /> Creator Earnings
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => navigate({ name: "premium" })} className="gap-2.5 text-[13px]">
+          <Crown className="h-4 w-4 text-fhb-gold" aria-hidden /> Premium Membership
+        </DropdownMenuItem>
+        {user.role === "ADMIN" && (
+          <DropdownMenuItem onClick={() => navigate({ name: "admin" })} className="gap-2.5 text-[13px]">
+            <LayoutDashboard className="h-4 w-4 text-muted-foreground" aria-hidden /> Admin Console
+          </DropdownMenuItem>
+        )}
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={async () => {
+            await logout();
+            toast({ title: "Signed out", description: "See you at the next matchday." });
+          }}
+          className="gap-2.5 text-[13px] text-fhb-red focus:text-fhb-red"
+        >
+          <LogOut className="h-4 w-4" aria-hidden /> Sign Out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Header — 56px sticky bar: menu (mobile) · brand · search · actions
+   ════════════════════════════════════════════════════════════════ */
+export function Header() {
+  const navigate = useAppStore((s) => s.navigate);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileSearch, setMobileSearch] = useState(false);
+
+  return (
+    <header className="glass sticky top-0 z-[55] border-b border-border">
+      <div className="flex h-14 items-center gap-3 px-3 sm:px-4 lg:px-5">
+        {/* Mobile: hamburger */}
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="tap-target flex h-9 w-9 items-center justify-center rounded-[7px] text-foreground/80 transition-colors hover:bg-white/[0.06] lg:hidden"
+          aria-label="Open menu"
+        >
+          <Menu className="h-[18px] w-[18px]" aria-hidden />
+        </button>
+
+        {/* Brand */}
+        <button
+          onClick={() => navigate({ name: "home" })}
+          className="flex shrink-0 items-center"
+          aria-label="Football Hub Bangladesh — home"
+        >
+          <Wordmark compact />
+        </button>
+
+        {/* Search — desktop inline, mobile toggle */}
+        <div className="ml-auto hidden min-w-0 flex-1 justify-end md:flex lg:ml-6 lg:justify-start">
+          <QuickSearch />
+        </div>
+
+        {/* Actions */}
+        <div className="ml-auto flex shrink-0 items-center gap-2 md:ml-3">
+          <button
+            onClick={() => setMobileSearch((v) => !v)}
+            className="tap-target flex h-9 w-9 items-center justify-center rounded-[7px] text-foreground/80 transition-colors hover:bg-white/[0.06] md:hidden"
+            aria-label="Search"
+            aria-expanded={mobileSearch}
+          >
+            <Search className="h-[18px] w-[18px]" aria-hidden />
+          </button>
+
+          <button
+            onClick={() => navigate({ name: "live-tv" })}
+            className="hidden h-9 items-center gap-2 rounded-[7px] border border-border bg-white/[0.02] px-3 text-[12px] font-semibold text-foreground/85 transition-colors hover:border-white/20 sm:flex"
+          >
+            <Radio className="h-3.5 w-3.5 text-fhb-red" aria-hidden />
+            Live TV
+          </button>
+
+          <button
+            onClick={() => navigate({ name: "premium" })}
+            className="hidden h-9 items-center gap-1.5 rounded-[7px] px-2.5 text-[12px] font-semibold text-fhb-gold transition-colors hover:bg-fhb-gold/10 xl:flex"
+          >
+            <Crown className="h-3.5 w-3.5" aria-hidden />
+            Premium
+          </button>
+
+          <AccountControl />
         </div>
       </div>
 
-      {/* ── Live score ticker ── */}
-      {liveCount > 0 && (
-        <div className="relative flex h-[34px] items-center overflow-hidden border-b border-white/15 bg-[#090d19]">
-          {/* LIVE badge — angled cut */}
-          <span className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-[#ff1e46] px-3.5 pr-5 text-[10px] font-black uppercase tracking-[0.15em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-8px)_100%,0_100%)] shadow-[0_0_15px_rgba(255,30,70,0.5)]">
-            <span className="live-dot h-2 w-2 rounded-full bg-white shadow-[0_0_6px_#ffffff]" aria-hidden />
-            LIVE {fmtNum(liveCount)}
-          </span>
-          <div className="relative flex-1 overflow-hidden">
-            <div className="marquee-track flex whitespace-nowrap">
-              {[0, 1].map((dup) => (
-                <div key={dup} className="flex" aria-hidden={dup === 1}>
-                  {[0, 1, 2].map((rep) =>
-                    live.matches.map((m) => (
-                      <button
-                        key={`${dup}-${rep}-${m.id}`}
-                        onClick={() => navigate({ name: "match-detail", id: m.id })}
-                        className="mx-5 flex items-center gap-2 text-[11px] font-bold tracking-wide text-white transition-all hover:text-[#00e5ff]"
-                      >
-                        <span className="text-white font-extrabold">{m.homeTeam.name}</span>
-                        <span className="tabular font-mono font-black text-white px-2 py-0.5 bg-[#ff1e46]/30 border border-[#ff1e46]/60 rounded text-[12px] shadow-[0_0_8px_rgba(255,30,70,0.3)]">
-                          {fmtNum(m.homeScore)} – {fmtNum(m.awayScore)}
-                        </span>
-                        <span className="text-white font-extrabold">{m.awayTeam.name}</span>
-                        <span className="text-emerald-400 text-[10px] font-black px-1 rounded bg-emerald-950/50">
-                          {m.period === "HT" ? "HT" : `${fmtNum(m.minute)}'`}
-                        </span>
-                        <span className="text-white/30 ml-2 font-light">|</span>
-                      </button>
-                    ))
-                  )}
-                </div>
-              ))}
-            </div>
-            <span className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-gradient-to-r from-[#090d19] to-transparent" aria-hidden />
-            <span className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-8 bg-gradient-to-l from-[#090d19] to-transparent" aria-hidden />
-          </div>
+      {/* Mobile search drawer */}
+      {mobileSearch && (
+        <div className="border-t border-border px-3 py-2.5 md:hidden">
+          <QuickSearch onNavigate={() => setMobileSearch(false)} />
         </div>
       )}
 
-      {/* ── Main brand bar ── */}
-      <div
-        className={cn(
-          "w-full border-b border-white/12 transition-all duration-200",
-          scrolled ? "bg-[#06080f]/95 backdrop-blur-2xl" : "bg-[#06080f]"
-        )}
-      >
-        <div className="mx-auto flex h-[62px] max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6">
-          {/* Logo + wordmark */}
-          <Link
-            href="/"
-            onClick={(e) => { e.preventDefault(); navigate({ name: "home" }); }}
-            className="group flex shrink-0 items-center gap-3"
-            aria-label="Football Hub Bangladesh homepage"
-          >
-            <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
-              <LogoMark />
-            </span>
-            <span className="hidden flex-col leading-none sm:flex">
-              <span className="font-black text-[19px] tracking-tight text-white leading-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
-                FOOTBALL HUB
-              </span>
-              <span className="text-[10.5px] font-black tracking-[0.14em] uppercase text-[#ff1e46] mt-0.5 drop-shadow-[0_0_8px_rgba(255,30,70,0.4)]">
-                BANGLADESH · BFL BROADCAST
-              </span>
-            </span>
-          </Link>
+      {/* Mobile nav sheet */}
+      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        <SheetContent side="left" className="w-[300px] border-r border-border bg-sidebar p-0">
+          <SheetHeader className="border-b border-border px-4 pb-4 pt-5">
+            <SheetTitle asChild>
+              <div className="flex items-center gap-2.5">
+                <LogoMark size={30} />
+                <span className="leading-none">
+                  <span className="label-cond block text-[14px] font-bold tracking-[0.06em] text-foreground">
+                    FOOTBALL HUB
+                  </span>
+                  <span className="mt-[3px] block text-[8px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                    Bangladesh
+                  </span>
+                </span>
+              </div>
+            </SheetTitle>
+          </SheetHeader>
+          <nav aria-label="Site menu" className="fhb-scroll max-h-[calc(100vh-88px)] overflow-y-auto px-3 py-4">
+            {NAV_SECTIONS.map((section, si) => (
+              <div key={si} className="mb-1">
+                {section.title && (
+                  <p className="px-2.5 pb-1 pt-3 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/85">
+                    {section.title}
+                  </p>
+                )}
+                {section.items.map((item) => (
+                  <MobileNavItem key={item.label} item={item} onGo={() => setMobileOpen(false)} />
+                ))}
+              </div>
+            ))}
+          </nav>
+        </SheetContent>
+      </Sheet>
+    </header>
+  );
+}
 
-          {/* Desktop nav — Sky Sports & Antipasto Pro style */}
-          <nav className="hidden h-full items-center gap-1 lg:flex" aria-label="Main navigation">
-            {NAV_ITEMS.map((item) => {
-              const active = isActive(item.view);
+function MobileNavItem({ item, onGo }: { item: NavItem; onGo: () => void }) {
+  const navigate = useAppStore((s) => s.navigate);
+  const isActive = useActiveNav()(item);
+  const Icon = item.icon;
+  return (
+    <button
+      onClick={() => {
+        navigate(item.view);
+        onGo();
+      }}
+      className={cn(
+        "menu-item flex h-10 w-full items-center gap-3 rounded-[7px] px-2.5 text-left transition-colors",
+        isActive ? "bg-white/[0.06] text-primary" : "text-foreground/80 hover:bg-white/[0.04]"
+      )}
+    >
+      <Icon className={cn("h-[17px] w-[17px]", item.premium && "text-fhb-gold")} aria-hidden />
+      <span className="text-[13.5px] font-medium">{item.label}</span>
+      {isActive && <span className="ml-auto h-4 w-[3px] rounded-full bg-primary" aria-hidden />}
+    </button>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   LeftRailNav — desktop persistent navigation (lg+).
+   Institutional sidebar, FotMob-style: icon + label, flat active
+   state, live-count badge on Live Scores.
+   ════════════════════════════════════════════════════════════════ */
+export function LeftRailNav() {
+  const navigate = useAppStore((s) => s.navigate);
+  const isActive = useActiveNav();
+  const liveCount = useLiveCount();
+
+  return (
+    <aside
+      className="sticky top-[92px] hidden h-[calc(100vh-92px)] w-[216px] shrink-0 flex-col border-r border-border pr-0 lg:flex"
+      aria-label="Primary navigation"
+    >
+      <nav className="fhb-scroll flex-1 overflow-y-auto px-3 py-5">
+        {NAV_SECTIONS.map((section, si) => (
+          <div key={si} className="mb-1.5">
+            {section.title && (
+              <p className="px-2.5 pb-1.5 pt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/85">
+                {section.title}
+              </p>
+            )}
+            {section.items.map((item) => {
+              const active = isActive(item);
+              const Icon = item.icon;
               return (
                 <button
                   key={item.label}
                   onClick={() => navigate(item.view)}
                   className={cn(
-                    "relative flex h-[62px] items-center px-3.5 text-[13px] font-extrabold tracking-wide transition-all xl:px-4",
-                    active ? "text-white" : "text-[#e2e8f0] hover:text-white"
+                    "group relative flex h-[34px] w-full items-center gap-2.5 rounded-[7px] px-2.5 text-left transition-colors",
+                    active
+                      ? "bg-white/[0.06] text-primary"
+                      : "text-foreground/75 hover:bg-white/[0.04] hover:text-foreground"
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  {item.label}
-                  {item.badge && item.badge === "LIVE" && liveCount > 0 && (
-                    <span className="ml-1.5 live-dot inline-block h-2 w-2 rounded-full bg-[#ff1e46] shadow-[0_0_6px_#ff1e46]" aria-hidden />
+                  {active && (
+                    <span className="absolute left-0 top-1/2 h-[18px] w-[3px] -translate-y-1/2 rounded-r-full bg-primary" aria-hidden />
                   )}
-                  {item.badge && item.badge === "NEW" && (
-                    <span className="ml-1.5 inline-block px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wider bg-gradient-to-r from-emerald-500 to-teal-400 text-white rounded shadow-[0_0_8px_rgba(16,185,129,0.5)]">
-                      LIVE TV
+                  <Icon
+                    className={cn("h-4 w-4 shrink-0 transition-colors", item.premium && !active && "text-fhb-gold")}
+                    aria-hidden
+                  />
+                  <span className="truncate text-[13px] font-medium">{item.label}</span>
+                  {item.view.name === "scores" && liveCount > 0 && (
+                    <span className="tabular ml-auto flex h-[18px] min-w-[18px] items-center justify-center rounded-[4px] bg-fhb-red px-1 text-[10px] font-bold text-white">
+                      {fmtNum(liveCount)}
                     </span>
                   )}
-                  {/* Active underline — solid glowing red bar */}
-                  <span
-                    aria-hidden
-                    className={cn(
-                      "absolute inset-x-2 bottom-0 h-[3px] transition-all duration-200",
-                      active ? "bg-[#ff1e46] opacity-100 shadow-[0_0_10px_#ff1e46]" : "opacity-0"
-                    )}
-                  />
                 </button>
               );
             })}
-          </nav>
-
-          {/* Right cluster */}
-          <div className="flex items-center gap-2">
-            {/* Search */}
-            <button
-              onClick={() => navigate({ name: "teams" })}
-              className="tap-target hidden h-9 w-9 items-center justify-center rounded border border-white/10 bg-white/5 text-white transition-all hover:bg-white/15 hover:border-white/30 md:flex"
-              aria-label="Search"
-            >
-              <Search className="h-4.5 w-4.5" aria-hidden />
-            </button>
-
-            {/* LIVE counter pill */}
-            {liveCount > 0 && (
-              <button
-                onClick={() => navigate({ name: "scores" })}
-                className="hidden items-center gap-1.5 rounded border border-[#ff1e46]/60 bg-[#ff1e46]/20 px-3 py-1.5 text-[10.5px] font-black uppercase tracking-widest text-white shadow-[0_0_12px_rgba(255,30,70,0.35)] transition-all hover:bg-[#ff1e46]/35 sm:flex"
-              >
-                <span className="live-dot h-2 w-2 rounded-full bg-white shadow-[0_0_6px_#ffffff]" aria-hidden />
-                LIVE {fmtNum(liveCount)}
-              </button>
-            )}
-
-            {/* Premium */}
-            <button
-              onClick={() => navigate({ name: "premium" })}
-              className="hidden items-center gap-1.5 rounded border border-amber-400/50 bg-amber-400/15 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide text-amber-300 shadow-[0_0_12px_rgba(251,191,36,0.25)] transition-all hover:border-amber-400 hover:bg-amber-400/25 hover:text-white sm:flex"
-            >
-              <Crown className="h-3.5 w-3.5 text-amber-300" aria-hidden />
-              VIP PASS
-            </button>
-
-            {/* User menu */}
-            {user ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button
-                    className="flex items-center gap-2 rounded border border-white/15 bg-white/10 p-1 pr-3 transition-all hover:border-white/30 hover:bg-white/20"
-                    aria-label="Account menu"
-                  >
-                    <Avatar className="h-7 w-7">
-                      <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
-                      <AvatarFallback className="bg-red-600/30 text-[11px] font-black text-white">
-                        {user.name.slice(0, 2).toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                    <span className="hidden max-w-[90px] truncate text-xs font-bold text-white sm:block">{user.name}</span>
-                    <ChevronDown className="h-3 w-3 text-white" aria-hidden />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-60 rounded border border-white/20 bg-[#0d1324] p-1.5 shadow-2xl">
-                  <DropdownMenuLabel className="rounded py-2.5 text-xs text-white/80">
-                    <span className="flex items-center gap-2">
-                      <span className="flex h-9 w-9 items-center justify-center rounded bg-red-600 font-black text-sm text-white">
-                        {user.name.slice(0, 2).toUpperCase()}
-                      </span>
-                      <span className="min-w-0 flex-col">
-                        <span className="block truncate font-bold text-white">{user.name}</span>
-                        <span className="block truncate text-[10px] text-white/70">{user.email}</span>
-                      </span>
-                    </span>
-                    {user.isPremium && (
-                      <span className="mt-2 inline-flex items-center gap-1 rounded bg-amber-400/20 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-amber-300">
-                        <Crown className="h-3 w-3" aria-hidden /> Premium
-                      </span>
-                    )}
-                  </DropdownMenuLabel>
-                  <DropdownMenuSeparator className="my-1 bg-white/10" />
-                  <DropdownMenuItem onClick={() => navigate({ name: "profile" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
-                    <User2 className="h-4 w-4 text-red-400" aria-hidden /> My Profile
-                  </DropdownMenuItem>
-                  {(user.role === "CREATOR" || user.role === "ADMIN") && (
-                    <>
-                      <DropdownMenuItem onClick={() => navigate({ name: "upload" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
-                        <Upload className="h-4 w-4 text-red-400" aria-hidden /> Upload Video
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => navigate({ name: "earnings" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
-                        <Wallet className="h-4 w-4 text-red-400" aria-hidden /> Earnings Dashboard
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  {user.role === "ADMIN" && (
-                    <DropdownMenuItem onClick={() => navigate({ name: "admin" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
-                      <LayoutDashboard className="h-4 w-4 text-red-400" aria-hidden /> Admin Panel
-                    </DropdownMenuItem>
-                  )}
-                  <DropdownMenuItem onClick={() => navigate({ name: "premium" })} className="gap-2.5 rounded text-xs text-white font-semibold focus:bg-white/10 focus:text-white">
-                    <Crown className="h-4 w-4 text-amber-400" aria-hidden /> Premium Membership
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator className="my-1 bg-white/10" />
-                  <DropdownMenuItem onClick={handleLogout} className="gap-2.5 rounded text-xs text-red-400 font-bold focus:bg-red-600/20 focus:text-red-400">
-                    <LogOut className="h-4 w-4" aria-hidden /> Log Out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
-                <button
-                  onClick={() => navigate({ name: "auth" })}
-                  className="hidden h-9 items-center px-4 text-[12px] font-extrabold text-white transition-colors hover:text-[#ff1e46] lg:flex"
-                >
-                  Log In
-                </button>
-                <button
-                  onClick={() => navigate({ name: "auth" })}
-                  className="flex h-9 items-center rounded bg-[#ff1e46] px-4 text-[12px] font-black text-white transition-all hover:bg-[#e01438] shadow-[0_0_15px_rgba(255,30,70,0.4)] sheen"
-                >
-                  Join Free
-                </button>
-              </>
-            )}
-
-            {/* Mobile menu */}
-            <button
-              className="tap-target flex h-9 w-9 items-center justify-center rounded border border-white/20 bg-white/10 text-white lg:hidden"
-              onClick={() => setMobileOpen((v) => !v)}
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            >
-              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
           </div>
-        </div>
-      </div>
+        ))}
 
-      {/* ── League quick-rail ── */}
-      <div className="hidden border-b border-white/12 bg-[#0a0e1c] lg:block">
-        <div className="no-scrollbar mx-auto flex max-w-[1440px] items-center gap-0 overflow-x-auto px-4 sm:px-6">
-          {LEAGUE_RAIL.map((l) => (
-            <button
-              key={l.label}
-              onClick={() => navigate(l.view)}
-              className="group flex shrink-0 items-center gap-2 border-r border-white/10 px-3.5 py-2 text-[12px] font-extrabold text-white transition-all hover:bg-white/10 hover:text-[#00e5ff] first:pl-0"
-            >
-              {l.flag && <span className="text-[12px]">{l.flag}</span>}
-              <span
-                className="h-[7px] w-[7px] rounded-full shrink-0 shadow-sm"
-                style={{ backgroundColor: l.color }}
-                aria-hidden
-              />
-              {l.label}
-            </button>
-          ))}
-          {/* Live Matches Indicator on Rail */}
-          {liveCount > 0 && (
-            <button
-              onClick={() => navigate({ name: "scores" })}
-              className="ml-auto flex shrink-0 items-center gap-1.5 px-3 py-2 text-[11px] font-black text-white uppercase tracking-wider bg-red-600/30 rounded"
-            >
-              <span className="live-dot h-2 w-2 rounded-full bg-[#ff1e46]" />
-              {fmtNum(liveCount)} Live Now
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* ── Mobile menu portal ── */}
-      {mobileOpen && typeof document !== "undefined" &&
-        createPortal(
-          <div
-            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto border-t border-white/[0.08] bg-[#0d0d10]/98 backdrop-blur-2xl lg:hidden"
-            style={{ top: liveCount > 0 ? "112px" : "82px" }}
-          >
-            <div className="px-4 pb-28 pt-4">
-              {/* Nav grid */}
-              <nav className="grid grid-cols-2 gap-2" aria-label="Mobile navigation">
-                {NAV_ITEMS.map((item, i) => (
-                  <button
-                    key={item.label}
-                    style={{ animationDelay: `${i * 30}ms` }}
-                    onClick={() => { navigate(item.view); setMobileOpen(false); }}
-                    className={cn(
-                      "menu-item flex items-center gap-3 border px-4 py-3.5 text-sm font-bold transition-all active:scale-[0.97]",
-                      isActive(item.view)
-                        ? "border-red-600/50 bg-red-600/10 text-white"
-                        : "border-white/[0.08] bg-white/[0.03] text-white/60"
-                    )}
-                  >
-                    {item.label}
-                    {item.badge === "LIVE" && liveCount > 0 && (
-                      <span className="ml-auto live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
-                    )}
-                  </button>
-                ))}
-              </nav>
-
-              {/* Premium CTA */}
-              <button
-                style={{ animationDelay: "300ms" }}
-                onClick={() => { navigate({ name: "premium" }); setMobileOpen(false); }}
-                className="menu-item gold-panel relative mt-3 flex w-full items-center gap-4 overflow-hidden border border-amber-500/25 p-4 text-left"
-              >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-amber-500/15 text-amber-400">
-                  <Crown className="h-5 w-5" aria-hidden />
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[13px] font-black text-white">
-                    Premium <span className="text-amber-400">PRO</span>
-                  </span>
-                  <span className="mt-0.5 block text-[11px] text-white/40">
-                    Ad-free · Exclusive content
-                  </span>
-                </span>
-                <ChevronRight className="h-4 w-4 text-amber-400" />
-              </button>
-
-              {/* Mobile Ad */}
-              <div className="menu-item mt-3" style={{ animationDelay: "360ms" }}>
-                <AdSlot placement="MOBILE_BANNER" className="h-20" />
-              </div>
-
-              {/* Auth buttons */}
-              {!user && (
-                <div className="menu-item mt-4 grid grid-cols-2 gap-2.5" style={{ animationDelay: "420ms" }}>
-                  <button
-                    onClick={() => { navigate({ name: "auth" }); setMobileOpen(false); }}
-                    className="h-12 border border-white/15 bg-white/[0.05] text-sm font-bold text-white/70 transition-colors hover:bg-white/[0.1]"
-                  >
-                    Log In
-                  </button>
-                  <button
-                    onClick={() => { navigate({ name: "auth" }); setMobileOpen(false); }}
-                    className="h-12 bg-red-600 text-sm font-black text-white transition-colors hover:bg-red-500"
-                  >
-                    Join Free
-                  </button>
-                </div>
-              )}
-
-              {/* Social */}
-              <div className="menu-item mt-5 flex items-center gap-2" style={{ animationDelay: "480ms" }}>
-                {[
-                  { label: "Facebook", icon: <Facebook className="h-4 w-4" /> },
-                  { label: "YouTube", icon: <Youtube className="h-4 w-4" /> },
-                  { label: "X", icon: <Twitter className="h-4 w-4" /> },
-                  { label: "Instagram", icon: <Instagram className="h-4 w-4" /> },
-                ].map((s) => (
-                  <button
-                    key={s.label}
-                    className="flex h-10 w-10 items-center justify-center border border-white/[0.08] bg-white/[0.04] text-white/40 transition-colors hover:border-red-500/40 hover:text-red-400"
-                    aria-label={`FHB on ${s.label}`}
-                  >
-                    {s.icon}
-                  </button>
-                ))}
-              </div>
-              <p className="menu-item mt-4 text-center text-[10.5px] text-white/25" style={{ animationDelay: "520ms" }}>
-                © {new Date().getFullYear()} Football Hub Bangladesh · footballhub.com.bd
-              </p>
-            </div>
-          </div>,
-          document.body
-        )}
-    </header>
+        {/* Admin — role-gated */}
+        <AdminRailItem />
+      </nav>
+    </aside>
   );
 }
 
-export function BottomNav() {
-  const { view, navigate } = useAppStore();
+function AdminRailItem() {
+  const user = useAppStore((s) => s.user);
+  const navigate = useAppStore((s) => s.navigate);
+  if (user?.role !== "ADMIN") return null;
   return (
-    <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.07] bg-[#0d0d10]/96 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden"
-      aria-label="Mobile navigation"
-    >
-      <div className="mx-auto grid max-w-lg grid-cols-5">
-        {MOBILE_NAV.map((item) => {
-          const active =
-            view.name === item.view.name ||
-            (item.view.name === "profile" && ["profile", "earnings", "admin"].includes(view.name)) ||
-            (item.view.name === "news" && view.name === "news-detail");
+    <div className="mt-1 border-t border-border pt-3">
+      <button
+        onClick={() => navigate({ name: "admin" })}
+        className="flex h-[34px] w-full items-center gap-2.5 rounded-[7px] px-2.5 text-left text-foreground/75 transition-colors hover:bg-white/[0.04] hover:text-foreground"
+      >
+        <LayoutDashboard className="h-4 w-4 shrink-0" aria-hidden />
+        <span className="text-[13px] font-medium">Admin Console</span>
+      </button>
+    </div>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   BottomNav — mobile primary tab bar (lg:hidden).
+   Home · Scores · News · Shorts · More
+   ════════════════════════════════════════════════════════════════ */
+const BOTTOM_ITEMS: Array<{ label: string; icon: React.ElementType; view: View }> = [
+  { label: "Home", icon: Home, view: { name: "home" } },
+  { label: "Scores", icon: Zap, view: { name: "scores" } },
+  { label: "News", icon: Newspaper, view: { name: "news" } },
+  { label: "Shorts", icon: Video, view: { name: "shorts" } },
+];
+
+export function BottomNav() {
+  const view = useAppStore((s) => s.view);
+  const navigate = useAppStore((s) => s.navigate);
+  const [moreOpen, setMoreOpen] = useState(false);
+  const live = useLiveScores();
+  const name = PARENT_MAP[view.name] ?? view.name;
+  const hasLive = live.matches.length > 0;
+
+  return (
+    <>
+      <nav
+        className="glass fixed inset-x-0 bottom-0 z-[58] flex h-[calc(56px+env(safe-area-inset-bottom))] items-stretch border-t border-border pb-[env(safe-area-inset-bottom)] lg:hidden"
+        aria-label="Primary"
+      >
+        {BOTTOM_ITEMS.map((item) => {
+          const active = name === item.view.name;
+          const Icon = item.icon;
           return (
             <button
               key={item.label}
               onClick={() => navigate(item.view)}
               className={cn(
-                "tap-target relative flex flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-bold transition-colors",
-                active ? "text-red-400" : "text-white/35 hover:text-white/70"
+                "relative flex flex-1 flex-col items-center justify-center gap-1 transition-colors",
+                active ? "text-primary" : "text-muted-foreground"
               )}
               aria-current={active ? "page" : undefined}
             >
-              <span
-                aria-hidden
-                className={cn(
-                  "absolute inset-x-4 top-0 h-[2px] transition-all duration-200",
-                  active ? "bg-red-500 opacity-100" : "opacity-0"
+              <span className="relative">
+                <Icon className="h-[19px] w-[19px]" aria-hidden />
+                {item.view.name === "scores" && hasLive && (
+                  <span className="live-dot absolute -right-1.5 -top-0.5 h-[7px] w-[7px] rounded-full bg-fhb-red" aria-hidden />
                 )}
-              />
-              <span className={cn(
-                "flex h-7 w-11 items-center justify-center transition-all duration-200",
-                active && "bg-red-600/15 rounded"
-              )}>
-                {item.icon}
               </span>
-              <span className="tracking-wide">{item.label}</span>
+              <span className={cn("text-[10px] font-semibold", active && "font-bold")}>{item.label}</span>
             </button>
           );
         })}
-      </div>
-    </nav>
+        <button
+          onClick={() => setMoreOpen(true)}
+          className={cn(
+            "flex flex-1 flex-col items-center justify-center gap-1 transition-colors",
+            ["teams", "players", "competitions", "standings", "community", "live-tv", "premium", "profile", "earnings", "upload", "admin", "auth"].includes(name)
+              ? "text-primary"
+              : "text-muted-foreground"
+          )}
+          aria-label="More sections"
+        >
+          <MoreHorizontal className="h-[19px] w-[19px]" aria-hidden />
+          <span className="text-[10px] font-semibold">More</span>
+        </button>
+      </nav>
+
+      {/* More sheet */}
+      <Sheet open={moreOpen} onOpenChange={setMoreOpen}>
+        <SheetContent
+          side="bottom"
+          className="max-h-[78vh] rounded-t-2xl border-t border-border bg-sidebar p-0"
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>All sections</SheetTitle>
+          </SheetHeader>
+          <div className="fhb-scroll max-h-[70vh] overflow-y-auto px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-5">
+            <div className="grid grid-cols-2 gap-1.5">
+              {NAV_SECTIONS.flatMap((s) => s.items)
+                .filter((i) => !BOTTOM_ITEMS.some((b) => b.view.name === i.view.name))
+                .map((item) => {
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.label}
+                      onClick={() => {
+                        navigate(item.view);
+                        setMoreOpen(false);
+                      }}
+                      className="flex h-11 items-center gap-3 rounded-[8px] border border-border bg-white/[0.02] px-3 text-left transition-colors hover:bg-white/[0.05]"
+                    >
+                      <Icon className={cn("h-[18px] w-[18px] shrink-0", item.premium ? "text-fhb-gold" : "text-primary")} aria-hidden />
+                      <span className="truncate text-[13px] font-medium text-foreground/90">{item.label}</span>
+                    </button>
+                  );
+                })}
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
+    </>
   );
 }
+
+/** Backwards-compatible export (legacy imports). */
+export const NAV_ITEMS = NAV_SECTIONS.flatMap((s) => s.items).map(({ label, view }) => ({ label, view }));

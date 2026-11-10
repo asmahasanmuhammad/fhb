@@ -1,16 +1,90 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
-import { timeAgo, fmtCompact } from "@/lib/format";
-import { CATEGORY_LABELS } from "@/lib/types";
-import type { NewsArticle } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
+import type { NewsArticle } from "@/lib/types";
+import { timeAgo, fmtCompact } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Eye, Clock, ChevronRight } from "lucide-react";
+import { Clock } from "lucide-react";
+
+const CATEGORY_STYLES: Record<string, string> = {
+  BFL: "bg-primary text-primary-foreground",
+  NATIONAL: "bg-fhb-red text-white",
+  TRANSFER: "bg-fhb-gold text-black",
+  INTERNATIONAL: "bg-elevated text-foreground ring-1 ring-inset ring-border",
+  OPINION: "bg-secondary text-foreground",
+};
+
+const CATEGORY_DOTS: Record<string, string> = {
+  BFL: "bg-primary",
+  NATIONAL: "bg-fhb-red",
+  TRANSFER: "bg-fhb-gold",
+  INTERNATIONAL: "bg-muted-foreground",
+  OPINION: "bg-muted-foreground",
+};
+
+/** Short chip labels — never overflow card widths. */
+const SHORT_LABELS: Record<string, string> = {
+  ALL: "All",
+  BFL: "BFL",
+  NATIONAL: "National Team",
+  TRANSFER: "Transfers",
+  INTERNATIONAL: "International",
+  OPINION: "Opinion",
+};
 
 /**
- * FHB 3.0 — The Athletic / Sky Sports editorial cards.
- * Clean carbon surfaces, photo-forward, tight editorial typography.
+ * FadeImg — image with a branded flat placeholder while loading, so
+ * cards never render as black voids on slow connections.
+ */
+function FadeImg({
+  src,
+  alt,
+  sizes,
+  className,
+  priority = false,
+}: {
+  src: string;
+  alt: string;
+  sizes: string;
+  className?: string;
+  priority?: boolean;
+}) {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <>
+      {!loaded && (
+        <span
+          aria-hidden
+          className="absolute inset-0 flex items-center justify-center bg-elevated"
+        >
+          <span className="label-cond select-none text-[11px] font-bold tracking-[0.22em] text-muted-foreground/25">
+            FHB
+          </span>
+        </span>
+      )}
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes={sizes}
+        priority={priority}
+        loading="eager"
+        onLoad={() => setLoaded(true)}
+        className={cn("object-cover transition-opacity duration-500", loaded ? "opacity-100" : "opacity-0", className)}
+      />
+    </>
+  );
+}
+
+/**
+ * FHB 4.0 — Editorial news cards.
+ * OneFootball-style: strong sans headlines (Inter, not condensed),
+ * clean category chips, quiet meta. Variants:
+ *   "lg"  — lead story (photo + scrim + overlay headline)
+ *   "md"  — standard grid card (photo top)
+ *   "row" — compact list row with thumb (rails, most-read)
  */
 export function NewsCard({
   article,
@@ -18,154 +92,133 @@ export function NewsCard({
   className,
 }: {
   article: NewsArticle;
-  size?: "md" | "lg" | "compact";
+  size?: "md" | "lg" | "row";
   className?: string;
 }) {
   const navigate = useAppStore((s) => s.navigate);
-  const category = CATEGORY_LABELS[article.category] ?? article.category;
-  const go = () => navigate({ name: "news-detail", id: article.id });
+  const open = () => navigate({ name: "news-detail", id: article.id });
+  const catLabel = SHORT_LABELS[article.category] ?? article.category;
+  const catStyle = CATEGORY_STYLES[article.category] ?? CATEGORY_STYLES.INTERNATIONAL;
+  const catDot = CATEGORY_DOTS[article.category] ?? "bg-muted-foreground";
 
-  /* ── Compact thumbnail row ── */
-  if (size === "compact") {
-    return (
-      <button
-        onClick={go}
-        className={cn(
-          "group flex w-full items-center gap-3 p-3 text-left transition-all hover:bg-white/10 rounded border border-transparent hover:border-white/10",
-          className
-        )}
-      >
-        {/* Thumbnail */}
-        <div className="relative h-[64px] w-[96px] shrink-0 overflow-hidden rounded bg-[#10172a]">
-          {article.coverUrl ? (
-            <Image
-              src={article.coverUrl}
-              alt={article.title}
-              fill
-              sizes="96px"
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              unoptimized
-            />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center text-[10px] font-black uppercase tracking-widest text-white/40">
-              FHB
-            </span>
-          )}
-          {/* Category chip on image */}
-          <span className="absolute left-0 top-0 px-2 py-0.5 bg-[#ff1e46] text-[8px] font-black uppercase tracking-widest text-white shadow-sm">
-            {category.slice(0, 5)}
-          </span>
-        </div>
-        {/* Text */}
-        <div className="min-w-0 flex-1">
-          <p className="line-clamp-2 text-[13px] font-extrabold leading-snug text-white transition-colors group-hover:text-[#00e5ff]">
-            {article.title}
-          </p>
-          <p className="mt-1.5 flex items-center gap-2 text-[11px] font-semibold text-[#cbd5e1]">
-            <Clock className="h-3 w-3 text-[#ff1e46]" /> {timeAgo(article.createdAt)}
-            <span className="text-white/30">·</span>
-            <Eye className="h-3 w-3 text-[#00e5ff]" /> {fmtCompact(article.views)}
-          </p>
-        </div>
-        <ChevronRight className="h-4 w-4 shrink-0 text-white/40 transition-colors group-hover:text-white" />
-      </button>
-    );
-  }
-
-  /* ── Large hero overlay card ── */
+  /* ── Lead story — full-bleed photo, scrim, overlay headline ── */
   if (size === "lg") {
     return (
       <button
-        onClick={go}
+        onClick={open}
         className={cn(
-          "group relative flex h-full w-full min-h-[340px] overflow-hidden rounded-md border border-white/15 text-left shadow-2xl",
+          "group relative flex min-h-[300px] w-full flex-col justify-end overflow-hidden rounded-xl border border-border text-left sm:min-h-[380px]",
           className
         )}
-        aria-label={article.title}
+        aria-label={`Read: ${article.title}`}
       >
-        {/* Full bleed photo */}
         {article.coverUrl ? (
-          <Image
+          <FadeImg
             src={article.coverUrl}
-            alt={article.title}
-            fill
+            alt=""
+            sizes="(max-width: 1024px) 100vw, 720px"
+            className="img-zoom"
             priority
-            sizes="(max-width: 1024px) 100vw, 60vw"
-            className="object-cover brightness-[0.7] transition-transform duration-700 group-hover:scale-[1.03]"
-            unoptimized
           />
         ) : (
-          <div className="absolute inset-0 carbon-panel" />
+          <span className="stadium-panel absolute inset-0" aria-hidden />
         )}
-        <div className="photo-scrim absolute inset-0" />
-
-        {/* Category badge */}
-        <span className="absolute left-4 top-4 z-10 px-2.5 py-1 text-[10px] font-black uppercase tracking-widest bg-[#ff1e46] text-white shadow-[0_0_10px_rgba(255,30,70,0.5)]">
-          {category}
-        </span>
-
-        {/* Content */}
-        <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-6 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
-          <h3 className="mb-2 font-black text-white leading-tight text-[22px] sm:text-[26px] drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] line-clamp-3">
+        <span className="photo-scrim absolute inset-0" aria-hidden />
+        <span className="relative z-10 flex flex-col gap-2.5 p-5 sm:p-6">
+          <span className="flex flex-wrap items-center gap-2">
+            <span className={cn("rounded-[4px] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em]", catStyle)}>
+              {catLabel}
+            </span>
+          </span>
+          <h3 className="max-w-2xl text-[22px] font-bold leading-[1.15] tracking-[-0.015em] text-white sm:text-[28px]">
             {article.title}
           </h3>
-          <p className="mb-3 line-clamp-2 text-[13.5px] font-medium text-[#f1f5f9] leading-relaxed hidden sm:block">
-            {article.excerpt}
-          </p>
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] font-bold text-white">
-            <span className="text-[#00e5ff]">{article.author.name}</span>
-            <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5 text-[#ff1e46]" /> {timeAgo(article.createdAt)}</span>
-            <span className="flex items-center gap-1.5"><Eye className="h-3.5 w-3.5 text-[#00e5ff]" /> {fmtCompact(article.views)} views</span>
-          </div>
-        </div>
+          <p className="line-clamp-2 max-w-2xl text-[13px] leading-relaxed text-white/70">{article.excerpt}</p>
+          <span className="mt-1 flex items-center gap-3 text-[11px] font-medium text-white/55">
+            <span className="font-semibold text-white/85">{article.author.name}</span>
+            <span className="flex items-center gap-1">
+              <Clock className="h-3 w-3" aria-hidden /> {timeAgo(article.createdAt)}
+            </span>
+            <span>{fmtCompact(article.views)} reads</span>
+          </span>
+        </span>
       </button>
     );
   }
 
-  /* ── Standard card ── */
+  /* ── Row — compact horizontal card for rails & lists ── */
+  if (size === "row") {
+    return (
+      <button
+        onClick={open}
+        className={cn("row-hover group flex w-full items-start gap-3.5 px-4 py-3 text-left", className)}
+        aria-label={`Read: ${article.title}`}
+      >
+        <span className="relative h-16 w-[96px] shrink-0 overflow-hidden rounded-[6px] bg-elevated">
+          {article.coverUrl && <FadeImg src={article.coverUrl} alt="" sizes="96px" />}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="mb-1.5 flex items-center gap-1.5">
+            <span className={cn("h-[7px] w-[7px] rounded-[2px]", catDot)} aria-hidden />
+            <span className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+              {catLabel}
+            </span>
+          </span>
+          <span title={article.title} className="line-clamp-2 text-[13px] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+            {article.title}
+          </span>
+          <span className="mt-1 flex items-center gap-2 text-[10.5px] text-muted-foreground">
+            {timeAgo(article.createdAt)}
+            <span aria-hidden>·</span>
+            <span>{fmtCompact(article.views)} reads</span>
+          </span>
+        </span>
+      </button>
+    );
+  }
+
+  /* ── Standard grid card ── */
   return (
     <button
-      onClick={go}
+      onClick={open}
       className={cn(
-        "group flex flex-col w-full overflow-hidden rounded-md border border-white/12 bg-[#0b101e] text-left transition-all hover:border-white/30 hover:bg-[#10172a] shadow-md",
+        "card-lift group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left",
         className
       )}
+      aria-label={`Read: ${article.title}`}
     >
-      {/* Photo */}
-      <div className="relative w-full aspect-[16/9] overflow-hidden bg-[#10172a]">
+      <span className="relative block aspect-[16/9] overflow-hidden bg-elevated">
         {article.coverUrl ? (
-          <Image
+          <FadeImg
             src={article.coverUrl}
-            alt={article.title}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover transition-transform duration-600 group-hover:scale-[1.04]"
-            unoptimized
+            alt=""
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
+            className="img-zoom"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center carbon-panel">
-            <span className="text-[11px] font-black uppercase tracking-widest text-white/30">FHB NEWS</span>
-          </div>
+          <span className="stadium-panel absolute inset-0" aria-hidden />
         )}
-        {/* Category tag */}
-        <span className="absolute left-0 bottom-0 px-2.5 py-1 bg-[#ff1e46] text-[9px] font-black uppercase tracking-widest text-white shadow-sm">
-          {category}
+        <span
+          className={cn(
+            "label-cond absolute left-3 top-3 rounded-[4px] px-2 py-1 text-[9.5px] font-bold tracking-[0.08em] backdrop-blur-sm",
+            catStyle
+          )}
+        >
+          {catLabel}
         </span>
-      </div>
-
-      {/* Content */}
-      <div className="flex flex-1 flex-col p-4">
-        {/* Red accent left border on title */}
-        <h3 className="mb-2 pl-3 border-l-3 border-[#ff1e46] text-[15px] font-extrabold leading-snug text-white transition-colors group-hover:text-[#00e5ff] line-clamp-2">
+      </span>
+      <span className="flex flex-1 flex-col gap-2 p-4">
+        <h3 className="line-clamp-3 text-[15px] font-semibold leading-[1.25] tracking-[-0.005em] text-foreground transition-colors group-hover:text-primary">
           {article.title}
         </h3>
-        <p className="mt-auto flex items-center justify-between border-t border-white/10 pt-3 text-[11px] font-semibold text-[#cbd5e1]">
-          <span className="truncate">{article.author.name} · {timeAgo(article.createdAt)}</span>
-          <span className="shrink-0 flex items-center gap-1.5 ml-2 text-white">
-            <Eye className="h-3.5 w-3.5 text-[#00e5ff]" /> {fmtCompact(article.views)}
+        <p className="line-clamp-2 text-[12.5px] leading-relaxed text-muted-foreground">{article.excerpt}</p>
+        <span className="mt-auto flex items-center gap-2 pt-1 text-[10.5px] text-muted-foreground">
+          <span className="font-semibold text-foreground/60">{article.author.name}</span>
+          <span className="flex items-center gap-1">
+            <Clock className="h-3 w-3" aria-hidden /> {timeAgo(article.createdAt)}
           </span>
-        </p>
-      </div>
+        </span>
+      </span>
     </button>
   );
 }

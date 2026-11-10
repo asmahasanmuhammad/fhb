@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAppStore, type View } from "@/store/app-store";
 import { LogoMark } from "@/components/layout/header";
 import { useToast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 import { Facebook, Youtube, Twitter, Instagram, Send, Globe, Rss, Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
 
 const FOOTER_LINKS: Record<string, Array<{ label: string; view: View }>> = {
@@ -187,6 +188,35 @@ export function Footer() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+
+        {/* Official Partners & Sponsors Strip */}
+        <div className="mt-10 border-t border-white/10 pt-6">
+          <p className="text-[10.5px] font-black uppercase tracking-[0.18em] text-white/60 mb-4 text-center">
+            Official Broadcast & Digital Media Partners
+          </p>
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 py-2">
+            {[
+              { name: "bKash", src: "/brands/bkash.png", h: "h-6" },
+              { name: "Daraz", src: "/brands/daraz.png", h: "h-5" },
+              { name: "Grameenphone", src: "/brands/grameenphone.svg", h: "h-6" },
+              { name: "Robi", src: "/brands/robi.svg", h: "h-6" },
+              { name: "City Bank", src: "/brands/citybank.png", h: "h-5" },
+              { name: "Walton", src: "/brands/walton.png", h: "h-5" },
+              { name: "Pathao", src: "/brands/pathao.png", h: "h-5" },
+              { name: "Samsung", src: "/brands/samsung.png", h: "h-4" },
+              { name: "Pran", src: "/brands/pran.png", h: "h-5" },
+              { name: "Bata", src: "/brands/bata.png", h: "h-4" },
+            ].map((p) => (
+              <div
+                key={p.name}
+                className="flex items-center justify-center rounded bg-white px-2.5 py-1 shadow-sm transition-transform hover:scale-105"
+                title={p.name}
+              >
+                <img src={p.src} alt={p.name} className={cn("object-contain", p.h)} />
+              </div>
+            ))}
           </div>
         </div>
 

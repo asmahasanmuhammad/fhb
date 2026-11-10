@@ -15,6 +15,7 @@ import { TeamCrest } from "@/components/football/team-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatKickoff, fmtNum, fmtCompact, timeAgo } from "@/lib/format";
 import { TacticalPitch } from "@/components/football/tactical-pitch";
+import { TransferRadar } from "@/components/football/transfer-radar";
 import {
   Zap, Newspaper, Video as VideoIcon, Flame, Play, ChevronRight,
   Trophy, Users, Crown, Goal, Tv, Clock, CalendarDays, ArrowRight,
@@ -420,6 +421,11 @@ export function HomeView() {
           />
         </section>
       )}
+
+      {/* ══════════ TRANSFER RADAR ══════════ */}
+      <section className="reveal mb-8" aria-label="Transfer Radar">
+        <TransferRadar />
+      </section>
 
       {/* ══════════ TRENDING SHORTS ══════════ */}
       {videos.length > 0 && (

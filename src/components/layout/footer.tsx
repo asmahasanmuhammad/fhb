@@ -129,7 +129,7 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2 text-[12px] text-white font-medium">
                 <Globe className="h-3.5 w-3.5 text-[#ff1e46] shrink-0" />
-                🇧🇩 বাংলা · 🇬🇧 English Edition Available
+                English Global Broadcast Edition
               </div>
             </div>
 

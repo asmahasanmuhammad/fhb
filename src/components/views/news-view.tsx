@@ -53,7 +53,7 @@ export function NewsView() {
             </span>
           </div>
           <h1 className="font-black text-[28px] sm:text-[36px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]">
-            {language === "bn" ? "ফুটবল সংবাদ ও দলবদল" : "Football News & Transfers"}
+            Football News & Transfers
           </h1>
           <p className="text-[14px] text-[#cbd5e1] font-medium mt-1">
             Breaking transfer stories, tactical match reports, exclusive interviews & BFL coverage.

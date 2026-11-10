@@ -26,16 +26,16 @@ import {
   ChevronDown, Wifi,
 } from "lucide-react";
 
-const NAV_ITEMS: Array<{ label: string; labelBn: string; view: View; badge?: string }> = [
-  { label: "Live Scores", labelBn: "লাইভ স্কোর", view: { name: "scores" }, badge: "LIVE" },
-  { label: "Live TV", labelBn: "লাইভ টিভি", view: { name: "live-tv" }, badge: "NEW" },
-  { label: "Tables", labelBn: "পয়েন্ট টেবিল", view: { name: "standings" } },
-  { label: "News", labelBn: "সংবাদ", view: { name: "news" } },
-  { label: "Teams", labelBn: "দলসমূহ", view: { name: "teams" } },
-  { label: "Players", labelBn: "খেলোয়াড়", view: { name: "players" } },
-  { label: "Competitions", labelBn: "লিগ", view: { name: "competitions" } },
-  { label: "Shorts", labelBn: "শর্টস", view: { name: "shorts" } },
-  { label: "Community", labelBn: "কমিউনিটি", view: { name: "community" } },
+const NAV_ITEMS: Array<{ label: string; view: View; badge?: string }> = [
+  { label: "Live Scores", view: { name: "scores" }, badge: "LIVE" },
+  { label: "Live TV", view: { name: "live-tv" }, badge: "NEW" },
+  { label: "Tables", view: { name: "standings" } },
+  { label: "News", view: { name: "news" } },
+  { label: "Teams", view: { name: "teams" } },
+  { label: "Players", view: { name: "players" } },
+  { label: "Competitions", view: { name: "competitions" } },
+  { label: "Shorts", view: { name: "shorts" } },
+  { label: "Community", view: { name: "community" } },
 ];
 
 const LEAGUE_RAIL: Array<{ label: string; abbr: string; view: View; color: string; flag?: string }> = [
@@ -121,7 +121,7 @@ export function LogoMark({ size = 9 }: { size?: number }) {
 }
 
 export function Header() {
-  const { view, navigate, user, logout, language, setLanguage } = useAppStore();
+  const { view, navigate, user, logout } = useAppStore();
   const live = useLiveScores();
   const { toast } = useToast();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -237,13 +237,11 @@ export function Header() {
               </div>
             </div>
 
-            {/* Edition / Language Toggle */}
-            <button
-              onClick={() => setLanguage(language === "bn" ? "en" : "bn")}
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-white/10 hover:bg-white/20 border border-white/20 text-[10px] font-black text-white transition-all cursor-pointer shadow-sm"
-            >
-              {language === "bn" ? "🇧🇩 বাংলা" : "🇬🇧 English"}
-            </button>
+            {/* Official Edition Badge */}
+            <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-white/10 border border-white/20 text-[10px] font-black text-white tracking-wider shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+              GLOBAL EDITION
+            </div>
           </div>
         </div>
       </div>
@@ -330,7 +328,7 @@ export function Header() {
                   )}
                   aria-current={active ? "page" : undefined}
                 >
-                  {language === "bn" ? item.labelBn : item.label}
+                  {item.label}
                   {item.badge && item.badge === "LIVE" && liveCount > 0 && (
                     <span className="ml-1.5 live-dot inline-block h-2 w-2 rounded-full bg-[#ff1e46] shadow-[0_0_6px_#ff1e46]" aria-hidden />
                   )}
@@ -528,7 +526,7 @@ export function Header() {
                         : "border-white/[0.08] bg-white/[0.03] text-white/60"
                     )}
                   >
-                    {language === "bn" ? item.labelBn : item.label}
+                    {item.label}
                     {item.badge === "LIVE" && liveCount > 0 && (
                       <span className="ml-auto live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
                     )}

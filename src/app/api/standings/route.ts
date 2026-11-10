@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
       orderBy: { goals: "desc" },
       take: 10,
       select: {
-        id: true, name: true, goals: true, assists: true, position: true,
+        id: true, name: true, goals: true, assists: true, position: true, photoUrl: true,
         team: { select: { id: true, name: true, initials: true, color: true, color2: true, logoUrl: true } },
       },
     });

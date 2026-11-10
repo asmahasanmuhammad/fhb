@@ -31,8 +31,8 @@ interface AppState {
   history: View[];
   user: SafeUser | null;
   authLoading: boolean;
-  language: 'bn' | 'en';
-  setLanguage: (lang: 'bn' | 'en') => void;
+  language: "en";
+  setLanguage: (lang: "en") => void;
   navigate: (view: View) => void;
   back: () => void;
   setUser: (user: SafeUser | null) => void;
@@ -46,8 +46,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   history: [],
   user: null,
   authLoading: true,
-  language: "bn",
-  setLanguage: (lang) => set({ language: lang }),
+  language: "en",
+  setLanguage: (lang) => set({ language: "en" }),
 
   navigate: (view) => {
     const { view: current, history } = get();

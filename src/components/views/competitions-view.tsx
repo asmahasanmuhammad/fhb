@@ -78,7 +78,7 @@ export function CompetitionsView() {
           </span>
         </div>
         <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight">
-          {language === "bn" ? "প্রতিযোগিতা ও টুর্নামেন্ট" : "Competitions Hub"}
+          Competitions Hub
         </h1>
         <p className="text-[12.5px] text-white/40 mt-1">
           Full coverage of the Bangladesh Premier League (BFL), Federation Cup, UEFA Champions League, and top domestic leagues.

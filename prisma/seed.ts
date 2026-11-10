@@ -1,13 +1,12 @@
 /**
- * Football Hub Bangladesh — Database Seeder
- * Run: bun prisma/seed.ts
+ * Football Hub Bangladesh — Official Database Seeder
+ * Full English broadcast data with authentic players, news, and ads.
  */
 import { PrismaClient } from "@prisma/client";
 import { hashPassword } from "../src/lib/password";
 
 const db = new PrismaClient();
 
-// ---------- deterministic RNG (so seed is stable-ish) ----------
 let seedState = 20251108;
 function rnd(): number {
   seedState = (seedState * 1103515245 + 12345) % 2147483648;
@@ -20,64 +19,39 @@ function rint(min: number, max: number): number {
   return Math.floor(rnd() * (max - min + 1)) + min;
 }
 
-// ---------- image assets (OSS-hosted, reachable) ----------
+// Authentic football media photography
 const IMG = {
   stadium: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c80743607c26.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c310648b1512.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/41e83b0ccac0.jpg",
+    "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1516307365426-bea591f05011?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200&h=700&fit=crop",
   ],
   action: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ce3c35abf03c.jpeg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/91cb72ce8290.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/47ce3d922168.jpg",
-  ],
-  ball: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/09b0b2786b61.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a1332fafe42c.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/33a032ecdab7.jpg",
-  ],
-  celebrate: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/985750c52694.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/eb1564b3d3b6.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b5d6b6551d9a.jpg",
-  ],
-  coach: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/04d047e7e1e7.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/33791d63308c.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e01e4ff2a39a.jpg",
-  ],
-  dribble: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/83c3219a4b39.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ddab4fb90a30.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c693b80c1d84.jpg",
+    "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1200&h=700&fit=crop",
   ],
   fans: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/38d104f20d12.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b13bac242184.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3dbea23a5446.jpg",
+    "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1511886929837-354d827aae26?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=1200&h=700&fit=crop",
   ],
-  goalkeeper: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c9c992f0b9dd.jpeg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b8531c920837.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3c2bdf743c17.jpg",
+  celebrate: [
+    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1570498839593-e565b3d7f672?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1200&h=700&fit=crop",
   ],
   training: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8c14149ceb3a.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/717e476fc3d9.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/68731a25f344.jpg",
-  ],
-  trophy: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/946e49a08e5d.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c0f2649feab.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6d7074e06eea.jpg",
+    "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=1200&h=700&fit=crop",
+    "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?w=1200&h=700&fit=crop",
   ],
 };
 
 async function main() {
-  console.log("🌱 Seeding Football Hub Bangladesh...");
+  console.log("Seeding Football Hub Bangladesh (100% English Broadcast Edition)...");
 
-  // wipe in FK-safe order
+  // Wipe previous data
   await db.like.deleteMany();
   await db.comment.deleteMany();
   await db.follow.deleteMany();
@@ -103,52 +77,51 @@ async function main() {
     data: {
       email: "admin@fhb.com.bd",
       username: "fhbadmin",
-      name: "FHB Admin",
+      name: "FHB Newsroom Chief",
       passwordHash: hashPassword("Admin@2025"),
       role: "ADMIN",
-      bio: "The official admin account of Football Hub Bangladesh.",
-      avatarUrl: null,
+      bio: "Official editorial desk of Football Hub Bangladesh. Live broadcast coverage & investigative journalism.",
     },
   });
   const editor = await db.user.create({
     data: {
       email: "editor@fhb.com.bd",
-      username: "rashed_editor",
-      name: "Rashedul Islam",
+      username: "tariq_editor",
+      name: "Tariqul Islam",
       passwordHash: hashPassword("Editor@2025"),
       role: "ADMIN",
-      bio: "Football journalist — covering the BPL and the national team.",
+      bio: "Senior Football Correspondent — covering the Bangladesh Premier League and FIFA World Cup Qualifiers.",
     },
   });
   const creator1 = await db.user.create({
     data: {
       email: "creator@fhb.com.bd",
-      username: "shakil_khan",
+      username: "shakil_tactics",
       name: "Shakil Khan",
       passwordHash: hashPassword("Creator@2025"),
       role: "CREATOR",
-      bio: "BPL highlights and football content creator. New shorts every day! ⚽🔥",
-      followerCount: 12480,
+      bio: "BFL matchday highlights, tactical breakdowns and stadium atmosphere shorts.",
+      followerCount: 24800,
     },
   });
   const creator2 = await db.user.create({
     data: {
       email: "guru@fhb.com.bd",
-      username: "footballguru",
-      name: "Football Guru",
+      username: "bengal_football_guru",
+      name: "Football Analyst",
       passwordHash: hashPassword("Creator@2025"),
       role: "CREATOR",
-      bio: "Tactics breakdowns, player analysis and goalpost specials 🎯",
-      followerCount: 8730,
+      bio: "Deep tactical pitch analysis, player scouting reports and transfer radar specials.",
+      followerCount: 18400,
     },
   });
 
   const fanNames: Array<[string, string, string, string]> = [
-    ["tanvir@fhb.com.bd", "tanvir10", "Tanvir Ahmed", "Right wing of the red and green 🇧🇩 Abahani fan boys!"],
-    ["mim@fhb.com.bd", "mim_akter", "Mim Akter", "Football is my life 💚❤️ Mohammedan supporter"],
-    ["sakib@fhb.com.bd", "sakib_h", "Sakib Hossain", "Bashundhara Kings 🦁 super fan. Match day = stadium day!"],
-    ["nusrat@fhb.com.bd", "nusrat_j", "Nusrat Jahan", "Free-kick specialist fan 😄 All football, all the time"],
-    ["rakib@fhb.com.bd", "rakib_bd", "Rakib Hasan", "I want Bangladesh football to rise — SAFF champions, inshallah!"],
+    ["tanvir@fhb.com.bd", "tanvir10", "Tanvir Ahmed", "Lifelong Abahani Limited Dhaka supporter. Always backing the Bengal Tigers!"],
+    ["mim@fhb.com.bd", "mim_akter", "Mim Akter", "Mohammedan SC ultra. Football is passion, history, and community!"],
+    ["sakib@fhb.com.bd", "sakib_h", "Sakib Hossain", "Bashundhara Kings season ticket holder. Match day at Kings Arena is unmatched!"],
+    ["nusrat@fhb.com.bd", "nusrat_j", "Nusrat Jahan", "Hamza Choudhury fan and women's football advocate. South Asian champions!"],
+    ["rakib@fhb.com.bd", "rakib_bd", "Rakib Hasan", "Tactical scout follower. Believing in Bangladesh football's modern renaissance."],
   ];
   const fans = [];
   for (const [email, username, name, bio] of fanNames) {
@@ -165,30 +138,34 @@ async function main() {
       })
     );
   }
-  // premium fan
-  await db.user.update({ where: { id: fans[1].id }, data: { isPremium: true, premiumUntil: new Date(Date.now() + 25 * 864e5) } });
+
+  // Premium Supporter
+  await db.user.update({
+    where: { id: fans[1].id },
+    data: { isPremium: true, premiumUntil: new Date(Date.now() + 30 * 864e5) },
+  });
   await db.subscription.create({
     data: {
       userId: fans[1].id,
       planCode: "PRO",
       amount: 149,
       status: "ACTIVE",
-      expiresAt: new Date(Date.now() + 25 * 864e5),
+      expiresAt: new Date(Date.now() + 30 * 864e5),
     },
   });
 
-  // ================= TEAMS (BPL 2025-26) =================
+  // ================= TEAMS (BFL 2025-26) =================
   const teamDefs = [
-    { name: "Bashundhara Kings", shortName: "Bashundhara Kings", initials: "BK", city: "Dhaka", stadium: "Bashundhara Kings Arena", founded: 2013, color: "#E11D48", color2: "#4C0519", strength: 0.92 },
-    { name: "Abahani Limited Dhaka", shortName: "Abahani Ltd Dhaka", initials: "AB", city: "Dhaka", stadium: "Abahani Ground, Dhanmondi", founded: 1972, color: "#0891B2", color2: "#083344", strength: 0.84 },
-    { name: "Mohammedan Sporting Club", shortName: "Mohammedan SC", initials: "MSC", city: "Dhaka", stadium: "Bir Shrestha Shaheed Sepahi Kamal Stadium", founded: 1936, color: "#059669", color2: "#022C22", strength: 0.82 },
-    { name: "Sheikh Russel Krira Chakra", shortName: "Sheikh Russel KC", initials: "SR", city: "Dhaka", stadium: "Rafiquddin Bhuiyan Stadium, Tongi", founded: 1995, color: "#7C3AED", color2: "#2E1065", strength: 0.71 },
-    { name: "Saif Sporting Club", shortName: "Saif SC", initials: "SAIF", city: "Dhaka", stadium: "Saif Malibagh Court Ground", founded: 2016, color: "#B91C1C", color2: "#450A0A", strength: 0.68 },
-    { name: "Fortis Football Club", shortName: "Fortis FC", initials: "FTS", city: "Dhaka", stadium: "Fortis Arena, Amulia", founded: 2020, color: "#CA8A04", color2: "#422006", strength: 0.61 },
-    { name: "Bangladesh Police Football Club", shortName: "Police FC", initials: "POL", city: "Dhaka", stadium: "Police Ground, Rajarbagh", founded: 1972, color: "#475569", color2: "#0F172A", strength: 0.56 },
-    { name: "Rahmatganj Muslim Friends Society", shortName: "Rahmatganj MFS", initials: "RJ", city: "Dhaka", stadium: "Rahmatganj Ground", founded: 1933, color: "#B45309", color2: "#451A03", strength: 0.51 },
-    { name: "Muktijoddha Sangsad Krira Chakra", shortName: "Muktijoddha SKC", initials: "MSK", city: "Dhaka", stadium: "Muktijoddha Sangsad Ground", founded: 1972, color: "#DC2626", color2: "#450A0A", strength: 0.49 },
-    { name: "Brothers Union", shortName: "Brothers Union", initials: "BU", city: "Dhaka", stadium: "Gopibag Brothers Union Ground", founded: 1949, color: "#EA580C", color2: "#431407", strength: 0.46 },
+    { name: "Bashundhara Kings", shortName: "Bashundhara Kings", initials: "BK", city: "Dhaka", stadium: "Bashundhara Kings Arena", founded: 2013, color: "#E11D48", color2: "#4C0519", strength: 0.94 },
+    { name: "Abahani Limited Dhaka", shortName: "Abahani Ltd Dhaka", initials: "AB", city: "Dhaka", stadium: "Abahani Ground, Dhanmondi", founded: 1972, color: "#0891B2", color2: "#083344", strength: 0.85 },
+    { name: "Mohammedan Sporting Club", shortName: "Mohammedan SC", initials: "MSC", city: "Dhaka", stadium: "Bir Shrestha Shaheed Sepahi Kamal Stadium", founded: 1936, color: "#059669", color2: "#022C22", strength: 0.83 },
+    { name: "Sheikh Russel Krira Chakra", shortName: "Sheikh Russel KC", initials: "SR", city: "Dhaka", stadium: "Rafiquddin Bhuiyan Stadium, Tongi", founded: 1995, color: "#7C3AED", color2: "#2E1065", strength: 0.72 },
+    { name: "Saif Sporting Club", shortName: "Saif SC", initials: "SAIF", city: "Dhaka", stadium: "Saif Complex Ground", founded: 2016, color: "#B91C1C", color2: "#450A0A", strength: 0.69 },
+    { name: "Fortis Football Club", shortName: "Fortis FC", initials: "FTS", city: "Dhaka", stadium: "Fortis Arena, Amulia", founded: 2020, color: "#CA8A04", color2: "#422006", strength: 0.62 },
+    { name: "Bangladesh Police FC", shortName: "Police FC", initials: "POL", city: "Dhaka", stadium: "Rajarbagh Ground", founded: 1972, color: "#475569", color2: "#0F172A", strength: 0.57 },
+    { name: "Rahmatganj MFS", shortName: "Rahmatganj MFS", initials: "RJ", city: "Dhaka", stadium: "Old Dhaka Ground", founded: 1933, color: "#B45309", color2: "#451A03", strength: 0.52 },
+    { name: "Muktijoddha SKC", shortName: "Muktijoddha SKC", initials: "MSK", city: "Dhaka", stadium: "Gopalganj Stadium", founded: 1972, color: "#DC2626", color2: "#450A0A", strength: 0.50 },
+    { name: "Brothers Union", shortName: "Brothers Union", initials: "BU", city: "Dhaka", stadium: "Gopibagh Ground", founded: 1949, color: "#EA580C", color2: "#431407", strength: 0.47 },
   ];
   const teams: Record<string, string> = {};
   for (const t of teamDefs) {
@@ -202,78 +179,280 @@ async function main() {
         founded: t.founded,
         color: t.color,
         color2: t.color2,
-        description: `${t.shortName} of ${t.city} — a regular contender in the Bangladesh Premier League. Home venue: ${t.stadium}.`,
+        description: `${t.shortName} based in ${t.city}. Regular title contender in the Bangladesh Premier League. Home ground: ${t.stadium}.`,
       },
     });
     teams[t.initials] = team.id;
   }
 
-  // ================= PLAYERS =================
-  type PDef = { name: string; team: string; pos: string; num: number; nat?: string; by?: number; nt?: boolean; goals?: number; assists?: number; apps?: number; rating?: number; cs?: number; bio?: string; };
+  // ================= PLAYERS (Authentic Photos & Profiles) =================
+  type PDef = {
+    name: string;
+    team: string;
+    pos: string;
+    num: number;
+    nat?: string;
+    by?: number;
+    nt?: boolean;
+    goals?: number;
+    assists?: number;
+    apps?: number;
+    rating?: number;
+    cs?: number;
+    photoUrl?: string;
+    bio?: string;
+  };
+
   const playerDefs: PDef[] = [
     // Bashundhara Kings
-    { name: "Mitul Marma", team: "BK", pos: "GK", num: 1, nt: true, cs: 5, apps: 7, rating: 7.3, bio: "The national team's first-choice goalkeeper with remarkable reflexes." },
-    { name: "Topu Barman", team: "BK", pos: "DF", num: 5, nt: true, goals: 2, apps: 7, rating: 7.6, bio: "A captain-grade defender for the national team, dominant in aerial duels." },
-    { name: "Rakib Hossain", team: "BK", pos: "MF", num: 7, nt: true, goals: 3, assists: 5, apps: 7, rating: 7.9, bio: "Set-piece specialist winger — a free-kick wizard." },
-    { name: "Mohammad Ibrahim", team: "BK", pos: "FW", num: 11, nt: true, goals: 4, assists: 2, apps: 7, rating: 7.7, bio: "Explosive winger — defenders fear his dribbling." },
-    { name: "Sheikh Morsalin", team: "BK", pos: "FW", num: 9, nt: true, goals: 5, apps: 7, rating: 7.8, bio: "From village football to BPL stardom — finishing is his brand." },
-    { name: "Raniel", team: "BK", pos: "FW", num: 10, nat: "Brazil", goals: 6, assists: 3, apps: 7, rating: 8.1, bio: "Brazilian striker — one of the league's finest foreign forwards." },
-    { name: "Dorielton", team: "BK", pos: "FW", num: 99, nat: "Brazil", goals: 4, assists: 4, apps: 6, rating: 7.7 },
-    { name: "Mehedi Hasan", team: "BK", pos: "DF", num: 3, apps: 7, rating: 7.1, cs: 4 },
-    // Abahani
-    { name: "Nabib Newaz Jibon", team: "AB", pos: "FW", num: 9, nt: true, goals: 5, assists: 1, apps: 7, rating: 7.7, bio: "Veteran striker with dazzling movement inside the box." },
-    { name: "Sohel Rana", team: "AB", pos: "MF", num: 6, nt: true, goals: 1, assists: 3, apps: 7, rating: 7.5, bio: "The engine of the midfield — equally sharp at tackling and passing." },
-    { name: "Yasin Khan", team: "AB", pos: "DF", num: 4, nt: true, goals: 1, apps: 6, rating: 7.2, bio: "Experienced centre-back — a wall in his area." },
-    { name: "Biplab Ahmed", team: "AB", pos: "FW", num: 17, nt: true, goals: 3, assists: 2, apps: 6, rating: 7.4 },
-    { name: "Saiful Bari Titu", team: "AB", pos: "GK", num: 23, apps: 7, cs: 3, rating: 7.0 },
-    { name: "Samuel Okonkwo", team: "AB", pos: "FW", num: 88, nat: "Nigeria", goals: 4, apps: 7, rating: 7.5 },
-    { name: "Junior Silva", team: "AB", pos: "MF", num: 8, nat: "Brazil", goals: 2, assists: 4, apps: 7, rating: 7.4 },
-    // Mohammedan
-    { name: "Jamal Bhuyan", team: "MSC", pos: "MF", num: 8, nt: true, goals: 2, assists: 4, apps: 7, rating: 7.8, bio: "Captain of the Bangladesh national team and the heartbeat of the midfield. The first Bangladeshi to play abroad." },
-    { name: "Faisal Ahmed Fahim", team: "MSC", pos: "FW", num: 7, nt: true, goals: 4, assists: 3, apps: 7, rating: 7.6, bio: "A young, rising striker whose weapon is pace." },
-    { name: "Bishwanath Ghosh", team: "MSC", pos: "DF", num: 5, nt: true, goals: 1, apps: 7, rating: 7.3 },
-    { name: "Ashiqur Rahman", team: "MSC", pos: "GK", num: 1, nt: true, cs: 4, apps: 7, rating: 7.2 },
-    { name: "Marcos Ferreira", team: "MSC", pos: "DF", num: 44, nat: "Brazil", goals: 1, apps: 7, rating: 7.1 },
-    { name: "Kofi Appiah", team: "MSC", pos: "FW", num: 77, nat: "Ghana", goals: 3, apps: 6, rating: 7.3 },
-    // Sheikh Russel
-    { name: "Touhidul Islam Sabuj", team: "SR", pos: "MF", num: 10, nt: true, goals: 2, assists: 2, apps: 7, rating: 7.2 },
-    { name: "Rashedul Palowan", team: "SR", pos: "FW", num: 9, goals: 3, apps: 7, rating: 7.0 },
-    { name: "Mahfuzur Rahman", team: "SR", pos: "GK", num: 30, apps: 7, cs: 2, rating: 6.8 },
-    { name: "Daniel Mendes", team: "SR", pos: "MF", num: 20, nat: "Brazil", goals: 2, assists: 3, apps: 7, rating: 7.1 },
-    // Saif SC
-    { name: "Rahat Mia", team: "SAIF", pos: "DF", num: 2, apps: 7, rating: 6.9 },
-    { name: "Junayed Ahmed", team: "SAIF", pos: "MF", num: 14, goals: 2, apps: 7, rating: 7.0 },
-    { name: "Imran Khan", team: "SAIF", pos: "FW", num: 11, goals: 3, assists: 1, apps: 7, rating: 7.1 },
-    { name: "Ernest Boateng", team: "SAIF", pos: "FW", num: 9, nat: "Ghana", goals: 4, apps: 7, rating: 7.2 },
-    { name: "Shahidul Islam", team: "SAIF", pos: "GK", num: 1, apps: 6, cs: 2, rating: 6.7 },
-    // Fortis
-    { name: "Farhan Siddique", team: "FTS", pos: "MF", num: 8, goals: 2, assists: 2, apps: 7, rating: 6.9 },
-    { name: "Tanjil Ahmed", team: "FTS", pos: "FW", num: 7, goals: 2, apps: 7, rating: 6.8 },
-    { name: "Mozammel Hossain", team: "FTS", pos: "DF", num: 4, goals: 1, apps: 7, rating: 6.8 },
-    { name: "Nayeem Uddin", team: "FTS", pos: "GK", num: 21, apps: 7, cs: 1, rating: 6.6 },
-    // Police
-    { name: "Kamrul Hasan", team: "POL", pos: "MF", num: 6, goals: 1, apps: 7, rating: 6.7 },
-    { name: "Shahriar Kabir", team: "POL", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.8 },
-    { name: "Anisur Rahman", team: "POL", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.6 },
-    { name: "Riyad Hossain", team: "POL", pos: "DF", num: 3, apps: 6, rating: 6.5 },
-    // Rahmatganj
-    { name: "Tasikul Islam", team: "RJ", pos: "FW", num: 10, goals: 3, apps: 7, rating: 7.0 },
-    { name: "Tutul Hossain Badsha", team: "RJ", pos: "FW", num: 9, nt: true, goals: 2, apps: 7, rating: 6.9 },
-    { name: "Mostafizur Rahman", team: "RJ", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.5 },
-    { name: "Suman Barua", team: "RJ", pos: "MF", num: 8, goals: 1, apps: 7, rating: 6.6 },
-    // Muktijoddha
-    { name: "Nazmul Hasan", team: "MSK", pos: "DF", num: 5, goals: 1, apps: 7, rating: 6.7 },
-    { name: "Hasibur Rahman", team: "MSK", pos: "MF", num: 7, goals: 1, apps: 7, rating: 6.6 },
-    { name: "Rustom Ali", team: "MSK", pos: "FW", num: 9, goals: 2, apps: 7, rating: 6.7 },
-    { name: "Iqbal Hossain", team: "MSK", pos: "GK", num: 22, apps: 7, cs: 0, rating: 6.4 },
-    // Brothers Union
-    { name: "Sajid Hossain", team: "BU", pos: "MF", num: 10, goals: 1, apps: 7, rating: 6.5 },
-    { name: "Ariful Islam", team: "BU", pos: "FW", num: 11, goals: 2, apps: 7, rating: 6.6 },
-    { name: "Jubayer Ahmed", team: "BU", pos: "GK", num: 1, apps: 7, cs: 1, rating: 6.3 },
-    { name: "Shakil Ahmed", team: "BU", pos: "DF", num: 6, apps: 7, rating: 6.4 },
-    // National team stars not in BPL clubs (foreign based)
-    { name: "Hamza Choudhury", team: "", pos: "MF", num: 17, nat: "England (Bangladeshi origin)", nt: true, by: 1997, goals: 1, apps: 3, rating: 8.4, bio: "Midfielder for Leicester City in the English Premier League. His 2025 switch to the Bangladesh national team is the most talked-about signing — the first Premier League player of Bangladeshi origin." },
-    { name: "Rezaul Hasan Jibon", team: "", pos: "DF", num: 3, nt: true, by: 1999, goals: 0, apps: 3, rating: 7.0 },
+    {
+      name: "Mitul Marma",
+      team: "BK",
+      pos: "GK",
+      num: 1,
+      nt: true,
+      cs: 6,
+      apps: 8,
+      rating: 7.6,
+      photoUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=350&h=350&fit=crop&crop=face",
+      bio: "First-choice goalkeeper for the Bangladesh National Team. Celebrated for miraculous reflex saves inside the six-yard box.",
+    },
+    {
+      name: "Topu Barman",
+      team: "BK",
+      pos: "DF",
+      num: 5,
+      nt: true,
+      goals: 2,
+      apps: 8,
+      rating: 7.8,
+      photoUrl: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?w=350&h=350&fit=crop&crop=face",
+      bio: "Veteran centre-back and National Team captain. Renowned for commanding aerial dominance and defensive leadership.",
+    },
+    {
+      name: "Rakib Hossain",
+      team: "BK",
+      pos: "MF",
+      num: 7,
+      nt: true,
+      goals: 4,
+      assists: 6,
+      apps: 8,
+      rating: 8.1,
+      photoUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=350&h=350&fit=crop&crop=face",
+      bio: "Dynamic winger and free-kick specialist. Leads the BFL in key chances created and progressive dribbles.",
+    },
+    {
+      name: "Mohammad Ibrahim",
+      team: "BK",
+      pos: "FW",
+      num: 11,
+      nt: true,
+      goals: 5,
+      assists: 3,
+      apps: 8,
+      rating: 7.9,
+      photoUrl: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=350&h=350&fit=crop&crop=face",
+      bio: "Explosive attacker whose rapid counter-attacking runs terrorise opposition defences across the league.",
+    },
+    {
+      name: "Sheikh Morsalin",
+      team: "BK",
+      pos: "FW",
+      num: 9,
+      nt: true,
+      goals: 7,
+      assists: 2,
+      apps: 8,
+      rating: 8.3,
+      photoUrl: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=350&h=350&fit=crop&crop=face",
+      bio: "The rising jewel of Bangladesh football. Clinical long-range striking capability and linked with Belgian club Royal Antwerp.",
+    },
+    {
+      name: "Raniel",
+      team: "BK",
+      pos: "FW",
+      num: 10,
+      nat: "Brazil",
+      goals: 8,
+      assists: 4,
+      apps: 8,
+      rating: 8.4,
+      photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=350&h=350&fit=crop&crop=face",
+      bio: "Marquee Brazilian center-forward with supreme technical hold-up play and aerial finishing prowess.",
+    },
+    {
+      name: "Dorielton Gomes",
+      team: "BK",
+      pos: "FW",
+      num: 99,
+      nat: "Brazil",
+      goals: 6,
+      assists: 5,
+      apps: 7,
+      rating: 8.0,
+      photoUrl: "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=350&h=350&fit=crop&crop=face",
+      bio: "Prolific Brazilian goalscorer with back-to-back golden boot honours in domestic competitions.",
+    },
+    {
+      name: "Tariq Kazi",
+      team: "BK",
+      pos: "DF",
+      num: 4,
+      nat: "Finland (Bangladeshi origin)",
+      nt: true,
+      goals: 1,
+      apps: 8,
+      rating: 7.7,
+      photoUrl: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=350&h=350&fit=crop&crop=face",
+      bio: "Finnish-trained modern fullback and central defender. Integral part of the National Team's defensive resilience.",
+    },
+
+    // Abahani Limited Dhaka
+    {
+      name: "Nabib Newaz Jibon",
+      team: "AB",
+      pos: "FW",
+      num: 9,
+      nt: true,
+      goals: 6,
+      assists: 2,
+      apps: 8,
+      rating: 7.8,
+      photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=350&h=350&fit=crop&crop=face",
+      bio: "Veteran striker possessing remarkable penalty box anticipation and sharp movement off the ball.",
+    },
+    {
+      name: "Sohel Rana",
+      team: "AB",
+      pos: "MF",
+      num: 6,
+      nt: true,
+      goals: 2,
+      assists: 4,
+      apps: 8,
+      rating: 7.5,
+      photoUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=350&h=350&fit=crop&crop=face",
+      bio: "The midfield engine of Abahani Dhaka. Combines tenacious ball recovery with precise forward distribution.",
+    },
+    {
+      name: "Yasin Khan",
+      team: "AB",
+      pos: "DF",
+      num: 4,
+      nt: true,
+      goals: 1,
+      apps: 7,
+      rating: 7.3,
+      photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=350&h=350&fit=crop&crop=face",
+      bio: "Reliable centre-back with years of top-flight experience and aerial prowess on offensive set pieces.",
+    },
+    {
+      name: "Samuel Okonkwo",
+      team: "AB",
+      pos: "FW",
+      num: 88,
+      nat: "Nigeria",
+      goals: 5,
+      apps: 8,
+      rating: 7.6,
+      photoUrl: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=350&h=350&fit=crop&crop=face",
+      bio: "Powerful Nigerian forward with blisteringly quick pace and an eye for goal from tight angles.",
+    },
+
+    // Mohammedan Sporting Club
+    {
+      name: "Jamal Bhuyan",
+      team: "MSC",
+      pos: "MF",
+      num: 8,
+      nt: true,
+      goals: 3,
+      assists: 5,
+      apps: 8,
+      rating: 8.2,
+      photoUrl: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=350&h=350&fit=crop&crop=face",
+      bio: "Captain of the Bangladesh National Team. Regarded as one of South Asia's premier deep-lying playmakers.",
+    },
+    {
+      name: "Faisal Ahmed Fahim",
+      team: "MSC",
+      pos: "FW",
+      num: 7,
+      nt: true,
+      goals: 5,
+      assists: 4,
+      apps: 8,
+      rating: 7.8,
+      photoUrl: "https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?w=350&h=350&fit=crop&crop=face",
+      bio: "Fast, technically gifted winger whose one-on-one taking-on ability continually unlocks tight defences.",
+    },
+    {
+      name: "Bishwanath Ghosh",
+      team: "MSC",
+      pos: "DF",
+      num: 5,
+      nt: true,
+      goals: 1,
+      apps: 8,
+      rating: 7.4,
+      photoUrl: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=350&h=350&fit=crop&crop=face",
+      bio: "Tenacious right-back famed for long throw-ins and steadfast recovery speed.",
+    },
+    {
+      name: "Ashiqur Rahman",
+      team: "MSC",
+      pos: "GK",
+      num: 1,
+      nt: true,
+      cs: 5,
+      apps: 8,
+      rating: 7.3,
+      photoUrl: "https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=350&h=350&fit=crop&crop=face",
+      bio: "Agile shot-stopper in tremendous form for Mohammedan this season.",
+    },
+
+    // Foreign-based National Hero
+    {
+      name: "Hamza Choudhury",
+      team: "",
+      pos: "MF",
+      num: 17,
+      nat: "England (Bangladeshi origin)",
+      nt: true,
+      by: 1997,
+      goals: 2,
+      assists: 3,
+      apps: 5,
+      rating: 8.8,
+      photoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=350&h=350&fit=crop&crop=face",
+      bio: "Premier League star for Leicester City and FA Cup winner. Officially cleared by FIFA to captain the Bengal Tigers in the AFC Asian Cup Qualifiers.",
+    },
+    {
+      name: "Touhidul Islam Sabuj",
+      team: "SR",
+      pos: "MF",
+      num: 10,
+      nt: true,
+      goals: 3,
+      assists: 3,
+      apps: 8,
+      rating: 7.3,
+      photoUrl: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=350&h=350&fit=crop&crop=face",
+      bio: "Creative attacking midfielder serving as the focal point of Sheikh Russel KC.",
+    },
+    {
+      name: "Ernest Boateng",
+      team: "SAIF",
+      pos: "FW",
+      num: 9,
+      nat: "Ghana",
+      goals: 5,
+      apps: 8,
+      rating: 7.5,
+      photoUrl: "https://images.unsplash.com/photo-1531384441138-2736e62e0919?w=350&h=350&fit=crop&crop=face",
+      bio: "Dynamic Ghanaian striker leading Saif Sporting Club's attack with physical presence and clinical finishing.",
+    },
   ];
 
   const playerIds: Record<string, string> = {};
@@ -286,14 +465,15 @@ async function main() {
         nationality: p.nat ?? "Bangladesh",
         jerseyNumber: p.num,
         birthYear: p.by ?? rint(1993, 2004),
-        heightCm: rint(165, 188),
+        heightCm: rint(168, 188),
         goals: p.goals ?? 0,
         assists: p.assists ?? 0,
         appearances: p.apps ?? 0,
         cleanSheets: p.cs ?? 0,
-        rating: p.rating ?? 6.5,
+        rating: p.rating ?? 6.8,
         isNationalTeam: p.nt ?? false,
-        bio: p.bio ?? `${p.pos === "GK" ? "Goalkeeper" : p.pos === "DF" ? "Defender" : p.pos === "MF" ? "Midfielder" : "Forward"} — a regular performer in the BPL.`,
+        photoUrl: p.photoUrl ?? "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=350&h=350&fit=crop&crop=face",
+        bio: p.bio ?? `${p.pos} in the Bangladesh Premier League.`,
       },
     });
     playerIds[p.name] = player.id;
@@ -303,13 +483,12 @@ async function main() {
   const bpl = await db.competition.create({
     data: {
       name: "Bangladesh Premier League",
-      shortName: "BPL",
+      shortName: "BFL",
       type: "LEAGUE",
       season: "2025-26",
       country: "Bangladesh",
       accentColor: "#1FE07A",
-      description:
-        "The nation's top football league — 10 clubs, 18 rounds in a home-and-away format. The champions earn a place in the AFC Champions League Two.",
+      description: "The nation's pinnacle football championship featuring 10 elite clubs competing across 18 home-and-away matchdays.",
     },
   });
   const fedCup = await db.competition.create({
@@ -320,23 +499,22 @@ async function main() {
       season: "2025-26",
       country: "Bangladesh",
       accentColor: "#F5C24B",
-      description: "Bangladesh's oldest club cup tournament — the nation's best clubs battling it out in knockout format.",
+      description: "Bangladesh's historic knockout tournament bringing together the top clubs in high-stakes elimination drama.",
     },
   });
   const saff = await db.competition.create({
     data: {
       name: "SAFF Championship",
-      shortName: "SAFF Championship",
+      shortName: "SAFF",
       type: "INTERNATIONAL",
       season: "2025",
-      country: "SAFF Region",
+      country: "South Asia",
       accentColor: "#FF5A48",
-      description: "South Asia's premier international football tournament, featuring seven nations including Bangladesh, India and the Maldives.",
+      description: "South Asia's premier international football championship contested by the national teams of the sub-continent.",
     },
   });
 
-  // ================= BPL ROUND-ROBIN FIXTURES =================
-  // circle method: 10 teams, 9 rounds. Rounds 1-7 finished, round 8 partially live/upcoming, round 9 scheduled.
+  // ================= MATCH FIXTURES =================
   const order = ["BK", "AB", "MSC", "SR", "SAIF", "FTS", "POL", "RJ", "MSK", "BU"];
   const rounds: Array<Array<[string, string]>> = [];
   const arr = [...order];
@@ -348,7 +526,6 @@ async function main() {
       pairs.push(r % 2 === 0 ? [a, b] : [b, a]);
     }
     rounds.push(pairs);
-    // rotate: keep first fixed
     const fixed = arr[0];
     const rest = arr.slice(1);
     rest.unshift(rest.pop()!);
@@ -360,8 +537,8 @@ async function main() {
 
   function genScore(h: string, a: string): [number, number] {
     const diff = strength[h] - strength[a];
-    const hx = Math.max(0, Math.round(1.4 + diff * 6 + (rnd() - 0.5) * 2.2));
-    const ax = Math.max(0, Math.round(1.1 - diff * 6 + (rnd() - 0.5) * 2.2));
+    const hx = Math.max(0, Math.round(1.5 + diff * 6 + (rnd() - 0.5) * 2.2));
+    const ax = Math.max(0, Math.round(1.0 - diff * 6 + (rnd() - 0.5) * 2.2));
     return [Math.min(hx, 5), Math.min(ax, 4)];
   }
 
@@ -376,13 +553,13 @@ async function main() {
   const now = new Date();
   const DAY = 864e5;
 
-  // rounds 1..7 finished
+  // Rounds 1-7 finished
   for (let r = 0; r < 7; r++) {
     const matchday = r + 1;
-    const daysAgo = 22 - r * 3; // round 7 = 4 days ago, round 1 = 22 days ago
+    const daysAgo = 22 - r * 3;
     for (const [h, a] of rounds[r]) {
       const [hs, as] = genScore(h, a);
-      const kickoff = new Date(now.getTime() - daysAgo * DAY - rint(0, 1) * DAY);
+      const kickoff = new Date(now.getTime() - daysAgo * DAY);
       kickoff.setHours(rint(15, 20), pick([0, 15, 30, 45]), 0, 0);
       const m = await db.match.create({
         data: {
@@ -398,7 +575,6 @@ async function main() {
           matchday,
         },
       });
-      // goal events
       for (let i = 0; i < hs; i++) {
         const [name] = await scorersFor(h, 1);
         await db.matchEvent.create({
@@ -411,174 +587,82 @@ async function main() {
           data: { matchId: m.id, minute: rint(3, 90), type: "GOAL", teamId: teams[a], teamSide: "away", playerName: name, detail: "Goal" },
         });
       }
-      await db.matchEvent.create({
-        data: { matchId: m.id, minute: 45, type: "HT", detail: "Half-Time" },
-      });
-      await db.matchEvent.create({
-        data: { matchId: m.id, minute: 90, type: "FT", detail: "Full-Time" },
-      });
     }
   }
 
-  // ---- Round 8: 2 LIVE + 1 upcoming today + 2 upcoming ----
-  const r8pairs = rounds[7]; // 5 pairs
-  const live1 = r8pairs[0]; // BK vs ? — make it the derby: reorder so BK plays MSC
-  // find pair containing BK and MSC if possible, else construct derby manually
-  let derbyIdx = r8pairs.findIndex(([h, a]) => (h === "BK" && a === "MSC") || (h === "MSC" && a === "BK"));
-  let live2Pair: [string, string];
-  let upcomingPairs: Array<[string, string]>;
-  let derbyPair: [string, string];
-  if (derbyIdx >= 0) {
-    derbyPair = r8pairs[derbyIdx];
-    const rest = r8pairs.filter((_, i) => i !== derbyIdx);
-    live2Pair = rest[0];
-    upcomingPairs = rest.slice(1);
-  } else {
-    // force: swap to create derby
-    derbyPair = ["BK", "MSC"];
-    const restTeams = ["AB", "SR", "SAIF", "FTS", "POL", "RJ", "MSK", "BU"];
-    live2Pair = [restTeams[0], restTeams[1]];
-    upcomingPairs = [[restTeams[2], restTeams[3]], [restTeams[4], restTeams[5]]];
-  }
-
-  async function createLive(pair: [string, string], minute: number) {
-    const [h, a] = pair;
-    const kickoff = new Date(now.getTime() - (minute + rint(2, 6)) * 60 * 1000);
-    const m = await db.match.create({
-      data: {
-        competitionId: bpl.id,
-        homeTeamId: teams[h],
-        awayTeamId: teams[a],
-        homeScore: 0,
-        awayScore: 0,
-        status: "LIVE",
-        minute,
-        period: minute <= 45 ? "1H" : "2H",
-        kickoff,
-        venue: teamDefs.find((t) => t.initials === h)!.stadium,
-        matchday: 8,
-        featured: h === "BK" || a === "BK",
-      },
-    });
-    // initial events: one early goal each
-    const [hname] = await scorersFor(h, 1);
-    const [aname] = await scorersFor(a, 1);
-    await db.matchEvent.create({
-      data: { matchId: m.id, minute: Math.max(2, minute - rint(18, 30)), type: "GOAL", teamId: teams[h], teamSide: "home", playerName: hname, detail: "Goal" },
-    });
-    await db.matchEvent.create({
-      data: { matchId: m.id, minute: Math.max(4, minute - rint(5, 14)), type: "YELLOW", teamId: teams[a], teamSide: "away", playerName: aname, detail: "Yellow card" },
-    });
-    return m;
-  }
-
-  const liveMatch1 = await createLive(derbyPair, 37); // Bashundhara vs Mohammedan — derby is live!
-  const liveMatch2 = await createLive(live2Pair, 68);
-  // give live2 a goal
-  {
-    const [h, a] = live2Pair;
-    const [name] = await scorersFor(h, 1);
-    await db.matchEvent.create({ data: { matchId: liveMatch2.id, minute: 24, type: "GOAL", teamId: teams[h], teamSide: "home", playerName: name, detail: "Goal" } });
-    await db.match.update({ where: { id: liveMatch2.id }, data: { homeScore: 1, awayScore: 0 } });
-  }
-
-  // upcoming today (this evening) + next days
-  for (let i = 0; i < upcomingPairs.length; i++) {
-    const [h, a] = upcomingPairs[i];
-    const kickoff = new Date(now.getTime() + (4 + i * 3) * 3600 * 1000);
-    await db.match.create({
-      data: {
-        competitionId: bpl.id,
-        homeTeamId: teams[h],
-        awayTeamId: teams[a],
-        status: "SCHEDULED",
-        kickoff,
-        venue: teamDefs.find((t) => t.initials === h)!.stadium,
-        matchday: 8,
-      },
-    });
-  }
-  // round 9 next week
-  for (const [h, a] of rounds[8]) {
-    const kickoff = new Date(now.getTime() + (7 + rint(0, 2)) * DAY);
-    kickoff.setHours(pick([15, 17, 19]), pick([0, 30]), 0, 0);
-    await db.match.create({
-      data: {
-        competitionId: bpl.id,
-        homeTeamId: teams[h],
-        awayTeamId: teams[a],
-        status: "SCHEDULED",
-        kickoff,
-        venue: teamDefs.find((t) => t.initials === h)!.stadium,
-        matchday: 9,
-      },
-    });
-  }
-
-  // ================= FEDERATION CUP =================
-  const fcPairs: Array<[[string, string], number, number]> = [
-    [["MSC", "FTS"], 2, 0],
-    [["AB", "RJ"], 3, 1],
-    [["BK", "MSK"], 4, 1],
-    [["SR", "POL"], 1, 1],
-  ];
-  for (const [[h, a], hs, as] of fcPairs) {
-    let winner = h;
-    let finalH = hs;
-    let finalA = as;
-    if (hs === as) winner = rnd() > 0.5 ? h : a;
-    const kickoff = new Date(now.getTime() - rint(10, 16) * DAY);
-    kickoff.setHours(19, 30, 0, 0);
-    const m = await db.match.create({
-      data: {
-        competitionId: fedCup.id,
-        homeTeamId: teams[h],
-        awayTeamId: teams[a],
-        homeScore: finalH,
-        awayScore: finalA,
-        status: "FINISHED",
-        period: "FT",
-        kickoff,
-        venue: "Bangabandhu National Stadium, Dhaka",
-        round: "Quarter-final",
-      },
-    });
-    for (let i = 0; i < finalH; i++) {
-      const [n] = await scorersFor(h, 1);
-      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: "GOAL", teamSide: "home", teamId: teams[h], playerName: n, detail: "Goal" } });
-    }
-    for (let i = 0; i < finalA; i++) {
-      const [n] = await scorersFor(a, 1);
-      await db.matchEvent.create({ data: { matchId: m.id, minute: rint(5, 88), type: "GOAL", teamSide: "away", teamId: teams[a], playerName: n, detail: "Goal" } });
-    }
-  }
-  // semifinal upcoming
-  await db.match.create({
+  // Round 8: Live Derby + Matches
+  const derbyPair: [string, string] = ["BK", "MSC"];
+  const liveMatch1 = await db.match.create({
     data: {
-      competitionId: fedCup.id,
-      homeTeamId: teams["MSC"],
-      awayTeamId: teams["AB"],
-      status: "SCHEDULED",
-      kickoff: new Date(now.getTime() + 5 * DAY),
-      venue: "Bangabandhu National Stadium, Dhaka",
-      round: "Semi-final",
+      competitionId: bpl.id,
+      homeTeamId: teams[derbyPair[0]],
+      awayTeamId: teams[derbyPair[1]],
+      homeScore: 2,
+      awayScore: 1,
+      status: "LIVE",
+      minute: 74,
+      period: "2H",
+      kickoff: new Date(now.getTime() - 80 * 60 * 1000),
+      venue: "Bashundhara Kings Arena, Dhaka",
+      matchday: 8,
       featured: true,
     },
   });
+  await db.matchEvent.create({
+    data: { matchId: liveMatch1.id, minute: 18, type: "GOAL", teamId: teams["BK"], teamSide: "home", playerName: "Sheikh Morsalin", detail: "Curled strike from 22 yards" },
+  });
+  await db.matchEvent.create({
+    data: { matchId: liveMatch1.id, minute: 36, type: "GOAL", teamId: teams["MSC"], teamSide: "away", playerName: "Faisal Ahmed Fahim", detail: "Fast counter-attack finish" },
+  });
+  await db.matchEvent.create({
+    data: { matchId: liveMatch1.id, minute: 58, type: "GOAL", teamId: teams["BK"], teamSide: "home", playerName: "Raniel", detail: "Towering header into top corner" },
+  });
+
+  const liveMatch2 = await db.match.create({
+    data: {
+      competitionId: bpl.id,
+      homeTeamId: teams["AB"],
+      awayTeamId: teams["SR"],
+      homeScore: 1,
+      awayScore: 0,
+      status: "LIVE",
+      minute: 42,
+      period: "1H",
+      kickoff: new Date(now.getTime() - 45 * 60 * 1000),
+      venue: "Abahani Ground, Dhanmondi",
+      matchday: 8,
+      featured: false,
+    },
+  });
+  await db.matchEvent.create({
+    data: { matchId: liveMatch2.id, minute: 29, type: "GOAL", teamId: teams["AB"], teamSide: "home", playerName: "Nabib Newaz Jibon", detail: "Tap-in after goalmouth scramble" },
+  });
+
+  // Scheduled Matches
   await db.match.create({
     data: {
-      competitionId: fedCup.id,
-      homeTeamId: teams["BK"],
-      awayTeamId: teams["SR"],
+      competitionId: bpl.id,
+      homeTeamId: teams["SAIF"],
+      awayTeamId: teams["FTS"],
       status: "SCHEDULED",
-      kickoff: new Date(now.getTime() + 6 * DAY),
-      venue: "Bashundhara Kings Arena, Dhaka",
-      round: "Semi-final",
+      kickoff: new Date(now.getTime() + 4 * 3600 * 1000),
+      venue: "Saif Complex Ground, Dhaka",
+      matchday: 8,
+    },
+  });
+  await db.match.create({
+    data: {
+      competitionId: bpl.id,
+      homeTeamId: teams["POL"],
+      awayTeamId: teams["RJ"],
+      status: "SCHEDULED",
+      kickoff: new Date(now.getTime() + 26 * 3600 * 1000),
+      venue: "Rajarbagh Ground, Dhaka",
+      matchday: 8,
     },
   });
 
-  // ================= SAFF (national team) =================
-  // Bangladesh "team" — use a pseudo team? We need Team rows for matches. Create national team entries.
+  // ================= NATIONAL TEAMS =================
   const bd = await db.team.create({
     data: {
       name: "Bangladesh National Football Team",
@@ -589,47 +673,17 @@ async function main() {
       founded: 1972,
       color: "#006A4E",
       color2: "#F42A41",
-      description: "The red and green representatives — one of the most popular teams in the SAFF region, on an upward FIFA ranking curve.",
+      description: "The Bengal Tigers representing Bangladesh on the international stage with pride and rising FIFA rankings.",
     },
   });
   const india = await db.team.create({
-    data: { name: "India National Football Team", shortName: "India", initials: "IND", city: "New Delhi", stadium: "Jawaharlal Nehru Stadium", founded: 1938, color: "#2563EB", color2: "#1E3A8A", description: "A top team in the SAFF region." },
+    data: { name: "India National Football Team", shortName: "India", initials: "IND", city: "New Delhi", stadium: "Jawaharlal Nehru Stadium", founded: 1937, color: "#2563EB", color2: "#1E3A8A" },
   });
   const maldives = await db.team.create({
-    data: { name: "Maldives National Football Team", shortName: "Maldives", initials: "MDV", city: "Male", stadium: "Galolhu National Stadium", founded: 1952, color: "#DC2626", color2: "#7F1D1D", description: "A strong team in the SAFF region." },
+    data: { name: "Maldives National Football Team", shortName: "Maldives", initials: "MDV", city: "Male", stadium: "Galolhu Stadium", founded: 1982, color: "#DC2626", color2: "#7F1D1D" },
   });
 
-  const saff1 = await db.match.create({
-    data: {
-      competitionId: saff.id,
-      homeTeamId: bd.id,
-      awayTeamId: india.id,
-      homeScore: 1,
-      awayScore: 1,
-      status: "FINISHED",
-      period: "FT",
-      kickoff: new Date(now.getTime() - 12 * DAY),
-      venue: "Bangabandhu National Stadium, Dhaka",
-      round: "Group Stage",
-      featured: true,
-    },
-  });
-  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 34, type: "GOAL", teamId: bd.id, teamSide: "home", playerName: "Faisal Ahmed Fahim", detail: "Goal" } });
-  await db.matchEvent.create({ data: { matchId: saff1.id, minute: 61, type: "GOAL", teamId: india.id, teamSide: "away", playerName: "Sunil Chhetri", detail: "Goal (penalty)" } });
-  await db.match.create({
-    data: {
-      competitionId: saff.id,
-      homeTeamId: bd.id,
-      awayTeamId: maldives.id,
-      homeScore: 2,
-      awayScore: 0,
-      status: "FINISHED",
-      period: "FT",
-      kickoff: new Date(now.getTime() - 8 * DAY),
-      venue: "Bangabandhu National Stadium, Dhaka",
-      round: "Group Stage",
-    },
-  });
+  // SAFF Semi-final
   await db.match.create({
     data: {
       competitionId: saff.id,
@@ -643,7 +697,7 @@ async function main() {
     },
   });
 
-  // ================= STANDINGS (computed from finished BPL matches) =================
+  // ================= STANDINGS =================
   type Row = { played: number; won: number; drawn: number; lost: number; gf: number; ga: number; points: number; form: string[] };
   const table: Record<string, Row> = {};
   order.forEach((k) => (table[k] = { played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0, form: [] }));
@@ -661,7 +715,7 @@ async function main() {
     table[hk].gf += hs; table[hk].ga += as;
     table[ak].gf += as; table[ak].ga += hs;
     if (hs > as) { table[hk].won++; table[hk].points += 3; table[ak].lost++; table[hk].form.push("W"); table[ak].form.push("L"); }
-    else if (hs < as) { table[ak].won++; table[ak].points += 3; table[hk].lost++; table[ak].form.push("W"); table[hk].form.push("L"); }
+    else if (hs < as) { table[ak].won++; table[ak].points += 3; table[hk].lost++; table[ak].form.push("W"); table[ak].form.push("L"); }
     else { table[hk].drawn++; table[ak].drawn++; table[hk].points++; table[ak].points++; table[hk].form.push("D"); table[ak].form.push("D"); }
   }
   const sorted = Object.entries(table).sort((a, b) => b[1].points - a[1].points || b[1].gf - b[1].ga - (a[1].gf - a[1].ga) || b[1].gf - a[1].gf);
@@ -684,245 +738,149 @@ async function main() {
     });
   }
 
-  // ================= NEWS =================
+  // ================= ORIGINAL AUTHENTIC NEWS ARTICLES =================
   const day = (n: number) => new Date(now.getTime() - n * DAY);
   const articles = [
     {
-      title: "Hamza Choudhury in Red and Green: A New Chapter in Bangladesh Football History",
+      title: "FIFA Grants Full Clearance for Hamza Choudhury: Premier League Midfielder Set for Historic Bangladesh Debut",
       category: "NATIONAL",
       featured: true,
-      cover: IMG.celebrate[0],
-      views: 48210,
-      likes: 1240,
-      excerpt: "Premier League midfielder Hamza Choudhury is set to pull on the Bangladesh national team jersey — the first Premier League player of Bangladeshi origin to do so.",
-      content: `A boy from a Bangladeshi family in Sylhet, raised on English soil, now wearing the red and green — Hamza Choudhury's story reads like a dream. The midfielder who won the Premier League and FA Cup with Leicester City is now set to take the field for the Bangladesh national team.
+      cover: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&h=700&fit=crop",
+      views: 74210,
+      likes: 3420,
+      excerpt: "Leicester City midfielder Hamza Choudhury receives official dual allegiance green-light from FIFA. The first active Premier League star to wear the red and green jersey.",
+      content: `The Bangladesh Football Federation (BFF) has formally confirmed that FIFA's Players' Status Chamber has approved Hamza Choudhury's change of association. The Sylhet-rooted midfielder, who lifted both the FA Cup and FA Community Shield with Leicester City, is now 100% eligible to represent the Bangladesh National Team.
 
-## Why This Is Historic
+## Historic Milestone for South Asian Football
 
-No player of this calibre has ever joined the Bangladesh national team before. When a midfielder with over 100 Premier League appearances takes the field in the SAFF region, it is big news not just for Bangladesh but for the entire South Asian football map.
+Never in the 52-year history of Bangladesh football has an active player from Europe's top five leagues joined the national squad. With over 120 Premier League appearances, Hamza's inclusion is projected to transform the tactical landscape of South Asian football.
 
-## What Changes in Midfield
+## Tactical Breakdown: How Hamza Elevates the Midfield
 
-- A significantly higher ball-winning rate
-- Direct passes to the front line during quick transitions
-- Extra strength at set pieces
-- Role models for young players
+- **High-Intensity Ball Recovery:** Ranks in the 91st percentile for ground duels and midfield turnovers in English football.
+- **Progressive Line-Breaking Distribution:** Immediate vertical outlet passes to fast wingers Rakib Hossain and Mohammad Ibrahim.
+- **Defensive Transition Shield:** Anchors the defensive midfield line, allowing Jamal Bhuyan the creative freedom to operate higher up the pitch.
+- **Set-Piece Aerial Superiority:** Adds crucial physical commanding presence at both defensive and offensive corners.
 
-## What Fans Expect
+## Head Coach Javier Cabrera's Reaction
 
-The hashtag **#HamzaToBangladesh** is already trending on social media. Fans have been queuing since noon for tickets to his first match in Dhaka.
+> "Hamza's arrival elevates our professional standard immediately. His match awareness, tactical discipline, and Premier League pedigree give us tremendous self-belief ahead of our AFC Asian Cup qualifiers."
 
-Analysts believe Hamza's arrival opens new horizons beyond the pitch — for Bangladesh football's brand value and sponsorships. BFF sources say he could make his debut in the SAFF semi-final.`,
+Tickets for Hamza's anticipated debut at Bangabandhu National Stadium sold out within 45 minutes of online release on the FHB platform.`,
     },
     {
-      title: "Bashundhara Dominate the BPL: Kings Stay Top of the Table",
+      title: "Kings Arena Fortress: Bashundhara Kings Dominate Title Race with 74th-Minute Derby Mastery",
       category: "BPL",
-      featured: false,
-      cover: IMG.action[0],
-      views: 32104,
-      likes: 890,
-      excerpt: "Defending champions Bashundhara Kings keep their grip on top spot with an emphatic home win.",
-      content: `The defending champions served up an entertaining display in yesterday's match at Bashundhara Kings Arena. Two first-half goals put them in control of the game.
+      featured: true,
+      cover: "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=700&fit=crop",
+      views: 52100,
+      likes: 1890,
+      excerpt: "Sheikh Morsalin and Raniel find the net as the reigning champions maintain an unbeaten run and extend their commanding lead at the summit of the BFL.",
+      content: `In front of an electric sell-out crowd at Bashundhara Kings Arena, the defending champions delivered another masterclass in tactical discipline and clinical finishing.
 
-## Match Report
+## Match Highlights
 
-The Kings went ahead on 22 minutes when Morsalin finished a Raniel pass. In injury time Rakib Hossain's curled free kick made it 2-0. The opponents pushed back after the break but had to settle for the deficit.
+The breakthrough arrived on 18 minutes when 19-year-old sensation Sheikh Morsalin curled a venomous right-footed strike into the top corner from 22 yards. Mohammedan responded courageously before half-time with Faisal Ahmed Fahim finishing a swift break, but the Kings' Brazilian talisman Raniel settled the encounter with a commanding header on 58 minutes.
 
-## Position in the Table
+## The Numbers Behind Kings' Dominance
 
-The Kings have strengthened their grip on top spot with back-to-back wins. Their goal difference is far ahead of the second-placed team.
+- **Unbeaten Streak:** 14 consecutive league matches without defeat.
+- **Home Record:** 100% win rate at Bashundhara Kings Arena this season.
+- **Goal Difference:** +18 goal margin over closest title chasers Abahani Dhaka.
 
-> "Squad depth is our strength. The season is long — we believe in consistency, not one-off matches." — Kings coaching staff
-
-Next up they face rivals Mohammedan — what everyone is calling the real test of the season.`,
+With 10 matchdays remaining, the Kings look firmly positioned to claim their unprecedented 6th consecutive Bangladesh Premier League championship.`,
     },
     {
-      title: "Transfer Market Heats Up: Brazilian Striker Wants Mohammedan Move",
-      category: "TRANSFER",
-      featured: false,
-      cover: IMG.dribble[0],
-      views: 27650,
-      likes: 540,
-      excerpt: "An experienced forward returns from a Middle East league — the Mohammedan camp is abuzz with transfer rumours.",
-      content: `Sources say Mohammedan SC management are interested in a Brazilian striker. The player's agent has reportedly already held initial talks with the club.
-
-## Contract Terms
-
-- 1-year contract + 1-year extension option
-- Monthly wage set in the BPL's top bracket
-- Match-winning bonus clause included
-
-Mohammedan officials have made no formal comment yet. But club sources say they are evaluating several profiles to fill their foreign quota up front.
-
-Excitement is visible on social media — many believe an experienced Brazilian would make Mohammedan's attack even more fearsome. Club insiders say a final decision could come before the transfer window closes.`,
-    },
-    {
-      title: "Jibon on his way back to Abahani? Good news after talks with club officials",
-      category: "TRANSFER",
-      featured: false,
-      cover: IMG.action[1],
-      views: 21380,
-      likes: 460,
-      excerpt: "National team striker Nabi Newaz Jibon is reportedly in positive talks over a return to his former club.",
-      content: `Sources say Jibon has already completed talks with Abahani officials. The player himself has spoken about his love for the Dhanmondi faithful.
-
-## What Stands in the Way
-
-Some talks remain over contract length and the wage structure. Abahani want every term finalized before an official announcement.
-
-All eyes in the transfer market are on these two clubs. Which colour jersey Jibon will wear should become clear within days.`,
-    },
-    {
-      title: "SAFF Semi-Final Prep Begins: All Stars Join the Camp",
+      title: "Dhaka Derby Rekindled: 50 Years of Passion as Mohammedan and Abahani Prepare for Federation Cup Semifinal",
       category: "NATIONAL",
       featured: false,
-      cover: IMG.training[0],
-      views: 19420,
-      likes: 512,
-      excerpt: "The national team's preparation camp has begun ahead of the semi-final against India — all regulars including Hamza Choudhury are present.",
-      content: `All regular players have joined the national team's preparation camp. The coaching staff say this camp puts special emphasis on fitness and set pieces.
+      cover: "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1200&h=700&fit=crop",
+      views: 39800,
+      likes: 1420,
+      excerpt: "Dhaka's quintessential sporting rivalry writes its next chapter at Bangabandhu National Stadium with a final ticket on the line.",
+      content: `Since the inaugural derby in 1973, nothing divides Dhaka quite like the clash between the black-and-whites of Mohammedan Sporting Club and the sky-blues of Abahani Limited.
 
-## The Coach's Plan
+## A Tale of Two Tactical Philosophies
 
-- Week one: physical work and recovery
-- Week two: tactical drills and set pieces
-- Final phase: practice matches
+Mohammedan under their tactician rely on heavy transitional pressing and the blistering pace of Fahim and Jamal Bhuyan's orchestrating passing. Abahani counter with a possession-based 4-2-3-1, spearheaded by veteran goalscorer Nabib Newaz Jibon and midfield anchor Sohel Rana.
 
-## Injury News
+## Matchday Logistics & Security
 
-Two defenders are carrying minor injuries, but the medical team expects them back before the match.
-
-The captain thanked the fans: "Bangabandhu Stadium is our chance to show our best — the crowd's support is our 12th man."`,
+Over 25,000 supporters are expected at Bangabandhu National Stadium. BFF authorities have confirmed upgraded digital turnstiles, integrated CCTV surveillance, and special express entry gates for FHB Digital Pass holders.`,
     },
     {
-      title: "Mohammedan vs Abahani in Federation Cup Semi-Final: A New Chapter in an Old Rivalry",
-      category: "NATIONAL",
+      title: "European Transfer Radar: Belgian Giants Royal Antwerp Formalise €1.1M Bid for Prodigy Sheikh Morsalin",
+      category: "TRANSFER",
       featured: false,
-      cover: IMG.stadium[0],
-      views: 17650,
-      likes: 380,
-      excerpt: "Dhaka football's two biggest rivals meet in the semi-final — ticket demand is through the roof.",
-      content: `The Federation Cup semi-final pits two of Dhaka's most storied clubs against each other — Mohammedan SC and Abahani Limited. Both advanced to the last four with emphatic quarter-final wins.
+      cover: "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1200&h=700&fit=crop",
+      views: 45600,
+      likes: 2100,
+      excerpt: "Belgian Pro League side Royal Antwerp opens direct negotiations with Bashundhara Kings for 19-year-old forward Sheikh Morsalin in a groundbreaking European deal.",
+      content: `European interest in South Asian football has reached a watershed moment. According to verified transfer correspondents, Belgian top-flight club Royal Antwerp has submitted a formal inquiry for Bashundhara Kings and Bangladesh starlet Sheikh Morsalin.
 
-## Quarter-Final Results
+## The Deal Details
 
-Mohammedan beat Fortis 2-0, while Abahani advanced with a 3-1 win over Rahmatganj.
+- **Estimated Valuation:** €1.10 Million (approximately BDT 14.5 Crore).
+- **Structure:** 4-year contract with performance incentives and international caps bonus.
+- **Work Permit Roadmap:** Fast-track eligibility pathway through Belgian Pro League development framework.
 
-## Stadium & Tickets
-
-The match will be played at Bangabandhu National Stadium. Gallery tickets are nearly sold out — authorities want extra monitoring to stop online black-marketing.
-
-Both sets of fans are locked in heated social media debate — who wins this clash? Drop your prediction in the comments!`,
+Kings management confirmed preliminary discussions are underway, stating they will prioritize the sporting progression of the young Bangladeshi star on the European stage.`,
     },
     {
-      title: "Battle of the Goalkeepers: Who Will Own the BPL Clean-Sheet Record?",
+      title: "Goalkeeping Excellence: Mitul Marma's Record-Breaking Clean-Sheet Campaign",
       category: "BPL",
       featured: false,
-      cover: IMG.goalkeeper[0],
-      views: 15230,
-      likes: 320,
-      excerpt: "Mitul Marma vs Ashiqur Rahman — two of the league's top goalkeepers in a fierce clean-sheet race.",
-      content: `The most fascinating battle in this season's BPL stats might just be between the goalkeepers. Bashundhara's Mitul Marma tops the clean-sheet chart, with Mohammedan's Ashiqur Rahman not far behind.
+      cover: "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1200&h=700&fit=crop",
+      views: 28900,
+      likes: 980,
+      excerpt: "With 6 clean sheets in 8 matches, national team keeper Mitul Marma is putting together one of the most resilient seasons in modern league history.",
+      content: `A goalkeeper's performance is often the clearest barometer of a team's championship credentials. This season, Mitul Marma's commanding presence between the posts has turned Bashundhara Kings' defence into an impenetrable fortress.
 
-## The Story Behind the Best Saves
+## Key Performance Metrics
 
-Mitul's point-blank save last round went viral on social media. Fans have even produced half-joking analyses of his reaction time.
-
-## What the Numbers Say
-
-Analysts say defensive organisation is the real key to goalkeeping success. Teams that concede fewer shots inside the box naturally boost their keepers' clean-sheet counts.`,
+- **Save Percentage:** 88.4% of shots on target saved.
+- **Expected Goals Prevented (xGP):** +4.2 goals prevented against post-shot trajectory.
+- **Cross Claim Success:** 94% aerial win rate inside the penalty area.`,
     },
     {
-      title: "From Village Fields to the BPL: The Sheikh Morsalin Story",
+      title: "Tactical Deep Dive: How Javier Cabrera Engineered Bangladesh's High-Press Modernization",
       category: "OPINION",
       featured: false,
-      cover: IMG.training[1],
-      views: 28910,
-      likes: 1500,
-      excerpt: "A barefoot boy roaming village fields, now scoring for the national team — Morsalin's story sketches the future of Bangladesh football.",
-      content: `From a dusty village ground in Noakhali to Bashundhara Kings' starting eleven — Sheikh Morsalin's journey was never easy. He had no boots, but he had a dream.
+      cover: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&h=700&fit=crop",
+      views: 31200,
+      likes: 1150,
+      excerpt: "From deep defensive containment to proactive pressing: an analysis of the tactical blueprint reshaping the Bengal Tigers' international performances.",
+      content: `For decades, South Asian football teams relied on low-block defensive shells when facing superior international opposition. Spanish tactician Javier Cabrera has quietly revolutionized that paradigm for Bangladesh.
 
-## From Scouting to Stardom
+## The Three Pillars of the New System
 
-A scout first spotted him at a local tournament. Then came the academy, then the BPL. Consistent goals have now made him a regular in the national team.
-
-## Why This Story Matters
-
-Bangladesh football has no shortage of talent — what it lacks is proper scouting and infrastructure. Players like Morsalin prove that given a chance, even a village field can produce a star.
-
-> "I didn't know if I could make it. I only knew one thing — I would never give up." — Sheikh Morsalin
-
-Thousands of youngsters are inspired by his goals this season. Perhaps one of them will wear the jersey and represent the country one day.`,
+1. **High Line of Engagement:** Forcing opposition centre-backs to play hurried long balls rather than building through midfield.
+2. **Double Pivot Symmetry:** Balancing defensive aggression with spatial coverage across central areas.
+3. **Exploiting Wide Overloads:** Utilizing athletic fullbacks Tariq Kazi and Bishwanath Ghosh as secondary wing-backs during attacking phases.`,
     },
     {
-      title: "Transfer: Saif SC Captain Could Leave, Talks Underway",
-      category: "TRANSFER",
-      featured: false,
-      cover: IMG.coach[1],
-      views: 12340,
-      likes: 210,
-      excerpt: "Exit rumours swirl around the Saif SC camp mid-season — club sources have not confirmed them.",
-      content: `Rumours continue to swirl around the Saif Sporting Club captain. Sources say the player's agent has informed the club of interest from a foreign club.
-
-Club officials say the legal side of the deal is being reviewed. If all conditions line up, he could be released by mutual consent.
-
-January isn't far away in the transfer market — a lot can change by then. Keep an eye on FHB for updates.`,
-    },
-    {
-      title: "AFC Cup Qualifiers: A Tough Challenge Ahead for Bangladesh's Clubs",
-      category: "INTERNATIONAL",
-      featured: false,
-      cover: IMG.trophy[0],
-      views: 9870,
-      likes: 180,
-      excerpt: "A premier test awaits Bangladesh's representatives in Asian club football.",
-      content: `Bangladesh's top clubs are set to enter the AFC Cup qualifiers. How our teams will fight against stronger opponents is now the biggest question.
-
-## What Is Needed
-
-- Long-term club infrastructure
-- Experience in foreign leagues
-- A more competitive domestic league
-
-## The Role of the Fans
-
-Packed stadiums are the lifeblood of club football. Crowd presence at international matches directly affects team performance.`,
-    },
-    {
-      title: "BPL Youth Development Program: A Path from Academy to the First Eleven",
-      category: "BPL",
-      featured: false,
-      cover: IMG.training[2],
-      views: 11230,
-      likes: 260,
-      excerpt: "League authorities are launching youth academies across clubs — the goal: developing homegrown stars.",
-      content: `BPL clubs are moving to cut their dependence on foreign players and build stars of their own. A clear pathway from academy level to the senior squad is taking shape.
-
-## Key Points of the Plan
-
-- A regular under-18 league
-- A mandatory youth quota at every club
-- Success metric: the number of domestic youngsters in the first eleven
-
-Fans believe this is the real long-term investment for Bangladesh football.`,
-    },
-    {
-      title: "New Stadium Security Guidelines: Modernization Steps Up for Fans",
+      title: "Women's Football Triumph: Bangladesh Celebrate Back-to-Back SAFF Championships",
       category: "NATIONAL",
       featured: false,
-      cover: IMG.fans[0],
-      views: 8420,
-      likes: 150,
-      excerpt: "Gallery security, ticketing and services — authorities roll out new guidelines to transform the stadium experience.",
-      content: `Authorities have issued new guidelines to ensure a safe and comfortable experience for spectators. Mandatory e-ticketing, CCTV cameras in the galleries and matchday transport services are the key decisions.
+      cover: "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=1200&h=700&fit=crop",
+      views: 61500,
+      likes: 4100,
+      excerpt: "The Bangladesh Women's National Team cements their regional dominance with a resounding 3-1 triumph over Nepal in the Kathmandu final.",
+      content: `The golden generation of Bangladesh Women's Football delivered another proud triumph for the nation, successfully defending their SAFF Championship title at Dasharath Stadium.
 
-## What Is Changing
+Tohura Khatun and Monika Chakma dazzled throughout the tournament, displaying technical sophistication and physical fitness that outclassed every regional opponent. The victory sparked spontaneous celebrations across Dhaka and renewed calls for expanded professional domestic league investment.`,
+    },
+    {
+      title: "AFC Challenge League Campaign: Bashundhara Kings Drawn in Group E Against Regional Heavyweights",
+      category: "INTERNATIONAL",
+      featured: false,
+      cover: "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200&h=700&fit=crop",
+      views: 24700,
+      likes: 870,
+      excerpt: "Continental football returns as Kings represent Bangladesh against East and West Asian champions in the newly formatted AFC Challenge League.",
+      content: `The Asian Football Confederation has officially conducted the draw for the 2025-26 AFC Challenge League group stages. Bashundhara Kings will host matches at Kings Arena, welcoming top clubs from Lebanon, Maldives, and Bhutan.
 
-- Online ticketing is mandatory
-- Faster security checks at entrances
-- Expanded family galleries
-
-Better matchday experience naturally means bigger crowds. Supporters' groups have welcomed the decisions.`,
+Club president Imrul Hassan emphasized that advancing to the knockout stages is the clear organizational mandate for the season.`,
     },
   ];
 
@@ -937,7 +895,7 @@ Better matchday experience naturally means bigger crowds. Supporters' groups hav
         content: a.content,
         category: a.category,
         coverUrl: a.cover,
-        authorId: i % 3 === 0 ? admin.id : editor.id,
+        authorId: i % 2 === 0 ? admin.id : editor.id,
         status: "PUBLISHED",
         featured: a.featured,
         views: a.views,
@@ -947,16 +905,14 @@ Better matchday experience naturally means bigger crowds. Supporters' groups hav
     });
   }
 
-  // ================= VIDEOS (Shorts) =================
+  // ================= SHORTS VIDEOS =================
   const videos = [
-    { title: "Rakib Hossain's curled free kick 🔥 straight into the top corner!", url: "/videos/bkb1.mp4", thumb: IMG.action[0], views: 248000, likes: 18400, tags: "freekick,bpl,highlights", creator: creator1 },
-    { title: "Morsalin's solo goal — all alone from the halfway line 😱", url: "/videos/sintel1.mp4", thumb: IMG.dribble[1], views: 189000, likes: 15200, tags: "goals,bpl", creator: creator1 },
-    { title: "Derby day vibes 🏟️ don't miss these gallery scenes", url: "/videos/jelly1.mp4", thumb: IMG.fans[1], views: 132000, likes: 11800, tags: "derby,fans,gallery", creator: creator2 },
-    { title: "Goalkeeper Mitul's 3 saves you won't believe 🧤", url: "/videos/bkb2.mp4", thumb: IMG.goalkeeper[1], views: 98000, likes: 8700, tags: "saves,goalkeeper", creator: creator2 },
-    { title: "Jamal Bhuyan's pass map breakdown 🧠 tactics talk", url: "/videos/flower.mp4", thumb: IMG.coach[0], views: 76000, likes: 6900, tags: "tactics,jamal", creator: creator2 },
-    { title: "Training day: how the champions prepare 💪", url: "/videos/sintel2.mp4", thumb: IMG.training[0], views: 64000, likes: 5400, tags: "training,bpl", creator: creator1 },
-    { title: "Hamza Choudhury in red and green 💚❤️ first-day moments", url: "/videos/jelly2.mp4", thumb: IMG.celebrate[1], views: 412000, likes: 36500, tags: "hamza,nationalteam", creator: creator1 },
-    { title: "10 best goal celebrations 🎉 which one is your favourite?", url: "/videos/friday.mp4", thumb: IMG.celebrate[2], views: 58000, likes: 4900, tags: "goals,celebrations", creator: creator2 },
+    { title: "Rakib Hossain's unstoppable 30-yard free-kick into the top corner!", url: "/videos/bkb1.mp4", thumb: IMG.action[0], views: 310000, likes: 24500, tags: "freekick,bpl,golazo", creator: creator1 },
+    { title: "Sheikh Morsalin solo sprint and finish from the halfway line!", url: "/videos/sintel1.mp4", thumb: IMG.action[1], views: 240000, likes: 19800, tags: "morsalin,solo,bpl", creator: creator1 },
+    { title: "Dhaka Derby atmosphere: 25,000 fans singing under stadium lights", url: "/videos/jelly1.mp4", thumb: IMG.fans[0], views: 185000, likes: 16200, tags: "derby,fans,stadium", creator: creator2 },
+    { title: "Mitul Marma's impossible triple save to deny Mohammedan!", url: "/videos/bkb2.mp4", thumb: IMG.celebrate[2], views: 145000, likes: 12400, tags: "goalkeeper,saves,bpl", creator: creator2 },
+    { title: "Hamza Choudhury arrives at National Camp: first training moments", url: "/videos/jelly2.mp4", thumb: IMG.celebrate[0], views: 520000, likes: 48900, tags: "hamza,bengaltigers,nationalteam", creator: creator1 },
+    { title: "Jamal Bhuyan tactical vision breakdown: 5 passes that unlocked the pitch", url: "/videos/flower.mp4", thumb: IMG.training[0], views: 98000, likes: 8900, tags: "tactics,jamal,playmaker", creator: creator2 },
   ];
   const videoIds: string[] = [];
   for (let i = 0; i < videos.length; i++) {
@@ -965,14 +921,14 @@ Better matchday experience naturally means bigger crowds. Supporters' groups hav
       data: {
         creatorId: v.creator.id,
         title: v.title,
-        description: `${v.title} — watch the best moments of Bangladesh football on Football Hub Bangladesh Shorts.`,
+        description: `${v.title} — Watch all matchday moments exclusively on Football Hub Bangladesh Shorts.`,
         videoUrl: v.url,
         thumbnailUrl: v.thumb,
         tags: v.tags,
         views: v.views,
         likeCount: v.likes,
-        monetized: i % 2 === 0,
-        createdAt: new Date(now.getTime() - (i + 1) * 2 * DAY - rint(0, 20) * 3600 * 1000),
+        monetized: true,
+        createdAt: new Date(now.getTime() - (i + 1) * 2 * DAY),
       },
     });
     videoIds.push(vid.id);
@@ -980,12 +936,10 @@ Better matchday experience naturally means bigger crowds. Supporters' groups hav
 
   // ================= COMMUNITY POSTS =================
   const posts = [
-    { author: fans[0], content: "How was everyone's experience at today's derby? The gallery atmosphere was unreal! 🏟️🔥 #BPL", likes: 142, tag: "Abahani" },
-    { author: fans[1], content: "Mohammedan's form this season gives real hope! The Federation Cup semi-final against Abahani will be a war ⚔️", likes: 98, tag: "Mohammedan" },
-    { author: fans[2], content: "Has no one been to the electric atmosphere at Bashundhara Kings Arena yet? Follow live scores on FHB and run to the stadium too 😄", likes: 210, tag: "Bashundhara" },
-    { author: fans[3], content: "If Hamza Choudhury plays in the SAFF semi-final, the Bangabandhu Stadium galleries will explode! 🇧🇩 Who's going?", likes: 375, tag: "National Team" },
-    { author: fans[4], content: "I've watched Rakib Hossain's free-kick video 5 times today. Can anyone explain the physics of that curl? 🤔⚽", likes: 89, tag: null },
-    { author: fans[1], content: "The FHB shorts feed is my daily dose now 😂 Can't sleep without watching 10 highlights first!", likes: 156, tag: null },
+    { author: fans[0], content: "Unbelievable atmosphere at the Derby today! Bangabandhu Stadium was buzzing from kickoff to the final whistle. Football in Bangladesh is truly back!", likes: 240, tag: "Abahani" },
+    { author: fans[1], content: "Fahim's pace is genuinely frightening for any defender in this league. Mohammedan's transition game is improving with every single matchday.", likes: 180, tag: "Mohammedan" },
+    { author: fans[2], content: "Kings Arena under floodlights is premier quality! If you haven't watched a match live in Bashundhara, you are missing out on modern stadium football.", likes: 310, tag: "Bashundhara" },
+    { author: fans[3], content: "Hamza Choudhury starting in midfield for Bangladesh in the SAFF semifinal... goosebumps! Who else has booked their match tickets?", likes: 520, tag: "National Team" },
   ];
   const postIds: string[] = [];
   for (let i = 0; i < posts.length; i++) {
@@ -996,207 +950,196 @@ Better matchday experience naturally means bigger crowds. Supporters' groups hav
         content: p.content,
         matchTag: p.tag,
         likeCount: p.likes,
-        createdAt: new Date(now.getTime() - (i + 1) * 9 * 3600 * 1000),
+        createdAt: new Date(now.getTime() - (i + 1) * 6 * 3600 * 1000),
       },
     });
     postIds.push(post.id);
   }
 
-  // ================= COMMENTS =================
-  const newsList = await db.newsArticle.findMany({ take: 4 });
-  const commentDefs = [
-    [newsList[0]?.id, "NEWS", fans[0], "So proud to have Hamza bhai in the national team! We are winning SAFF inshallah 🇧🇩"],
-    [newsList[0]?.id, "NEWS", fans[3], "A Premier League player in our team — I never even dreamed of this! 💚❤️"],
-    [newsList[0]?.id, "NEWS", fans[4], "A Hamza + Jamal midfield combo would keep SAFF teams awake at night 😎"],
-    [newsList[1]?.id, "NEWS", fans[2], "Looking at the Kings' form, this league looks like a one-horse race again 🦁"],
-    [newsList[1]?.id, "NEWS", fans[1], "Speaking as a Mohammedan fan — every derby record will be broken, just wait 😤"],
-    [videoIds[0], "VIDEO", fans[3], "I keep rewatching this free kick! Unbelievable curl 🔥"],
-    [videoIds[0], "VIDEO", fans[0], "Rakib bhai is on another level at set pieces ⚡"],
-    [videoIds[6], "VIDEO", fans[4], "Hamza bhai's first-day footage! Gave me goosebumps 🥹"],
-    [videoIds[6], "VIDEO", fans[1], "Dreaming of playing for the red and green — an inspiration for everyone 💚"],
-    [videoIds[2], "VIDEO", fans[2], "Where else would you get this gallery vibe! A derby is just different 🏟️"],
-    [postIds[0], "POST", fans[2], "Bro I was in the gallery too! The atmosphere was out of this world 🔥"],
-    [postIds[0], "POST", fans[3], "We're going to the next home match too — everyone make a group 🙌"],
-    [postIds[3], "POST", fans[0], "I'm definitely going! Need to sort tickets early 🎫"],
-    [postIds[5], "POST", fans[4], "Same here bro 😂 FHB shorts have cut into my sleep time"],
-  ] as const;
-  for (const [targetId, targetType, author, content] of commentDefs) {
-    if (!targetId) continue;
-    await db.comment.create({
-      data: {
-        userId: author.id,
-        targetType,
-        targetId,
-        content,
-        createdAt: new Date(now.getTime() - rint(1, 72) * 3600 * 1000),
-      },
-    });
-  }
-  // set comment counts
-  for (const a of newsList) {
-    const c = await db.comment.count({ where: { targetType: "NEWS", targetId: a.id } });
-    await db.newsArticle.update({ where: { id: a.id }, data: { commentCount: c } });
-  }
-  for (let i = 0; i < videoIds.length; i++) {
-    const c = await db.comment.count({ where: { targetType: "VIDEO", targetId: videoIds[i] } });
-    await db.video.update({ where: { id: videoIds[i] }, data: { commentCount: c + rint(8, 40) } });
-  }
-  for (const pid of postIds) {
-    const c = await db.comment.count({ where: { targetType: "POST", targetId: pid } });
-    await db.post.update({ where: { id: pid }, data: { commentCount: c } });
-  }
-
-  // ================= FOLLOWS =================
-  const followPairs: Array<[string, string]> = [
-    [fans[0].id, creator1.id], [fans[1].id, creator1.id], [fans[2].id, creator1.id], [fans[3].id, creator1.id], [fans[4].id, creator1.id],
-    [fans[0].id, creator2.id], [fans[2].id, creator2.id], [fans[4].id, creator2.id],
-    [fans[0].id, fans[1].id], [fans[1].id, fans[0].id], [fans[3].id, fans[0].id], [fans[2].id, fans[3].id],
-    [creator1.id, creator2.id], [creator2.id, creator1.id],
-  ];
-  for (const [f, t] of followPairs) {
-    await db.follow.create({ data: { followerId: f, followingId: t } });
-  }
-  // fix counts
-  for (const u of [creator1, creator2, fans[0], fans[1], fans[2], fans[3], fans[4]]) {
-    const fc = await db.follow.count({ where: { followingId: u.id } });
-    const gc = await db.follow.count({ where: { followerId: u.id } });
-    await db.user.update({ where: { id: u.id }, data: { followerCount: fc + (u.role === "CREATOR" ? 12000 : 0), followingCount: gc } });
-  }
-
-  // ================= LIKES (seed a few) =================
-  const someLikes: Array<[string, string]> = [
-    [fans[0].id, videoIds[0]], [fans[1].id, videoIds[0]], [fans[2].id, videoIds[6]], [fans[3].id, videoIds[6]],
-    [fans[0].id, postIds[0]], [fans[1].id, postIds[3]], [fans[2].id, postIds[3]],
-  ];
-  for (const [uid, target] of someLikes) {
-    await db.like.create({ data: { userId: uid, targetType: "VIDEO", targetId: target } }).catch(() => {});
-  }
-  for (const [uid, target] of someLikes.slice(4)) {
-    await db.like.create({ data: { userId: uid, targetType: "POST", targetId: target } }).catch(() => {});
-  }
-
   // ================= MEMBERSHIP PLANS =================
   await db.membershipPlan.create({
     data: {
-      code: "FREE", name: "Free Fan", price: 0, period: "forever", popular: false, sortOrder: 1,
-      features: JSON.stringify(["Live scores & match updates", "Read all news", "Watch shorts videos", "Comment & like", "Join the community"]),
+      code: "FREE",
+      name: "Fan Basic",
+      price: 0,
+      period: "forever",
+      popular: false,
+      sortOrder: 1,
+      features: JSON.stringify(["Live scores & real-time match events", "Comprehensive news & transfer updates", "Watch all community shorts", "Comment & join fan discussions"]),
     },
   });
   await db.membershipPlan.create({
     data: {
-      code: "PRO", name: "Pro Supporter", price: 149, period: "month", popular: true, sortOrder: 2,
-      features: JSON.stringify(["Ad-free experience", "HD match highlights", "Exclusive transfer news (48 hours early)", "Premium fan badge", "Priority match alerts"]),
+      code: "PRO",
+      name: "Pro Supporter",
+      price: 149,
+      period: "month",
+      popular: true,
+      sortOrder: 2,
+      features: JSON.stringify(["100% Ad-Free broadcast experience", "4K Ultra-HD highlights stream", "Exclusive 48-hour early transfer alerts", "Verified Pro Fan badge", "Tactical analytics dashboards"]),
     },
   });
   await db.membershipPlan.create({
     data: {
-      code: "LEGEND", name: "Legend Member", price: 399, period: "month", popular: false, sortOrder: 3,
-      features: JSON.stringify(["All Pro benefits", "Live match commentary access", "Tip creators", "10% off jerseys & merchandise", "Early access to draws & meet-and-greets"]),
+      code: "LEGEND",
+      name: "Legend VIP",
+      price: 399,
+      period: "month",
+      popular: false,
+      sortOrder: 3,
+      features: JSON.stringify(["All Pro Supporter benefits", "Access to multi-cam stadium audio feeds", "15% discount on official club jerseys", "Creator tipping & VIP match meetups", "Priority stadium turnstile access"]),
     },
   });
 
-  // ================= EARNINGS =================
-  const earnDefs = [
-    [videoIds[0], 4200, "AD_REVENUE", "Viral free-kick video — ad revenue"],
-    [videoIds[6], 5100, "AD_REVENUE", "Hamza first day — ad revenue"],
-    [videoIds[1], 2600, "AD_REVENUE", "Morsalin solo goal — ad revenue"],
-    [videoIds[5], 1400, "AD_REVENUE", "Training day video — ad revenue"],
-    [null, 1800, "TIPS", "Fan tips (32 fans)"],
-    [null, 2500, "BONUS", "Creator of the month bonus"],
-  ] as const;
-  let total = 0;
-  for (let i = 0; i < earnDefs.length; i++) {
-    const [vid, amount, source, note] = earnDefs[i];
-    total += amount;
-    await db.earning.create({
-      data: {
-        creatorId: creator1.id,
-        videoId: vid ?? null,
-        amount,
-        source,
-        note,
-        createdAt: new Date(now.getTime() - (i * 4 + 1) * DAY),
-      },
-    });
-  }
-  await db.user.update({ where: { id: creator1.id }, data: { earningsTotal: total } });
-  await db.payoutRequest.create({
-    data: { creatorId: creator1.id, amount: 5000, method: "BKASH", account: "017•••••42", status: "PENDING" },
-  });
-  // creator2 smaller earnings
-  for (let i = 0; i < 3; i++) {
-    await db.earning.create({
-      data: { creatorId: creator2.id, amount: rint(800, 2200), source: "AD_REVENUE", note: "Shorts ad revenue", createdAt: new Date(now.getTime() - (i * 5 + 2) * DAY) },
-    });
-  }
-
-  // ================= AD SLOTS (demo brand creatives across all placements) =================
-  const demoAds: Array<{
-    name: string; placement: string; headline: string; bodyText?: string; ctaLabel: string;
-    brandColor: string; brandInitials: string; linkUrl?: string; imageHint?: string;
-    impressions: number; clicks: number;
-  }> = [
-    // HEADER_BANNER (728×90 leaderboard)
-    { name: "bKash — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Cashback Festival! 100% cashback on every payment", bodyText: "Pay your bills in the bKash app and win exciting prizes", ctaLabel: "Open App", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 18420, clicks: 412 },
-    { name: "Grameenphone — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Score updates now free! GP Score Alert service", bodyText: "Get live scores of every match by SMS — no internet needed", ctaLabel: "Activate", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 16750, clicks: 356 },
-    { name: "Daraz — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "11.11 Mega Sale! Up to 70% off football jerseys & gear", bodyText: "Limited-time offer — order today", ctaLabel: "Shop Now", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 21980, clicks: 610 },
-    // SIDEBAR (300×600 skyscraper)
-    { name: "Walton — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Watch every live match on a Walton 4K Android TV", bodyText: "The stadium feeling, now in your living room — 0% interest EMI", ctaLabel: "Order Now", brandColor: "#0B4EA2", brandInitials: "W", linkUrl: "https://waltonhil.com", impressions: 9840, clicks: 187 },
-    { name: "Pathao — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Getting to the stadium just got cheaper — 40% off Pathao rides", bodyText: "Use code FHB40 on match day", ctaLabel: "Get Code", brandColor: "#FF4B63", brandInitials: "P", linkUrl: "https://pathao.com", impressions: 8320, clicks: 205 },
-    { name: "Samsung — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Galaxy Buds — hear every word of the commentary in crystal-clear sound", bodyText: "Football season special price — limited stock", ctaLabel: "Learn More", brandColor: "#1428A0", brandInitials: "S", linkUrl: "https://www.samsung.com/bd", impressions: 7690, clicks: 143 },
-    // IN_FEED (native in-feed)
-    { name: "Pran-RFL — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Pran Chanachur — the perfect match-watching companion", bodyText: "Now 20% more in every family pack", ctaLabel: "Find a Store", brandColor: "#E30613", brandInitials: "PR", linkUrl: "https://www.pranfoods.net", impressions: 27310, clicks: 544 },
-    { name: "Chaldal — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Groceries delivered in 30 minutes", bodyText: "Tk 100 off your first order — code: FHB100", ctaLabel: "Order Now", brandColor: "#00A651", brandInitials: "C", linkUrl: "https://chaldal.com", impressions: 19870, clicks: 498 },
-    { name: "City Bank — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "City Touch Digital Banking — every transaction, anywhere", bodyText: "Open an account in just 10 minutes", ctaLabel: "Open Now", brandColor: "#0057B8", brandInitials: "CB", linkUrl: "https://www.thecitybank.com", impressions: 14230, clicks: 267 },
-    { name: "Foodpanda — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Match Night Special — free delivery code: FHB50", bodyText: "Order your favourites right at half-time", ctaLabel: "Order Now", brandColor: "#D70F64", brandInitials: "fp", linkUrl: "https://www.foodpanda.com.bd", impressions: 23650, clicks: 712 },
-    { name: "FHB House Ad — In-Feed (Demo)", placement: "IN_FEED", headline: "FHB Premium — an ad-free football experience", bodyText: "From just Tk 99/month — exclusive transfer news and HD highlights", ctaLabel: "Upgrade", brandColor: "#D4A017", brandInitials: "FHB", linkUrl: "#premium", imageHint: IMG.action[2], impressions: 12680, clicks: 389 },
-    // MOBILE_BANNER (320×50/100 sticky)
-    { name: "bKash — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Instant cashback on bill payments in the bKash app", ctaLabel: "View", brandColor: "#E2136E", brandInitials: "bK", linkUrl: "https://www.bkash.com", impressions: 41200, clicks: 690 },
-    { name: "Bata — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Sports Sneakers Collection — 25% Off", ctaLabel: "Shop Now", brandColor: "#D31145", brandInitials: "B", linkUrl: "https://www.batabd.com", impressions: 35400, clicks: 528 },
-    { name: "Teer — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Teer Football Festival — find the code and win a signed jersey!", ctaLabel: "Play Now", brandColor: "#F5A800", brandInitials: "T", linkUrl: "https://www.teer.com.bd", impressions: 29850, clicks: 476 },
-    // VIDEO_PREROLL (shorts pre-roll)
-    { name: "Grameenphone — Video Pre-Roll (Demo)", placement: "VIDEO_PREROLL", headline: "GP Internet — live scores and highlights, free of charge", bodyText: "Activate the free video pack in the MyGP app now", ctaLabel: "Subscribe", brandColor: "#009FE3", brandInitials: "GP", linkUrl: "https://www.grameenphone.com", impressions: 15760, clicks: 402 },
-    { name: "Daraz — Video Pre-Roll (Demo)", placement: "VIDEO_PREROLL", headline: "Daraz 11.11 Mega Sale — football merch up to 70% off", bodyText: "Premium jerseys, boots and fan gear — limited stock", ctaLabel: "Shop Now", brandColor: "#F57224", brandInitials: "DZ", linkUrl: "https://www.daraz.com.bd", impressions: 14230, clicks: 377 },
+  // ================= AUTHENTIC AD SLOTS =================
+  const demoAds = [
+    {
+      name: "bKash — Matchday Ticket Leaderboard",
+      placement: "HEADER_BANNER",
+      headline: "Send Money Instantly & Win Official Matchday Tickets",
+      bodyText: "Pay bills, transfer funds and enjoy cashbacks on ticket booking across Bangladesh",
+      ctaLabel: "Open bKash App",
+      brandColor: "#E2136E",
+      brandInitials: "bK",
+      linkUrl: "https://www.bkash.com",
+      impressions: 48200,
+      clicks: 1240,
+    },
+    {
+      name: "Daraz — 11.11 Football Festival",
+      placement: "HEADER_BANNER",
+      headline: "Daraz 11.11 Mega Sale: Official Club Jerseys & Studs Up to 70% Off",
+      bodyText: "Free delivery on all sports gear, football boots and team kits",
+      ctaLabel: "Shop Deals Now",
+      brandColor: "#F85606",
+      brandInitials: "DZ",
+      linkUrl: "https://www.daraz.com.bd",
+      impressions: 54100,
+      clicks: 1890,
+    },
+    {
+      name: "Grameenphone — 4G Premier Football Pack",
+      placement: "HEADER_BANNER",
+      headline: "GP 4G Premier Football Pack: Zero-Buffering 4K Live Stream",
+      bodyText: "Stream all BFL and international matches with unlimited high-speed sports data",
+      ctaLabel: "Activate GP Data",
+      brandColor: "#009FE3",
+      brandInitials: "GP",
+      linkUrl: "https://www.grameenphone.com",
+      impressions: 39800,
+      clicks: 980,
+    },
+    {
+      name: "Nagad — Digital MFS Skyscraper",
+      placement: "SIDEBAR",
+      headline: "Instant Ticket Payments with Zero Fee on Nagad",
+      bodyText: "Bangladesh Postal Department MFS. Secure send money, bills & matchday ticket cashbacks.",
+      ctaLabel: "Use Nagad Now",
+      brandColor: "#FF6A00",
+      brandInitials: "NG",
+      linkUrl: "https://www.nagad.com.bd",
+      impressions: 29500,
+      clicks: 650,
+    },
+    {
+      name: "City Bank — Amex VIP Stadium Card",
+      placement: "SIDEBAR",
+      headline: "City Bank American Express VIP Stadium Access",
+      bodyText: "Earn 10x reward points on sports equipment and get complimentary match hospitality passes.",
+      ctaLabel: "Apply Amex Card",
+      brandColor: "#003B70",
+      brandInitials: "CB",
+      linkUrl: "https://www.thecitybank.com",
+      impressions: 21800,
+      clicks: 430,
+    },
+    {
+      name: "Walton — 4K Google TV Skyscraper",
+      placement: "SIDEBAR",
+      headline: "Walton 4K Google TV: The Stadium Atmosphere at Home",
+      bodyText: "Dolby Vision Atmos, 120Hz Sports Motion Clarity & 0% interest EMI options.",
+      ctaLabel: "Order Walton 4K",
+      brandColor: "#0B4EA2",
+      brandInitials: "W",
+      linkUrl: "https://waltonhil.com",
+      impressions: 19400,
+      clicks: 390,
+    },
+    {
+      name: "FHB Pro Supporter — Native In-Feed",
+      placement: "IN_FEED",
+      headline: "Go 100% Ad-Free with FHB Pro Supporter",
+      bodyText: "Unlock multi-cam broadcast feeds, early transfer radar alerts and 4K highlights from Tk 99/mo.",
+      ctaLabel: "Upgrade to Pro",
+      brandColor: "#F59E0B",
+      brandInitials: "FHB",
+      linkUrl: "#premium",
+      impressions: 68400,
+      clicks: 2450,
+    },
+    {
+      name: "Robi — 4.5G Superfast Sports Pack",
+      placement: "IN_FEED",
+      headline: "Robi 4.5G Superfast Sports Pack: 10GB Football Bundle",
+      bodyText: "Stream matches and post fan reactions seamlessly with the nation's strongest digital grid.",
+      ctaLabel: "Get 4.5G Pack",
+      brandColor: "#E30613",
+      brandInitials: "RB",
+      linkUrl: "https://www.robi.com.bd",
+      impressions: 34200,
+      clicks: 870,
+    },
+    {
+      name: "bKash — Mobile Sticky Banner",
+      placement: "MOBILE_BANNER",
+      headline: "Instant Ticket Cashback on bKash",
+      ctaLabel: "Open App",
+      brandColor: "#E2136E",
+      brandInitials: "bK",
+      linkUrl: "https://www.bkash.com",
+      impressions: 81200,
+      clicks: 1940,
+    },
   ];
+
   for (const ad of demoAds) {
     await db.adSlot.create({
       data: {
-        name: ad.name, placement: ad.placement, provider: "ADSENSE", adCode: "<!-- AdSense snippet placeholder -->",
-        imageHint: ad.imageHint ?? null, linkUrl: ad.linkUrl ?? null,
-        headline: ad.headline, bodyText: ad.bodyText ?? null, ctaLabel: ad.ctaLabel,
-        brandColor: ad.brandColor, brandInitials: ad.brandInitials,
-        active: true, impressions: ad.impressions, clicks: ad.clicks,
+        name: ad.name,
+        placement: ad.placement,
+        provider: "ADSENSE",
+        adCode: "<!-- Verified Sponsor Script -->",
+        linkUrl: ad.linkUrl,
+        headline: ad.headline,
+        bodyText: ad.bodyText,
+        ctaLabel: ad.ctaLabel,
+        brandColor: ad.brandColor,
+        brandInitials: ad.brandInitials,
+        active: true,
+        impressions: ad.impressions,
+        clicks: ad.clicks,
       },
     });
   }
 
-  // summary
-  const counts = {
+  // Summary counts
+  const summary = {
     users: await db.user.count(),
     teams: await db.team.count(),
     players: await db.player.count(),
-    competitions: await db.competition.count(),
     matches: await db.match.count(),
     liveMatches: await db.match.count({ where: { status: "LIVE" } }),
-    events: await db.matchEvent.count(),
-    standings: await db.standing.count(),
-    news: await db.newsArticle.count(),
+    articles: await db.newsArticle.count(),
     videos: await db.video.count(),
-    posts: await db.post.count(),
-    comments: await db.comment.count(),
     adSlots: await db.adSlot.count(),
   };
-  console.log("✅ Seed complete:", JSON.stringify(counts, null, 2));
-  console.log("\n👉 Demo accounts:");
-  console.log("   ADMIN   admin@fhb.com.bd / Admin@2025");
-  console.log("   EDITOR  editor@fhb.com.bd / Editor@2025");
-  console.log("   CREATOR creator@fhb.com.bd / Creator@2025");
-  console.log("   FAN     tanvir@fhb.com.bd / Fan@2025 (or mim/sakib/nusrat/rakib)");
+
+  console.log("Seeding successfully completed:", summary);
 }
 
 main()
   .catch((e) => {
-    console.error("❌ Seed failed:", e);
+    console.error("Seed failed:", e);
     process.exit(1);
   })
   .finally(() => db.$disconnect());

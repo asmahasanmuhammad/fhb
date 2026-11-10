@@ -131,7 +131,7 @@ export function PlayersView() {
           </span>
         </div>
         <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight drop-shadow-sm">
-          {language === "bn" ? "খেলোয়াড় সূচি ও পরিসংখ্যান" : "Players & Top Performers"}
+          Players & Top Performers
         </h1>
         <p className="text-[13px] text-slate-300 font-medium mt-1">
           Top goalscorers, playmakers and national team stars across the Bangladesh Premier League and world football.
@@ -276,7 +276,7 @@ function PlayerCard({
   return (
     <button
       onClick={onClick}
-      className="group relative flex w-full flex-col overflow-hidden border border-white/15 bg-[#0b101d] text-left transition-all hover:border-red-500/60 hover:bg-[#11172a] hover:shadow-[0_4px_20px_rgba(255,30,70,0.15)] rounded"
+      className="group relative flex w-full flex-col overflow-hidden border border-white/15 bg-[#0b101d] text-left transition-all hover:border-red-500/60 hover:bg-[#11172a] hover:shadow-[0_4px_20px_rgba(255,30,70,0.15)] rounded cursor-pointer"
     >
       <span aria-hidden className={cn("absolute inset-y-0 left-0 w-[3px]", positionEdge(player.position))} />
 
@@ -284,13 +284,28 @@ function PlayerCard({
         <span className="tabular font-black text-xs text-slate-400 w-5 text-center">
           {fmtNum(rank)}
         </span>
-        {player.team ? (
-          <TeamCrest team={player.team} size="md" />
-        ) : (
-          <span className="flex h-8 w-8 shrink-0 items-center justify-center bg-white/10 rounded font-black text-[10px] text-slate-300">
-            NT
-          </span>
-        )}
+
+        {/* Player Photo Avatar with Club Badge Badge */}
+        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-white/20 bg-[#06080f] shadow-md">
+          {player.photoUrl ? (
+            <img
+              src={player.photoUrl}
+              alt={player.name}
+              className="h-full w-full object-cover object-top transition-transform group-hover:scale-105"
+              loading="lazy"
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center font-black text-xs text-white bg-gradient-to-br from-slate-700 to-slate-900">
+              {player.name.slice(0, 2).toUpperCase()}
+            </span>
+          )}
+          {player.team && (
+            <div className="absolute -bottom-1 -right-1 scale-75">
+              <TeamCrest team={player.team} size="sm" />
+            </div>
+          )}
+        </div>
+
         <div className="min-w-0 flex-1">
           <p className="truncate text-[14px] font-black text-white group-hover:text-red-400 transition-colors drop-shadow-sm">
             {player.name}
@@ -420,16 +435,30 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
         )}
 
         <div className="relative flex flex-wrap items-center gap-5 p-5 pl-6 sm:gap-6 sm:p-7 sm:pl-8">
-          {/* Jersey tile — big tabular number */}
-          <span
-            aria-hidden
-            className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-white/15 bg-white/5 sm:h-24 sm:w-24 shadow-inner"
-            style={{ backgroundColor: `color-mix(in oklab, ${teamColor} 25%, transparent)` }}
-          >
-            <span className="tabular font-display text-4xl font-black leading-none text-white sm:text-5xl">
-              {p.jerseyNumber != null ? fmtNum(p.jerseyNumber) : "–"}
-            </span>
-          </span>
+          {/* Player Portrait & Jersey Badge */}
+          <div className="relative h-24 w-24 shrink-0 sm:h-28 sm:w-28">
+            <div className="h-full w-full overflow-hidden rounded-xl border-2 border-white/20 bg-[#06080f] shadow-xl">
+              {p.photoUrl ? (
+                <img
+                  src={p.photoUrl}
+                  alt={p.name}
+                  className="h-full w-full object-cover object-top"
+                />
+              ) : (
+                <div
+                  className="flex h-full w-full items-center justify-center font-display text-4xl font-black text-white"
+                  style={{ backgroundColor: `color-mix(in oklab, ${teamColor} 30%, #0b101d)` }}
+                >
+                  {p.jerseyNumber != null ? fmtNum(p.jerseyNumber) : p.name.slice(0, 2).toUpperCase()}
+                </div>
+              )}
+            </div>
+            {p.jerseyNumber != null && (
+              <span className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-black/90 font-mono text-sm font-black text-amber-300 shadow-md">
+                #{fmtNum(p.jerseyNumber)}
+              </span>
+            )}
+          </div>
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">

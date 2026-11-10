@@ -66,6 +66,15 @@ function LeaderPanel({
             )}>
               {i + 1}
             </span>
+            <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/20 bg-slate-800">
+              {p.photoUrl ? (
+                <img src={p.photoUrl} alt={p.name} className="h-full w-full object-cover object-top" />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center text-[9px] font-black text-white">
+                  {p.name.slice(0, 2).toUpperCase()}
+                </span>
+              )}
+            </div>
             {p.team && <TeamCrest team={p.team} size="sm" />}
             <span className="min-w-0 flex-1">
               <span className="block truncate text-[13px] font-extrabold text-white transition-colors group-hover:text-[#00e5ff]">
@@ -129,7 +138,7 @@ export function StandingsView() {
           </span>
         </div>
         <h1 className="font-black text-[28px] sm:text-[36px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]">
-          {language === "bn" ? "পয়েন্ট টেবিল ও গোলস্কোরার" : "Points Table & Standings"}
+          Points Table & Standings
         </h1>
         <p className="text-[14px] text-[#cbd5e1] font-medium mt-1">
           Real-time standings, form guide, goal difference and golden boot races across all leagues.

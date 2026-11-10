@@ -196,7 +196,7 @@ export function TeamsView() {
             </span>
           </div>
           <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight drop-shadow-sm">
-            {language === "bn" ? "ক্লাব ও দলসমূহ" : "Teams & Clubs Hub"}
+            Teams & Clubs Hub
           </h1>
           <p className="text-[13px] text-slate-300 font-medium mt-1">
             Official profiles for {fmtNum(teams.length)} domestic BFL clubs, European giants and national teams.

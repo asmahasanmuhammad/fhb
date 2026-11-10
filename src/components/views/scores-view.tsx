@@ -498,7 +498,7 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
   const [streamPlaying, setStreamPlaying] = useState(true);
   const [streamMuted, setStreamMuted] = useState(false);
   const [cameraAngle, setCameraAngle] = useState<"main" | "tactical" | "goal">("main");
-  const [commentaryLang, setCommentaryLang] = useState<"bn" | "en">("bn");
+  const [audioChannel, setAudioChannel] = useState<"stadium" | "tactical">("stadium");
   const [streamServer, setStreamServer] = useState("Server 1 (BDIX Dhaka 60FPS)");
   const streamVideoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -814,26 +814,26 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
               </span>
               <div className="grid grid-cols-2 gap-1.5">
                 <button
-                  onClick={() => setCommentaryLang("bn")}
+                  onClick={() => setAudioChannel("stadium")}
                   className={cn(
                     "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
-                    commentaryLang === "bn"
+                    audioChannel === "stadium"
                       ? "bg-rose-600 text-white shadow"
                       : "bg-muted text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  🇧🇩 বাংলা ধারাভাষ্য
+                  Stadium Broadcast (EN)
                 </button>
                 <button
-                  onClick={() => setCommentaryLang("en")}
+                  onClick={() => setAudioChannel("tactical")}
                   className={cn(
                     "py-1.5 px-2 rounded-lg text-xs font-bold transition-all text-center",
-                    commentaryLang === "en"
+                    audioChannel === "tactical"
                       ? "bg-rose-600 text-white shadow"
                       : "bg-muted text-muted-foreground hover:text-foreground"
                   )}
                 >
-                  🇬🇧 English Audio
+                  Tactical Analysis (EN)
                 </button>
               </div>
             </div>
@@ -846,12 +846,12 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
             </div>
             <div className="flex-1 text-xs leading-relaxed">
               <span className="font-bold text-primary mr-2">
-                {commentaryLang === "bn" ? "লাইভ ধারাভাষ্য (৭৪'):" : "Live Commentary (74'):"}
+                Live Commentary (74&apos;):
               </span>
               <span className="text-foreground/90">
-                {commentaryLang === "bn"
-                  ? "মাঝমাঠ থেকে নিখুঁত বল নিয়ে বক্সে ঢুকছেন মোরসালিন! ডিফেন্ডারদের পরাস্ত করে শট নিলেন, কিংস অ্যারেনা গর্জন করছে।"
-                  : "Brilliant progressive play through the lines, testing the backline with venomous speed! The stadium is electric."}
+                {audioChannel === "stadium"
+                  ? "Brilliant progressive play through the lines, testing the backline with venomous speed! The stadium is electric."
+                  : "Kings pushing high with a 3-2-5 attacking shape. Morsalin drifting inside to overload the half-space with precision."}
               </span>
             </div>
           </div>

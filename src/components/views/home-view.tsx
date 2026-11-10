@@ -24,12 +24,11 @@ import { cn } from "@/lib/utils";
 
 /** Section header — The Athletic / Sky Sports style */
 function SectionLabel({
-  label, labelBn, accent = "red", action, onAction, className,
+  label, accent = "red", action, onAction, className,
 }: {
-  label: string; labelBn?: string; accent?: "red" | "gold" | "blue" | "green";
+  label: string; accent?: "red" | "gold" | "blue" | "green";
   action?: string; onAction?: () => void; className?: string;
 }) {
-  const language = useAppStore((s) => s.language);
   const colors = {
     red: "bg-[#ff1e46] shadow-[0_0_8px_#ff1e46]",
     gold: "bg-amber-400 shadow-[0_0_8px_#fbbf24]",
@@ -41,7 +40,7 @@ function SectionLabel({
       <div className="flex items-center gap-3">
         <div className={cn("h-5 w-1.5 rounded-full shrink-0", colors[accent])} aria-hidden />
         <h2 className="text-[16px] font-black uppercase tracking-[0.06em] text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
-          {language === "bn" && labelBn ? labelBn : label}
+          {label}
         </h2>
       </div>
       {action && onAction && (
@@ -197,7 +196,6 @@ export function HomeView() {
         <div className="lg:col-span-8">
           <SectionLabel
             label="Scores & Fixtures"
-            labelBn="স্কোর ও ফিক্সচার"
             accent="red"
             action="All Matches"
             onAction={() => navigate({ name: "scores" })}
@@ -311,7 +309,6 @@ export function HomeView() {
       <section className="reveal mb-8" aria-label="Football News">
         <SectionLabel
           label="Football News"
-          labelBn="ফুটবল সংবাদ"
           accent="red"
           action="All News"
           onAction={() => navigate({ name: "news" })}
@@ -394,7 +391,6 @@ export function HomeView() {
         <div className="lg:col-span-8">
           <SectionLabel
             label="BFL Points Table"
-            labelBn="বিএফএল পয়েন্ট টেবিল"
             accent="green"
             action="Full Table"
             onAction={() => navigate({ name: "standings" })}
@@ -412,7 +408,6 @@ export function HomeView() {
         <section className="reveal mb-8" aria-label="Tactical Analysis">
           <SectionLabel
             label="Matchday Tactical Analysis"
-            labelBn="ট্যাকটিক্যাল বিশ্লেষণ"
             accent="blue"
             action="Match Centre"
             onAction={() => navigate({ name: "match-detail", id: heroMatch.id })}
@@ -431,7 +426,6 @@ export function HomeView() {
         <section className="reveal mb-8" aria-label="Trending shorts">
           <SectionLabel
             label="Trending Shorts"
-            labelBn="ট্রেন্ডিং শর্টস"
             accent="gold"
             action="All Shorts"
             onAction={() => navigate({ name: "shorts" })}
@@ -557,7 +551,7 @@ export function HomeView() {
 }
 
 function TopScorersMini() {
-  const { data } = useQuery<{ topScorers: Array<{ id: string; name: string; goals: number; team: TeamRef | null }> }>({
+  const { data } = useQuery<{ topScorers: Array<{ id: string; name: string; goals: number; photoUrl?: string | null; team: TeamRef | null }> }>({
     queryKey: ["topscorers", "home"],
     queryFn: async () => {
       const res = await fetch("/api/standings");
@@ -581,7 +575,7 @@ function TopScorersMini() {
           <button
             key={p.id}
             onClick={() => navigate({ name: "player-detail", id: p.id })}
-            className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-white/10"
+            className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-all hover:bg-white/10 cursor-pointer"
           >
             <span className={cn(
               "tabular flex h-6 w-6 shrink-0 items-center justify-center rounded font-black text-[12px]",
@@ -589,6 +583,15 @@ function TopScorersMini() {
             )}>
               {i + 1}
             </span>
+            <div className="relative h-7 w-7 shrink-0 overflow-hidden rounded-full border border-white/20 bg-slate-800">
+              {p.photoUrl ? (
+                <img src={p.photoUrl} alt={p.name} className="h-full w-full object-cover object-top" />
+              ) : (
+                <span className="flex h-full w-full items-center justify-center text-[9px] font-black text-white">
+                  {p.name.slice(0, 2).toUpperCase()}
+                </span>
+              )}
+            </div>
             {p.team && <TeamCrest team={p.team} size="xs" />}
             <span className="min-w-0 flex-1 truncate text-[13px] font-extrabold text-white transition-colors group-hover:text-[#00e5ff]">
               {p.name}

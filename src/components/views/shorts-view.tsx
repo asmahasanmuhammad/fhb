@@ -384,17 +384,17 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
               
               <div className="grid grid-cols-2 gap-2.5">
                 {[
-                  { bdt: 20, label: "৳২০ (Cheers)" },
-                  { bdt: 50, label: "৳৫০ (Goal Tip)" },
-                  { bdt: 100, label: "৳১০০ (Match MVP)" },
-                  { bdt: 500, label: "৳৫০০ (Super Fan)" },
+                  { bdt: 20, label: "Tk 20 (Cheers)" },
+                  { bdt: 50, label: "Tk 50 (Goal Tip)" },
+                  { bdt: 100, label: "Tk 100 (Match MVP)" },
+                  { bdt: 500, label: "Tk 500 (Super Fan)" },
                 ].map((tier) => (
                   <button
                     key={tier.bdt}
                     onClick={() => {
                       toast({
                         title: `Tip sent! ${tier.label}`,
-                        description: `৳${tier.bdt} successfully tipped to @${video.creator.username} via bKash. Thank you for supporting Bangladeshi football creators!`,
+                        description: `Tk ${tier.bdt} successfully tipped to @${video.creator.username} via bKash. Thank you for supporting Bangladeshi football creators!`,
                       });
                     }}
                     className="p-3 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-primary/5 transition-all text-left group cursor-pointer"

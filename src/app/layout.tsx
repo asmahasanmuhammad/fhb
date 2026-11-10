@@ -5,41 +5,41 @@ import { Toaster } from "@/components/ui/toaster";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { LiveScoreProvider } from "@/components/providers/live-score-provider";
 
-/* ═══ Antipasto Pro — Geometric Modern Rounded Sans Serif ═══ */
+/* ═══ Antipasto Pro — Geometric Modern Rounded Sans Serif (Primary Brand Font) ═══ */
 const antipasto = localFont({
   src: [
     {
-      path: "../../public/fonts/antipasto/AntipastoPro-Extralight_trial.ttf",
+      path: "../fonts/antipasto/AntipastoPro-Extralight_trial.ttf",
       weight: "200",
       style: "normal",
     },
     {
-      path: "../../public/fonts/antipasto/AntipastoPro-Light_trial.ttf",
+      path: "../fonts/antipasto/AntipastoPro-Light_trial.ttf",
       weight: "300",
       style: "normal",
     },
     {
-      path: "../../public/fonts/antipasto/AntipastoPro_trial.ttf",
+      path: "../fonts/antipasto/AntipastoPro_trial.ttf",
       weight: "400",
       style: "normal",
     },
     {
-      path: "../../public/fonts/antipasto/AntipastoPro-Medium_trial.ttf",
+      path: "../fonts/antipasto/AntipastoPro-Medium_trial.ttf",
       weight: "500",
       style: "normal",
     },
     {
-      path: "../../public/fonts/antipasto/AntipastoPro-DemiBold_trial.ttf",
+      path: "../fonts/antipasto/AntipastoPro-DemiBold_trial.ttf",
       weight: "600",
       style: "normal",
     },
     {
-      path: "../../public/fonts/antipasto/AntipastoPro-Bold_trial.ttf",
+      path: "../fonts/antipasto/AntipastoPro-Bold_trial.ttf",
       weight: "700",
       style: "normal",
     },
     {
-      path: "../../public/fonts/antipasto/AntipastoPro-ExtraBold_trial.ttf",
+      path: "../fonts/antipasto/AntipastoPro-ExtraBold_trial.ttf",
       weight: "800",
       style: "normal",
     },

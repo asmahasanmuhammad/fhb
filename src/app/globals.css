@@ -3,12 +3,63 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══ Antipasto Pro Local Webfont Definitions ═══ */
+@font-face {
+  font-family: "Antipasto Pro";
+  src: url("/fonts/antipasto/AntipastoPro-Extralight_trial.ttf") format("truetype");
+  font-weight: 200;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antipasto Pro";
+  src: url("/fonts/antipasto/AntipastoPro-Light_trial.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antipasto Pro";
+  src: url("/fonts/antipasto/AntipastoPro_trial.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antipasto Pro";
+  src: url("/fonts/antipasto/AntipastoPro-Medium_trial.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antipasto Pro";
+  src: url("/fonts/antipasto/AntipastoPro-DemiBold_trial.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antipasto Pro";
+  src: url("/fonts/antipasto/AntipastoPro-Bold_trial.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Antipasto Pro";
+  src: url("/fonts/antipasto/AntipastoPro-ExtraBold_trial.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme inline {
-  --font-antipasto: var(--font-antipasto);
+  --font-antipasto: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-antipasto), var(--font-body), system-ui, sans-serif;
-  --font-display: var(--font-antipasto), var(--font-display), system-ui, sans-serif;
+  --font-sans: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif;
+  --font-display: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -51,43 +102,49 @@
 
 :root {
   --radius: 0.5rem;
-  /* Light theme (secondary — site is dark-first) */
-  --background: oklch(0.975 0.003 250);
-  --foreground: oklch(0.21 0.01 250);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.01 250);
-  --elevated: oklch(0.965 0.004 250);
-  --elevated-foreground: oklch(0.21 0.01 250);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.01 250);
-  --primary: oklch(0.6 0.16 152);
-  --primary-foreground: oklch(0.985 0.005 150);
-  --secondary: oklch(0.955 0.005 250);
-  --secondary-foreground: oklch(0.3 0.01 250);
-  --muted: oklch(0.95 0.005 250);
-  --muted-foreground: oklch(0.47 0.015 250);
-  --accent: oklch(0.94 0.006 250);
-  --accent-foreground: oklch(0.3 0.01 250);
-  --destructive: oklch(0.55 0.22 27);
-  --border: oklch(0.89 0.005 250);
-  --input: oklch(0.89 0.005 250);
-  --ring: oklch(0.6 0.16 152);
-  --chart-1: oklch(0.6 0.16 152);
-  --chart-2: oklch(0.6 0.2 25);
-  --chart-3: oklch(0.72 0.14 85);
-  --chart-4: oklch(0.5 0.01 250);
-  --chart-5: oklch(0.68 0.12 85);
-  --sidebar: oklch(0.975 0.003 250);
-  --sidebar-foreground: oklch(0.21 0.01 250);
-  --sidebar-primary: oklch(0.6 0.16 152);
-  --sidebar-primary-foreground: oklch(0.985 0.005 150);
-  --sidebar-accent: oklch(0.94 0.006 250);
-  --sidebar-accent-foreground: oklch(0.3 0.01 250);
-  --sidebar-border: oklch(0.89 0.005 250);
-  --sidebar-ring: oklch(0.6 0.16 152);
-  --fhb-red: oklch(0.58 0.22 27);
-  --fhb-gold: oklch(0.76 0.14 85);
-  --fhb-green: oklch(0.6 0.16 152);
+  --font-antipasto: "Antipasto Pro", system-ui, sans-serif;
+  --font-display: "Antipasto Pro", system-ui, sans-serif;
+  --font-body: "Antipasto Pro", system-ui, sans-serif;
+  --font-sans: "Antipasto Pro", system-ui, sans-serif;
+
+  /* ═══ FHB Flagship Theme: Stadium Sapphire Midnight & Luminous Pure White ═══ */
+  --background: #06080f;
+  --foreground: #ffffff;
+  --card: #0b101d;
+  --card-foreground: #ffffff;
+  --elevated: #11172a;
+  --elevated-foreground: #ffffff;
+  --popover: #0d1324;
+  --popover-foreground: #ffffff;
+  --primary: #ff1e46;
+  --primary-foreground: #ffffff;
+  --secondary: #141c32;
+  --secondary-foreground: #ffffff;
+  --muted: #10162a;
+  --muted-foreground: #d1d5db;
+  --accent: #162038;
+  --accent-foreground: #ffffff;
+  --destructive: #ff2d55;
+  --border: rgba(255, 255, 255, 0.12);
+  --input: rgba(255, 255, 255, 0.16);
+  --ring: #ff1e46;
+  --chart-1: #ff1e46;
+  --chart-2: #fbbf24;
+  --chart-3: #00e5ff;
+  --chart-4: #cbd5e1;
+  --chart-5: #00e676;
+  --sidebar: #060913;
+  --sidebar-foreground: #ffffff;
+  --sidebar-primary: #ff1e46;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #162038;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgba(255, 255, 255, 0.12);
+  --sidebar-ring: #ff1e46;
+  --fhb-red: #ff1e46;
+  --fhb-gold: #fbbf24;
+  --fhb-green: #00e676;
+  --fhb-blue: #00e5ff;
 }
 
 .dark {
@@ -105,11 +162,11 @@
   --secondary: #141c32;
   --secondary-foreground: #ffffff;
   --muted: #10162a;
-  --muted-foreground: #cbd5e1;
+  --muted-foreground: #d1d5db;
   --accent: #162038;
   --accent-foreground: #ffffff;
   --destructive: #ff2d55;
-  --border: rgba(255, 255, 255, 0.13);
+  --border: rgba(255, 255, 255, 0.12);
   --input: rgba(255, 255, 255, 0.16);
   --ring: #ff1e46;
   --chart-1: #ff1e46;
@@ -123,7 +180,7 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #162038;
   --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: rgba(255, 255, 255, 0.13);
+  --sidebar-border: rgba(255, 255, 255, 0.12);
   --sidebar-ring: #ff1e46;
   --fhb-red: #ff1e46;
   --fhb-gold: #fbbf24;
@@ -134,22 +191,27 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif;
   }
   html {
     scroll-behavior: smooth;
+    background-color: #06080f;
+    color: #ffffff;
   }
   body {
     @apply bg-background text-foreground;
-    font-family: var(--font-antipasto), var(--font-body), system-ui, sans-serif;
-    color: #ffffff;
+    font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif !important;
+    background-color: #06080f !important;
+    color: #ffffff !important;
     font-size: 14px;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-antipasto), var(--font-display), sans-serif;
+    font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif !important;
     color: #ffffff !important;
     text-wrap: balance;
+    font-weight: 700;
   }
   ::selection {
     background: color-mix(in oklab, var(--primary) 38%, transparent);
@@ -163,14 +225,14 @@
 
 /* ═══════════════ FHB 4.0 — PRO utilities ═══════════════ */
 
-/* Display font — Barlow Condensed (scores, labels, numerals) */
+/* Display font — Antipasto Pro (scores, labels, numerals) */
 .font-display {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif !important;
 }
 
-/* Oversized condensed display (hero scores) */
+/* Oversized display (hero scores) */
 .display-hero {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif !important;
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: 0.005em;
@@ -178,9 +240,9 @@
   text-wrap: balance;
 }
 
-/* Condensed uppercase label (section titles, nav, meta) */
+/* Uppercase label (section titles, nav, meta) */
 .label-cond {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif !important;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.035em;
@@ -188,7 +250,7 @@
 
 /* Micro kicker — tiny uppercase eyebrow above titles */
 .kicker {
-  font-family: var(--font-body), sans-serif;
+  font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif !important;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   font-weight: 650;
@@ -201,25 +263,27 @@
   font-feature-settings: "tnum";
 }
 
-/* Oversized tabular score numerals (condensed) */
+/* Oversized tabular score numerals */
 .score-num {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-family: "Antipasto Pro", var(--font-antipasto), system-ui, sans-serif !important;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
 
-/* ── Surfaces (FLAT — v4 removes all gradients/glow/noise) ── */
+/* ── Surfaces (Stadium Obsidian & Broadcast Glass) ── */
 
-/* Legacy surface aliases — kept as quiet flats for compatibility */
 .stadium-panel {
-  background: oklch(0.175 0.007 264);
+  background: #0b101d;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 .gold-panel {
-  background: oklch(0.2 0.014 88);
+  background: #171407;
+  border: 1px solid rgba(251, 191, 36, 0.2);
 }
 .live-panel {
-  background: oklch(0.2 0.012 25);
+  background: #18090f;
+  border: 1px solid rgba(255, 30, 70, 0.25);
 }
 .edge-lit::before { content: none; }
 .noise::after { content: none; }
@@ -228,7 +292,7 @@
 
 /* Frosted floating chrome (header / ticker) */
 .glass {
-  background: color-mix(in oklab, var(--background) 92%, transparent);
+  background: rgba(6, 8, 15, 0.92);
   backdrop-filter: blur(14px) saturate(1.3);
   -webkit-backdrop-filter: blur(14px) saturate(1.3);
 }
@@ -237,9 +301,9 @@
 .photo-scrim {
   background: linear-gradient(
     180deg,
-    oklch(0.132 0.004 264 / 0) 30%,
-    oklch(0.11 0.004 264 / 0.55) 62%,
-    oklch(0.09 0.004 264 / 0.94) 100%
+    rgba(6, 8, 15, 0) 30%,
+    rgba(6, 8, 15, 0.65) 62%,
+    rgba(6, 8, 15, 0.95) 100%
   );
 }
 
@@ -261,28 +325,27 @@
   background: transparent;
 }
 .fhb-scroll::-webkit-scrollbar-thumb {
-  background: oklch(1 0 0 / 12%);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 999px;
 }
 .fhb-scroll::-webkit-scrollbar-thumb:hover {
-  background: oklch(1 0 0 / 22%);
+  background: rgba(255, 255, 255, 0.24);
 }
 
 /* ── Motion & interaction ─────────────────────────────── */
 
-/* Ad creative rotation — instant swap (no fade gate on readability) */
 .ad-creative {}
 
 /* LIVE pulse — sharp double blink, broadcast style */
 @keyframes live-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
+  50% { opacity: 0.35; transform: scale(0.8); }
 }
 .live-dot {
   animation: live-pulse 1.3s ease-in-out infinite;
 }
 
-/* Live minute flip — subtle settle */
+/* Live minute flip */
 @keyframes minute-tick {
   0% { opacity: 0.35; }
   100% { opacity: 1; }
@@ -303,21 +366,21 @@
   animation-play-state: paused;
 }
 
-/* Row/card hover — quiet flat lift (FotMob-style) */
+/* Row/card hover */
 .card-lift {
-  transition: background-color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 .card-lift:hover {
-  background-color: oklch(1 0 0 / 3%);
-  border-color: oklch(1 0 0 / 12%);
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
-/* Flat list-row hover (open tables, no border lift) */
+/* Flat list-row hover */
 .row-hover {
   transition: background-color 0.15s ease;
 }
 .row-hover:hover {
-  background-color: oklch(1 0 0 / 3%);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 /* Image zoom on hover */
@@ -328,7 +391,7 @@
   transform: scale(1.04);
 }
 
-/* Scroll reveal — conservative */
+/* Scroll reveal */
 .reveal {
   opacity: 0;
   transform: translateY(12px);

@@ -107,7 +107,7 @@ export function ScoreTicker() {
 
   return (
     <div
-      className="relative z-[60] flex h-9 items-stretch border-b border-border bg-[oklch(0.108_0.004_264)]"
+      className="relative z-[60] flex h-9 items-stretch border-b border-border bg-[#080d1a]/95"
       role="region"
       aria-label="Live score ticker"
     >

@@ -102,10 +102,14 @@ export default function Page() {
         Skip to main content
       </a>
 
-      {!isImmersive && <ScoreTicker />}
-      <Header />
+      {!isImmersive && (
+        <div className="sticky top-0 z-[60] w-full border-b border-border bg-[#06080f]/95 backdrop-blur-md">
+          <ScoreTicker />
+          <Header />
+        </div>
+      )}
 
-      <div className="flex flex-1">
+      <div className="mx-auto flex w-full max-w-[1480px] flex-1">
         {!isImmersive && <LeftRailNav />}
         <main
           id="main"

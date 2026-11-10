@@ -424,7 +424,7 @@ export function Header() {
   const [mobileSearch, setMobileSearch] = useState(false);
 
   return (
-    <header className="glass sticky top-0 z-[55] border-b border-border">
+    <header className="w-full">
       <div className="flex h-14 items-center gap-3 px-3 sm:px-4 lg:px-5">
         {/* Mobile: hamburger */}
         <button

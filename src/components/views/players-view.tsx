@@ -1,43 +1,56 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Player } from "@/lib/types";
+import type { Player, TeamRef } from "@/lib/types";
 import { POSITION_LABELS } from "@/lib/types";
 import { useReveal } from "@/hooks/use-reveal";
 import { TeamCrest } from "@/components/football/team-badge";
 import { AdSlot } from "@/components/football/ad-slot";
 import { PageHeader, SectionHeader } from "@/components/football/section-header";
+import { PageLayout, RailCard } from "@/components/layout/page-layout";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/store/app-store";
 import { fmtNum } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import {
-  ArrowLeft,
-  Cake,
-  ChevronRight,
-  Flag,
-  Flame,
-  Ruler,
-  Search,
-  Users,
-  X,
-} from "lucide-react";
+import { Activity, ChevronDown, ChevronLeft, Flag, Search, Users, X } from "lucide-react";
 
 /* ════════════════════════════════════════════════════════════════
-   Players — leaderboard-grade player index
-   PlayersView:      position tabs, national toggle, search, sort
-   PlayerDetailView: hero, season stat tiles, bio, squad depth
+   Players — dense player index + focused player page.
+   PlayersView:      position chips, national toggle, sort select,
+                     debounced API search, compact stat-strip cards.
+   PlayerDetailView: 860px profile band, stat tiles, season summary,
+                     bio and teammates.
    ════════════════════════════════════════════════════════════════ */
 
-const POSITION_TABS = [
+/** Player rows from /api/players carry an optional photo. */
+type PlayerWithPhoto = Player & { photoUrl?: string | null };
+
+/** Player + teammates payload from GET /api/players/:id (team carries full club info). */
+type PlayerDetailData = {
+  player: PlayerWithPhoto & { team: (TeamRef & { stadium?: string; founded?: number }) | null };
+  similar: PlayerWithPhoto[];
+};
+
+const POSITION_CHIPS = [
   { key: "ALL", label: "All" },
   { key: "GK", label: "GK" },
   { key: "DF", label: "DF" },
   { key: "MF", label: "MF" },
   { key: "FW", label: "FW" },
+] as const;
+
+type SortId = "goals" | "rating" | "name";
+
+const SORT_OPTIONS: Array<{ id: SortId; label: string }> = [
+  { id: "goals", label: "Top Goals" },
+  { id: "rating", label: "Top Rating" },
+  { id: "name", label: "Name A–Z" },
 ];
+
+/** One in-feed ad after the eighth card. */
+const AD_AFTER = 8;
 
 function useDebouncedValue<T>(value: T, delay = 250): T {
   const [debounced, setDebounced] = useState(value);
@@ -48,65 +61,40 @@ function useDebouncedValue<T>(value: T, delay = 250): T {
   return debounced;
 }
 
-/** Subtle left-edge coding by role — deeper green = more attacking. */
-function positionEdge(position: string): string {
-  switch (position) {
-    case "GK":
-      return "bg-white/25";
-    case "DF":
-      return "bg-primary/30";
-    case "MF":
-      return "bg-primary/55";
-    case "FW":
-      return "bg-primary";
-    default:
-      return "bg-primary/40";
-  }
+/** Position label helper (chips/tooltips/labels). */
+const posLabel = (pos: string) => POSITION_LABELS[pos] ?? pos;
+
+/** Initials for the avatar tile fallback (no photo, no shirt number). */
+function initialsOf(name: string): string {
+  return name
+    .split(/\s+/)
+    .map((w) => w[0])
+    .filter(Boolean)
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
 }
 
-/** The stat that defines the role — shown large on the card. */
-function keyStat(p: Player): { label: string; value: string } {
-  switch (p.position) {
-    case "GK":
-      return { label: "Clean sheets", value: fmtNum(p.cleanSheets) };
-    case "DF":
-      return { label: "Apps", value: fmtNum(p.appearances) };
-    case "MF":
-      return { label: "Assists", value: fmtNum(p.assists) };
-    default:
-      return { label: "Goals", value: fmtNum(p.goals) };
-  }
+/** Ratio formatted to two decimals, safe on zero appearances. */
+function perGame(n: number, apps: number): string {
+  return apps > 0 ? (n / apps).toFixed(2) : "0.00";
 }
 
-/** Remaining season stats — always exactly three short-label cells. */
-function footerStats(p: Player): Array<{ label: string; value: string }> {
-  const all = [
-    { label: "Apps", value: fmtNum(p.appearances) },
-    { label: "Goals", value: fmtNum(p.goals) },
-    { label: "Assists", value: fmtNum(p.assists) },
-    { label: "Rating", value: fmtNum(p.rating.toFixed(1)) },
-  ];
-  // Keepers: clean sheets already headline the card, drop assists for a tidy trio.
-  if (p.position === "GK") return all.filter((s) => s.label !== "Assists");
-  return all.filter((s) => s.label !== keyStat(p).label);
-}
-
-/* ════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════
    PlayersView — player index
-   ════════════════════════════════════════════════════════════ */
+   ════════════════════════════════════════════════════════════════ */
 
 export function PlayersView() {
-  const navigate = useAppStore((s) => s.navigate);
-  const language = useAppStore((s) => s.language);
   useReveal();
+  const navigate = useAppStore((s) => s.navigate);
 
-  const [position, setPosition] = useState("ALL");
+  const [position, setPosition] = useState<string>("ALL");
   const [nationalOnly, setNationalOnly] = useState(false);
-  const [sortBy, setSortBy] = useState<"goals" | "rating">("goals");
+  const [sortBy, setSortBy] = useState<SortId>("goals");
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query.trim());
 
-  const { data, isLoading } = useQuery<{ players: Player[] }>({
+  const { data, isLoading } = useQuery<{ players: PlayerWithPhoto[] }>({
     queryKey: ["players", position, nationalOnly, sortBy, debouncedQuery || null],
     queryFn: async () => {
       const params = new URLSearchParams({ sort: sortBy });
@@ -118,230 +106,321 @@ export function PlayersView() {
     },
   });
 
-  const players = useMemo(() => data?.players ?? [], [data]);
+  const players = data?.players ?? [];
 
-  return (
-    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      {/* ── Editorial Header ── */}
-      <div className="mb-6 border-b border-white/15 pb-4">
-        <div className="flex items-center gap-2 mb-1.5">
-          <span className="h-5 w-1 bg-red-500 shadow-[0_0_10px_rgba(255,30,70,0.8)] shrink-0" aria-hidden />
-          <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
-            OFFICIAL PLAYER LEADERBOARD & STATS
-          </span>
-        </div>
-        <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight drop-shadow-sm">
-          Players & Top Performers
-        </h1>
-        <p className="text-[13px] text-slate-300 font-medium mt-1">
-          Top goalscorers, playmakers and national team stars across the Bangladesh Premier League and world football.
-        </p>
-      </div>
+  /* Rail top scorers — leaders within the current result set. */
+  const topScorers = [...players].sort((a, b) => b.goals - a.goals || b.assists - a.assists).slice(0, 5);
 
-      {/* Leaderboard ad */}
-      <div className="reveal mb-8">
-        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
-      </div>
-
-      {/* ── Filters: position tabs + national toggle | search + sort ── */}
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between border-b border-white/15 pb-4 mb-6">
-        <div className="flex flex-wrap items-center gap-2">
-          <div
-            className="no-scrollbar flex gap-1 overflow-x-auto border border-white/15 bg-[#06080f] p-1 rounded"
-            role="tablist"
-            aria-label="Filter by position"
-          >
-            {POSITION_TABS.map((tab) => (
+  const rail = (
+    <>
+      {topScorers.length > 0 && (
+        <RailCard title="Top Scorers">
+          <div className="divide-y divide-border/40">
+            {topScorers.map((p, i) => (
               <button
-                key={tab.key}
-                role="tab"
-                aria-selected={position === tab.key}
-                onClick={() => setPosition(tab.key)}
-                className={cn(
-                  "shrink-0 px-3 py-1.5 text-[11px] font-black uppercase rounded transition-colors",
-                  position === tab.key
-                    ? "bg-red-600 text-white shadow-md shadow-red-600/30"
-                    : "text-slate-300 hover:text-white"
-                )}
+                key={p.id}
+                onClick={() => navigate({ name: "player-detail", id: p.id })}
+                className="row-hover group flex w-full items-center gap-3 px-4 py-2.5 text-left"
               >
-                {tab.label}
+                <span
+                  className={cn(
+                    "score-num w-5 shrink-0 text-center text-[16px] font-bold leading-none",
+                    i < 3 ? "text-primary" : "text-muted-foreground/60"
+                  )}
+                >
+                  {i + 1}
+                </span>
+                {p.team && <TeamCrest team={p.team} size="xs" />}
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[12.5px] font-semibold text-foreground transition-colors group-hover:text-primary">
+                    {p.name}
+                  </span>
+                  <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">
+                    {p.team?.name ?? "National Team"}
+                  </span>
+                </span>
+                <span className="tabular shrink-0 text-[15px] font-bold leading-none text-foreground">
+                  {fmtNum(p.goals)}
+                </span>
               </button>
             ))}
+          </div>
+        </RailCard>
+      )}
+      <AdSlot placement="SIDEBAR" />
+    </>
+  );
+
+  return (
+    <PageLayout rail={rail}>
+      <PageHeader
+        title="Players"
+        kicker="stars & squad members"
+        icon={<Users className="h-3.5 w-3.5" aria-hidden />}
+        subtitle="Top scorers, creators and squad players across every competition."
+      />
+
+      {/* ── Controls: position chips + national toggle | search + sort ── */}
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter by position">
+            {POSITION_CHIPS.map((chip) => {
+              const active = position === chip.key;
+              return (
+                <button
+                  key={chip.key}
+                  onClick={() => setPosition(chip.key)}
+                  aria-pressed={active}
+                  title={chip.key === "ALL" ? "All positions" : posLabel(chip.key)}
+                  className={cn(
+                    "flex h-8 shrink-0 items-center rounded-full border px-3.5 text-[12px] font-semibold transition-colors",
+                    active
+                      ? "border-primary/50 bg-primary/10 text-primary"
+                      : "border-border bg-card text-foreground/75 hover:border-white/20 hover:text-foreground"
+                  )}
+                >
+                  {chip.label}
+                </button>
+              );
+            })}
           </div>
           <button
             onClick={() => setNationalOnly((v) => !v)}
             aria-pressed={nationalOnly}
             className={cn(
-              "flex shrink-0 items-center gap-1.5 border px-3 py-2 text-[11px] font-black uppercase rounded transition-colors",
+              "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[12px] font-semibold transition-colors",
               nationalOnly
-                ? "border-red-500 bg-red-600/25 text-red-300"
-                : "border-white/15 bg-[#0b101d] text-slate-300 hover:text-white"
+                ? "border-primary/50 bg-primary/10 text-primary"
+                : "border-border bg-card text-foreground/75 hover:border-white/20 hover:text-foreground"
             )}
           >
-            <Flag className="h-3 w-3 text-red-400" aria-hidden /> National Team
+            <Flag className="h-3 w-3" aria-hidden />
+            National Teams
           </button>
         </div>
+
         <div className="flex items-center gap-2">
           <div className="relative min-w-0 flex-1 xl:w-64 xl:flex-none">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
               aria-hidden
             />
-            <input
-              type="text"
+            <Input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search players..."
+              placeholder="Search players…"
               aria-label="Search players"
-              className="h-10 w-full border border-white/20 bg-[#0b101d] pl-9 pr-9 text-xs font-semibold text-white placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 focus:outline-none rounded"
+              className="h-9 rounded-[6px] border-border bg-card pl-10 pr-10 text-[13px]"
             />
             {query && (
               <button
                 onClick={() => setQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="tap-target absolute right-0 top-0 flex h-9 w-9 items-center justify-center rounded-[6px] text-muted-foreground transition-colors hover:text-foreground"
                 aria-label="Clear search"
               >
-                <X className="h-3.5 w-3.5" aria-hidden />
+                <X className="h-4 w-4" aria-hidden />
               </button>
             )}
           </div>
-          <div
-            className="flex shrink-0 border border-white/15 bg-[#06080f] p-1 rounded"
-            role="group"
-            aria-label="Sort players"
-          >
-            {(["goals", "rating"] as const).map((s) => (
-              <button
-                key={s}
-                onClick={() => setSortBy(s)}
-                aria-pressed={sortBy === s}
-                className={cn(
-                  "px-3 py-1 text-[11px] font-black uppercase rounded transition-colors",
-                  sortBy === s ? "bg-red-600 text-white shadow-md shadow-red-600/30" : "text-slate-300 hover:text-white"
-                )}
-              >
-                {s === "goals" ? "Top Goals" : "Top Rating"}
-              </button>
-            ))}
+          <div className="relative shrink-0">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortId)}
+              aria-label="Sort players"
+              className="h-9 cursor-pointer appearance-none rounded-[6px] border border-border bg-card pl-3 pr-8 text-[12px] font-semibold text-foreground transition-colors hover:border-white/20 focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-ring"
+            >
+              {SORT_OPTIONS.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+            <ChevronDown
+              className="pointer-events-none absolute right-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground"
+              aria-hidden
+            />
           </div>
         </div>
       </div>
 
+      <p className="mt-4 text-[11.5px] text-muted-foreground">
+        {isLoading
+          ? "Loading players…"
+          : `${fmtNum(players.length)} ${players.length === 1 ? "player" : "players"}${
+              position !== "ALL" ? ` · ${posLabel(position)}s` : ""
+            }${nationalOnly ? " · national teams only" : ""}`}
+      </p>
+
       {/* ── Player grid ── */}
       {isLoading ? (
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-hidden>
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" aria-hidden>
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-[140px] bg-[#0b101d]" />
+            <div key={i} className="rounded-lg border border-border bg-card p-3.5">
+              <div className="flex items-center justify-between">
+                <Skeleton className="h-[18px] w-9 rounded-[4px]" />
+                <Skeleton className="h-[18px] w-7" />
+              </div>
+              <Skeleton className="mt-3 h-4 w-3/4" />
+              <Skeleton className="mt-2.5 h-3 w-2/3" />
+              <div className="mt-3 grid grid-cols-4 gap-1.5 border-t border-border pt-3">
+                {Array.from({ length: 4 }).map((_, j) => (
+                  <Skeleton key={j} className="h-9" />
+                ))}
+              </div>
+            </div>
           ))}
         </div>
       ) : players.length === 0 ? (
-        <div className="border border-white/15 bg-[#0b101d] px-6 py-16 text-center rounded">
-          <Users className="mx-auto mb-3 h-10 w-10 text-slate-400" />
-          <p className="font-black text-lg text-white">No players found</p>
-          <p className="mt-1 text-xs text-slate-300">Try searching with a different name or clear filters.</p>
+        <div className="reveal mt-3 rounded-lg border border-border bg-card px-4 py-12 text-center">
+          <p className="text-sm font-semibold text-foreground">No players found</p>
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
+            {debouncedQuery
+              ? `Nothing matches “${debouncedQuery}” under the current filters. Try another name or clear the search.`
+              : "No players are listed under the current filters."}
+          </p>
+          <button
+            onClick={() => {
+              setQuery("");
+              setPosition("ALL");
+              setNationalOnly(false);
+            }}
+            className="mt-5 inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-border bg-card px-3.5 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/25"
+          >
+            Reset Filters
+          </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="reveal mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {players.map((p, i) => (
-            <PlayerCard
-              key={p.id}
-              player={p}
-              rank={i + 1}
-              onClick={() => navigate({ name: "player-detail", id: p.id })}
-            />
+            <Fragment key={p.id}>
+              <PlayerCard player={p} onClick={() => navigate({ name: "player-detail", id: p.id })} />
+              {i === AD_AFTER - 1 && players.length > AD_AFTER && (
+                <div className="col-span-2 sm:col-span-3 lg:col-span-4">
+                  <AdSlot placement="IN_FEED" />
+                </div>
+              )}
+            </Fragment>
           ))}
         </div>
       )}
-
-      {/* In-feed ad after the index */}
-      <div className="reveal mt-8">
-        <AdSlot placement="IN_FEED" />
-      </div>
-    </div>
+    </PageLayout>
   );
 }
 
-function PlayerCard({
-  player,
-  rank,
-  onClick,
-}: {
-  player: Player;
-  rank: number;
-  onClick: () => void;
-}) {
-  const key = keyStat(player);
-  const footer = footerStats(player);
+/* ── Index card — position chip, shirt number, stat strip ── */
+
+function PlayerCard({ player, onClick }: { player: PlayerWithPhoto; onClick: () => void }) {
+  const team = player.team;
+  const stats: Array<[string, string]> = [
+    ["G", fmtNum(player.goals)],
+    ["A", fmtNum(player.assists)],
+    ["Apps", fmtNum(player.appearances)],
+    ["Rtg", fmtNum(player.rating.toFixed(1))],
+  ];
 
   return (
     <button
       onClick={onClick}
-      className="group relative flex w-full flex-col overflow-hidden border border-white/15 bg-[#0b101d] text-left transition-all hover:border-red-500/60 hover:bg-[#11172a] hover:shadow-[0_4px_20px_rgba(255,30,70,0.15)] rounded cursor-pointer"
+      className="card-lift group flex w-full flex-col rounded-lg border border-border bg-card p-3.5 text-left"
+      aria-label={`View ${player.name}`}
     >
-      <span aria-hidden className={cn("absolute inset-y-0 left-0 w-[3px]", positionEdge(player.position))} />
-
-      <div className="flex items-center gap-3 px-4 pb-3 pl-5 pt-4">
-        <span className="tabular font-black text-xs text-slate-400 w-5 text-center">
-          {fmtNum(rank)}
-        </span>
-
-        {/* Player Photo Avatar with Club Badge Badge */}
-        <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-full border border-white/20 bg-[#06080f] shadow-md">
+      <span className="flex items-start justify-between gap-2">
+        <span className="flex items-center gap-2">
           {player.photoUrl ? (
-            <img
-              src={player.photoUrl}
-              alt={player.name}
-              className="h-full w-full object-cover object-top transition-transform group-hover:scale-105"
-              loading="lazy"
-            />
+            <span className="relative block h-9 w-9 shrink-0 overflow-hidden rounded-full border border-border bg-elevated">
+              <img
+                src={player.photoUrl}
+                alt={player.name}
+                className="h-full w-full object-cover object-top"
+                loading="lazy"
+              />
+            </span>
           ) : (
-            <span className="flex h-full w-full items-center justify-center font-black text-xs text-white bg-gradient-to-br from-slate-700 to-slate-900">
-              {player.name.slice(0, 2).toUpperCase()}
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border bg-elevated text-[11px] font-bold text-muted-foreground">
+              {player.jerseyNumber != null ? fmtNum(player.jerseyNumber) : initialsOf(player.name)}
             </span>
           )}
-          {player.team && (
-            <div className="absolute -bottom-1 -right-1 scale-75">
-              <TeamCrest team={player.team} size="sm" />
-            </div>
-          )}
-        </div>
+          <span className="label-cond rounded-[4px] bg-secondary px-1.5 py-[3px] text-[10px] font-bold text-muted-foreground">
+            {player.position}
+          </span>
+        </span>
+        {player.jerseyNumber != null && (
+          <span className="tabular text-[12px] font-semibold text-muted-foreground">
+            #{fmtNum(player.jerseyNumber)}
+          </span>
+        )}
+      </span>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-[14px] font-black text-white group-hover:text-red-400 transition-colors drop-shadow-sm">
-            {player.name}
-          </p>
-          <p className="text-[11.5px] font-medium text-slate-300 truncate mt-0.5">
-            {POSITION_LABELS[player.position] ?? player.position} · {player.team?.name ?? "National Team"}
-          </p>
-          <p className="text-[10.5px] font-bold text-slate-400 truncate">{player.nationality}</p>
-        </div>
-        <div className="shrink-0 text-right">
-          <p className="tabular font-black text-xl text-white">{key.value}</p>
-          <p className="text-[9.5px] font-black text-red-400 uppercase tracking-wider">{key.label}</p>
-        </div>
-      </div>
+      <span
+        className="mt-2.5 block truncate text-[13.5px] font-semibold text-foreground transition-colors group-hover:text-primary"
+        title={player.name}
+      >
+        {player.name}
+      </span>
 
-      <div className="grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 bg-[#06080f]">
-        {footer.map((stat) => (
-          <div key={stat.label} className="px-2 py-2 text-center">
-            <p className="tabular font-black text-[12.5px] text-white">{stat.value}</p>
-            <p className="text-[9.5px] font-black uppercase tracking-wider text-slate-300">{stat.label}</p>
-          </div>
+      {team ? (
+        <span className="mt-1.5 flex min-w-0 items-center gap-1.5">
+          <TeamCrest team={team} size="xs" />
+          <span className="truncate text-[11px] text-muted-foreground">{team.shortName ?? team.name}</span>
+        </span>
+      ) : (
+        <span className="mt-1.5 flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
+          <Flag className="h-3 w-3 shrink-0" aria-hidden />
+          National Team
+        </span>
+      )}
+
+      <span className="mt-3 grid grid-cols-4 divide-x divide-border/50 border-t border-border/50 pt-2.5">
+        {stats.map(([label, value]) => (
+          <span key={label} className="text-center">
+            <span className="tabular block text-[14px] font-bold leading-none text-foreground">{value}</span>
+            <span className="mt-1 block text-[9px] font-semibold uppercase tracking-[0.08em] text-muted-foreground">
+              {label}
+            </span>
+          </span>
         ))}
-      </div>
+      </span>
     </button>
   );
 }
 
-/* ════════════════════════════════════════════════════════════
-   PlayerDetailView — player page
-   ════════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════════
+   PlayerDetailView — focused player page (860px)
+   ════════════════════════════════════════════════════════════════ */
+
+function StatTile({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-lg border border-border bg-card px-4 py-3.5">
+      <p className="text-[9.5px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
+      <p className="score-num mt-1.5 truncate text-[26px] leading-none text-foreground" title={value}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function SummaryRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex items-center justify-between gap-4 px-4 py-3">
+      <span className="text-[12px] text-muted-foreground">{label}</span>
+      <span className="tabular text-[13px] font-bold text-foreground">{value}</span>
+    </div>
+  );
+}
+
+function FactChip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="rounded-[4px] bg-secondary px-2.5 py-1 text-[11px] font-semibold text-foreground/85">
+      {children}
+    </span>
+  );
+}
 
 export function PlayerDetailView({ playerId }: { playerId: string }) {
-  const navigate = useAppStore((s) => s.navigate);
   useReveal();
+  const navigate = useAppStore((s) => s.navigate);
 
-  const { data, isLoading } = useQuery<{ player: Player; similar: Player[] }>({
+  const { data, isLoading } = useQuery<PlayerDetailData>({
     queryKey: ["player", playerId],
     queryFn: async () => {
       const res = await fetch(`/api/players/${playerId}`);
@@ -351,251 +430,221 @@ export function PlayerDetailView({ playerId }: { playerId: string }) {
 
   if (isLoading) {
     return (
-      <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6" aria-hidden>
-        <Skeleton className="h-5 w-40 rounded-md bg-[#0b101d]" />
-        <Skeleton className="mt-4 h-56 rounded-xl bg-[#0b101d]" />
-        <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-[92px] rounded-xl bg-[#0b101d]" />
-          ))}
+      <div className="mx-auto w-full max-w-[860px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7" aria-hidden>
+        <Skeleton className="h-8 w-24 rounded-[6px]" />
+        <Skeleton className="mt-4 h-48 rounded-xl" />
+        <div className="mt-10">
+          <Skeleton className="h-5 w-32" />
+          <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="h-[84px] rounded-lg" />
+            ))}
+          </div>
         </div>
-        <Skeleton className="mt-8 h-40 rounded-xl bg-[#0b101d]" />
+        <Skeleton className="mt-10 h-40 rounded-lg" />
       </div>
     );
   }
 
   if (!data?.player) {
     return (
-      <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+      <div className="mx-auto w-full max-w-[860px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7">
         <button
-          onClick={() => navigate({ name: "players" })}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-300 transition-colors hover:text-white"
+          onClick={() => useAppStore.getState().back()}
+          className="mb-4 flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Players
+          <ChevronLeft className="h-4 w-4" aria-hidden />
+          Back
         </button>
-        <div className="mt-4 flex flex-col items-center justify-center gap-2.5 rounded-xl border border-white/15 bg-[#0b101d] px-6 py-16 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10 text-slate-300">
+        <div className="rounded-lg border border-border bg-card px-4 py-14 text-center">
+          <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
             <Users className="h-5 w-5" aria-hidden />
           </span>
-          <p className="text-base font-black text-white">Player not found</p>
-          <p className="max-w-[36ch] text-xs font-medium leading-relaxed text-slate-300">
+          <p className="text-sm font-semibold text-foreground">Player not found</p>
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
             This player profile is no longer available. Head back to the index to browse all players.
           </p>
+          <button
+            onClick={() => navigate({ name: "players" })}
+            className="mt-5 inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-border bg-card px-3.5 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/25"
+          >
+            Back to Players
+          </button>
         </div>
       </div>
     );
   }
 
   const p = data.player;
-  const teamColor = p.team?.color ?? "#ff1e46";
-  const positionLabel = POSITION_LABELS[p.position] ?? p.position;
+  const teamColor = p.team?.color ?? "var(--primary)";
+  const isGK = p.position === "GK";
+  const positionLabel = posLabel(p.position);
+  const age = p.birthYear != null ? Math.max(0, new Date().getFullYear() - p.birthYear) : null;
+  const teammates = data.similar.slice(0, 4);
 
-  const tiles = [
-    { label: "Appearances", value: fmtNum(p.appearances) },
+  const tiles: Array<{ label: string; value: string }> = [
     { label: "Goals", value: fmtNum(p.goals) },
     { label: "Assists", value: fmtNum(p.assists) },
-    { label: "Clean Sheets", value: fmtNum(p.cleanSheets) },
-    { label: "Avg Rating", value: fmtNum(p.rating.toFixed(1)) },
-    { label: "Form Index", value: `${fmtNum(Math.round(p.rating * 10))}%` },
+    { label: "Appearances", value: fmtNum(p.appearances) },
+    { label: "Rating", value: fmtNum(p.rating.toFixed(1)) },
+    ...(isGK ? [{ label: "Clean Sheets", value: fmtNum(p.cleanSheets) }] : []),
   ];
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      {/* Breadcrumb back to the index */}
-      <nav className="flex items-center gap-2 text-xs" aria-label="Breadcrumb">
-        <button
-          onClick={() => navigate({ name: "players" })}
-          className="flex items-center gap-1.5 font-bold text-slate-300 transition-colors hover:text-white"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" aria-hidden /> Players
-        </button>
-        <ChevronRight className="h-3.5 w-3.5 text-slate-400" aria-hidden />
-        <span className="font-bold text-white">{p.name}</span>
-      </nav>
+    <div className="mx-auto w-full max-w-[860px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7">
+      {/* Back */}
+      <button
+        onClick={() => useAppStore.getState().back()}
+        className="mb-4 flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+      >
+        <ChevronLeft className="h-4 w-4" aria-hidden />
+        Back
+      </button>
 
-      {/* ── Player hero ──────────────────────────────────────────── */}
+      {/* ── Profile band ── */}
       <section
-        className="relative mt-4 overflow-hidden rounded-xl border border-white/20 bg-[#0b101d] shadow-xl"
+        className="reveal overflow-hidden rounded-xl border border-border bg-card"
         aria-label={`${p.name} profile`}
       >
-        {/* Club-colour accent edge */}
-        <span
-          aria-hidden
-          className="absolute inset-y-0 left-0 w-1"
-          style={{ backgroundColor: teamColor }}
-        />
-        {/* Watermark jersey number */}
-        {p.jerseyNumber != null && (
-          <span
-            aria-hidden
-            className="pointer-events-none absolute -right-2 -top-8 hidden select-none font-display text-[8rem] font-bold leading-none text-white/[0.04] sm:block sm:text-[11rem]"
-          >
-            {fmtNum(p.jerseyNumber)}
-          </span>
-        )}
-
-        <div className="relative flex flex-wrap items-center gap-5 p-5 pl-6 sm:gap-6 sm:p-7 sm:pl-8">
-          {/* Player Portrait & Jersey Badge */}
-          <div className="relative h-24 w-24 shrink-0 sm:h-28 sm:w-28">
-            <div className="h-full w-full overflow-hidden rounded-xl border-2 border-white/20 bg-[#06080f] shadow-xl">
-              {p.photoUrl ? (
-                <img
-                  src={p.photoUrl}
-                  alt={p.name}
-                  className="h-full w-full object-cover object-top"
-                />
-              ) : (
-                <div
-                  className="flex h-full w-full items-center justify-center font-display text-4xl font-black text-white"
-                  style={{ backgroundColor: `color-mix(in oklab, ${teamColor} 30%, #0b101d)` }}
-                >
-                  {p.jerseyNumber != null ? fmtNum(p.jerseyNumber) : p.name.slice(0, 2).toUpperCase()}
-                </div>
-              )}
+        <div className="flex flex-wrap items-center gap-5 p-5 sm:p-6">
+          {/* Authentic player photo or shirt-number tile */}
+          {p.photoUrl ? (
+            <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border border-border bg-elevated shadow-md">
+              <img
+                src={p.photoUrl}
+                alt={p.name}
+                className="h-full w-full object-cover object-top"
+              />
             </div>
-            {p.jerseyNumber != null && (
-              <span className="absolute -bottom-2 -right-2 flex h-8 w-8 items-center justify-center rounded-lg border border-white/20 bg-black/90 font-mono text-sm font-black text-amber-300 shadow-md">
-                #{fmtNum(p.jerseyNumber)}
+          ) : (
+            <span
+              aria-hidden
+              className="flex h-20 w-20 shrink-0 items-center justify-center rounded-lg border border-border bg-elevated"
+            >
+              <span className="score-num text-[32px] leading-none" style={{ color: teamColor }}>
+                {p.jerseyNumber != null ? fmtNum(p.jerseyNumber) : initialsOf(p.name)}
               </span>
-            )}
-          </div>
+            </span>
+          )}
 
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md bg-red-600/25 border border-red-500/40 px-2.5 py-1 text-[10.5px] font-black uppercase tracking-[0.08em] text-red-300">
+              <span className="label-cond rounded-[4px] bg-primary/10 px-2 py-1 text-[10px] font-bold text-primary">
                 {positionLabel}
               </span>
               {p.isNationalTeam && (
-                <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[10.5px] font-black uppercase tracking-[0.08em] text-white">
-                  <Flag className="h-3 w-3 text-red-400" aria-hidden /> National Team
+                <span className="label-cond inline-flex items-center gap-1.5 rounded-[4px] bg-secondary px-2 py-1 text-[10px] font-bold text-foreground/85">
+                  <Flag className="h-3 w-3 text-primary" aria-hidden /> National Team
                 </span>
               )}
             </div>
-            <h1 className="mt-2 text-[1.8rem] font-black leading-tight text-white drop-shadow-sm sm:text-4xl">
+            <h1 className="mt-2 text-[22px] font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-[24px]">
               {p.name}
             </h1>
-            <p className="mt-1.5 text-[13.5px] font-semibold text-slate-300">
-              {p.nationality}
-              {p.team ? ` · ${p.team.name}` : ""}
+            <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-[12.5px] text-muted-foreground">
+              <span>{p.nationality}</span>
+              {p.team && (
+                <>
+                  <span aria-hidden className="text-muted-foreground/50">·</span>
+                  <button
+                    onClick={() => navigate({ name: "team-detail", id: p.team!.id })}
+                    className="flex min-w-0 items-center gap-1.5 transition-colors hover:text-foreground"
+                    aria-label={`View ${p.team.name}`}
+                  >
+                    <TeamCrest team={p.team} size="xs" />
+                    <span className="truncate font-semibold text-foreground/85">{p.team.name}</span>
+                  </button>
+                </>
+              )}
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
-              {p.birthYear != null && (
-                <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">
-                  <Cake className="h-3 w-3 text-red-400" aria-hidden /> Born {fmtNum(p.birthYear)}
-                </span>
-              )}
-              {p.heightCm != null && (
-                <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">
-                  <Ruler className="h-3 w-3 text-red-400" aria-hidden /> {fmtNum(p.heightCm)} cm
-                </span>
-              )}
-              <span className="flex items-center gap-1.5 rounded-md border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] font-bold text-slate-200">
-                <span className="tabular font-black text-emerald-400">{fmtNum(p.rating.toFixed(1))}</span>
-                Avg rating
-              </span>
+              {age != null && <FactChip>Age {fmtNum(age)}</FactChip>}
+              {p.heightCm != null && <FactChip>{fmtNum(p.heightCm)} cm</FactChip>}
+              {p.jerseyNumber != null && <FactChip>Shirt {fmtNum(p.jerseyNumber)}</FactChip>}
             </div>
           </div>
-
-          {/* Team link */}
-          {p.team && (
-            <button
-              onClick={() => navigate({ name: "team-detail", id: p.team!.id })}
-              className="group flex shrink-0 flex-col items-center gap-2 rounded-lg border border-white/15 bg-[#06080f] p-3.5 transition-colors hover:border-red-500/50"
-              aria-label={`View ${p.team.name}`}
-            >
-              <TeamCrest team={p.team} size="lg" />
-              <span className="flex items-center gap-1 text-[11.5px] font-black text-white transition-colors group-hover:text-red-400">
-                {p.team.shortName ?? p.team.name}
-                <ChevronRight className="h-3 w-3 text-slate-300" aria-hidden />
-              </span>
-            </button>
-          )}
         </div>
-
-        {p.bio && (
-          <p className="relative max-w-[65ch] border-t border-white/10 px-5 py-4 pl-6 text-[13px] leading-relaxed text-slate-300 sm:px-7 sm:pl-8">
-            {p.bio}
-          </p>
-        )}
       </section>
 
-      {/* ── Season stats ─────────────────────────────────────────── */}
-      <section className="reveal mt-6" aria-label="Season statistics">
-        <SectionHeader title="Season Stats" kicker="current campaign" />
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {tiles.map((tile) => (
-            <div key={tile.label} className="rounded-xl border border-white/15 bg-[#0b101d] p-4 text-center shadow">
-              <p className="tabular font-display text-2xl font-black leading-none text-white">{tile.value}</p>
-              <p className="mt-2 text-[10.5px] font-black uppercase tracking-[0.06em] text-slate-300">
-                {tile.label}
-              </p>
-            </div>
+      {/* ── Season stats ── */}
+      <section className="reveal mt-10" aria-label="Season statistics">
+        <SectionHeader
+          title="Season Stats"
+          kicker="current campaign"
+          icon={<Activity className="h-3.5 w-3.5" aria-hidden />}
+        />
+        <div
+          className={cn(
+            "grid grid-cols-2 gap-3",
+            isGK ? "sm:grid-cols-3 lg:grid-cols-5" : "sm:grid-cols-4"
+          )}
+        >
+          {tiles.map((t) => (
+            <StatTile key={t.label} label={t.label} value={t.value} />
           ))}
         </div>
+        <div className="mt-3 overflow-hidden rounded-lg border border-border bg-card">
+          <div className="divide-y divide-border/40">
+            <SummaryRow label="Goal involvements" value={fmtNum(p.goals + p.assists)} />
+            <SummaryRow label="Goals per appearance" value={perGame(p.goals, p.appearances)} />
+            <SummaryRow label="Assists per appearance" value={perGame(p.assists, p.appearances)} />
+            {isGK && (
+              <SummaryRow
+                label="Clean-sheet rate"
+                value={`${Math.round((p.cleanSheets / Math.max(1, p.appearances)) * 100)}%`}
+              />
+            )}
+          </div>
+        </div>
       </section>
 
-      {/* ── Squad depth: similar players ─────────────────────────── */}
-      {data.similar.length > 0 && (
-        <section className="reveal mt-8" aria-label={`More ${positionLabel}s`}>
+      {/* ── Bio ── */}
+      {p.bio && (
+        <section className="reveal mt-10" aria-label="About">
+          <SectionHeader title="About" kicker="background" />
+          <p className="rounded-lg border border-border bg-card p-5 text-[13px] leading-relaxed text-muted-foreground">
+            {p.bio}
+          </p>
+        </section>
+      )}
+
+      {/* In-feed ad */}
+      <div className="reveal mt-10">
+        <AdSlot placement="IN_FEED" />
+      </div>
+
+      {/* ── More from the club ── */}
+      {p.team && teammates.length > 0 && (
+        <section className="reveal mt-10" aria-label={`More from ${p.team.name}`}>
           <SectionHeader
-            title={`${positionLabel}s at ${p.team?.name ?? "the club"}`}
-            kicker="squad depth"
+            title={`More from ${p.team.shortName ?? p.team.name}`}
+            kicker="teammates"
+            icon={<Users className="h-3.5 w-3.5" aria-hidden />}
           />
-          <div className="grid gap-3 sm:grid-cols-2">
-            {data.similar.map((s) => (
-              <button
-                key={s.id}
-                onClick={() => navigate({ name: "player-detail", id: s.id })}
-                className="group flex items-center gap-3 rounded-xl border border-white/15 bg-[#0b101d] px-4 py-3 text-left transition-colors hover:border-red-500/50 hover:bg-[#11172a]"
-              >
-                <span
-                  aria-hidden
-                  className={cn("h-10 w-[3px] shrink-0 rounded-full", positionEdge(s.position))}
-                />
-                {s.team ? (
-                  <TeamCrest team={s.team} size="sm" />
-                ) : (
-                  <span
-                    className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md bg-white/10 text-[9px] font-bold text-slate-300"
-                    aria-hidden
-                  >
-                    NT
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            <div className="divide-y divide-border/40">
+              {teammates.map((s) => (
+                <button
+                  key={s.id}
+                  onClick={() => navigate({ name: "player-detail", id: s.id })}
+                  className="row-hover group flex w-full items-center gap-3 px-4 py-2.5 text-left"
+                >
+                  <span className="tabular w-7 shrink-0 text-center text-[13px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">
+                    {s.jerseyNumber != null ? fmtNum(s.jerseyNumber) : "–"}
                   </span>
-                )}
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-[13.5px] font-black leading-tight text-white transition-colors group-hover:text-red-400">
+                  <TeamCrest team={s.team ?? p.team!} size="xs" />
+                  <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground transition-colors group-hover:text-primary">
                     {s.name}
-                  </p>
-                  <p className="mt-0.5 truncate text-[11px] font-medium leading-tight text-slate-300">
-                    {POSITION_LABELS[s.position] ?? s.position} · #{s.jerseyNumber != null ? fmtNum(s.jerseyNumber) : "–"}
-                  </p>
-                </div>
-                <div className="flex shrink-0 items-center gap-3.5 text-right">
-                  <div>
-                    <p className="tabular font-display text-[13.5px] font-black leading-none text-white">
-                      {fmtNum(s.goals)}
-                    </p>
-                    <p className="mt-1 text-[10px] font-black uppercase tracking-[0.04em] text-slate-400">Gls</p>
-                  </div>
-                  <div>
-                    <p className="tabular font-display text-[13.5px] font-black leading-none text-white">
-                      {fmtNum(s.assists)}
-                    </p>
-                    <p className="mt-1 text-[10px] font-black uppercase tracking-[0.04em] text-slate-400">Ast</p>
-                  </div>
-                  <div>
-                    <p className="tabular font-display text-[13.5px] font-black leading-none text-emerald-400">
-                      {fmtNum(s.rating.toFixed(1))}
-                    </p>
-                    <p className="mt-1 text-[10px] font-black uppercase tracking-[0.04em] text-slate-400">Rtg</p>
-                  </div>
-                </div>
-                <ChevronRight
-                  className="h-4 w-4 shrink-0 text-slate-400 opacity-0 transition-opacity group-hover:opacity-100"
-                  aria-hidden
-                />
-              </button>
-            ))}
+                  </span>
+                  <span className="label-cond shrink-0 rounded-[4px] bg-secondary px-1.5 py-[3px] text-[10px] font-bold text-muted-foreground">
+                    {s.position}
+                  </span>
+                  <span className="tabular shrink-0 text-[11px] text-muted-foreground">
+                    {fmtNum(s.appearances)} apps · {fmtNum(s.goals)} gls
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </section>
       )}

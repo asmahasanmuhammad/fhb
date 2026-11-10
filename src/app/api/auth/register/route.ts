@@ -5,6 +5,9 @@ import { hashPassword } from "@/lib/password";
 import { createSession, setSessionCookie } from "@/lib/auth";
 import { ok, fail, handleError, rateLimit } from "@/lib/api";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(60),
   username: z

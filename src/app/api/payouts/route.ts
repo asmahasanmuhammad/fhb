@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { ok, fail, handleError } from "@/lib/api";
 import { requireCreatorOrAdmin } from "@/lib/auth";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   amount: z.number().min(500, "Minimum withdrawal is Tk 500"),
   method: z.enum(["BKASH", "NAGAD", "BANK"]),

@@ -3,6 +3,9 @@ import { z } from "zod";
 import { db } from "@/lib/db";
 import { ok, fail, handleError } from "@/lib/api";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 // GET: active ad slots for a placement (used by AdSlot component)
 export async function GET(req: NextRequest) {
   try {

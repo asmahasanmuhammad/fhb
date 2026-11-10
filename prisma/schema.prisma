@@ -336,6 +336,8 @@ model AdSlot {
   ctaLabel      String? // demo creative CTA button label
   brandColor    String? // brand accent color (hex) for the demo creative
   brandInitials String? // 1-2 letter brand monogram
+  logoUrl       String? // official brand logo asset (e.g. /brands/bkash.png)
+  logoTheme     String? // logo chip treatment: LIGHT (white chip) | DARK (brand-colour chip for white logos)
   active        Boolean @default(true)
   impressions   Int     @default(0)
   clicks        Int     @default(0)

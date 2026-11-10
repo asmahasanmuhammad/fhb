@@ -4,6 +4,9 @@ import { ok, fail, handleError } from "@/lib/api";
 import { getSessionUser, requireCreatorOrAdmin } from "@/lib/auth";
 import { z } from "zod";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const sp = req.nextUrl.searchParams;

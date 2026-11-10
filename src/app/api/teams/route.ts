@@ -3,6 +3,9 @@ import { db } from "@/lib/db";
 import { ok, handleError } from "@/lib/api";
 import { NATIONAL_TEAM_INITIALS } from "@/lib/types";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const search = req.nextUrl.searchParams.get("q")?.trim();

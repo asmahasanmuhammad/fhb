@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { ok, fail, handleError } from "@/lib/api";
 import { requireAdmin } from "@/lib/auth";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 const updateSchema = z.object({
   id: z.string().min(1),
   active: z.boolean().optional(),
@@ -15,6 +18,8 @@ const updateSchema = z.object({
   ctaLabel: z.string().optional(),
   brandColor: z.string().optional(),
   brandInitials: z.string().optional(),
+  logoUrl: z.string().optional(),
+  logoTheme: z.string().optional(),
   linkUrl: z.string().optional(),
 });
 

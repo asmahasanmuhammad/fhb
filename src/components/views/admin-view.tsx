@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
 import { useReveal } from "@/hooks/use-reveal";
@@ -11,14 +11,46 @@ import { useToast } from "@/hooks/use-toast";
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription,
+  AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import {
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
+} from "@/components/ui/table";
 import { PageHeader } from "@/components/football/section-header";
 import { TeamCrest } from "@/components/football/team-badge";
+import { AdBrandLogo } from "@/components/football/ad-slot";
 import {
   LayoutDashboard, Newspaper, Zap, Users, Megaphone, Wallet, Plus, Pencil, Trash2,
-  TrendingUp, Eye, Clapperboard, MessageSquare, PenLine, Crown, Ban, RotateCcw,
-  CircleDot, ShieldCheck, Info, Star, CheckCircle2, XCircle, Inbox,
+  Eye, Clapperboard, MessageSquare, PenLine, Crown, Ban, RotateCcw,
+  ShieldCheck, Info, Star, CheckCircle2, XCircle, Inbox, Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+
+/* ── Types (API contracts kept identical) ─────────────────── */
+
+type AdminAd = {
+  id: string;
+  name: string;
+  placement: string;
+  active: boolean;
+  impressions: number;
+  clicks: number;
+  adCode: string | null;
+  headline: string | null;
+  bodyText: string | null;
+  ctaLabel: string | null;
+  linkUrl: string | null;
+  brandColor: string | null;
+  brandInitials: string | null;
+  logoUrl: string | null;
+  logoTheme: string | null;
+};
 
 type AdminStats = {
   stats: {
@@ -28,8 +60,30 @@ type AdminStats = {
   };
   recentUsers: Array<{ id: string; name: string; username: string; role: string; isPremium: boolean; createdAt: string }>;
   recentArticles: Array<{ id: string; title: string; category: string; views: number; status: string; createdAt: string }>;
-  ads: Array<{ id: string; name: string; placement: string; active: boolean; impressions: number; clicks: number; adCode: string | null; headline?: string | null; brandColor?: string | null; brandInitials?: string | null }>;
+  ads: AdminAd[];
 };
+
+type AdminMatch = {
+  id: string; status: string; homeScore: number | null; awayScore: number | null; minute: number | null;
+  kickoff: string; round: string | null; venue: string | null;
+  homeTeam: { id: string; name: string; initials: string; color: string };
+  awayTeam: { id: string; name: string; initials: string; color: string };
+  competition: { id: string; name: string; shortName: string };
+};
+
+type Article = {
+  id: string; title: string; excerpt: string; content: string; category: string;
+  coverUrl: string | null; status: string; featured: boolean; views: number; createdAt: string;
+  author: { name: string };
+};
+
+type AdminUser = {
+  id: string; name: string; username: string; email: string; role: string; isPremium: boolean;
+  isBanned: boolean; followerCount: number; createdAt: string;
+  _count: { posts: number; videos: number; comments: number };
+};
+
+type Payout = { id: string; amount: number; method: string; account: string; status: string; createdAt: string; creator: { name: string; username: string } };
 
 /* ── Section navigation ───────────────────────────────────── */
 
@@ -44,20 +98,42 @@ const SECTIONS = [
 
 type SectionId = (typeof SECTIONS)[number]["id"];
 
-/* ── Presentation helpers ─────────────────────────────────── */
+/* ── Presentation constants & helpers (module-level, pure) ── */
 
 const PAYOUT_STATUS: Record<string, { label: string; cls: string }> = {
-  PENDING: { label: "Pending", cls: "border-border bg-muted text-muted-foreground" },
+  PENDING: { label: "Pending", cls: "border-fhb-gold/30 bg-fhb-gold/12 text-fhb-gold" },
   APPROVED: { label: "Approved", cls: "border-primary/25 bg-primary/12 text-primary" },
   PAID: { label: "Paid", cls: "border-primary/25 bg-primary/12 text-primary" },
+  PAUSED: { label: "Paused", cls: "border-fhb-red/25 bg-fhb-red/12 text-fhb-red" },
   REJECTED: { label: "Rejected", cls: "border-fhb-red/25 bg-fhb-red/12 text-fhb-red" },
 };
 
 const METHOD_LABEL: Record<string, string> = { BKASH: "bKash", NAGAD: "Nagad", BANK: "Bank" };
 const ROLE_LABEL: Record<string, string> = { USER: "Fan", CREATOR: "Creator", ADMIN: "Admin" };
+const ROLE_CLS: Record<string, string> = {
+  USER: "border-border bg-muted text-muted-foreground",
+  CREATOR: "border-primary/25 bg-primary/12 text-primary",
+  ADMIN: "border-fhb-gold/30 bg-fhb-gold/12 text-fhb-gold",
+};
+
+const MATCH_STATUS = [
+  { value: "SCHEDULED", label: "Upcoming" },
+  { value: "LIVE", label: "Live" },
+  { value: "FINISHED", label: "Finished" },
+] as const;
+
+const MATCH_FILTERS = [
+  { value: "ALL", label: "All" },
+  { value: "LIVE", label: "Live" },
+  { value: "SCHEDULED", label: "Upcoming" },
+  { value: "FINISHED", label: "Finished" },
+] as const;
 
 const inputCls =
-  "w-full rounded-lg border border-white/20 bg-[#06080f] px-3 py-2.5 text-sm font-semibold text-white outline-none transition-colors placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50";
+  "w-full rounded-md border border-border bg-background px-3 py-2.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-2 focus:ring-primary/15";
+
+const thCls = "h-9 px-3 text-[10.5px] font-bold uppercase tracking-[0.08em] text-muted-foreground/80";
+const tdCls = "px-3 py-2.5 align-middle";
 
 function placementLabel(p: string): string {
   const map: Record<string, string> = {
@@ -80,26 +156,29 @@ function initials(name: string): string {
   );
 }
 
-/** Consistent 11px uppercase card header with hairline rule. */
+/** ISO date → datetime-local input value ("YYYY-MM-DDTHH:mm", local time). */
+function toLocalInput(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => n.toString().padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** Condensed uppercase card header with hairline rule. */
 function CardHead({ label, right }: { label: string; right?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-3 border-b border-white/15 bg-[#06080f] px-4 py-3 sm:px-5">
-      <h3 className="text-[11px] font-black uppercase tracking-wider text-white">{label}</h3>
+    <div className="flex items-center justify-between gap-3 border-b border-border/70 px-4 py-3 sm:px-5">
+      <h3 className="label-cond shrink-0 text-[12px] text-muted-foreground">{label}</h3>
       {right != null && <div className="min-w-0 text-right">{right}</div>}
     </div>
   );
-}
-
-function ColHead({ children, className }: { children: React.ReactNode; className?: string }) {
-  return <span className={cn("text-[10.5px] font-black uppercase tracking-wider text-slate-300", className)}>{children}</span>;
 }
 
 function Chip({ children, cls }: { children: React.ReactNode; cls?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex shrink-0 items-center gap-1 rounded-md border px-2 py-0.5 text-[10.5px] font-bold",
-        cls ?? "border-white/15 bg-white/5 text-slate-300"
+        "inline-flex shrink-0 items-center gap-1 rounded-[4px] border px-1.5 py-0.5 text-[10px] font-bold",
+        cls ?? "border-border bg-muted text-muted-foreground"
       )}
     >
       {children}
@@ -107,24 +186,22 @@ function Chip({ children, cls }: { children: React.ReactNode; cls?: string }) {
   );
 }
 
-/** Edge-lit stat tile — small icon, 11px label, big tabular value. */
+function StatusChip({ status }: { status: string }) {
+  const meta = PAYOUT_STATUS[status];
+  return <Chip cls={meta?.cls}>{meta?.label ?? status}</Chip>;
+}
+
+/** Stat tile — the dashboard standard: kicker, big tabular numeral, delta line. */
 function StatTile({
-  label, value, sub, icon, iconCls,
+  label, value, sub, subCls,
 }: {
-  label: string; value: string; sub?: React.ReactNode; icon: React.ReactNode; iconCls: string;
+  label: string; value: string; sub?: React.ReactNode; subCls?: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/15 bg-[#0b101d] p-4 shadow-lg">
-      <div className="flex items-center gap-2">
-        <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md", iconCls)}>
-          <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>
-        </span>
-        <p className="text-[11px] font-black uppercase tracking-wider text-slate-300 truncate">{label}</p>
-      </div>
-      <p className="tabular mt-3 font-display text-[1.4rem] font-black leading-none tracking-[-0.01em] text-white drop-shadow-sm">
-        {value}
-      </p>
-      {sub != null && <p className="mt-2 truncate text-[11.5px] font-medium text-slate-300">{sub}</p>}
+    <div className="rounded-md border border-border bg-card p-4">
+      <p className="kicker truncate text-muted-foreground">{label}</p>
+      <p className="score-num mt-1.5 text-[26px] text-foreground sm:text-[28px]">{value}</p>
+      {sub != null && <p className={cn("mt-1.5 truncate text-[11px]", subCls ?? "text-muted-foreground")}>{sub}</p>}
     </div>
   );
 }
@@ -133,8 +210,8 @@ function StatTile({
 function SectionTitle({ title, sub }: { title: string; sub?: string }) {
   return (
     <div className="mb-4">
-      <h2 className="font-display text-[1.4rem] font-black leading-tight text-white drop-shadow-sm">{title}</h2>
-      {sub && <p className="mt-1 text-[13px] font-medium text-slate-300">{sub}</p>}
+      <h2 className="label-cond text-[1.35rem] font-bold leading-none text-foreground">{title}</h2>
+      {sub && <p className="mt-1.5 text-[12.5px] text-muted-foreground">{sub}</p>}
     </div>
   );
 }
@@ -150,7 +227,7 @@ function SegmentGroup({
   ariaLabel: string;
 }) {
   return (
-    <div className="flex items-center gap-0.5 rounded-lg border border-border bg-background p-0.5" role="group" aria-label={ariaLabel}>
+    <div className="flex items-center gap-0.5 rounded-md border border-border bg-background p-0.5" role="group" aria-label={ariaLabel}>
       {options.map((o) => {
         const isActive = o.value === active;
         return (
@@ -160,7 +237,7 @@ function SegmentGroup({
             onClick={() => onSelect(o.value)}
             disabled={isActive || disabled}
             className={cn(
-              "rounded-md px-2 py-1 text-[11px] font-bold transition-colors disabled:cursor-default",
+              "rounded-[4px] px-2 py-1 text-[11px] font-bold transition-colors disabled:cursor-default",
               isActive
                 ? o.activeCls ?? "bg-primary/15 text-primary"
                 : "text-muted-foreground hover:text-foreground disabled:opacity-40"
@@ -174,26 +251,23 @@ function SegmentGroup({
   );
 }
 
+/** Quiet info banner used above manager tables. */
+function InfoBanner({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mb-4 flex items-start gap-2.5 rounded-md border border-border bg-card px-4 py-3">
+      <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+      <p className="text-[11.5px] leading-relaxed text-muted-foreground">{children}</p>
+    </div>
+  );
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    AdminView — professional console: sidebar nav + dense tables
    ═══════════════════════════════════════════════════════════════════ */
 export function AdminView() {
-  const { user } = useAppStore();
+  const user = useAppStore((s) => s.user);
   useReveal();
   const [section, setSection] = useState<SectionId>("overview");
-
-  // Track the site header height so the sidebar sticks exactly below it —
-  // the header grows when the live score ticker row appears.
-  const [headerH, setHeaderH] = useState<number | null>(null);
-  useEffect(() => {
-    const header = document.querySelector("header");
-    if (!header) return;
-    const update = () => setHeaderH(Math.round(header.getBoundingClientRect().height));
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(header);
-    return () => ro.disconnect();
-  }, []);
 
   const { data, isLoading } = useQuery<AdminStats>({
     queryKey: ["admin", "stats"],
@@ -210,10 +284,10 @@ export function AdminView() {
   if (user && user.role !== "ADMIN") {
     return (
       <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-3 px-4 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-fhb-red/25 bg-fhb-red/10">
+        <span className="flex h-14 w-14 items-center justify-center rounded-md border border-fhb-red/25 bg-fhb-red/10">
           <Ban className="h-6 w-6 text-fhb-red" aria-hidden />
         </span>
-        <p className="font-display text-base font-bold text-foreground">Access denied</p>
+        <p className="label-cond text-[18px] font-bold text-foreground">Access denied</p>
         <p className="text-xs leading-relaxed text-muted-foreground">
           This area is reserved for administrators. To preview the demo, log in with{" "}
           <b className="text-foreground">admin@fhb.com.bd / Admin@2025</b>.
@@ -225,18 +299,14 @@ export function AdminView() {
   if (isLoading || !data) {
     return (
       <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-        <Skeleton className="h-16 rounded-xl" />
-        <div className="mt-8 grid gap-6 lg:grid-cols-[216px_minmax(0,1fr)]">
-          <Skeleton className="hidden h-80 rounded-xl lg:block" />
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <Skeleton key={i} className="h-[100px] rounded-xl" />
-              ))}
-            </div>
-            <Skeleton className="h-64 rounded-xl" />
-          </div>
+        <Skeleton className="h-16 rounded-md" />
+        <Skeleton className="mt-6 h-11 w-full rounded-md" />
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <Skeleton key={i} className="h-[104px] rounded-md" />
+          ))}
         </div>
+        <Skeleton className="mt-6 h-64 rounded-md" />
       </div>
     );
   }
@@ -244,79 +314,53 @@ export function AdminView() {
   return (
     <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       <PageHeader
-        title="Admin console"
+        title="Admin Console"
         kicker="control centre"
         subtitle="Content, users, advertising and creator payouts in one place"
         icon={<LayoutDashboard className="h-5 w-5" aria-hidden />}
       >
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-primary">
+        <span className="inline-flex items-center gap-1.5 rounded-[4px] border border-primary/30 bg-primary/10 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.08em] text-primary">
           <ShieldCheck className="h-3.5 w-3.5" aria-hidden /> Admin access
         </span>
       </PageHeader>
 
       <div className="reveal">
-        {/* Section tabs — horizontal scroll on mobile */}
+        {/* Section tabs — MatchDetailView underline pattern */}
         <div
-          className="fhb-scroll -mx-4 mb-5 flex gap-1.5 overflow-x-auto px-4 pb-1 sm:-mx-6 sm:px-6 lg:hidden"
+          className="no-scrollbar mb-6 flex gap-1 overflow-x-auto border-b border-border"
           role="tablist"
           aria-label="Admin sections"
         >
-          {SECTIONS.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              type="button"
-              role="tab"
-              aria-selected={section === id}
-              onClick={() => setSection(id)}
-              className={cn(
-                "flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border px-3 py-2 text-[12px] font-black transition-colors",
-                section === id
-                  ? "border-red-500 bg-red-600 text-white shadow-md shadow-red-600/30"
-                  : "border-white/15 bg-[#0b101d] text-slate-300 hover:text-white"
-              )}
-            >
-              <Icon className="h-3.5 w-3.5" aria-hidden />
-              {label}
-            </button>
-          ))}
+          {SECTIONS.map(({ id, label, Icon }) => {
+            const active = section === id;
+            return (
+              <button
+                key={id}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() => setSection(id)}
+                className={cn(
+                  "relative flex h-10 shrink-0 items-center gap-2 px-4 text-[12.5px] font-semibold transition-colors",
+                  active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon className="h-4 w-4" aria-hidden />
+                {label}
+                {active && <span className="absolute inset-x-2 bottom-0 h-[2px] rounded-full bg-primary" aria-hidden />}
+              </button>
+            );
+          })}
         </div>
 
-        <div className="lg:grid lg:grid-cols-[216px_minmax(0,1fr)] lg:gap-6">
-          {/* Sidebar nav — desktop */}
-          <nav className="hidden lg:block" aria-label="Admin sections">
-            <div
-              className="rounded-xl border border-white/15 bg-[#0b101d] p-1.5 shadow-xl lg:sticky lg:top-[76px]"
-              style={headerH != null ? { top: `${headerH + 12}px` } : undefined}
-            >
-              {SECTIONS.map(({ id, label, Icon }) => (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => setSection(id)}
-                  aria-current={section === id}
-                  className={cn(
-                    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] font-black transition-colors",
-                    section === id
-                      ? "bg-red-600 text-white shadow-md shadow-red-600/30"
-                      : "text-slate-300 hover:bg-white/5 hover:text-white"
-                  )}
-                >
-                  <Icon className="h-4 w-4 shrink-0" aria-hidden />
-                  {label}
-                </button>
-              ))}
-            </div>
-          </nav>
-
-          {/* Content column */}
-          <div className="min-w-0">
-            {section === "overview" && <Overview data={data} />}
-            {section === "matches" && <MatchManager />}
-            {section === "news" && <NewsManager />}
-            {section === "users" && <UserManager />}
-            {section === "ads" && <AdManager ads={data.ads} />}
-            {section === "payouts" && <PayoutManager />}
-          </div>
+        {/* Content column */}
+        <div className="min-w-0">
+          {section === "overview" && <Overview data={data} />}
+          {section === "matches" && <MatchManager />}
+          {section === "news" && <NewsManager />}
+          {section === "users" && <UserManager />}
+          {section === "ads" && <AdManager ads={data.ads} />}
+          {section === "payouts" && <PayoutManager />}
         </div>
       </div>
     </div>
@@ -326,26 +370,39 @@ export function AdminView() {
 /* ============ OVERVIEW ============ */
 function Overview({ data }: { data: AdminStats }) {
   const s = data.stats;
+  const adImpressions = data.ads.reduce((sum, a) => sum + a.impressions, 0);
+  const adClicks = data.ads.reduce((sum, a) => sum + a.clicks, 0);
+  const adCtr = adImpressions ? ((adClicks / adImpressions) * 100).toFixed(1) : "0";
+
   const tiles = [
-    { label: "Total users", value: fmtLocale(s.totalUsers), sub: `${fmtLocale(s.creators)} creators`, Icon: Users, cls: "bg-primary/12 text-primary" },
-    { label: "Premium members", value: fmtLocale(s.premiumUsers), sub: "Active subscriptions", Icon: Crown, cls: "bg-fhb-gold/12 text-fhb-gold" },
+    {
+      label: "Total users",
+      value: fmtLocale(s.totalUsers),
+      sub: `${fmtLocale(s.creators)} creators · ${fmtLocale(s.premiumUsers)} premium`,
+    },
     {
       label: "Matches",
       value: fmtLocale(s.totalMatches),
-      sub: <span className={s.liveMatches > 0 ? "font-semibold text-fhb-red" : undefined}>{fmtLocale(s.liveMatches)} live now</span>,
-      Icon: CircleDot,
-      cls: s.liveMatches > 0 ? "bg-fhb-red/12 text-fhb-red" : "bg-muted text-muted-foreground",
+      sub: s.liveMatches > 0 ? `${fmtLocale(s.liveMatches)} live now` : "None live right now",
+      subCls: s.liveMatches > 0 ? "font-semibold text-fhb-red" : undefined,
     },
-    { label: "Articles", value: fmtLocale(s.totalArticles), sub: `${fmtCompact(s.newsViews)} reads`, Icon: Newspaper, cls: "bg-muted text-muted-foreground" },
-    { label: "Videos", value: fmtLocale(s.totalVideos), sub: `${fmtCompact(s.videoViews)} views`, Icon: Clapperboard, cls: "bg-muted text-muted-foreground" },
-    { label: "Revenue", value: formatMoney(s.adRevenue + s.membershipRevenue), sub: "Ads + memberships", Icon: TrendingUp, cls: "bg-primary/12 text-primary" },
+    { label: "Articles", value: fmtLocale(s.totalArticles), sub: `${fmtCompact(s.newsViews)} reads` },
+    { label: "Shorts videos", value: fmtLocale(s.totalVideos), sub: `${fmtCompact(s.videoViews)} views` },
+    {
+      label: "Ad delivery",
+      value: fmtCompact(adImpressions),
+      sub: `${fmtCompact(adClicks)} clicks · ${adCtr}% CTR`,
+      subCls: "text-primary",
+    },
+    { label: "Revenue", value: formatMoney(s.adRevenue + s.membershipRevenue), sub: "Ads + memberships" },
   ];
 
   const engagement = [
-    { label: "News reads", value: fmtCompact(s.newsViews), Icon: Eye },
-    { label: "Video views", value: fmtCompact(s.videoViews), Icon: Clapperboard },
-    { label: "Comments", value: fmtLocale(s.totalComments), Icon: MessageSquare },
-    { label: "Community posts", value: fmtLocale(s.totalPosts), Icon: PenLine },
+    { label: "Premium members", value: fmtLocale(s.premiumUsers), Icon: Crown, cls: "text-fhb-gold" },
+    { label: "News reads", value: fmtCompact(s.newsViews), Icon: Eye, cls: "text-primary/80" },
+    { label: "Video views", value: fmtCompact(s.videoViews), Icon: Clapperboard, cls: "text-primary/80" },
+    { label: "Comments", value: fmtLocale(s.totalComments), Icon: MessageSquare, cls: "text-primary/80" },
+    { label: "Community posts", value: fmtLocale(s.totalPosts), Icon: PenLine, cls: "text-primary/80" },
   ];
 
   return (
@@ -354,32 +411,32 @@ function Overview({ data }: { data: AdminStats }) {
 
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {tiles.map((t) => (
-          <StatTile key={t.label} label={t.label} value={t.value} sub={t.sub} icon={<t.Icon aria-hidden />} iconCls={t.cls} />
+          <StatTile key={t.label} label={t.label} value={t.value} sub={t.sub} subCls={t.subCls} />
         ))}
       </div>
 
       {/* Engagement strip — hairline grid */}
-      <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border/60 sm:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border/60 sm:grid-cols-3 xl:grid-cols-5">
         {engagement.map((c) => (
           <div key={c.label} className="bg-card px-4 py-3.5">
             <div className="flex items-center gap-2">
-              <c.Icon className="h-3.5 w-3.5 shrink-0 text-primary/80" aria-hidden />
-              <p className="eyebrow truncate text-muted-foreground">{c.label}</p>
+              <c.Icon className={cn("h-3.5 w-3.5 shrink-0", c.cls)} aria-hidden />
+              <p className="kicker truncate text-muted-foreground">{c.label}</p>
             </div>
-            <p className="tabular mt-2 font-display text-lg font-bold text-foreground">{c.value}</p>
+            <p className="score-num mt-2 text-[19px] text-foreground">{c.value}</p>
           </div>
         ))}
       </div>
 
       {/* Recent activity */}
-      <div className="mt-6 grid gap-6 xl:grid-cols-2">
-        <section className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
+      <div className="mt-6 grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <section className="overflow-hidden rounded-md border border-border bg-card" aria-label="New sign-ups">
           <CardHead label="New sign-ups" right={<span className="text-[11px] font-semibold text-muted-foreground">Most recent 6</span>} />
-          <div className="divide-y divide-border/60">
+          <div className="divide-y divide-border/50">
             {data.recentUsers.map((u) => (
-              <div key={u.id} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.03] sm:px-5">
+              <div key={u.id} className="row-hover flex items-center gap-3 px-4 py-2.5 sm:px-5">
                 <span
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted font-display text-[11px] font-bold text-muted-foreground"
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted font-display text-[11px] font-bold text-muted-foreground"
                   aria-hidden
                 >
                   {initials(u.name)}
@@ -391,22 +448,22 @@ function Overview({ data }: { data: AdminStats }) {
                   </p>
                   <p className="truncate text-[11px] text-muted-foreground">@{u.username}</p>
                 </div>
-                <Chip>{ROLE_LABEL[u.role] ?? u.role}</Chip>
+                <Chip cls={ROLE_CLS[u.role]}>{ROLE_LABEL[u.role] ?? u.role}</Chip>
                 <span className="tabular shrink-0 text-[11px] text-muted-foreground">{timeAgo(u.createdAt)}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
+        <section className="overflow-hidden rounded-md border border-border bg-card" aria-label="Latest articles">
           <CardHead label="Latest articles" right={<span className="text-[11px] font-semibold text-muted-foreground">Most recent 6</span>} />
-          <div className="divide-y divide-border/60">
+          <div className="divide-y divide-border/50">
             {data.recentArticles.map((a) => (
-              <div key={a.id} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.03] sm:px-5">
+              <div key={a.id} className="row-hover flex items-center gap-3 px-4 py-2.5 sm:px-5">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[13px] font-semibold leading-tight text-foreground">{a.title}</p>
                   <p className="mt-1 flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-                    <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em]">
+                    <span className="shrink-0 rounded-[3px] bg-muted px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.06em]">
                       {a.category}
                     </span>
                     <span className={a.status === "PUBLISHED" ? "font-semibold text-primary" : undefined}>
@@ -430,16 +487,15 @@ function Overview({ data }: { data: AdminStats }) {
 }
 
 /* ============ MATCH MANAGER ============ */
-type AdminMatch = {
-  id: string; status: string; homeScore: number | null; awayScore: number | null; kickoff: string; round: string | null; venue: string | null;
-  homeTeam: { id: string; name: string; initials: string; color: string };
-  awayTeam: { id: string; name: string; initials: string; color: string };
-  competition: { id: string; name: string; shortName: string };
-};
-
 function MatchManager() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "LIVE" | "SCHEDULED" | "FINISHED">("ALL");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editing, setEditing] = useState<AdminMatch | null>(null);
+  const [mForm, setMForm] = useState({
+    kickoff: "", status: "SCHEDULED", homeScore: "", awayScore: "", minute: "", venue: "", round: "",
+  });
 
   const { data, isLoading } = useQuery<{ matches: AdminMatch[] }>({
     queryKey: ["admin", "matches"],
@@ -466,6 +522,8 @@ function MatchManager() {
           ? "Match is now live! The live simulation service will pick it up within 15 seconds."
           : "Match updated";
       toast({ title: msg });
+      setDialogOpen(false);
+      setEditing(null);
       queryClient.invalidateQueries({ queryKey: ["admin", "matches"] });
       queryClient.invalidateQueries({ queryKey: ["matches"] });
     },
@@ -477,34 +535,101 @@ function MatchManager() {
     const rank = (s: string) => (s === "LIVE" ? 0 : s === "SCHEDULED" ? 1 : 2);
     return rank(a.status) - rank(b.status) || +new Date(b.kickoff) - +new Date(a.kickoff);
   });
+  const visible = statusFilter === "ALL" ? sorted : sorted.filter((m) => m.status === statusFilter);
+
+  const openEdit = (m: AdminMatch) => {
+    setEditing(m);
+    setMForm({
+      kickoff: toLocalInput(m.kickoff),
+      status: m.status,
+      homeScore: m.homeScore != null ? String(m.homeScore) : "",
+      awayScore: m.awayScore != null ? String(m.awayScore) : "",
+      minute: m.minute != null ? String(m.minute) : "",
+      venue: m.venue ?? "",
+      round: m.round ?? "",
+    });
+    setDialogOpen(true);
+  };
+
+  const submitEdit = () => {
+    if (!editing || !mForm.kickoff) return;
+    const payload: Record<string, unknown> = {
+      id: editing.id,
+      kickoff: new Date(mForm.kickoff).toISOString(),
+      status: mForm.status,
+      venue: mForm.venue,
+      round: mForm.round,
+      minute: mForm.minute === "" ? null : Number(mForm.minute),
+    };
+    if (mForm.homeScore !== "") payload.homeScore = Number(mForm.homeScore);
+    if (mForm.awayScore !== "") payload.awayScore = Number(mForm.awayScore);
+    update.mutate(payload);
+  };
 
   return (
     <div>
       <SectionTitle title="Match control" sub="Set match status — the live engine picks up changes within seconds." />
 
-      <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-border bg-card px-4 py-3">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-        <p className="text-[11.5px] leading-relaxed text-muted-foreground">
-          <span className="font-bold text-foreground">Live test tip:</span> set any upcoming match to{" "}
-          <span className="font-bold text-fhb-red">Live</span> — the WebSocket simulation service will automatically start
-          updating minutes and scores.
-        </p>
-      </div>
+      <InfoBanner>
+        <span className="font-bold text-foreground">Live test tip:</span> set any upcoming match to{" "}
+        <span className="font-bold text-fhb-red">Live</span> — the WebSocket simulation service will automatically start
+        updating minutes and scores.
+      </InfoBanner>
 
-      <div className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <CardHead
           label="Fixtures and results"
           right={<span className="text-[11px] font-semibold text-muted-foreground">{fmtNum(sorted.length)} matches</span>}
         />
+        {/* Status filter rail */}
+        <div className="no-scrollbar flex items-center gap-1.5 overflow-x-auto border-b border-border/70 px-4 py-2.5 sm:px-5" role="group" aria-label="Filter matches by status">
+          {MATCH_FILTERS.map((f) => {
+            const count = f.value === "ALL" ? sorted.length : sorted.filter((m) => m.status === f.value).length;
+            const isActive = statusFilter === f.value;
+            return (
+              <button
+                key={f.value}
+                type="button"
+                onClick={() => setStatusFilter(f.value)}
+                aria-pressed={isActive}
+                className={cn(
+                  "label-cond flex shrink-0 items-center gap-1.5 rounded-[4px] px-2.5 py-1 text-[11.5px] font-semibold transition-colors",
+                  isActive
+                    ? "bg-primary/15 text-primary"
+                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+                )}
+              >
+                {f.label}
+                <span
+                  className={cn(
+                    "tabular rounded-full px-1.5 py-px text-[10px] font-bold",
+                    isActive ? "bg-primary/20 text-primary" : "bg-secondary text-muted-foreground"
+                  )}
+                >
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
         {isLoading ? (
           <div className="space-y-2 p-4">
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-14 rounded-lg" />
+              <Skeleton key={i} className="h-14 rounded-md" />
             ))}
           </div>
+        ) : visible.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 px-5 py-12 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
+              <Zap className="h-5 w-5" aria-hidden />
+            </span>
+            <p className="label-cond text-[14px] text-foreground">No matches in this view</p>
+            <p className="text-[11.5px] text-muted-foreground">Switch the filter to see other fixtures.</p>
+          </div>
         ) : (
-          <div className="divide-y divide-border/60">
-            {sorted.map((m) => {
+          <div className="divide-y divide-border/50">
+            {visible.map((m) => {
               const ko = formatKickoff(m.kickoff);
               return (
                 <div
@@ -541,39 +666,168 @@ function MatchManager() {
                       {m.venue && <span className="hidden shrink-0 sm:inline">· {m.venue}</span>}
                     </p>
                   </div>
-                  <SegmentGroup
-                    ariaLabel={`Status for ${m.homeTeam.name} vs ${m.awayTeam.name}`}
-                    active={m.status}
-                    disabled={update.isPending}
-                    onSelect={(st) => update.mutate({ id: m.id, status: st })}
-                    options={[
-                      { value: "SCHEDULED", label: "Upcoming" },
-                      { value: "LIVE", label: "Live", activeCls: "bg-fhb-red/15 text-fhb-red" },
-                      { value: "FINISHED", label: "Finished" },
-                    ]}
-                  />
+                  <div className="flex shrink-0 items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => openEdit(m)}
+                      aria-label={`Edit ${m.homeTeam.name} vs ${m.awayTeam.name}`}
+                      className="tap-target flex h-9 w-9 items-center justify-center rounded-md border border-border text-muted-foreground transition-colors hover:border-primary/40 hover:text-primary"
+                    >
+                      <Pencil className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                    <SegmentGroup
+                      ariaLabel={`Status for ${m.homeTeam.name} vs ${m.awayTeam.name}`}
+                      active={m.status}
+                      disabled={update.isPending}
+                      onSelect={(st) => update.mutate({ id: m.id, status: st })}
+                      options={MATCH_STATUS.map((s) => ({
+                        value: s.value,
+                        label: s.label,
+                        ...(s.value === "LIVE" ? { activeCls: "bg-fhb-red/15 text-fhb-red" } : {}),
+                      }))}
+                    />
+                  </div>
                 </div>
               );
             })}
           </div>
         )}
       </div>
+
+      {/* Edit match dialog */}
+      <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) setEditing(null); }}>
+        <DialogContent className="max-h-[85vh] max-w-lg overflow-y-auto rounded-md">
+          <DialogHeader>
+            <DialogTitle className="label-cond text-lg font-bold">Edit match</DialogTitle>
+            <DialogDescription className="text-[12px]">
+              {editing
+                ? `${editing.homeTeam.name} vs ${editing.awayTeam.name} — ${editing.competition.name}`
+                : "Update kickoff, status and score details."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="match-kickoff" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Kickoff
+                </label>
+                <input
+                  id="match-kickoff"
+                  type="datetime-local"
+                  value={mForm.kickoff}
+                  onChange={(e) => setMForm((f) => ({ ...f, kickoff: e.target.value }))}
+                  className={cn(inputCls, "[color-scheme:dark] tabular")}
+                />
+              </div>
+              <div>
+                <label htmlFor="match-status" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Status
+                </label>
+                <Select value={mForm.status} onValueChange={(v) => setMForm((f) => ({ ...f, status: v }))}>
+                  <SelectTrigger id="match-status" className="h-10 w-full rounded-md">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {MATCH_STATUS.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              <div>
+                <label htmlFor="match-homescore" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Home score
+                </label>
+                <input
+                  id="match-homescore"
+                  type="number"
+                  min={0}
+                  max={30}
+                  value={mForm.homeScore}
+                  onChange={(e) => setMForm((f) => ({ ...f, homeScore: e.target.value }))}
+                  className={cn(inputCls, "tabular")}
+                />
+              </div>
+              <div>
+                <label htmlFor="match-awayscore" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Away score
+                </label>
+                <input
+                  id="match-awayscore"
+                  type="number"
+                  min={0}
+                  max={30}
+                  value={mForm.awayScore}
+                  onChange={(e) => setMForm((f) => ({ ...f, awayScore: e.target.value }))}
+                  className={cn(inputCls, "tabular")}
+                />
+              </div>
+              <div>
+                <label htmlFor="match-minute" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Minute
+                </label>
+                <input
+                  id="match-minute"
+                  type="number"
+                  min={0}
+                  max={130}
+                  value={mForm.minute}
+                  onChange={(e) => setMForm((f) => ({ ...f, minute: e.target.value }))}
+                  className={cn(inputCls, "tabular")}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="match-venue" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Venue
+                </label>
+                <input
+                  id="match-venue"
+                  value={mForm.venue}
+                  onChange={(e) => setMForm((f) => ({ ...f, venue: e.target.value }))}
+                  placeholder="e.g. Bangabandhu National Stadium"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label htmlFor="match-round" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Round
+                </label>
+                <input
+                  id="match-round"
+                  value={mForm.round}
+                  onChange={(e) => setMForm((f) => ({ ...f, round: e.target.value }))}
+                  placeholder="e.g. Matchday 7"
+                  className={inputCls}
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-md">
+              Cancel
+            </Button>
+            <Button onClick={submitEdit} disabled={update.isPending || !mForm.kickoff} className="rounded-md bg-primary font-bold">
+              {update.isPending ? "Saving…" : "Save changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
 /* ============ NEWS MANAGEMENT ============ */
-type Article = {
-  id: string; title: string; excerpt: string; content: string; category: string;
-  coverUrl: string | null; status: string; featured: boolean; views: number; createdAt: string;
-  author: { name: string };
-};
-
 function NewsManager() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Article | null>(null);
+  const [confirmDel, setConfirmDel] = useState<Article | null>(null);
+  const [search, setSearch] = useState("");
   const [form, setForm] = useState({ title: "", excerpt: "", content: "", category: "BFL", coverUrl: "", featured: false, status: "PUBLISHED" });
 
   const { data, isLoading } = useQuery<{ articles: Article[] }>({
@@ -634,57 +888,88 @@ function NewsManager() {
   };
 
   const articles = data?.articles ?? [];
+  const q = search.trim().toLowerCase();
+  const filtered = q
+    ? articles.filter((a) => a.title.toLowerCase().includes(q) || a.category.toLowerCase().includes(q))
+    : articles;
 
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
         <SectionTitle title="Newsroom" sub="Write, edit and curate the editorial feed." />
-        <Button size="sm" onClick={openNew} className="gap-1.5 rounded-lg bg-primary font-bold">
+        <Button size="sm" onClick={openNew} className="gap-1.5 rounded-md bg-primary font-bold">
           <Plus className="h-4 w-4" aria-hidden /> New article
         </Button>
       </div>
 
-      <div className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <CardHead
           label="Articles"
           right={<span className="text-[11px] font-semibold text-muted-foreground">{fmtNum(articles.length)} total</span>}
         />
+        {/* Search rail */}
+        <div className="flex items-center gap-2.5 border-b border-border/70 px-4 py-2.5 sm:px-5">
+          <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70" aria-hidden />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search by headline or category"
+            aria-label="Search articles"
+            className="h-8 w-full min-w-0 rounded-[4px] border border-transparent bg-transparent text-[12.5px] text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/40 focus:bg-background focus:px-2.5"
+          />
+          {q && (
+            <span className="tabular shrink-0 text-[11px] font-semibold text-muted-foreground">
+              {fmtNum(filtered.length)} / {fmtNum(articles.length)}
+            </span>
+          )}
+        </div>
+
         {isLoading ? (
           <div className="space-y-2 p-4">
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-12 rounded-lg" />
+              <Skeleton key={i} className="h-12 rounded-md" />
             ))}
           </div>
+        ) : filtered.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 px-5 py-12 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
+              <Search className="h-5 w-5" aria-hidden />
+            </span>
+            <p className="label-cond text-[14px] text-foreground">No articles found</p>
+            <p className="text-[11.5px] text-muted-foreground">Try a different headline or category.</p>
+          </div>
         ) : (
-          <>
-            <div className="hidden gap-3 border-b border-border/70 bg-white/[0.02] px-5 py-2 md:grid md:grid-cols-[minmax(0,1fr)_92px_88px_64px_84px_76px]">
-              <ColHead>Article</ColHead>
-              <ColHead>Category</ColHead>
-              <ColHead>Status</ColHead>
-              <ColHead className="text-right">Views</ColHead>
-              <ColHead>Updated</ColHead>
-              <ColHead className="text-right">Actions</ColHead>
-            </div>
-            <div className="divide-y divide-border/60">
-              {articles.map((a) => (
-                <div
-                  key={a.id}
-                  className="flex flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 transition-colors hover:bg-white/[0.03] sm:px-5 md:grid md:grid-cols-[minmax(0,1fr)_92px_88px_64px_84px_76px] md:gap-3"
-                >
-                  <div className="min-w-0 flex-1 md:min-w-0">
-                    <p className="flex min-w-0 items-center gap-1.5 text-[13px] font-semibold leading-tight text-foreground">
-                      <span className="truncate">{a.title}</span>
-                      {a.featured && <Star className="h-3 w-3 shrink-0 fill-fhb-gold text-fhb-gold" aria-label="Featured" />}
-                    </p>
-                    <p className="mt-1 text-[11px] text-muted-foreground md:hidden">
-                      {a.category} · {a.status === "PUBLISHED" ? "Published" : "Draft"} · {fmtCompact(a.views)} views ·{" "}
-                      {timeAgo(a.createdAt)}
-                    </p>
-                  </div>
-                  <span className="hidden md:block">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/60 hover:bg-transparent">
+                <TableHead className={cn(thCls, "px-4 sm:px-5")}>Article</TableHead>
+                <TableHead className={cn(thCls, "hidden md:table-cell")}>Category</TableHead>
+                <TableHead className={thCls}>Status</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right sm:table-cell")}>Views</TableHead>
+                <TableHead className={cn(thCls, "hidden lg:table-cell")}>Updated</TableHead>
+                <TableHead className={cn(thCls, "px-4 text-right sm:px-5")}>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((a) => (
+                <TableRow key={a.id} className="border-border/50 hover:bg-white/[0.03]">
+                  <TableCell className={cn(tdCls, "max-w-[200px] px-4 sm:max-w-[340px] sm:px-5")}>
+                    <div className="min-w-0">
+                      <p className="flex items-center gap-1.5">
+                        <span className="truncate text-[13px] font-semibold leading-tight text-foreground">{a.title}</span>
+                        {a.featured && <Star className="h-3 w-3 shrink-0 fill-fhb-gold text-fhb-gold" aria-label="Featured" />}
+                      </p>
+                      <p className="mt-1 text-[11px] text-muted-foreground md:hidden">
+                        {a.category} · {a.status === "PUBLISHED" ? "Published" : "Draft"} · {fmtCompact(a.views)} views · {timeAgo(a.createdAt)}
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "hidden md:table-cell")}>
                     <Chip cls="border-border bg-muted uppercase text-muted-foreground">{a.category}</Chip>
-                  </span>
-                  <span className="hidden md:block">
+                  </TableCell>
+                  <TableCell className={tdCls}>
                     <Chip
                       cls={
                         a.status === "PUBLISHED"
@@ -694,48 +979,76 @@ function NewsManager() {
                     >
                       {a.status === "PUBLISHED" ? "Published" : "Draft"}
                     </Chip>
-                  </span>
-                  <span className="tabular hidden text-right text-[12px] font-semibold text-foreground md:block">
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] font-semibold text-foreground sm:table-cell")}>
                     {fmtCompact(a.views)}
-                  </span>
-                  <span className="tabular hidden text-[11px] text-muted-foreground md:block">{timeAgo(a.createdAt)}</span>
-                  <div className="flex items-center gap-1 md:justify-self-end">
-                    <button
-                      type="button"
-                      onClick={() => openEdit(a)}
-                      aria-label={`Edit ${a.title}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
-                    >
-                      <Pencil className="h-3.5 w-3.5" aria-hidden />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => del.mutate(a.id)}
-                      aria-label={`Delete ${a.title}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-fhb-red/10 hover:text-fhb-red"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" aria-hidden />
-                    </button>
-                  </div>
-                </div>
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "tabular hidden text-[11px] text-muted-foreground lg:table-cell")}>
+                    {timeAgo(a.createdAt)}
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "px-4 sm:px-5")}>
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        type="button"
+                        onClick={() => openEdit(a)}
+                        aria-label={`Edit ${a.title}`}
+                        className="tap-target flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-white/[0.05] hover:text-foreground"
+                      >
+                        <Pencil className="h-3.5 w-3.5" aria-hidden />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setConfirmDel(a)}
+                        aria-label={`Delete ${a.title}`}
+                        className="tap-target flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-fhb-red/10 hover:text-fhb-red"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-            </div>
-          </>
+            </TableBody>
+          </Table>
         )}
       </div>
 
+      {/* Delete confirmation */}
+      <AlertDialog open={confirmDel != null} onOpenChange={(o) => { if (!o) setConfirmDel(null); }}>
+        <AlertDialogContent className="rounded-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="label-cond text-lg font-bold">Delete article</AlertDialogTitle>
+            <AlertDialogDescription className="text-[12.5px] leading-relaxed">
+              This permanently removes “{confirmDel?.title}” from the newsroom. The action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="rounded-md">Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (confirmDel) del.mutate(confirmDel.id);
+                setConfirmDel(null);
+              }}
+              className="rounded-md border-none bg-fhb-red font-bold text-white hover:bg-fhb-red/90"
+            >
+              Delete article
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       {/* Editor dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-xl">
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-md">
           <DialogHeader>
-            <DialogTitle className="font-display">{editing ? "Edit article" : "New article"}</DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
+            <DialogTitle className="label-cond text-lg font-bold">{editing ? "Edit article" : "New article"}</DialogTitle>
+            <DialogDescription className="text-xs">
               {editing ? "Update the story and save — changes go live immediately." : "Publish a new story to the FHB news feed."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <label htmlFor="article-title" className="eyebrow mb-1.5 block text-muted-foreground">
+              <label htmlFor="article-title" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
                 Headline *
               </label>
               <input
@@ -746,7 +1059,7 @@ function NewsManager() {
               />
             </div>
             <div>
-              <label htmlFor="article-excerpt" className="eyebrow mb-1.5 block text-muted-foreground">
+              <label htmlFor="article-excerpt" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
                 Excerpt *
               </label>
               <textarea
@@ -758,7 +1071,7 @@ function NewsManager() {
               />
             </div>
             <div>
-              <label htmlFor="article-body" className="eyebrow mb-1.5 block text-muted-foreground">
+              <label htmlFor="article-body" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
                 Body — Markdown supported *
               </label>
               <textarea
@@ -769,41 +1082,39 @@ function NewsManager() {
                 className={cn(inputCls, "resize-y")}
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               <div>
-                <label htmlFor="article-category" className="eyebrow mb-1.5 block text-muted-foreground">
+                <label htmlFor="article-category" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
                   Category
                 </label>
-                <select
-                  id="article-category"
-                  value={form.category}
-                  onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
-                  className={inputCls}
-                >
-                  {["BFL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"].map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
+                <Select value={form.category} onValueChange={(v) => setForm((f) => ({ ...f, category: v }))}>
+                  <SelectTrigger id="article-category" className="h-10 w-full rounded-md">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["BFL", "NATIONAL", "TRANSFER", "INTERNATIONAL", "OPINION"].map((c) => (
+                      <SelectItem key={c} value={c}>{c}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
-                <label htmlFor="article-status" className="eyebrow mb-1.5 block text-muted-foreground">
+                <label htmlFor="article-status" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
                   Status
                 </label>
-                <select
-                  id="article-status"
-                  value={form.status}
-                  onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
-                  className={inputCls}
-                >
-                  <option value="PUBLISHED">Published</option>
-                  <option value="DRAFT">Draft</option>
-                </select>
+                <Select value={form.status} onValueChange={(v) => setForm((f) => ({ ...f, status: v }))}>
+                  <SelectTrigger id="article-status" className="h-10 w-full rounded-md">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="PUBLISHED">Published</SelectItem>
+                    <SelectItem value="DRAFT">Draft</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
             <div>
-              <label htmlFor="article-cover" className="eyebrow mb-1.5 block text-muted-foreground">
+              <label htmlFor="article-cover" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
                 Cover image URL
               </label>
               <input
@@ -814,25 +1125,26 @@ function NewsManager() {
                 className={inputCls}
               />
             </div>
-            <label className="flex items-center gap-2.5 text-xs font-semibold text-foreground">
-              <input
-                type="checkbox"
+            <div className="flex items-center justify-between gap-3 rounded-md border border-border bg-background px-3.5 py-3">
+              <label htmlFor="article-featured" className="flex items-center gap-1.5 text-[12.5px] font-semibold text-foreground">
+                Feature on homepage
+                <Star className="h-3.5 w-3.5 text-fhb-gold" aria-hidden />
+              </label>
+              <Switch
+                id="article-featured"
                 checked={form.featured}
-                onChange={(e) => setForm((f) => ({ ...f, featured: e.target.checked }))}
-                className="h-4 w-4 accent-[var(--primary)]"
+                onCheckedChange={(v) => setForm((f) => ({ ...f, featured: v }))}
               />
-              Feature on homepage
-              <Star className="h-3.5 w-3.5 text-fhb-gold" aria-hidden />
-            </label>
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-lg">
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-md">
               Cancel
             </Button>
             <Button
               onClick={() => save.mutate()}
               disabled={save.isPending || !form.title.trim() || !form.content.trim()}
-              className="rounded-lg bg-primary font-bold"
+              className="rounded-md bg-primary font-bold"
             >
               {save.isPending ? "Saving…" : editing ? "Save changes" : "Publish"}
             </Button>
@@ -844,14 +1156,6 @@ function NewsManager() {
 }
 
 /* ============ USER MANAGER ============ */
-type AdminUser = {
-  id: string; name: string; username: string; email: string; role: string; isPremium: boolean;
-  isBanned: boolean; followerCount: number; createdAt: string;
-  _count: { posts: number; videos: number; comments: number };
-};
-
-const USER_COLS = "lg:grid-cols-[minmax(0,1.5fr)_76px_60px_60px_84px_172px_44px]";
-
 function UserManager() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -887,7 +1191,7 @@ function UserManager() {
     <div>
       <SectionTitle title="Users and roles" sub="Promote creators, moderate members and review audience activity." />
 
-      <div className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <CardHead
           label="Members"
           right={<span className="text-[11px] font-semibold text-muted-foreground">{fmtNum(users.length)} registered</span>}
@@ -895,60 +1199,61 @@ function UserManager() {
         {isLoading ? (
           <div className="space-y-2 p-4">
             {[1, 2, 3, 4].map((i) => (
-              <Skeleton key={i} className="h-14 rounded-lg" />
+              <Skeleton key={i} className="h-14 rounded-md" />
             ))}
           </div>
         ) : (
-          <>
-            <div className={cn("hidden gap-3 border-b border-border/70 bg-white/[0.02] px-5 py-2 lg:grid", USER_COLS)}>
-              <ColHead>Member</ColHead>
-              <ColHead className="text-right">Followers</ColHead>
-              <ColHead className="text-right">Shorts</ColHead>
-              <ColHead className="text-right">Posts</ColHead>
-              <ColHead className="text-right">Comments</ColHead>
-              <ColHead>Role</ColHead>
-              <span />
-            </div>
-            <div className="divide-y divide-border/60">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/60 hover:bg-transparent">
+                <TableHead className={cn(thCls, "px-4 sm:px-5")}>Member</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right xl:table-cell")}>Followers</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right xl:table-cell")}>Shorts</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right xl:table-cell")}>Posts</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right xl:table-cell")}>Comments</TableHead>
+                <TableHead className={thCls}>Role</TableHead>
+                <TableHead className={cn(thCls, "px-4 text-right sm:px-5")}>
+                  <span className="sr-only">Moderation</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {users.map((u) => (
-                <div
-                  key={u.id}
-                  className={cn(
-                    "flex flex-wrap items-center gap-x-4 gap-y-2.5 px-4 py-3 transition-colors hover:bg-white/[0.03] sm:px-5 lg:grid lg:gap-3",
-                    USER_COLS
-                  )}
-                >
-                  <div className="flex min-w-0 flex-1 items-center gap-3 lg:min-w-0">
-                    <span
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-muted font-display text-[11px] font-bold text-muted-foreground"
-                      aria-hidden
-                    >
-                      {initials(u.name)}
-                    </span>
-                    <div className="min-w-0">
-                      <p className="flex min-w-0 items-center gap-1.5 text-[13px] font-semibold leading-tight text-foreground">
-                        <span className="truncate">{u.name}</span>
-                        {u.isPremium && <Crown className="h-3 w-3 shrink-0 text-fhb-gold" aria-label="Premium member" />}
-                        {u.isBanned && <Chip cls="border-fhb-red/25 bg-fhb-red/12 text-fhb-red">Banned</Chip>}
-                      </p>
-                      <p className="truncate text-[11px] text-muted-foreground">
-                        @{u.username} · {u.email}
-                      </p>
+                <TableRow key={u.id} className="border-border/50 hover:bg-white/[0.03]">
+                  <TableCell className={cn(tdCls, "max-w-[220px] px-4 sm:max-w-[320px] sm:px-5")}>
+                    <div className="flex min-w-0 items-center gap-3">
+                      <span
+                        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted font-display text-[11px] font-bold text-muted-foreground"
+                        aria-hidden
+                      >
+                        {initials(u.name)}
+                      </span>
+                      <div className="min-w-0">
+                        <p className="flex min-w-0 items-center gap-1.5 text-[13px] font-semibold leading-tight text-foreground">
+                          <span className="truncate">{u.name}</span>
+                          {u.isPremium && <Crown className="h-3 w-3 shrink-0 text-fhb-gold" aria-label="Premium member" />}
+                          {u.isBanned && <Chip cls="border-fhb-red/25 bg-fhb-red/12 text-fhb-red">Banned</Chip>}
+                        </p>
+                        <p className="truncate text-[11px] text-muted-foreground">@{u.username} · {u.email}</p>
+                        <p className="tabular mt-0.5 text-[11px] text-muted-foreground xl:hidden">
+                          {fmtLocale(u.followerCount)} followers · {fmtLocale(u._count.videos)} shorts · {fmtLocale(u._count.comments)} comments
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                  <span className="tabular hidden text-right text-[12px] font-semibold text-foreground lg:block">
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] font-semibold text-foreground xl:table-cell")}>
                     {fmtLocale(u.followerCount)}
-                  </span>
-                  <span className="tabular hidden text-right text-[12px] text-muted-foreground lg:block">
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] text-muted-foreground xl:table-cell")}>
                     {fmtLocale(u._count.videos)}
-                  </span>
-                  <span className="tabular hidden text-right text-[12px] text-muted-foreground lg:block">
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] text-muted-foreground xl:table-cell")}>
                     {fmtLocale(u._count.posts)}
-                  </span>
-                  <span className="tabular hidden text-right text-[12px] text-muted-foreground lg:block">
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] text-muted-foreground xl:table-cell")}>
                     {fmtLocale(u._count.comments)}
-                  </span>
-                  <div className="ml-auto flex items-center gap-1.5 lg:ml-0">
+                  </TableCell>
+                  <TableCell className={tdCls}>
                     <SegmentGroup
                       ariaLabel={`Role for ${u.name}`}
                       active={u.role}
@@ -960,24 +1265,28 @@ function UserManager() {
                         { value: "ADMIN", label: "Admin" },
                       ]}
                     />
-                    <button
-                      type="button"
-                      onClick={() => update.mutate({ id: u.id, isBanned: !u.isBanned })}
-                      aria-label={u.isBanned ? `Unban ${u.name}` : `Ban ${u.name}`}
-                      className={cn(
-                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border transition-colors",
-                        u.isBanned
-                          ? "border-primary/30 text-primary hover:bg-primary/10 hover:text-primary"
-                          : "border-border text-muted-foreground hover:border-fhb-red/40 hover:bg-fhb-red/10 hover:text-fhb-red"
-                      )}
-                    >
-                      {u.isBanned ? <RotateCcw className="h-3.5 w-3.5" aria-hidden /> : <Ban className="h-3.5 w-3.5" aria-hidden />}
-                    </button>
-                  </div>
-                </div>
+                  </TableCell>
+                  <TableCell className={cn(tdCls, "px-4 sm:px-5")}>
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => update.mutate({ id: u.id, isBanned: !u.isBanned })}
+                        aria-label={u.isBanned ? `Unban ${u.name}` : `Ban ${u.name}`}
+                        className={cn(
+                          "tap-target flex h-9 w-9 shrink-0 items-center justify-center rounded-md border transition-colors",
+                          u.isBanned
+                            ? "border-primary/30 text-primary hover:bg-primary/10"
+                            : "border-border text-muted-foreground hover:border-fhb-red/40 hover:bg-fhb-red/10 hover:text-fhb-red"
+                        )}
+                      >
+                        {u.isBanned ? <RotateCcw className="h-3.5 w-3.5" aria-hidden /> : <Ban className="h-3.5 w-3.5" aria-hidden />}
+                      </button>
+                    </div>
+                  </TableCell>
+                </TableRow>
               ))}
-            </div>
-          </>
+            </TableBody>
+          </Table>
         )}
       </div>
     </div>
@@ -985,13 +1294,20 @@ function UserManager() {
 }
 
 /* ============ AD MANAGER ============ */
-function AdManager({ ads }: { ads: AdminStats["ads"] }) {
+function AdManager({ ads }: { ads: AdminAd[] }) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [editing, setEditing] = useState<{ id: string; code: string } | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingAd, setEditingAd] = useState<AdminAd | null>(null);
+  const [adForm, setAdForm] = useState({
+    name: "", headline: "", bodyText: "", ctaLabel: "", linkUrl: "", brandColor: "", brandInitials: "", logoUrl: "", logoTheme: "LIGHT", adCode: "",
+  });
 
   const update = useMutation({
-    mutationFn: async (payload: { id: string; active?: boolean; adCode?: string }) => {
+    mutationFn: async (payload: {
+      id: string; active?: boolean; adCode?: string; name?: string; headline?: string; bodyText?: string;
+      ctaLabel?: string; brandColor?: string; brandInitials?: string; logoUrl?: string; logoTheme?: string; linkUrl?: string;
+    }) => {
       const res = await fetch("/api/admin/ads", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -1003,7 +1319,8 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
     },
     onSuccess: () => {
       toast({ title: "Ad settings updated" });
-      setEditing(null);
+      setDialogOpen(false);
+      setEditingAd(null);
       queryClient.invalidateQueries({ queryKey: ["admin", "stats"] });
       queryClient.invalidateQueries({ queryKey: ["ads"] });
     },
@@ -1012,19 +1329,52 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
 
   const activeCount = ads.filter((a) => a.active).length;
 
+  const openEditor = (ad: AdminAd) => {
+    setEditingAd(ad);
+    setAdForm({
+      name: ad.name,
+      headline: ad.headline ?? "",
+      bodyText: ad.bodyText ?? "",
+      ctaLabel: ad.ctaLabel ?? "",
+      linkUrl: ad.linkUrl ?? "",
+      brandColor: ad.brandColor ?? "",
+      brandInitials: ad.brandInitials ?? "",
+      logoUrl: ad.logoUrl ?? "",
+      logoTheme: ad.logoTheme ?? "LIGHT",
+      adCode: ad.adCode ?? "",
+    });
+    setDialogOpen(true);
+  };
+
+  const submitCreative = () => {
+    if (!editingAd) return;
+    update.mutate({
+      id: editingAd.id,
+      name: adForm.name,
+      headline: adForm.headline,
+      bodyText: adForm.bodyText,
+      ctaLabel: adForm.ctaLabel,
+      linkUrl: adForm.linkUrl,
+      brandColor: adForm.brandColor,
+      brandInitials: adForm.brandInitials,
+      logoUrl: adForm.logoUrl,
+      logoTheme: adForm.logoTheme,
+      adCode: adForm.adCode,
+    });
+  };
+
+  const previewColor = /^#[0-9a-fA-F]{6}$/.test(adForm.brandColor) ? adForm.brandColor : "#2BE573";
+
   return (
     <div>
       <SectionTitle title="Advertising" sub="AdSense code, delivery and performance for every placement." />
 
-      <div className="mb-4 flex items-start gap-2.5 rounded-xl border border-border bg-card px-4 py-3">
-        <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
-        <p className="text-[11.5px] leading-relaxed text-muted-foreground">
-          Paste your Google AdSense code (ca-pub-…) here and real ads will serve across the site in matching placements.
-          Premium members never see ads — the core premium benefit.
-        </p>
-      </div>
+      <InfoBanner>
+        Paste your Google AdSense code (ca-pub-…) here and real ads will serve across the site in matching placements.
+        Premium members never see ads — the core premium benefit.
+      </InfoBanner>
 
-      <div className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <CardHead
           label="Ad inventory"
           right={
@@ -1033,118 +1383,267 @@ function AdManager({ ads }: { ads: AdminStats["ads"] }) {
             </span>
           }
         />
-        <div className="divide-y divide-border/60">
-          {ads.map((ad) => {
-            const ctr = ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0";
-            return (
-              <div key={ad.id} className="px-4 py-3.5 transition-colors hover:bg-white/[0.02] sm:px-5">
-                <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-                  <span
-                    aria-hidden
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg font-display text-[12px] font-bold text-white"
-                    style={{ backgroundColor: ad.brandColor || "#1E9E50" }}
-                  >
-                    {(ad.brandInitials || ad.name.slice(0, 2)).trim()}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-foreground">{ad.name}</p>
-                    <p className="mt-0.5 truncate text-[11px] text-muted-foreground">
-                      {placementLabel(ad.placement)}
-                      {ad.headline && <span className="text-muted-foreground/70"> · “{ad.headline}”</span>}
-                    </p>
-                  </div>
-
-                  {/* Performance — desktop */}
-                  <div className="hidden items-center gap-5 sm:flex">
-                    <div className="text-right">
-                      <p className="eyebrow text-muted-foreground/70">Impressions</p>
-                      <p className="tabular mt-1 text-[12.5px] font-semibold text-foreground">{fmtCompact(ad.impressions)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="eyebrow text-muted-foreground/70">Clicks</p>
-                      <p className="tabular mt-1 text-[12.5px] font-semibold text-foreground">{fmtCompact(ad.clicks)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="eyebrow text-muted-foreground/70">CTR</p>
-                      <p className="tabular mt-1 text-[12.5px] font-semibold text-primary">{fmtNum(ctr)}%</p>
-                    </div>
-                  </div>
-
-                  <div className="flex shrink-0 items-center gap-2 sm:gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setEditing({ id: ad.id, code: ad.adCode ?? "" })}
-                      className="h-8 rounded-lg text-[11px] font-bold"
-                    >
-                      Ad code
-                    </Button>
-                    <button
-                      onClick={() => update.mutate({ id: ad.id, active: !ad.active })}
-                      disabled={update.isPending}
-                      className={cn(
-                        "relative h-6 w-11 shrink-0 rounded-full border transition-colors disabled:opacity-50",
-                        ad.active ? "border-primary/50 bg-primary" : "border-border bg-muted"
-                      )}
-                      role="switch"
-                      aria-checked={ad.active}
-                      aria-label={`${ad.name} — ${ad.active ? "active" : "inactive"}`}
-                    >
-                      <span
-                        className={cn(
-                          "absolute top-1/2 h-5 w-5 -translate-y-1/2 rounded-full bg-white shadow transition-all",
-                          ad.active ? "left-[calc(100%-1.375rem)]" : "left-0.5"
-                        )}
-                      />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Performance — mobile */}
-                <p className="tabular mt-2.5 text-[11px] text-muted-foreground sm:hidden">
-                  {fmtCompact(ad.impressions)} impressions · {fmtCompact(ad.clicks)} clicks · {fmtNum(ctr)}% CTR
-                </p>
-
-                {editing?.id === ad.id && (
-                  <div className="mt-3.5 border-t border-border/70 pt-3.5">
-                    <label htmlFor={`adcode-${ad.id}`} className="eyebrow mb-1.5 block text-muted-foreground">
-                      AdSense code
-                    </label>
-                    <textarea
-                      id={`adcode-${ad.id}`}
-                      value={editing.code}
-                      onChange={(e) => setEditing((ed) => (ed ? { ...ed, code: e.target.value } : ed))}
-                      rows={4}
-                      placeholder='<ins class="adsbygoogle" …></ins>'
-                      className={cn(inputCls, "resize-y font-mono text-[11px] leading-relaxed")}
-                    />
-                    <div className="mt-2.5 flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => update.mutate({ id: ad.id, adCode: editing.code })}
+        {ads.length === 0 ? (
+          <div className="flex flex-col items-center gap-2 px-5 py-12 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
+              <Megaphone className="h-5 w-5" aria-hidden />
+            </span>
+            <p className="label-cond text-[14px] text-foreground">No ad slots</p>
+            <p className="text-[11.5px] text-muted-foreground">Ad placements will appear here once configured.</p>
+          </div>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow className="border-border/60 hover:bg-transparent">
+                <TableHead className={cn(thCls, "px-4 sm:px-5")}>Ad</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right sm:table-cell")}>Impressions</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right sm:table-cell")}>Clicks</TableHead>
+                <TableHead className={cn(thCls, "hidden text-right md:table-cell")}>CTR</TableHead>
+                <TableHead className={thCls}>Active</TableHead>
+                <TableHead className={cn(thCls, "px-4 text-right sm:px-5")}>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {ads.map((ad) => {
+                const ctr = ad.impressions ? ((ad.clicks / ad.impressions) * 100).toFixed(1) : "0";
+                return (
+                  <TableRow key={ad.id} className="border-border/50 hover:bg-white/[0.03]">
+                    <TableCell className={cn(tdCls, "max-w-[200px] px-4 sm:max-w-[320px] sm:px-5")}>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <AdBrandLogo
+                          brand={{ name: ad.name, brandColor: ad.brandColor, brandInitials: ad.brandInitials, logoUrl: ad.logoUrl, logoTheme: ad.logoTheme }}
+                          size="sm"
+                        />
+                        <div className="min-w-0">
+                          <p className="truncate text-[13px] font-semibold leading-tight text-foreground">{ad.name}</p>
+                          <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{placementLabel(ad.placement)}</p>
+                          <p className="tabular mt-0.5 text-[11px] text-muted-foreground sm:hidden">
+                            {fmtCompact(ad.impressions)} impressions · {fmtCompact(ad.clicks)} clicks · {fmtNum(ctr)}% CTR
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] font-semibold text-foreground sm:table-cell")}>
+                      {fmtCompact(ad.impressions)}
+                    </TableCell>
+                    <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] font-semibold text-foreground sm:table-cell")}>
+                      {fmtCompact(ad.clicks)}
+                    </TableCell>
+                    <TableCell className={cn(tdCls, "tabular hidden text-right text-[12px] font-semibold text-primary md:table-cell")}>
+                      {fmtNum(ctr)}%
+                    </TableCell>
+                    <TableCell className={tdCls}>
+                      <Switch
+                        checked={ad.active}
                         disabled={update.isPending}
-                        className="rounded-lg bg-primary font-bold"
-                      >
-                        Save code
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setEditing(null)} className="rounded-lg">
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                        onCheckedChange={() => update.mutate({ id: ad.id, active: !ad.active })}
+                        aria-label={`${ad.name} — ${ad.active ? "active" : "inactive"}`}
+                      />
+                    </TableCell>
+                    <TableCell className={cn(tdCls, "px-4 sm:px-5")}>
+                      <div className="flex justify-end">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => openEditor(ad)}
+                          className="h-8 gap-1.5 rounded-md text-[11px] font-bold"
+                        >
+                          <Pencil className="h-3 w-3" aria-hidden /> Creative
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        )}
       </div>
+
+      {/* Creative editor dialog */}
+      <Dialog open={dialogOpen} onOpenChange={(o) => { setDialogOpen(o); if (!o) setEditingAd(null); }}>
+        <DialogContent className="max-h-[85vh] max-w-2xl overflow-y-auto rounded-md">
+          <DialogHeader>
+            <DialogTitle className="label-cond text-lg font-bold">Edit ad creative</DialogTitle>
+            <DialogDescription className="flex flex-wrap items-center gap-2 text-[12px]">
+              {editingAd && <Chip cls="uppercase">{placementLabel(editingAd.placement)}</Chip>}
+              Demo creative copy and AdSense code for this placement.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Live creative preview */}
+            <div className="flex items-center gap-3.5 overflow-hidden rounded-md border border-border bg-elevated/50 p-3.5">
+              <AdBrandLogo
+                brand={{ name: adForm.name || "Ad", brandColor: previewColor, brandInitials: adForm.brandInitials, logoUrl: adForm.logoUrl, logoTheme: adForm.logoTheme }}
+              />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-sm font-bold leading-tight text-foreground/95">
+                  {adForm.headline || adForm.name || "Headline"}
+                </p>
+                {adForm.bodyText && <p className="mt-0.5 truncate text-[11.5px] text-muted-foreground">{adForm.bodyText}</p>}
+                <p className="mt-1 text-[9px] font-semibold uppercase tracking-[0.12em] text-muted-foreground/70">Sponsored</p>
+              </div>
+              <span
+                className="flex h-8 shrink-0 items-center gap-1 rounded-[5px] px-3.5 text-[11px] font-bold text-white"
+                style={{ backgroundColor: `${previewColor}e6` }}
+              >
+                {adForm.ctaLabel || "Learn More"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="ad-name" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Campaign name
+                </label>
+                <input
+                  id="ad-name"
+                  value={adForm.name}
+                  onChange={(e) => setAdForm((f) => ({ ...f, name: e.target.value }))}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label htmlFor="ad-link" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Link URL
+                </label>
+                <input
+                  id="ad-link"
+                  value={adForm.linkUrl}
+                  onChange={(e) => setAdForm((f) => ({ ...f, linkUrl: e.target.value }))}
+                  placeholder="https://… or #premium"
+                  className={inputCls}
+                />
+              </div>
+            </div>
+            <div>
+              <label htmlFor="ad-headline" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                Headline
+              </label>
+              <input
+                id="ad-headline"
+                value={adForm.headline}
+                onChange={(e) => setAdForm((f) => ({ ...f, headline: e.target.value }))}
+                className={inputCls}
+              />
+            </div>
+            <div>
+              <label htmlFor="ad-body" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                Body text
+              </label>
+              <textarea
+                id="ad-body"
+                value={adForm.bodyText}
+                onChange={(e) => setAdForm((f) => ({ ...f, bodyText: e.target.value }))}
+                rows={2}
+                className={cn(inputCls, "resize-none")}
+              />
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div>
+                <label htmlFor="ad-cta" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  CTA label
+                </label>
+                <input
+                  id="ad-cta"
+                  value={adForm.ctaLabel}
+                  onChange={(e) => setAdForm((f) => ({ ...f, ctaLabel: e.target.value }))}
+                  placeholder="Learn More"
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <label htmlFor="ad-color" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Brand color
+                </label>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-10 w-10 shrink-0 rounded-md border border-border"
+                    style={{ backgroundColor: previewColor }}
+                    aria-hidden
+                  />
+                  <input
+                    id="ad-color"
+                    value={adForm.brandColor}
+                    onChange={(e) => setAdForm((f) => ({ ...f, brandColor: e.target.value }))}
+                    placeholder="#2BE573"
+                    className={cn(inputCls, "tabular")}
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="ad-initials" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Brand initials
+                </label>
+                <input
+                  id="ad-initials"
+                  value={adForm.brandInitials}
+                  onChange={(e) => setAdForm((f) => ({ ...f, brandInitials: e.target.value }))}
+                  placeholder="AB"
+                  maxLength={2}
+                  className={cn(inputCls, "uppercase")}
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="ad-logo" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Brand logo URL
+                </label>
+                <input
+                  id="ad-logo"
+                  value={adForm.logoUrl}
+                  onChange={(e) => setAdForm((f) => ({ ...f, logoUrl: e.target.value }))}
+                  placeholder="/brands/bkash.png"
+                  className={cn(inputCls, "font-mono text-[11px]")}
+                />
+              </div>
+              <div>
+                <label htmlFor="ad-logotheme" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                  Logo chip
+                </label>
+                <select
+                  id="ad-logotheme"
+                  value={adForm.logoTheme}
+                  onChange={(e) => setAdForm((f) => ({ ...f, logoTheme: e.target.value }))}
+                  className={inputCls}
+                >
+                  <option value="LIGHT">White chip (colour logos)</option>
+                  <option value="DARK">Brand-colour chip (white logos)</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="ad-code" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                AdSense code
+              </label>
+              <textarea
+                id="ad-code"
+                value={adForm.adCode}
+                onChange={(e) => setAdForm((f) => ({ ...f, adCode: e.target.value }))}
+                rows={4}
+                placeholder='<ins class="adsbygoogle" …></ins>'
+                className={cn(inputCls, "resize-y font-mono text-[11px] leading-relaxed")}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-md">
+              Cancel
+            </Button>
+            <Button onClick={submitCreative} disabled={update.isPending || !adForm.name.trim()} className="rounded-md bg-primary font-bold">
+              {update.isPending ? "Saving…" : "Save creative"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
 
 /* ============ PAYOUT MANAGER ============ */
-type Payout = { id: string; amount: number; method: string; account: string; status: string; createdAt: string; creator: { name: string; username: string } };
-
 function PayoutManager() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -1183,7 +1682,7 @@ function PayoutManager() {
     <div>
       <SectionTitle title="Creator payouts" sub="Review, approve and settle creator withdrawal requests." />
 
-      <div className="edge-lit overflow-hidden rounded-xl border border-border bg-card">
+      <div className="overflow-hidden rounded-md border border-border bg-card">
         <CardHead
           label="Withdrawal queue"
           right={
@@ -1200,69 +1699,66 @@ function PayoutManager() {
         {isLoading ? (
           <div className="space-y-2 p-4">
             {[1, 2].map((i) => (
-              <Skeleton key={i} className="h-14 rounded-lg" />
+              <Skeleton key={i} className="h-14 rounded-md" />
             ))}
           </div>
         ) : payouts.length === 0 ? (
           <div className="flex flex-col items-center gap-2 px-5 py-12 text-center">
-            <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-muted text-muted-foreground">
               <Inbox className="h-5 w-5" aria-hidden />
             </span>
-            <p className="text-sm font-semibold text-foreground">No withdrawal requests</p>
-            <p className="text-xs text-muted-foreground">Creator payout requests will appear here for review.</p>
+            <p className="label-cond text-[14px] text-foreground">No withdrawal requests</p>
+            <p className="text-[11.5px] text-muted-foreground">Creator payout requests will appear here for review.</p>
           </div>
         ) : (
-          <div className="divide-y divide-border/60">
-            {payouts.map((p) => {
-              const meta = PAYOUT_STATUS[p.status];
-              return (
-                <div
-                  key={p.id}
-                  className="flex flex-wrap items-center gap-x-4 gap-y-2.5 px-4 py-3 transition-colors hover:bg-white/[0.03] sm:px-5"
-                >
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-semibold text-foreground">
-                      {p.creator.name} <span className="font-medium text-muted-foreground">@{p.creator.username}</span>
-                    </p>
-                    <p className="tabular mt-0.5 truncate text-[11px] text-muted-foreground">
-                      {METHOD_LABEL[p.method] ?? p.method} · {p.account} · {timeAgo(p.createdAt)}
-                    </p>
-                  </div>
-                  <p className="tabular shrink-0 font-display text-[14px] font-bold text-foreground">{formatMoney(p.amount)}</p>
-                  <Chip cls={meta?.cls}>{meta?.label ?? p.status}</Chip>
-                  {(p.status === "PENDING" || p.status === "APPROVED") && (
-                    <div className="flex shrink-0 items-center gap-1.5">
-                      {p.status === "PENDING" ? (
-                        <>
-                          <button
-                            type="button"
-                            onClick={() => update.mutate({ id: p.id, status: "APPROVED" })}
-                            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-primary/30 px-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/10"
-                          >
-                            <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Approve
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => update.mutate({ id: p.id, status: "REJECTED" })}
-                            className="inline-flex h-8 items-center gap-1.5 rounded-lg border border-fhb-red/30 px-2.5 text-[11px] font-bold text-fhb-red transition-colors hover:bg-fhb-red/10"
-                          >
-                            <XCircle className="h-3.5 w-3.5" aria-hidden /> Reject
-                          </button>
-                        </>
-                      ) : (
+          <div className="divide-y divide-border/50">
+            {payouts.map((p) => (
+              <div
+                key={p.id}
+                className="row-hover flex flex-wrap items-center gap-x-4 gap-y-2.5 px-4 py-3 sm:px-5"
+              >
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[13px] font-semibold text-foreground">
+                    {p.creator.name} <span className="font-medium text-muted-foreground">@{p.creator.username}</span>
+                  </p>
+                  <p className="tabular mt-0.5 truncate text-[11px] text-muted-foreground">
+                    {METHOD_LABEL[p.method] ?? p.method} · {p.account} · {timeAgo(p.createdAt)}
+                  </p>
+                </div>
+                <p className="tabular shrink-0 font-display text-[14px] font-bold text-foreground">{formatMoney(p.amount)}</p>
+                <StatusChip status={p.status} />
+                {(p.status === "PENDING" || p.status === "APPROVED") && (
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {p.status === "PENDING" ? (
+                      <>
                         <button
                           type="button"
-                          onClick={() => update.mutate({ id: p.id, status: "PAID" })}
-                          className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-primary px-2.5 text-[11px] font-bold text-primary-foreground transition-all hover:brightness-110"
+                          onClick={() => update.mutate({ id: p.id, status: "APPROVED" })}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-md border border-primary/30 px-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/10"
                         >
-                          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Mark paid
+                          <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Approve
                         </button>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
+                        <button
+                          type="button"
+                          onClick={() => update.mutate({ id: p.id, status: "REJECTED" })}
+                          className="inline-flex h-8 items-center gap-1.5 rounded-md border border-fhb-red/30 px-2.5 text-[11px] font-bold text-fhb-red transition-colors hover:bg-fhb-red/10"
+                        >
+                          <XCircle className="h-3.5 w-3.5" aria-hidden /> Reject
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => update.mutate({ id: p.id, status: "PAID" })}
+                        className="inline-flex h-8 items-center gap-1.5 rounded-md bg-primary px-2.5 text-[11px] font-bold text-primary-foreground transition-all hover:brightness-110"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5" aria-hidden /> Mark paid
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         )}
       </div>

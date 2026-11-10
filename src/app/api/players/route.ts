@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { ok, handleError } from "@/lib/api";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const sp = req.nextUrl.searchParams;

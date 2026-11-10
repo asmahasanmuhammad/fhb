@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { ok, handleError } from "@/lib/api";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const competitionId = req.nextUrl.searchParams.get("competitionId");
@@ -28,7 +31,7 @@ export async function GET(req: NextRequest) {
       orderBy: { goals: "desc" },
       take: 10,
       select: {
-        id: true, name: true, goals: true, assists: true, position: true, photoUrl: true,
+        id: true, name: true, goals: true, assists: true, position: true,
         team: { select: { id: true, name: true, initials: true, color: true, color2: true, logoUrl: true } },
       },
     });

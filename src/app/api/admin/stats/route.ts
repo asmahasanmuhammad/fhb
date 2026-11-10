@@ -2,6 +2,9 @@ import { db } from "@/lib/db";
 import { ok, handleError } from "@/lib/api";
 import { requireAdmin } from "@/lib/auth";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     await requireAdmin();

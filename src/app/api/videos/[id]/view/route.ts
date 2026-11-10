@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { ok, fail, handleError, rateLimit } from "@/lib/api";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function POST(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;

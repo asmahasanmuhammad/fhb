@@ -5,6 +5,9 @@ import { verifyPassword } from "@/lib/password";
 import { createSession, setSessionCookie } from "@/lib/auth";
 import { ok, fail, handleError, rateLimit } from "@/lib/api";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 const schema = z.object({
   email: z.string().trim().min(3),
   password: z.string().min(1),

@@ -1,55 +1,74 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { CompetitionRef, Match, Player, Standing, TeamRef } from "@/lib/types";
 import { NATIONAL_TEAM_INITIALS, POSITION_LABELS } from "@/lib/types";
 import { useReveal } from "@/hooks/use-reveal";
 import { TeamCrest } from "@/components/football/team-badge";
-import { MatchRow } from "@/components/football/match-card";
+import { MatchCard, MatchRow } from "@/components/football/match-card";
+import { StandingsTable } from "@/components/football/standings-table";
 import { AdSlot } from "@/components/football/ad-slot";
-import { FormDots } from "@/components/football/live-badge";
+import { PageHeader, SectionHeader } from "@/components/football/section-header";
+import { PageLayout, RailCard } from "@/components/layout/page-layout";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/store/app-store";
-import { fmtNum } from "@/lib/format";
+import { formatKickoff, fmtNum } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import {
-  ArrowLeft,
-  Building2,
-  CalendarDays,
-  ChevronRight,
-  Flag,
-  MapPin,
-  Search,
-  Shield,
-  Trophy,
-  Users,
-  X,
-} from "lucide-react";
+import { Activity, CalendarDays, ChevronLeft, ChevronRight, Flag, Search, Shield, Trophy, Users, X } from "lucide-react";
 
+/* ════════════════════════════════════════════════════════════════
+   Teams — club directory + club hub.
+   TeamsView:      search + All/Domestic/International chips,
+                   league-grouped crest grid, national-teams rail.
+   TeamDetailView: focused 860px club page — hero band, next match,
+                   recent results, squad by position, league position.
+   ════════════════════════════════════════════════════════════════ */
+
+/** Competition ref as returned by the teams API (includes country). */
 type TeamCompetition = CompetitionRef & { country?: string | null };
 
+/** Team row from GET /api/teams. */
 type TeamListItem = TeamRef & {
   city: string;
   stadium: string;
   founded: number;
-  color2?: string;
   description: string | null;
   standings?: Array<{ position: number; competition: TeamCompetition }>;
   _count?: { players: number };
 };
 
-type TeamDetailTeam = TeamListItem & { players?: Player[] };
-
+/** Team payload from GET /api/teams/:id (adds the full squad). */
 type TeamDetailData = {
-  team: TeamDetailTeam;
+  team: TeamListItem & { players?: Player[] };
   matches: Match[];
   standings: Array<Standing & { competition: { id: string; name: string; shortName: string } }>;
 };
 
+/** Section of the directory grid (a league, national teams, or search results). */
+type TeamSection = {
+  id: string;
+  title: string;
+  kicker: string;
+  items: TeamListItem[];
+};
+
 const isNationalTeam = (t: { initials: string }) => NATIONAL_TEAM_INITIALS.includes(t.initials);
+
+/** Editorial league order: BFL first, then the big European leagues. */
 const COUNTRY_ORDER = ["Bangladesh", "England", "Spain", "Italy", "Germany", "France"];
+
+/** Squad display order — keeper through to attack. */
 const SQUAD_POSITIONS = ["GK", "DF", "MF", "FW"];
+
+type TeamFilter = "ALL" | "DOMESTIC" | "INTERNATIONAL";
+
+const TEAM_FILTERS: Array<{ key: TeamFilter; label: string }> = [
+  { key: "ALL", label: "All" },
+  { key: "DOMESTIC", label: "Domestic" },
+  { key: "INTERNATIONAL", label: "International" },
+];
 
 function useDebouncedValue<T>(value: T, delay = 250): T {
   const [debounced, setDebounced] = useState(value);
@@ -60,18 +79,92 @@ function useDebouncedValue<T>(value: T, delay = 250): T {
   return debounced;
 }
 
+/** 1 → "1st", 2 → "2nd", 11 → "11th", 21 → "21st" … */
 function ordinal(n: number): string {
   const suffixes = ["th", "st", "nd", "rd"];
   const v = n % 100;
   return `${fmtNum(n)}${suffixes[(v - 20) % 10] ?? suffixes[v] ?? suffixes[0]}`;
 }
 
-export function TeamsView() {
-  const navigate = useAppStore((s) => s.navigate);
-  const language = useAppStore((s) => s.language);
-  useReveal();
+/** League of a team row (first standings entry), if any. */
+function leagueOf(t: TeamListItem): TeamCompetition | undefined {
+  return t.standings?.[0]?.competition;
+}
 
-  const [filter, setFilter] = useState("ALL");
+/** Pure helper — client-side search across name, short name and city. */
+function searchTeams(all: TeamListItem[], query: string): TeamListItem[] {
+  if (!query) return all;
+  const q = query.toLowerCase();
+  return all.filter(
+    (t) =>
+      t.name.toLowerCase().includes(q) ||
+      (t.shortName ?? "").toLowerCase().includes(q) ||
+      t.city.toLowerCase().includes(q)
+  );
+}
+
+/** Pure helper — group clubs by league in editorial order (BFL first). */
+function groupClubsByLeague(clubs: TeamListItem[]): Array<{ comp: TeamCompetition; items: TeamListItem[] }> {
+  const byComp = new Map<string, { comp: TeamCompetition; items: TeamListItem[] }>();
+  for (const t of clubs) {
+    const comp = leagueOf(t);
+    if (!comp) continue;
+    const existing = byComp.get(comp.id);
+    byComp.set(comp.id, existing ? { ...existing, items: [...existing.items, t] } : { comp, items: [t] });
+  }
+  return Array.from(byComp.values()).sort((a, b) => {
+    const ia = COUNTRY_ORDER.indexOf(a.comp.country ?? "");
+    const ib = COUNTRY_ORDER.indexOf(b.comp.country ?? "");
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib) || a.comp.name.localeCompare(b.comp.name);
+  });
+}
+
+/** Pure helper — sections to render for the current filter / search. */
+function buildSections(opts: {
+  query: string;
+  filter: TeamFilter;
+  clubs: TeamListItem[];
+  national: TeamListItem[];
+}): TeamSection[] {
+  const { query, filter, clubs, national } = opts;
+  const list: TeamSection[] = [];
+
+  if (query) {
+    const pool = filter === "INTERNATIONAL" ? national : filter === "DOMESTIC" ? clubs : [...clubs, ...national];
+    list.push({
+      id: "search",
+      title: `Results for “${query}”`,
+      kicker: `${fmtNum(pool.length)} ${pool.length === 1 ? "team" : "teams"}`,
+      items: pool,
+    });
+    return list;
+  }
+
+  if (filter !== "INTERNATIONAL") {
+    for (const g of groupClubsByLeague(clubs)) {
+      list.push({
+        id: g.comp.id,
+        title: g.comp.country === "Bangladesh" ? "BFL Clubs" : g.comp.name,
+        kicker: g.comp.country === "Bangladesh" ? "bangladesh football league" : (g.comp.country ?? "league").toLowerCase(),
+        items: g.items,
+      });
+    }
+  }
+  if (filter !== "DOMESTIC" && national.length > 0) {
+    list.push({ id: "national", title: "National Teams", kicker: "international squads", items: national });
+  }
+  return list;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   TeamsView — club directory
+   ════════════════════════════════════════════════════════════════ */
+
+export function TeamsView() {
+  useReveal();
+  const navigate = useAppStore((s) => s.navigate);
+
+  const [filter, setFilter] = useState<TeamFilter>("ALL");
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebouncedValue(query.trim());
 
@@ -83,271 +176,236 @@ export function TeamsView() {
     },
   });
 
-  const teams = useMemo(() => {
-    const all = data?.teams ?? [];
-    if (!debouncedQuery) return all;
-    const q = debouncedQuery.toLowerCase();
-    return all.filter(
-      (t) =>
-        t.name.toLowerCase().includes(q) ||
-        (t.shortName ?? "").toLowerCase().includes(q) ||
-        t.city.toLowerCase().includes(q)
-    );
-  }, [data, debouncedQuery]);
+  const allTeams = data?.teams ?? [];
+  const allClubs = allTeams.filter((t) => !isNationalTeam(t));
+  const allNational = allTeams.filter(isNationalTeam);
 
-  const national = useMemo(() => teams.filter(isNationalTeam), [teams]);
-  const clubs = useMemo(() => teams.filter((t) => !isNationalTeam(t)), [teams]);
-  const leagueOf = (t: TeamListItem) => t.standings?.[0]?.competition;
+  /* Search runs inside the active filter. */
+  const searched = searchTeams(allTeams, debouncedQuery);
+  const visibleClubs = searched.filter((t) => !isNationalTeam(t));
+  const visibleNational = searched.filter(isNationalTeam);
 
-  const leagueGroups = useMemo(() => {
-    const byComp = new Map<string, { comp: TeamCompetition; items: TeamListItem[] }>();
-    for (const t of clubs) {
-      const comp = leagueOf(t);
-      if (!comp) continue;
-      const group = byComp.get(comp.id) ?? { comp, items: [] };
-      group.items.push(t);
-      byComp.set(comp.id, group);
-    }
-    return [...byComp.values()].sort((a, b) => {
-      const ia = COUNTRY_ORDER.indexOf(a.comp.country ?? "");
-      const ib = COUNTRY_ORDER.indexOf(b.comp.country ?? "");
-      return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
-    });
-  }, [clubs]);
+  const sections = buildSections({
+    query: debouncedQuery,
+    filter,
+    clubs: visibleClubs,
+    national: visibleNational,
+  }).filter((s) => s.items.length > 0);
 
-  const unaffiliated = useMemo(() => clubs.filter((t) => !leagueOf(t)), [clubs]);
+  /* Result count line under the controls. */
+  const countLine = debouncedQuery
+    ? `${fmtNum(searched.length)} ${searched.length === 1 ? "result" : "results"} for “${debouncedQuery}”`
+    : filter === "DOMESTIC"
+      ? `${fmtNum(allClubs.length)} clubs`
+      : filter === "INTERNATIONAL"
+        ? `${fmtNum(allNational.length)} national teams`
+        : `${fmtNum(allClubs.length)} clubs · ${fmtNum(allNational.length)} national teams`;
 
-  const chips = useMemo(() => {
-    const leagueChips = leagueGroups.map((g) => ({
-      key: g.comp.country ?? g.comp.id,
-      label: g.comp.country === "Bangladesh" ? "BFL (Bangladesh)" : g.comp.shortName,
-      count: g.items.length,
-    }));
-    return [
-      { key: "ALL", label: "All Clubs", count: teams.length },
-      ...leagueChips,
-      { key: "NATIONAL", label: "National Teams", count: national.length },
-    ];
-  }, [teams.length, national.length, leagueGroups]);
-
-  const sections = useMemo(() => {
-    type Section = { id: string; title: string; kicker: string; accent?: "red"; items: TeamListItem[] };
-    const list: Section[] = [];
-
-    if (debouncedQuery) {
-      const items = teams.filter(
-        (t) =>
-          filter === "ALL" ||
-          (filter === "NATIONAL" ? isNationalTeam(t) : leagueOf(t)?.country === filter)
-      );
-      list.push({
-        id: "search",
-        title: `Search: "${debouncedQuery}"`,
-        kicker: `${fmtNum(items.length)} clubs found`,
-        items,
-      });
-      return list;
-    }
-
-    if (filter === "ALL") {
-      for (const g of leagueGroups) {
-        list.push({
-          id: g.comp.id,
-          title: g.comp.country === "Bangladesh" ? "Bangladesh Premier League (BFL)" : g.comp.name,
-          kicker: g.comp.country === "Bangladesh" ? "domestic football" : (g.comp.country ?? "league").toLowerCase(),
-          items: g.items,
-        });
-      }
-      if (unaffiliated.length) {
-        list.push({ id: "unaffiliated", title: "More Clubs", kicker: "other competitions", items: unaffiliated });
-      }
-      if (national.length) {
-        list.push({ id: "national", title: "National Teams", kicker: "international", accent: "red", items: national });
-      }
-    } else if (filter === "NATIONAL") {
-      if (national.length) {
-        list.push({ id: "national", title: "National Teams", kicker: "international", accent: "red", items: national });
-      }
-    } else {
-      const g = leagueGroups.find((x) => (x.comp.country ?? x.comp.id) === filter);
-      if (g) {
-        list.push({
-          id: g.comp.id,
-          title: g.comp.country === "Bangladesh" ? "Bangladesh Premier League (BFL)" : g.comp.name,
-          kicker: g.comp.country === "Bangladesh" ? "domestic football" : (g.comp.country ?? "league").toLowerCase(),
-          items: g.items,
-        });
-      }
-    }
-    return list;
-  }, [debouncedQuery, filter, teams, leagueGroups, unaffiliated, national]);
-
-  const visibleSections = sections.filter((s) => s.items.length > 0);
+  const rail = (
+    <>
+      {allNational.length > 0 && (
+        <RailCard title="National Teams">
+          <div className="divide-y divide-border/40">
+            {allNational.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => navigate({ name: "team-detail", id: t.id })}
+                className="row-hover group flex w-full items-center gap-2.5 px-4 py-2.5 text-left"
+              >
+                <TeamCrest team={t} size="xs" />
+                <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-foreground transition-colors group-hover:text-primary">
+                  {t.name}
+                </span>
+                <ChevronRight
+                  className="h-3.5 w-3.5 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100"
+                  aria-hidden
+                />
+              </button>
+            ))}
+          </div>
+        </RailCard>
+      )}
+      <AdSlot placement="SIDEBAR" />
+    </>
+  );
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      {/* ── Editorial Header ── */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/15 pb-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="h-5 w-1 bg-red-500 shadow-[0_0_10px_rgba(255,30,70,0.8)] shrink-0" aria-hidden />
-            <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
-              OFFICIAL CLUB DIRECTORY
-            </span>
-          </div>
-          <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight drop-shadow-sm">
-            Teams & Clubs Hub
-          </h1>
-          <p className="text-[13px] text-slate-300 font-medium mt-1">
-            Official profiles for {fmtNum(teams.length)} domestic BFL clubs, European giants and national teams.
-          </p>
-        </div>
+    <PageLayout rail={rail}>
+      <PageHeader
+        title="Teams"
+        kicker="clubs & national sides"
+        icon={<Shield className="h-3.5 w-3.5" aria-hidden />}
+        subtitle="Every club and national side covered by FHB — domestic leagues and international squads."
+      />
 
-        {/* Search */}
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
+      {/* ── Controls: search + filter chips ── */}
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter teams">
+          {TEAM_FILTERS.map((f) => {
+            const active = filter === f.key;
+            const count =
+              f.key === "ALL"
+                ? allTeams.length
+                : f.key === "DOMESTIC"
+                  ? allClubs.length
+                  : allNational.length;
+            return (
+              <button
+                key={f.key}
+                onClick={() => setFilter(f.key)}
+                aria-pressed={active}
+                className={cn(
+                  "flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-[12px] font-semibold transition-colors",
+                  active
+                    ? "border-primary/50 bg-primary/10 text-primary"
+                    : "border-border bg-card text-foreground/75 hover:border-white/20 hover:text-foreground"
+                )}
+              >
+                {f.label}
+                <span className={cn("tabular text-[10.5px]", active ? "opacity-80" : "text-muted-foreground")}>
+                  {fmtNum(count)}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+        <div className="relative w-full xl:w-72 xl:flex-none">
+          <Search
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            aria-hidden
+          />
+          <Input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search clubs, cities, stadiums..."
-            className="w-full h-10 border border-white/20 bg-[#0b101d] pl-9 pr-8 text-xs font-semibold text-white placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/50 focus:outline-none rounded"
+            placeholder="Search clubs, cities…"
+            aria-label="Search teams"
+            className="h-9 rounded-[6px] border-border bg-card pl-10 pr-10 text-[13px]"
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+              className="tap-target absolute right-0 top-0 flex h-9 w-9 items-center justify-center rounded-[6px] text-muted-foreground transition-colors hover:text-foreground"
+              aria-label="Clear search"
             >
-              <X className="h-3.5 w-3.5" />
+              <X className="h-4 w-4" aria-hidden />
             </button>
           )}
         </div>
       </div>
 
-      {/* ── League Filter Tabs ── */}
-      <div className="reveal mb-6 flex items-center gap-0 border-b border-white/15 overflow-x-auto no-scrollbar">
-        {chips.map((chip) => (
-          <button
-            key={chip.key}
-            onClick={() => setFilter(chip.key)}
-            className={cn(
-              "shrink-0 pb-3 pt-1 px-4 text-[12px] font-black uppercase tracking-wider border-b-2 transition-colors",
-              filter === chip.key
-                ? "border-red-500 text-white shadow-[0_4px_12px_rgba(255,30,70,0.3)]"
-                : "border-transparent text-slate-300 hover:text-white"
-            )}
-          >
-            {chip.label}
-            <span className="ml-1.5 text-[10.5px] font-bold text-slate-400">({fmtNum(chip.count)})</span>
-          </button>
-        ))}
-      </div>
+      <p className="mt-4 text-[11.5px] text-muted-foreground">{countLine}</p>
 
-      {/* Leaderboard ad */}
-      <div className="reveal mb-8">
-        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
-      </div>
-
-      {/* ── Teams Directory Grid ── */}
+      {/* ── Directory grid ── */}
       {isLoading ? (
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4" aria-hidden>
           {Array.from({ length: 12 }).map((_, i) => (
-            <Skeleton key={i} className="h-[140px] bg-[#0b101d]" />
+            <div key={i} className="rounded-lg border border-border bg-card p-4">
+              <Skeleton className="mx-auto h-9 w-9 rounded-lg" />
+              <Skeleton className="mx-auto mt-3 h-4 w-3/4" />
+              <Skeleton className="mx-auto mt-2 h-3 w-2/3" />
+            </div>
           ))}
         </div>
-      ) : visibleSections.length === 0 ? (
-        <div className="border border-white/15 bg-[#0b101d] px-6 py-16 text-center rounded">
-          <Shield className="mx-auto mb-3 h-10 w-10 text-slate-400" />
-          <p className="font-black text-lg text-white">No teams match your search</p>
-          <p className="mt-1 text-xs text-slate-300">Try searching with a different spelling or clear the filter.</p>
+      ) : sections.length === 0 ? (
+        <div className="reveal mt-3 rounded-lg border border-border bg-card px-4 py-12 text-center">
+          <p className="text-sm font-semibold text-foreground">No teams found</p>
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
+            {debouncedQuery
+              ? `Nothing matches “${debouncedQuery}” under the current filter. Try another spelling or clear the search.`
+              : "No teams are listed under this filter yet."}
+          </p>
+          <button
+            onClick={() => {
+              setQuery("");
+              setFilter("ALL");
+            }}
+            className="mt-5 inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-border bg-card px-3.5 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/25"
+          >
+            Show All Teams
+            <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+          </button>
         </div>
       ) : (
-        <div className="space-y-10">
-          {visibleSections.map((section) => (
-            <section key={section.id} className="reveal">
-              {/* Section title with red bar */}
-              <div className="flex items-center gap-2.5 mb-4 border-b border-white/15 pb-2.5">
-                <span className="h-4 w-1 bg-red-500 shadow-[0_0_8px_rgba(255,30,70,0.8)]" />
-                <h2 className="font-black text-[15px] uppercase tracking-wider text-white">
-                  {section.title}
-                </h2>
-                <span className="ml-auto text-[11px] font-black text-slate-300 uppercase tracking-widest">
-                  {section.kicker}
-                </span>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {section.items.map((t) => (
-                  <TeamCard key={t.id} team={t} onClick={() => navigate({ name: "team-detail", id: t.id })} />
-                ))}
-              </div>
-            </section>
+        <div className="mt-3">
+          {sections.map((section, idx) => (
+            <Fragment key={section.id}>
+              <section className={idx === 0 ? "reveal" : "reveal mt-10"} aria-label={section.title}>
+                <SectionHeader
+                  title={section.title}
+                  kicker={section.kicker}
+                  icon={section.id === "national" ? <Flag className="h-3.5 w-3.5" aria-hidden /> : undefined}
+                  actionLabel={section.id === "search" || section.id === "national" ? undefined : "Hub"}
+                  actionView={
+                    section.id === "search" || section.id === "national"
+                      ? undefined
+                      : { name: "competition-detail", id: section.id }
+                  }
+                />
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                  {section.items.map((t) => (
+                    <TeamCard key={t.id} team={t} onClick={() => navigate({ name: "team-detail", id: t.id })} />
+                  ))}
+                </div>
+              </section>
+              {/* In-feed ad after the first grid section */}
+              {idx === 0 && sections.length > 1 && (
+                <div className="reveal mt-10">
+                  <AdSlot placement="IN_FEED" />
+                </div>
+              )}
+            </Fragment>
           ))}
         </div>
       )}
-
-      {/* Bottom in-feed ad */}
-      <div className="reveal mt-10">
-        <AdSlot placement="IN_FEED" />
-      </div>
-    </div>
+    </PageLayout>
   );
 }
 
+/* ── Directory card — crest, name, city/league meta ── */
+
 function TeamCard({ team, onClick }: { team: TeamListItem; onClick: () => void }) {
-  const league = team.standings?.[0]?.competition;
-  const position = team.standings?.[0]?.position;
+  const league = leagueOf(team);
   const national = isNationalTeam(team);
+  const meta = national ? "National side" : league ? `${team.city} · ${league.shortName ?? league.name}` : team.city;
 
   return (
     <button
       onClick={onClick}
-      className="group relative flex flex-col justify-between border border-white/15 bg-[#0b101d] p-4 text-left transition-all hover:border-red-500/60 hover:bg-[#11172a] hover:shadow-[0_4px_20px_rgba(255,30,70,0.15)] rounded"
+      title={team.name}
+      className="card-lift group flex w-full flex-col items-center rounded-lg border border-border bg-card p-4 text-center"
     >
-      {/* Club color left accent */}
-      <span
-        aria-hidden
-        className="absolute inset-y-0 left-0 w-[3px]"
-        style={{ backgroundColor: team.color || "#ff1e46" }}
-      />
-
-      {/* Top crest + badge */}
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <TeamCrest team={team} size="md" />
-        {position != null ? (
-          <span className="px-2 py-0.5 text-[9.5px] font-black uppercase text-red-300 bg-red-600/30 border border-red-500/40 rounded">
-            {ordinal(position)}
-          </span>
-        ) : (
-          <span className="text-[10px] font-bold text-slate-300">
-            Est. {team.founded}
-          </span>
-        )}
-      </div>
-
-      {/* Name + stadium info */}
-      <div>
-        <p className="font-black text-[14.5px] text-white leading-tight group-hover:text-red-400 transition-colors line-clamp-1 drop-shadow-sm">
-          {team.name}
-        </p>
-        <p className="mt-1 text-[11.5px] text-slate-300 font-medium truncate">
-          {team.city} · {team.stadium}
-        </p>
-      </div>
-
-      {/* Footer league */}
-      <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[10.5px] font-black uppercase tracking-wider text-slate-300">
-        <span>{national ? "National Team" : (league?.shortName ?? "BFL")}</span>
-        <ChevronRight className="h-3.5 w-3.5 text-slate-300 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
-      </div>
+      <TeamCrest team={team} size="lg" />
+      <h3
+        className="mt-3 w-full truncate text-[14px] font-semibold leading-tight text-foreground transition-colors group-hover:text-primary"
+        title={team.name}
+      >
+        {team.name}
+      </h3>
+      <p className="mt-1 w-full truncate text-[11px] text-muted-foreground" title={meta}>
+        {meta}
+      </p>
     </button>
   );
 }
 
+/* ════════════════════════════════════════════════════════════════
+   TeamDetailView — focused club page (860px)
+   ════════════════════════════════════════════════════════════════ */
+
+function FactCell({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <p className="text-[9.5px] font-bold uppercase tracking-[0.12em] text-muted-foreground">{label}</p>
+      <p className="mt-1 truncate text-[12.5px] font-semibold text-foreground" title={value}>
+        {value}
+      </p>
+    </div>
+  );
+}
+
 export function TeamDetailView({ teamId }: { teamId: string }) {
-  const navigate = useAppStore((s) => s.navigate);
   useReveal();
-  const [squadFilter, setSquadFilter] = useState<string>("ALL");
+  const navigate = useAppStore((s) => s.navigate);
 
   const { data, isLoading } = useQuery<TeamDetailData>({
     queryKey: ["team", teamId],
@@ -357,13 +415,31 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
     },
   });
 
+  /* Full league table for the "League Position" section (the team API
+     only returns the club's own row, not the whole table). */
+  const primaryStanding = data?.standings?.[0];
+  const { data: leagueData, isLoading: leagueLoading } = useQuery<{ standings: Standing[] }>({
+    queryKey: ["standings", primaryStanding?.competition.id],
+    queryFn: async () => {
+      const res = await fetch(`/api/standings?competitionId=${primaryStanding!.competition.id}`);
+      return res.json().then((j) => j.data);
+    },
+    enabled: !!primaryStanding,
+    staleTime: 60_000,
+  });
+
   if (isLoading) {
     return (
-      <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-        <Skeleton className="h-56 bg-[#0b101d]" />
-        <div className="mt-6 grid gap-6 lg:grid-cols-12">
-          <Skeleton className="h-[400px] lg:col-span-8 bg-[#0b101d]" />
-          <Skeleton className="h-[400px] lg:col-span-4 bg-[#0b101d]" />
+      <div className="mx-auto w-full max-w-[860px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7" aria-hidden>
+        <Skeleton className="h-8 w-24 rounded-[6px]" />
+        <Skeleton className="mt-4 h-44 rounded-xl" />
+        <div className="mt-10">
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="mt-4 h-40 rounded-lg" />
+        </div>
+        <div className="mt-10">
+          <Skeleton className="h-5 w-36" />
+          <Skeleton className="mt-4 h-56 rounded-lg" />
         </div>
       </div>
     );
@@ -371,15 +447,29 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
 
   if (!data?.team) {
     return (
-      <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+      <div className="mx-auto w-full max-w-[860px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7">
         <button
-          onClick={() => navigate({ name: "teams" })}
-          className="flex items-center gap-1.5 text-xs font-bold text-slate-300 hover:text-white mb-4"
+          onClick={() => useAppStore.getState().back()}
+          className="mb-4 flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
         >
-          <ArrowLeft className="h-3.5 w-3.5" /> Back to Teams
+          <ChevronLeft className="h-4 w-4" aria-hidden />
+          Back
         </button>
-        <div className="border border-white/15 bg-[#0b101d] px-6 py-16 text-center rounded">
-          <p className="font-black text-white text-base">Club profile not found</p>
+        <div className="rounded-lg border border-border bg-card px-4 py-14 text-center">
+          <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+            <Shield className="h-5 w-5" aria-hidden />
+          </span>
+          <p className="text-sm font-semibold text-foreground">Team not found</p>
+          <p className="mx-auto mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
+            This club profile is no longer available. Head back to the directory to browse all teams.
+          </p>
+          <button
+            onClick={() => navigate({ name: "teams" })}
+            className="mt-5 inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-border bg-card px-3.5 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/25"
+          >
+            Back to Teams
+            <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+          </button>
         </div>
       </div>
     );
@@ -388,203 +478,214 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
   const { team, matches, standings } = data;
   const players = team.players ?? [];
   const national = isNationalTeam(team);
+  const primaryComp = primaryStanding?.competition;
 
+  /* Fixtures arrive kickoff-desc — flip for "next", keep desc for recent. */
+  const upcoming = matches
+    .filter((m) => m.status === "SCHEDULED")
+    .sort((a, b) => +new Date(a.kickoff) - +new Date(b.kickoff));
+  const nextMatch = upcoming[0];
   const recent = matches.filter((m) => m.status !== "SCHEDULED").slice(0, 5);
-  const upcoming = matches.filter((m) => m.status === "SCHEDULED").reverse().slice(0, 5);
 
+  /* Squad grouped GK → DF → MF → FW (unknown codes appended). */
   const groupOrder = [
     ...SQUAD_POSITIONS,
     ...Array.from(new Set(players.map((p) => p.position).filter((pos) => !SQUAD_POSITIONS.includes(pos)))),
   ];
-  const groups = groupOrder
+  const squadGroups = groupOrder
     .map((pos) => ({ pos, items: players.filter((p) => p.position === pos) }))
     .filter((g) => g.items.length > 0);
-  const visibleGroups = squadFilter === "ALL" ? groups : groups.filter((g) => g.pos === squadFilter);
+
+  /* League table rows — always include the club's own row. */
+  const leagueStandings = leagueData?.standings ?? [];
+  const teamRow = leagueStandings.find((s) => s.team.id === teamId);
+  const tableLimit = teamRow
+    ? Math.min(Math.max(10, teamRow.position + 2), Math.max(leagueStandings.length, 10))
+    : 10;
+
+  const nextOpponent = nextMatch
+    ? nextMatch.homeTeam.id === teamId
+      ? nextMatch.awayTeam
+      : nextMatch.homeTeam
+    : null;
+
+  const facts: Array<{ label: string; value: string }> = [
+    ...(primaryComp ? [{ label: "League", value: primaryComp.shortName ?? primaryComp.name }] : []),
+    ...(teamRow ? [{ label: "Position", value: `${ordinal(teamRow.position)} · ${fmtNum(teamRow.points)} pts` }] : []),
+    ...(nextMatch
+      ? [{ label: "Next Match", value: `${formatKickoff(nextMatch.kickoff).relative} vs ${nextOpponent?.shortName ?? nextOpponent?.name ?? "TBC"}` }]
+      : []),
+    { label: "Founded", value: fmtNum(team.founded) },
+  ];
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      {/* Breadcrumb */}
+    <div className="mx-auto w-full max-w-[860px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7">
+      {/* Back */}
       <button
-        onClick={() => navigate({ name: "teams" })}
-        className="flex items-center gap-1.5 text-[11px] font-black text-slate-300 hover:text-white mb-4 uppercase tracking-wider"
+        onClick={() => useAppStore.getState().back()}
+        className="mb-4 flex items-center gap-1.5 text-[12px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
       >
-        <ArrowLeft className="h-3.5 w-3.5" /> Teams Directory
+        <ChevronLeft className="h-4 w-4" aria-hidden />
+        Back
       </button>
 
-      {/* ── Club Hero Banner ── */}
-      <div className="relative border border-white/20 bg-[#0b101d] p-6 sm:p-8 overflow-hidden mb-8 rounded shadow-xl">
-        {/* Accent strip */}
-        <span
-          aria-hidden
-          className="absolute inset-y-0 left-0 w-1.5"
-          style={{ backgroundColor: team.color || "#ff1e46" }}
-        />
-
-        {/* Ambient glow */}
-        <div className="absolute inset-0 stadium-glow pointer-events-none" />
-
-        <div className="relative z-10 flex flex-wrap items-center gap-6">
+      {/* ── Hero band ── */}
+      <section
+        className="reveal overflow-hidden rounded-xl border border-border bg-card"
+        aria-label={`${team.name} profile`}
+      >
+        <div className="flex flex-wrap items-center gap-5 p-5 sm:p-6">
           <TeamCrest team={team} size="match" />
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 bg-red-600/25 border border-red-500/40 text-red-300 rounded">
-                {national ? "National Football Team" : (standings[0]?.competition.name ?? "Official Club")}
+            {national && (
+              <span className="label-cond mb-2 inline-flex items-center gap-1.5 rounded-[4px] bg-secondary px-2 py-1 text-[10px] font-bold text-primary">
+                <Flag className="h-3 w-3" aria-hidden /> National Team
               </span>
-              <span className="text-slate-400 text-[11px]">·</span>
-              <span className="text-slate-300 text-[11px] font-bold">Est. {team.founded}</span>
-            </div>
-            <h1 className="font-black text-2xl sm:text-4xl text-white leading-tight drop-shadow-sm">
+            )}
+            <h1 className="label-cond truncate text-[24px] font-bold leading-none text-foreground sm:text-[26px]" title={team.name}>
               {team.name}
             </h1>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-200">
-              <span className="flex items-center gap-1 border border-white/15 bg-white/[0.05] px-3 py-1 font-semibold rounded">
-                <MapPin className="h-3 w-3 text-red-400" /> {team.city}
-              </span>
-              <span className="flex items-center gap-1 border border-white/15 bg-white/[0.05] px-3 py-1 font-semibold rounded">
-                <Building2 className="h-3 w-3 text-red-400" /> {team.stadium}
-              </span>
-              <span className="flex items-center gap-1 border border-white/15 bg-white/[0.05] px-3 py-1 font-semibold rounded">
-                <Users className="h-3 w-3 text-red-400" /> {fmtNum(players.length)} Registered Players
-              </span>
-            </div>
+            <p className="mt-2 truncate text-[12.5px] text-muted-foreground" title={`${team.city} · ${team.stadium}`}>
+              {team.city} · {team.stadium}
+            </p>
           </div>
         </div>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-3.5 border-t border-border px-5 py-4 sm:grid-cols-4 sm:px-6">
+          {facts.map((f) => (
+            <FactCell key={f.label} label={f.label} value={f.value} />
+          ))}
+        </div>
+      </section>
 
-        {team.description && (
-          <p className="mt-5 pt-4 border-t border-white/10 text-[13px] text-slate-200 font-medium leading-relaxed max-w-3xl">
-            {team.description}
-          </p>
+      {/* ── Next match ── */}
+      <section className="reveal mt-10" aria-label="Next match">
+        <SectionHeader
+          title="Next Match"
+          kicker="upcoming fixture"
+          icon={<CalendarDays className="h-3.5 w-3.5" aria-hidden />}
+        />
+        {nextMatch ? (
+          <MatchCard match={nextMatch} />
+        ) : (
+          <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
+            <p className="text-sm font-semibold text-foreground">No fixtures scheduled</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Check back closer to matchday for confirmed kick-offs.
+            </p>
+          </div>
         )}
-      </div>
+      </section>
 
-      {/* ── Content Grid ── */}
-      <div className="grid gap-6 lg:grid-cols-12">
-        {/* Squad list */}
-        <div className="lg:col-span-8 space-y-6">
-          <div>
-            <div className="flex items-center justify-between mb-4 border-b border-white/15 pb-2.5">
-              <div className="flex items-center gap-2">
-                <span className="h-4 w-1 bg-red-500 shadow-[0_0_8px_rgba(255,30,70,0.8)]" />
-                <h2 className="font-black text-[15px] uppercase tracking-wider text-white">First Team Squad</h2>
-              </div>
-              <span className="text-[11px] font-black text-slate-300">{fmtNum(players.length)} Players</span>
-            </div>
-
-            {/* Position filter */}
-            <div className="flex gap-1.5 mb-4 overflow-x-auto no-scrollbar">
-              {["ALL", ...groups.map((g) => g.pos)].map((key) => (
-                <button
-                  key={key}
-                  onClick={() => setSquadFilter(key)}
-                  className={cn(
-                    "px-3 py-1 text-[11px] font-black uppercase rounded transition-colors",
-                    squadFilter === key ? "bg-red-600 text-white shadow-md shadow-red-600/30" : "border border-white/15 bg-[#0b101d] text-slate-300 hover:text-white"
-                  )}
-                >
-                  {key === "ALL" ? "All" : key}
-                </button>
+      {/* ── Recent results ── */}
+      <section className="reveal mt-10" aria-label="Recent results">
+        <SectionHeader
+          title="Recent Results"
+          kicker="last five"
+          icon={<Activity className="h-3.5 w-3.5" aria-hidden />}
+        />
+        {recent.length > 0 ? (
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            <div className="divide-y divide-border/40">
+              {recent.map((m) => (
+                <MatchRow key={m.id} match={m} showCompetition />
               ))}
             </div>
-
-            {/* Squad Table */}
-            <div className="border border-white/15 bg-[#0b101d] rounded overflow-hidden shadow-lg">
-              <div className="flex items-center gap-3 border-b border-white/15 bg-[#06080f] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-slate-300">
-                <span className="w-8">#</span>
-                <span className="flex-1">Player</span>
-                <span className="w-12 text-center">Pos</span>
-                <span className="w-12 text-center">Apps</span>
-                <span className="w-12 text-center">Goals</span>
-                <span className="w-12 text-right">Rating</span>
-              </div>
-              <div className="divide-y divide-white/10">
-                {visibleGroups.flatMap((g) => g.items).map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => navigate({ name: "player-detail", id: p.id })}
-                    className="flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.05]"
-                  >
-                    <span className="w-8 tabular font-mono font-black text-[12px] text-slate-400">
-                      {p.jerseyNumber ?? "–"}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-black text-[13.5px] text-white hover:text-red-400 truncate">
-                        {p.name}
-                      </p>
-                      <p className="text-[11px] font-semibold text-slate-300">{p.nationality}</p>
-                    </div>
-                    <span className="w-12 text-center text-[11.5px] font-black text-red-400">{p.position}</span>
-                    <span className="w-12 text-center text-[12px] font-bold text-slate-200">{p.appearances}</span>
-                    <span className="w-12 text-center text-[12px] font-black text-white">{p.goals}</span>
-                    <span className="w-12 text-right tabular font-black text-[13px] text-emerald-400">
-                      {p.rating.toFixed(1)}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
           </div>
-
-          {/* Fixtures */}
-          <div>
-            <div className="flex items-center gap-2 mb-4 border-b border-white/15 pb-2.5">
-              <span className="h-4 w-1 bg-red-500 shadow-[0_0_8px_rgba(255,30,70,0.8)]" />
-              <h2 className="font-black text-[15px] uppercase tracking-wider text-white">Fixtures & Results</h2>
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="border border-white/15 bg-[#0b101d] rounded overflow-hidden shadow">
-                <p className="border-b border-white/15 bg-[#06080f] px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-300">
-                  Recent Results
-                </p>
-                <div className="divide-y divide-white/10">
-                  {recent.length > 0 ? (
-                    recent.map((m) => <MatchRow key={m.id} match={m} showCompetition={false} />)
-                  ) : (
-                    <p className="p-4 text-xs font-semibold text-slate-400 text-center">No recent matches</p>
-                  )}
-                </div>
-              </div>
-              <div className="border border-white/15 bg-[#0b101d] rounded overflow-hidden shadow">
-                <p className="border-b border-white/15 bg-[#06080f] px-4 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-300">
-                  Upcoming Fixtures
-                </p>
-                <div className="divide-y divide-white/10">
-                  {upcoming.length > 0 ? (
-                    upcoming.map((m) => <MatchRow key={m.id} match={m} showCompetition={false} />)
-                  ) : (
-                    <p className="p-4 text-xs font-semibold text-slate-400 text-center">No upcoming fixtures</p>
-                  )}
-                </div>
-              </div>
-            </div>
+        ) : (
+          <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
+            <p className="text-sm font-semibold text-foreground">No results yet this season</p>
+            <p className="mt-1 text-xs text-muted-foreground">Finished matches will appear here once recorded.</p>
           </div>
-        </div>
+        )}
+      </section>
 
-        {/* Sidebar */}
-        <div className="lg:col-span-4 space-y-5">
-          {standings[0] && (
-            <div className="border border-white/15 bg-[#0b101d] p-5 rounded shadow-lg">
-              <div className="flex items-center gap-2 mb-3">
-                <Trophy className="h-4 w-4 text-amber-400" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-300">League Standing</span>
-              </div>
-              <p className="text-[13.5px] font-black text-white mb-2">{standings[0].competition.name}</p>
-              <div className="flex items-baseline justify-between mb-3">
-                <span className="font-black text-4xl text-red-500 drop-shadow-[0_0_12px_rgba(255,30,70,0.4)]">{ordinal(standings[0].position)}</span>
-                <span className="text-xl font-black text-white">{standings[0].points} <span className="text-xs font-bold text-slate-300">pts</span></span>
-              </div>
-              <p className="text-xs font-semibold text-slate-300">{standings[0].won}W · {standings[0].drawn}D · {standings[0].lost}L</p>
-              {standings[0].form && (
-                <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
-                  <span className="text-[10.5px] font-black text-slate-300 uppercase tracking-wider">Form</span>
-                  <FormDots form={standings[0].form} />
+      {/* ── Squad ── */}
+      <section className="reveal mt-10" aria-label="Squad">
+        <SectionHeader
+          title="Squad"
+          kicker={players.length > 0 ? `${fmtNum(players.length)} players` : "first team"}
+          icon={<Users className="h-3.5 w-3.5" aria-hidden />}
+        />
+        {squadGroups.length === 0 ? (
+          <div className="rounded-lg border border-border bg-card px-4 py-10 text-center">
+            <p className="text-sm font-semibold text-foreground">No squad data published yet</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              The full roster for this club has not been released.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-hidden rounded-lg border border-border bg-card">
+            {squadGroups.map((g, gi) => (
+              <div key={g.pos} className={gi > 0 ? "border-t border-border" : undefined}>
+                <div className="flex items-center justify-between bg-elevated/60 px-4 py-2">
+                  <span className="label-cond text-[11.5px] font-bold tracking-[0.08em] text-foreground/85">
+                    {POSITION_LABELS[g.pos] ?? g.pos}s
+                  </span>
+                  <span className="tabular text-[10.5px] text-muted-foreground">{fmtNum(g.items.length)}</span>
                 </div>
-              )}
-            </div>
-          )}
+                <div className="divide-y divide-border/40">
+                  {g.items.map((p) => (
+                    <SquadRow key={p.id} player={p} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
 
-          <AdSlot placement="SIDEBAR" className="min-h-[250px]" />
-        </div>
+      {/* In-feed ad between sections */}
+      <div className="reveal mt-10">
+        <AdSlot placement="IN_FEED" />
       </div>
+
+      {/* ── League position ── */}
+      {primaryComp && (
+        <section className="reveal mt-10" aria-label="League position">
+          <SectionHeader
+            title="League Position"
+            kicker={primaryComp.name.toLowerCase()}
+            icon={<Trophy className="h-3.5 w-3.5" aria-hidden />}
+            actionLabel="Full Table"
+            actionView={{ name: "standings" }}
+          />
+          {leagueLoading && leagueStandings.length === 0 ? (
+            <Skeleton className="h-[420px] rounded-lg" />
+          ) : (
+            <StandingsTable
+              standings={leagueStandings}
+              highlightTeamId={teamId}
+              compact
+              limit={tableLimit}
+            />
+          )}
+        </section>
+      )}
     </div>
+  );
+}
+
+/* ── Squad row — number, name, position chip, season meta ── */
+
+function SquadRow({ player }: { player: Player }) {
+  const navigate = useAppStore((s) => s.navigate);
+  return (
+    <button
+      onClick={() => navigate({ name: "player-detail", id: player.id })}
+      className="row-hover group flex w-full items-center gap-3 px-4 py-2.5 text-left"
+    >
+      <span className="tabular w-7 shrink-0 text-center text-[13px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">
+        {player.jerseyNumber != null ? fmtNum(player.jerseyNumber) : "–"}
+      </span>
+      <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground transition-colors group-hover:text-primary">
+        {player.name}
+      </span>
+      <span className="label-cond shrink-0 rounded-[4px] bg-secondary px-1.5 py-[3px] text-[10px] font-bold text-muted-foreground">
+        {player.position}
+      </span>
+      <span className="tabular shrink-0 text-[11px] text-muted-foreground">
+        {fmtNum(player.appearances)} apps · {fmtNum(player.goals)} gls
+      </span>
+    </button>
   );
 }

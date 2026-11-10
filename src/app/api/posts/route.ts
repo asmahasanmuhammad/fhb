@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { ok, fail, handleError } from "@/lib/api";
 import { getSessionUser, requireUser } from "@/lib/auth";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function GET(req: NextRequest) {
   try {
     const sp = req.nextUrl.searchParams;

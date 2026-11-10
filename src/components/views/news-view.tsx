@@ -1,209 +1,194 @@
 "use client";
 
 import { Fragment, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import type { NewsArticle } from "@/lib/types";
 import { CATEGORY_LABELS } from "@/lib/types";
 import { useReveal } from "@/hooks/use-reveal";
-import { useAppStore } from "@/store/app-store";
 import { NewsCard } from "@/components/football/news-card";
 import { AdSlot } from "@/components/football/ad-slot";
-import { TransferRadar } from "@/components/football/transfer-radar";
+import { PageHeader, SectionHeader } from "@/components/football/section-header";
+import { PageLayout, RailCard } from "@/components/layout/page-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { Newspaper, Search, X, Flame, Clock, ArrowRight } from "lucide-react";
-import { fmtLocale, fmtCompact, timeAgo } from "@/lib/format";
+import { fmtLocale } from "@/lib/format";
+import { Newspaper, ChevronDown } from "lucide-react";
+
+/* ════════════════════════════════════════════════════════════════
+   NewsView — the editorial feed.
+   Lead story full-width, 2-col story grid, category chips, offset
+   pagination ("Load more"), Most Read rail + sidebar ad.
+   ════════════════════════════════════════════════════════════════ */
+
+const PAGE_SIZE = 12;
+
+/** Tab chips — every CATEGORY_LABELS desk with compact display forms. */
+const CATEGORY_CHIPS: Array<{ key: string; label: string }> = [
+  { key: "ALL", label: "All" },
+  ...Object.keys(CATEGORY_LABELS)
+    .filter((k) => k !== "ALL")
+    .map((k) => ({ key: k, label: k === "BFL" ? "BFL" : CATEGORY_LABELS[k] })),
+];
 
 export function NewsView() {
-  const [category, setCategory] = useState("ALL");
-  const [query, setQuery] = useState("");
-  const navigate = useAppStore((s) => s.navigate);
-  const language = useAppStore((s) => s.language);
   useReveal();
+  const [category, setCategory] = useState("ALL");
 
-  const { data, isLoading } = useQuery<{ articles: NewsArticle[]; total: number }>({
-    queryKey: ["news", category],
-    queryFn: async () => {
-      const res = await fetch(`/api/news?category=${category}&limit=30`);
-      return res.json().then((j) => j.data);
+  const {
+    data,
+    isLoading,
+    isFetchingNextPage,
+    hasNextPage,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: ["news", "feed", category],
+    queryFn: async ({ pageParam }: { pageParam: number }) => {
+      const res = await fetch(`/api/news?category=${category}&limit=${PAGE_SIZE}&offset=${pageParam}`);
+      return res.json().then(
+        (j) => j.data as { articles: NewsArticle[]; total: number }
+      );
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const loaded = allPages.reduce((n, p) => n + p.articles.length, 0);
+      return loaded < lastPage.total && lastPage.articles.length > 0 ? loaded : undefined;
     },
   });
 
-  const articles = (data?.articles ?? []).filter((a) =>
-    query.trim() ? (a.title + a.excerpt).toLowerCase().includes(query.toLowerCase()) : true
-  );
+  const articles = data ? data.pages.flatMap((p) => p.articles) : [];
+  const total = data ? data.pages[data.pages.length - 1].total : 0;
   const [lead, ...rest] = articles;
+  const activeLabel = CATEGORY_CHIPS.find((c) => c.key === category)?.label ?? "All";
 
-  const mostRead = [...articles]
+  // Most-read rail excludes the lead story (already the page hero)
+  const mostRead = articles
     .filter((a) => a.id !== lead?.id)
     .sort((a, b) => b.views - a.views)
     .slice(0, 5);
 
-  const activeLabel = CATEGORY_LABELS[category] ?? "All";
+  const rail = (
+    <>
+      {mostRead.length > 0 && (
+        <RailCard title="Most Read">
+          <div className="divide-y divide-border/40">
+            {mostRead.map((a) => (
+              <NewsCard key={a.id} article={a} size="row" />
+            ))}
+          </div>
+        </RailCard>
+      )}
+      <AdSlot placement="SIDEBAR" />
+    </>
+  );
 
   return (
-    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      {/* ── Editorial Header ── */}
-      <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-white/12 pb-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1.5">
-            <span className="h-5 w-1.5 bg-[#ff1e46] rounded-full shrink-0 shadow-[0_0_8px_#ff1e46]" aria-hidden />
-            <span className="text-[10.5px] font-black uppercase tracking-widest text-[#ff1e46]">
-              FHB NEWSDESK · DHAKA BUREAU
-            </span>
-          </div>
-          <h1 className="font-black text-[28px] sm:text-[36px] text-white leading-tight drop-shadow-[0_2px_8px_rgba(255,255,255,0.2)]">
-            Football News & Transfers
-          </h1>
-          <p className="text-[14px] text-[#cbd5e1] font-medium mt-1">
-            Breaking transfer stories, tactical match reports, exclusive interviews & BFL coverage.
-          </p>
-        </div>
+    <PageLayout rail={rail}>
+      <PageHeader
+        title="Football News"
+        kicker="editorial"
+        icon={<Newspaper className="h-3.5 w-3.5" aria-hidden />}
+        subtitle="Transfers, match reports and analysis from the FHB desk."
+      />
 
-        {/* Search */}
-        <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search news & transfers..."
-            className="w-full h-10 rounded border border-white/20 bg-white/10 pl-9 pr-8 text-xs font-semibold text-white placeholder:text-white/40 focus:border-[#ff1e46] focus:outline-none"
-          />
-          {query && (
-            <button
-              onClick={() => setQuery("")}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white hover:text-white"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* ── Category tabs ── */}
-      <div className="reveal mb-6 flex items-center gap-1 border-b border-white/12 overflow-x-auto no-scrollbar pb-1">
-        {Object.entries(CATEGORY_LABELS).map(([key, label]) => (
+      {/* Category chips */}
+      <div
+        className="no-scrollbar -mx-1 mb-5 flex gap-2 overflow-x-auto px-1 pb-1"
+        role="group"
+        aria-label="Filter news by category"
+      >
+        {CATEGORY_CHIPS.map((c) => (
           <button
-            key={key}
-            onClick={() => setCategory(key)}
+            key={c.key}
+            onClick={() => setCategory(c.key)}
+            aria-pressed={category === c.key}
             className={cn(
-              "shrink-0 pb-3 pt-1.5 px-4 text-[13px] font-extrabold uppercase tracking-wider border-b-2 transition-all",
-              category === key
-                ? "border-[#ff1e46] text-white shadow-[0_2px_8px_rgba(255,30,70,0.4)]"
-                : "border-transparent text-[#cbd5e1] hover:text-white hover:bg-white/5 rounded-t"
+              "h-8 shrink-0 rounded-full border px-3.5 text-[12px] font-semibold transition-colors",
+              category === c.key
+                ? "border-primary/50 bg-primary/10 text-primary"
+                : "border-border bg-card text-foreground/75 hover:border-white/20"
             )}
           >
-            {label}
+            {c.label}
           </button>
         ))}
       </div>
 
-      {/* Transfer Radar for transfers category */}
-      {(category === "TRANSFERS" || category === "ALL") && (
-        <div className="reveal mb-8">
-          <TransferRadar />
-        </div>
-      )}
-
-      {/* Leaderboard ad */}
-      <div className="reveal mb-8">
-        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
-      </div>
-
       {isLoading ? (
-        <div className="grid gap-5 lg:grid-cols-12">
-          <Skeleton className="h-[380px] lg:col-span-8 bg-white/10 rounded-md" />
-          <Skeleton className="h-[380px] lg:col-span-4 bg-white/10 rounded-md" />
+        <div aria-hidden>
+          <Skeleton className="h-[340px] w-full rounded-xl sm:h-[380px]" />
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {[1, 2, 3, 4].map((i) => (
+              <Skeleton key={i} className="h-[292px] rounded-lg" />
+            ))}
+          </div>
         </div>
       ) : articles.length === 0 ? (
-        <div className="rounded-md border border-white/12 bg-[#090d19] px-6 py-16 text-center shadow-lg">
-          <Newspaper className="mx-auto mb-3 h-12 w-12 text-white/30" />
-          <p className="font-black text-xl text-white">No stories found</p>
-          <p className="mt-1 text-sm text-[#cbd5e1] font-medium">Try searching with different keywords or switch category.</p>
-          {(query || category !== "ALL") && (
+        <div className="rounded-lg border border-border bg-card px-4 py-12 text-center">
+          <p className="text-sm font-semibold text-foreground">Nothing here yet</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            No published stories in {activeLabel} right now — check back soon for updates from
+            the FHB newsdesk.
+          </p>
+          {category !== "ALL" && (
             <button
-              onClick={() => { setQuery(""); setCategory("ALL"); }}
-              className="mt-5 rounded bg-[#ff1e46] px-5 py-2.5 text-xs font-black uppercase text-white hover:bg-[#e01438] shadow-[0_0_12px_rgba(255,30,70,0.4)]"
+              onClick={() => setCategory("ALL")}
+              className="mt-4 inline-flex h-8 items-center rounded-[6px] border border-border px-3.5 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/25"
             >
-              Reset Filters
+              All stories
             </button>
           )}
         </div>
       ) : (
-        <div className="grid gap-6 lg:grid-cols-12">
-          {/* Main news stream */}
-          <div className="lg:col-span-8 space-y-6">
-            {lead && (
-              <NewsCard article={lead} size="lg" className="h-[360px] sm:h-[400px]" />
-            )}
+        <>
+          {/* Lead story */}
+          {lead && (
+            <section className="reveal" aria-label="Lead story">
+              <NewsCard article={lead} size="lg" />
+            </section>
+          )}
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {rest.map((a, idx) => (
-                <Fragment key={a.id}>
-                  <NewsCard article={a} />
-                  {idx === 3 && (
-                    <div className="col-span-full">
-                      <AdSlot placement="IN_FEED" />
-                    </div>
-                  )}
-                </Fragment>
-              ))}
-            </div>
-          </div>
-
-          {/* Right sidebar */}
-          <aside className="lg:col-span-4 space-y-5">
-            {/* Most read */}
-            <div className="rounded-md border border-white/12 bg-[#090d19] shadow-xl overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-white/12 bg-[#050812] px-4 py-2.5">
-                <Flame className="h-4 w-4 text-[#ff1e46]" />
-                <span className="text-[11px] font-black uppercase tracking-widest text-white">Most Read</span>
-              </div>
-              <div className="divide-y divide-white/10">
-                {mostRead.map((a, i) => (
-                  <button
-                    key={a.id}
-                    onClick={() => navigate({ name: "news-detail", id: a.id })}
-                    className="group flex w-full items-start gap-3.5 px-4 py-3.5 text-left transition-all hover:bg-white/10"
-                  >
-                    <span className={cn(
-                      "tabular font-black text-2xl leading-none w-7",
-                      i === 0 ? "text-[#ff1e46] drop-shadow-[0_0_8px_rgba(255,30,70,0.5)]" : "text-white"
-                    )}>
-                      {i + 1}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 text-[13px] font-extrabold leading-snug text-white transition-colors group-hover:text-[#00e5ff]">
-                        {a.title}
-                      </span>
-                      <span className="mt-1.5 flex items-center gap-2 text-[11px] font-semibold text-[#cbd5e1]">
-                        <Clock className="h-3 w-3 text-[#ff1e46]" /> {timeAgo(a.createdAt)} · {fmtCompact(a.views)} views
-                      </span>
-                    </span>
-                  </button>
+          {/* Story grid */}
+          {rest.length > 0 && (
+            <section className="reveal mt-8" aria-label="Latest stories">
+              <SectionHeader
+                title="Latest Stories"
+                kicker={category === "ALL" ? "all categories" : activeLabel.toLowerCase()}
+                icon={<Newspaper className="h-3.5 w-3.5" aria-hidden />}
+              />
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {rest.map((a, i) => (
+                  <Fragment key={a.id}>
+                    <NewsCard article={a} className={cn(i === rest.length - 1 && rest.length % 2 === 1 && i > 3 && "sm:col-span-2")} />
+                    {i === 3 && (
+                      <div className="reveal sm:col-span-2">
+                        <AdSlot placement="IN_FEED" />
+                      </div>
+                    )}
+                  </Fragment>
                 ))}
               </div>
-            </div>
+            </section>
+          )}
 
-            {/* Sidebar ad */}
-            <AdSlot placement="SIDEBAR" className="min-h-[250px]" />
-
-            {/* Quick newsletter pill */}
-            <div className="rounded-md border border-white/12 bg-[#090d19] p-5 shadow-xl">
-              <span className="text-[10px] font-black uppercase tracking-widest text-[#ff1e46]">NEWSLETTER</span>
-              <h3 className="font-black text-white text-base mt-1">Get match reports delivered to your inbox</h3>
-              <p className="text-[#cbd5e1] text-[12px] font-medium mt-1 mb-4">Daily football digest covering BFL & European matches.</p>
+          {/* Load more */}
+          <div className="mt-6 flex flex-col items-center gap-2.5">
+            <p className="text-[11px] text-muted-foreground">
+              Showing {fmtLocale(articles.length)} of {fmtLocale(total)}{" "}
+              {total === 1 ? "story" : "stories"}
+            </p>
+            {hasNextPage && (
               <button
-                onClick={() => navigate({ name: "community" })}
-                className="w-full flex items-center justify-center gap-1.5 rounded bg-[#ff1e46] py-3 text-xs font-black uppercase text-white hover:bg-[#e01438] transition-all shadow-[0_0_12px_rgba(255,30,70,0.4)]"
+                onClick={() => fetchNextPage()}
+                disabled={isFetchingNextPage}
+                className="flex h-9 items-center gap-1.5 rounded-[6px] border border-border bg-card px-4 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/20 hover:text-foreground active:scale-[0.97] disabled:pointer-events-none disabled:opacity-50"
               >
-                Join Fan Club <ArrowRight className="h-4 w-4" />
+                {isFetchingNextPage ? "Loading…" : "Load more stories"}
+                {!isFetchingNextPage && <ChevronDown className="h-3.5 w-3.5" aria-hidden />}
               </button>
-            </div>
-          </aside>
-        </div>
+            )}
+          </div>
+        </>
       )}
-    </div>
+    </PageLayout>
   );
 }

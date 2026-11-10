@@ -170,6 +170,8 @@ export type AdSlotData = {
   ctaLabel: string | null;
   brandColor: string | null;
   brandInitials: string | null;
+  logoUrl: string | null;
+  logoTheme: string | null;
   active: boolean;
   impressions: number;
   clicks: number;

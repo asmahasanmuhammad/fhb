@@ -4,6 +4,9 @@ import { db } from "@/lib/db";
 import { ok, fail, handleError } from "@/lib/api";
 import { requireUser } from "@/lib/auth";
 
+// Real-time data — never cache route handlers
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   try {
     const plans = await db.membershipPlan.findMany({ orderBy: { sortOrder: "asc" } });

@@ -91,18 +91,23 @@ export function CommunityView() {
   const visiblePosts = activeTag ? posts.filter((p) => p.matchTag === activeTag) : posts;
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       <PageHeader
         title="Fan Community"
-        kicker="fan zone"
-        subtitle="Matchday takes, hot posts and fan talk"
+        kicker="the terrace · matchday banter & takes"
+        subtitle="Matchday reactions, tactical opinions and live discussions with football fans across Bangladesh"
         icon={<Radio className="h-5 w-5" aria-hidden />}
       >
-        <span className="tabular hidden shrink-0 items-center gap-1.5 rounded-md border border-border bg-muted px-2.5 py-1.5 text-[10.5px] font-bold text-muted-foreground sm:flex">
-          <MessageCircle className="h-3.5 w-3.5" aria-hidden />
-          {fmtNum(posts.length)} {posts.length === 1 ? "post" : "posts"}
+        <span className="tabular hidden shrink-0 items-center gap-1.5 border border-white/[0.08] bg-white/[0.04] px-3 py-1.5 text-[10.5px] font-black uppercase text-white/50 sm:flex">
+          <MessageCircle className="h-3.5 w-3.5 text-red-500" aria-hidden />
+          {fmtNum(posts.length)} {posts.length === 1 ? "take" : "takes"}
         </span>
       </PageHeader>
+
+      {/* Leaderboard ad */}
+      <div className="reveal mb-6">
+        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
+      </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* ── Post feed ─────────────────────────────────────────── */}

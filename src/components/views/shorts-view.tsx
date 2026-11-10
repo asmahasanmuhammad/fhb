@@ -65,7 +65,7 @@ export function ShortsView() {
   }, []);
 
   return (
-    <div className="relative flex h-[calc(100dvh-3.5rem)] w-full justify-center overflow-hidden bg-[oklch(0.085_0.01_168)] sm:h-[calc(100dvh-60px)]">
+    <div className="relative flex h-[calc(100dvh-3.5rem)] w-full justify-center overflow-hidden bg-[#0a0a0c] sm:h-[calc(100dvh-60px)]">
       {/* Ambient stage backdrop — desktop only */}
       <span
         aria-hidden

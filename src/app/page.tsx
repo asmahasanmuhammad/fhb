@@ -28,11 +28,35 @@ export default function Page() {
     refreshUser();
   }, [refreshUser]);
 
-  // Deep-link support: /?view=shorts etc.
+  // Deep-link and history popstate support: /?view=live-tv, /?view=scores, /?view=news, etc.
   useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    const v = sp.get("view");
-    if (v === "shorts" || v === "live-tv") useAppStore.getState().navigate({ name: v });
+    const parseUrl = () => {
+      const sp = new URLSearchParams(window.location.search);
+      const v = sp.get("view");
+      const id = sp.get("id");
+      const username = sp.get("username");
+      if (v) {
+        if (id) {
+          useAppStore.setState({ view: { name: v as any, id } });
+        } else if (username) {
+          useAppStore.setState({ view: { name: v as any, username } });
+        } else {
+          useAppStore.setState({ view: { name: v as any } });
+        }
+      }
+    };
+
+    parseUrl();
+
+    const onPop = (e: PopStateEvent) => {
+      if (e.state?.view) {
+        useAppStore.setState({ view: e.state.view });
+      } else {
+        parseUrl();
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
 
   const renderView = () => {

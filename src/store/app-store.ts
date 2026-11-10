@@ -55,6 +55,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ view, history: [...history, current].slice(-15) });
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+      const sp = new URLSearchParams();
+      if (view.name !== "home") {
+        sp.set("view", view.name);
+        if ("id" in view && view.id) sp.set("id", view.id);
+        if ("username" in view && view.username) sp.set("username", view.username);
+      }
+      const qs = sp.toString();
+      const url = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+      window.history.pushState({ view }, "", url);
     }
   },
 

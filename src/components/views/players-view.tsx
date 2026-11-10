@@ -97,6 +97,7 @@ function footerStats(p: Player): Array<{ label: string; value: string }> {
 
 export function PlayersView() {
   const navigate = useAppStore((s) => s.navigate);
+  const language = useAppStore((s) => s.language);
   useReveal();
 
   const [position, setPosition] = useState("ALL");
@@ -120,25 +121,33 @@ export function PlayersView() {
   const players = useMemo(() => data?.players ?? [], [data]);
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      <PageHeader
-        title="Players"
-        kicker="player index"
-        subtitle="Top scorers, creators and national team stars"
-        icon={<Flame className="h-5 w-5" aria-hidden />}
-      >
-        {!isLoading && (
-          <span className="tabular hidden shrink-0 items-center rounded-md border border-border bg-card px-2.5 py-1.5 text-[10.5px] font-bold text-muted-foreground sm:flex">
-            {fmtNum(players.length)} {players.length === 1 ? "player" : "players"}
+    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+      {/* ── Editorial Header ── */}
+      <div className="mb-6 border-b border-white/[0.07] pb-4">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="h-5 w-1 bg-red-600 shrink-0" aria-hidden />
+          <span className="text-[10px] font-black uppercase tracking-widest text-red-500">
+            OFFICIAL PLAYER LEADERBOARD & STATS
           </span>
-        )}
-      </PageHeader>
+        </div>
+        <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight">
+          {language === "bn" ? "খেলোয়াড় সূচি ও পরিসংখ্যান" : "Players & Top Performers"}
+        </h1>
+        <p className="text-[12.5px] text-white/40 mt-1">
+          Top goalscorers, playmakers and national team stars across the Bangladesh Premier League and world football.
+        </p>
+      </div>
+
+      {/* Leaderboard ad */}
+      <div className="reveal mb-8">
+        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
+      </div>
 
       {/* ── Filters: position tabs + national toggle | search + sort ── */}
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between border-b border-white/[0.07] pb-4 mb-6">
         <div className="flex flex-wrap items-center gap-2">
           <div
-            className="no-scrollbar flex gap-1 overflow-x-auto rounded-lg border border-border bg-muted/40 p-1"
+            className="no-scrollbar flex gap-1 overflow-x-auto border border-white/[0.08] bg-[#060608] p-1"
             role="tablist"
             aria-label="Filter by position"
           >
@@ -148,12 +157,11 @@ export function PlayersView() {
                 role="tab"
                 aria-selected={position === tab.key}
                 onClick={() => setPosition(tab.key)}
-                title={tab.key === "ALL" ? "All positions" : (POSITION_LABELS[tab.key] ?? tab.key)}
                 className={cn(
-                  "shrink-0 rounded-md px-3 py-1.5 text-[11.5px] font-bold transition-colors",
+                  "shrink-0 px-3 py-1.5 text-[11px] font-black uppercase transition-colors",
                   position === tab.key
-                    ? "bg-elevated text-foreground"
-                    : "text-muted-foreground hover:text-foreground"
+                    ? "bg-red-600 text-white"
+                    : "text-white/40 hover:text-white"
                 )}
               >
                 {tab.label}
@@ -164,10 +172,10 @@ export function PlayersView() {
             onClick={() => setNationalOnly((v) => !v)}
             aria-pressed={nationalOnly}
             className={cn(
-              "flex shrink-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-[11.5px] font-bold transition-colors",
+              "flex shrink-0 items-center gap-1.5 border px-3 py-2 text-[11px] font-black uppercase transition-colors",
               nationalOnly
-                ? "border-primary/50 bg-primary/12 text-primary"
-                : "border-border bg-card text-muted-foreground hover:text-foreground"
+                ? "border-red-500 bg-red-600/15 text-red-400"
+                : "border-white/[0.08] bg-white/[0.03] text-white/40 hover:text-white"
             )}
           >
             <Flag className="h-3 w-3" aria-hidden /> National Team
@@ -176,20 +184,21 @@ export function PlayersView() {
         <div className="flex items-center gap-2">
           <div className="relative min-w-0 flex-1 xl:w-64 xl:flex-none">
             <Search
-              className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+              className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-white/40"
               aria-hidden
             />
-            <Input
+            <input
+              type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search players…"
+              placeholder="Search players..."
               aria-label="Search players"
-              className="h-9 rounded-lg border-border bg-card pl-9 pr-9 text-[13px]"
+              className="h-10 w-full border border-white/[0.1] bg-white/[0.04] pl-9 pr-9 text-xs text-white placeholder:text-white/30 focus:border-red-500/60 focus:outline-none"
             />
             {query && (
               <button
                 onClick={() => setQuery("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-muted-foreground transition-colors hover:text-foreground"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
                 aria-label="Clear search"
               >
                 <X className="h-3.5 w-3.5" aria-hidden />
@@ -197,7 +206,7 @@ export function PlayersView() {
             )}
           </div>
           <div
-            className="flex shrink-0 rounded-lg border border-border bg-muted/40 p-1"
+            className="flex shrink-0 border border-white/[0.08] bg-[#060608] p-1"
             role="group"
             aria-label="Sort players"
           >
@@ -207,38 +216,32 @@ export function PlayersView() {
                 onClick={() => setSortBy(s)}
                 aria-pressed={sortBy === s}
                 className={cn(
-                  "rounded-md px-3 py-1.5 text-[11.5px] font-bold transition-colors",
-                  sortBy === s ? "bg-elevated text-foreground" : "text-muted-foreground hover:text-foreground"
+                  "px-3 py-1 text-[11px] font-black uppercase transition-colors",
+                  sortBy === s ? "bg-red-600 text-white" : "text-white/40 hover:text-white"
                 )}
               >
-                {s === "goals" ? "Top goals" : "Best rating"}
+                {s === "goals" ? "Top Goals" : "Top Rating"}
               </button>
             ))}
           </div>
         </div>
       </div>
 
-      {/* ── Player grid ──────────────────────────────────────────── */}
+      {/* ── Player grid ── */}
       {isLoading ? (
         <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" aria-hidden>
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="h-[150px] rounded-xl" />
+            <Skeleton key={i} className="h-[140px] bg-white/[0.04]" />
           ))}
         </div>
       ) : players.length === 0 ? (
-        <div className="reveal mt-6 flex flex-col items-center justify-center gap-2.5 rounded-xl border border-border bg-card px-6 py-16 text-center">
-          <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-            <Users className="h-5 w-5" aria-hidden />
-          </span>
-          <p className="text-sm font-semibold text-foreground">No players found</p>
-          <p className="max-w-[36ch] text-xs leading-relaxed text-muted-foreground">
-            {debouncedQuery
-              ? `Nothing matches "${debouncedQuery}" with the current filters. Try another name or clear the search.`
-              : "No players are listed under the current filters."}
-          </p>
+        <div className="border border-white/[0.07] bg-[#0d0d10] px-6 py-16 text-center">
+          <Users className="mx-auto mb-3 h-10 w-10 text-white/20" />
+          <p className="font-black text-lg text-white">No players found</p>
+          <p className="mt-1 text-xs text-white/40">Try searching with a different name or clear filters.</p>
         </div>
       ) : (
-        <div className="reveal mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {players.map((p, i) => (
             <PlayerCard
               key={p.id}
@@ -258,8 +261,6 @@ export function PlayersView() {
   );
 }
 
-/* ── Index card — position edge, crest, key stat, footer stats ── */
-
 function PlayerCard({
   player,
   rank,
@@ -275,56 +276,41 @@ function PlayerCard({
   return (
     <button
       onClick={onClick}
-      className="card-lift group relative flex w-full flex-col overflow-hidden rounded-xl border border-border bg-card text-left"
+      className="group relative flex w-full flex-col overflow-hidden border border-white/[0.07] bg-[#0d0d10] text-left transition-all hover:border-white/20 hover:bg-white/[0.02]"
     >
-      {/* Position-coded accent edge */}
       <span aria-hidden className={cn("absolute inset-y-0 left-0 w-[3px]", positionEdge(player.position))} />
 
-      <div className="flex items-center gap-3 px-4 pb-3 pl-[18px] pt-4">
-        <span className="tabular w-5 shrink-0 text-right font-display text-[13px] font-bold text-muted-foreground/70">
+      <div className="flex items-center gap-3 px-4 pb-3 pl-5 pt-4">
+        <span className="tabular font-black text-xs text-white/30 w-5 text-center">
           {fmtNum(rank)}
         </span>
         {player.team ? (
           <TeamCrest team={player.team} size="md" />
         ) : (
-          <span
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted font-display text-[10px] font-bold text-muted-foreground"
-            aria-hidden
-          >
+          <span className="flex h-8 w-8 shrink-0 items-center justify-center bg-white/[0.05] font-black text-[10px] text-white/40">
             NT
           </span>
         )}
         <div className="min-w-0 flex-1">
-          <p className="flex items-center gap-1.5">
-            <span className="truncate text-[13.5px] font-bold leading-tight text-foreground transition-colors group-hover:text-primary">
-              {player.name}
-            </span>
-            {player.isNationalTeam && (
-              <Flag className="h-3 w-3 shrink-0 text-primary" aria-label="National team player" />
-            )}
+          <p className="truncate text-[13.5px] font-black text-white group-hover:text-red-400 transition-colors">
+            {player.name}
           </p>
-          <p className="mt-0.5 truncate text-[11px] leading-tight text-muted-foreground">
+          <p className="text-[11px] text-white/40 truncate mt-0.5">
             {POSITION_LABELS[player.position] ?? player.position} · {player.team?.name ?? "National Team"}
           </p>
-          <p className="mt-0.5 truncate text-[10.5px] leading-tight text-muted-foreground/80">
-            {player.nationality}
-          </p>
+          <p className="text-[10px] text-white/30 truncate">{player.nationality}</p>
         </div>
         <div className="shrink-0 text-right">
-          <p className="tabular font-display text-xl font-bold leading-none text-primary">{key.value}</p>
-          <p className="mt-1 text-[10px] font-semibold text-muted-foreground">{key.label}</p>
+          <p className="tabular font-black text-xl text-white">{key.value}</p>
+          <p className="text-[9.5px] font-bold text-red-400 uppercase tracking-wider">{key.label}</p>
         </div>
       </div>
 
-      <div className="grid grid-cols-3 divide-x divide-border/60 border-t border-border/60 bg-background/40">
+      <div className="grid grid-cols-3 divide-x divide-white/[0.05] border-t border-white/[0.06] bg-[#060608]">
         {footer.map((stat) => (
-          <div key={stat.label} className="px-2 py-2.5 text-center">
-            <p className="tabular font-display text-[14px] font-bold leading-none text-foreground">
-              {stat.value}
-            </p>
-            <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.04em] text-muted-foreground">
-              {stat.label}
-            </p>
+          <div key={stat.label} className="px-2 py-2 text-center">
+            <p className="tabular font-black text-[12px] text-white/80">{stat.value}</p>
+            <p className="text-[9px] font-bold uppercase tracking-wider text-white/30">{stat.label}</p>
           </div>
         ))}
       </div>

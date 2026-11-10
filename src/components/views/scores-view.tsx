@@ -197,38 +197,43 @@ export function ScoresView() {
           : { title: `No matches on ${selectedDay.label}`, hint: "Pick another date from the rail above." };
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
       <PageHeader
-        title="Live Scores"
-        kicker="match centre"
+        title="Live Scores & Fixtures"
+        kicker="match centre · real-time bst"
         subtitle={`${todayLine} ${new Date().getFullYear()} — every fixture, live minute and final score`}
         icon={<Zap className="h-5 w-5" aria-hidden />}
       >
         <span
           className={cn(
-            "flex shrink-0 items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[10.5px] font-bold",
+            "flex shrink-0 items-center gap-1.5 px-3 py-1 text-[10.5px] font-black uppercase tracking-wider",
             liveConnected
-              ? "border-primary/35 bg-primary/10 text-primary"
-              : "border-border bg-muted text-muted-foreground"
+              ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30"
+              : "bg-white/[0.05] text-white/40 border border-white/[0.08]"
           )}
         >
           <span
-            className={cn("h-1.5 w-1.5 rounded-[2px]", liveConnected ? "live-dot bg-primary" : "bg-muted-foreground")}
+            className={cn("h-1.5 w-1.5 rounded-full", liveConnected ? "live-dot bg-emerald-400" : "bg-white/30")}
             aria-hidden
           />
-          {liveConnected ? "Real-time connected" : "Offline mode"}
+          {liveConnected ? "Live Feed Connected" : "Local Database Mode"}
         </span>
       </PageHeader>
 
+      {/* Leaderboard ad */}
+      <div className="reveal mb-6">
+        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
+      </div>
+
       {/* ── Sticky sub-nav: date rail + status tabs ─────────────── */}
       <div
-        className="glass sticky top-14 z-30 -mx-4 border-b border-border sm:-mx-6 sm:top-[60px] lg:top-[99px]"
+        className="sticky top-14 z-30 -mx-4 border-b border-white/[0.08] bg-[#0d0d10]/95 backdrop-blur-xl sm:-mx-6 sm:top-[60px] lg:top-[90px]"
         style={headerH != null ? { top: `${headerH}px` } : undefined}
       >
-        <div className="flex flex-col gap-2 px-4 py-2.5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
+        <div className="flex flex-col gap-2 px-4 py-2 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:gap-4">
           {/* Date rail */}
           <div
-            className="no-scrollbar -mx-1 flex items-center gap-1 overflow-x-auto px-1"
+            className="no-scrollbar -mx-1 flex items-center gap-0.5 overflow-x-auto px-1"
             role="group"
             aria-label="Match date"
           >
@@ -239,25 +244,25 @@ export function ScoresView() {
                 aria-pressed={dayOffset === chip.offset}
                 title={chip.fullLabel}
                 className={cn(
-                  "flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11.5px] font-semibold transition-colors",
+                  "flex shrink-0 items-center gap-1.5 px-3 py-2 text-[11px] font-black uppercase tracking-wider transition-colors",
                   dayOffset === chip.offset
-                    ? "bg-elevated text-foreground"
-                    : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
+                    ? "bg-red-600 text-white"
+                    : "text-white/40 hover:bg-white/[0.04] hover:text-white"
                 )}
               >
                 {chip.label}
                 {chip.count > 0 && (
                   <span
                     className={cn(
-                      "tabular rounded px-1 text-[9.5px] font-bold leading-[1.5]",
-                      dayOffset === chip.offset ? "bg-white/[0.09]" : "bg-white/[0.05] text-muted-foreground"
+                      "tabular px-1 text-[9px] font-mono",
+                      dayOffset === chip.offset ? "text-white/90" : "text-white/30"
                     )}
                   >
                     {fmtNum(chip.count)}
                   </span>
                 )}
                 {chip.offset === 0 && liveCount > 0 && (
-                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-400" aria-hidden />
                 )}
               </button>
             ))}
@@ -265,7 +270,7 @@ export function ScoresView() {
 
           {/* Status filter tabs */}
           <div
-            className="no-scrollbar flex shrink-0 items-center gap-0.5 self-start overflow-x-auto rounded-lg border border-border bg-muted/40 p-1 lg:self-auto"
+            className="no-scrollbar flex shrink-0 items-center gap-0 self-start overflow-x-auto border border-white/[0.08] bg-[#060608] lg:self-auto"
             role="tablist"
             aria-label="Match status filter"
           >
@@ -276,24 +281,24 @@ export function ScoresView() {
                 aria-selected={tab === key}
                 onClick={() => setUserTab(key)}
                 className={cn(
-                  "flex shrink-0 items-center justify-center gap-1.5 rounded-md px-2.5 py-1.5 text-[11.5px] font-bold transition-colors sm:px-3",
-                  tab === key ? "bg-elevated text-foreground" : "text-muted-foreground hover:text-foreground"
+                  "flex shrink-0 items-center justify-center gap-1.5 px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wider transition-colors",
+                  tab === key ? "bg-red-600 text-white" : "text-white/40 hover:text-white"
                 )}
               >
                 {key === "live" && liveCount > 0 && (
                   <span
-                    className={cn("h-1.5 w-1.5 shrink-0 rounded-[2px] bg-fhb-red", tab !== "live" && "live-dot")}
+                    className={cn("h-1.5 w-1.5 shrink-0 rounded-full bg-white", tab !== "live" && "live-dot")}
                     aria-hidden
                   />
                 )}
                 {TAB_LABELS[key]}
                 <span
                   className={cn(
-                    "tabular rounded px-1 text-[9.5px] font-bold leading-[1.5]",
-                    tab === key ? "bg-white/[0.09]" : "bg-white/[0.05] text-muted-foreground"
+                    "tabular text-[9.5px] font-mono",
+                    tab === key ? "text-white/90" : "text-white/30"
                   )}
                 >
-                  {fmtNum(counts[key])}
+                  ({fmtNum(counts[key])})
                 </span>
               </button>
             ))}
@@ -346,44 +351,44 @@ export function ScoresView() {
                 return (
                   <section
                     key={g.comp.id}
-                    className="reveal overflow-hidden rounded-xl border border-border bg-card"
+                    className="reveal overflow-hidden border border-white/[0.07] bg-[#0d0d10]"
                     aria-label={g.comp.name}
                   >
                     {/* Competition group header */}
                     <button
                       onClick={() => navigate({ name: "competition-detail", id: g.comp.id })}
-                      className="group flex w-full items-center gap-2.5 border-b border-border bg-muted/40 px-3.5 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+                      className="group flex w-full items-center gap-2.5 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
                       aria-label={`View competition: ${g.comp.name}`}
                     >
                       <span
-                        className="h-2 w-2 shrink-0 rounded-[3px]"
-                        style={{ backgroundColor: g.comp.accentColor ?? "var(--primary)" }}
+                        className="h-2 w-2 shrink-0 rounded-full"
+                        style={{ backgroundColor: g.comp.accentColor ?? "#dc2626" }}
                         aria-hidden
                       />
-                      <span className="min-w-0 truncate text-[12.5px] font-bold text-foreground" title={g.comp.name}>
+                      <span className="min-w-0 truncate text-[12px] font-black uppercase tracking-wider text-white" title={g.comp.name}>
                         {g.comp.name}
                       </span>
                       {round && (
-                        <span className="hidden min-w-0 truncate text-[11px] font-medium text-muted-foreground md:inline">
+                        <span className="hidden min-w-0 truncate text-[11px] font-bold text-white/30 md:inline">
                           · {round}
                         </span>
                       )}
                       {hasLive && (
-                        <span className="flex shrink-0 items-center gap-1 rounded bg-fhb-red/12 px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.08em] text-fhb-red">
-                          <span className="live-dot h-1 w-1 rounded-full bg-fhb-red" aria-hidden />
+                        <span className="flex shrink-0 items-center gap-1 bg-red-600/15 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-red-400">
+                          <span className="live-dot h-1 w-1 rounded-full bg-red-500" aria-hidden />
                           Live
                         </span>
                       )}
-                      <span className="tabular ml-auto shrink-0 text-[10.5px] font-semibold text-muted-foreground">
+                      <span className="tabular ml-auto shrink-0 text-[10.5px] font-bold text-white/30 uppercase tracking-widest">
                         {fmtNum(g.list.length)} {g.list.length === 1 ? "match" : "matches"}
                       </span>
                       <ChevronRight
-                        className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                        className="h-3.5 w-3.5 shrink-0 text-white/30 transition-transform group-hover:translate-x-0.5"
                         aria-hidden
                       />
                     </button>
                     {/* Dense match rows */}
-                    <div className="divide-y divide-border/60">
+                    <div className="divide-y divide-white/[0.04]">
                       {g.list.map((m) => (
                         <MatchRow key={m.id} match={m} showCompetition={false} />
                       ))}
@@ -401,21 +406,21 @@ export function ScoresView() {
         </div>
 
         {/* ── Side rail ─────────────────────────────────────────── */}
-        <aside className="min-w-0 space-y-4 lg:col-span-4" aria-label="Scores side rail">
+        <aside className="min-w-0 space-y-5 lg:col-span-4" aria-label="Scores side rail">
           {liveCount > 0 && (
-            <div className="reveal overflow-hidden rounded-xl border border-fhb-red/30 bg-card">
-              <p className="flex items-center gap-2 border-b border-border bg-fhb-red/[0.07] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-fhb-red">
-                <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
+            <div className="reveal overflow-hidden border border-red-600/30 bg-[#0d0d10]">
+              <p className="flex items-center gap-2 border-b border-red-600/20 bg-red-600/10 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-red-400">
+                <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden />
                 Live Now — {fmtNum(liveCount)}
               </p>
-              <div className="divide-y divide-border/60">
+              <div className="divide-y divide-white/[0.04]">
                 {liveMatches.slice(0, 4).map((m) => (
                   <MatchRow key={m.id} match={m} showCompetition />
                 ))}
               </div>
               <button
                 onClick={() => setUserTab("live")}
-                className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
+                className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-red-400 transition-colors hover:bg-red-600/5"
               >
                 All live matches <ChevronRight className="h-3 w-3" aria-hidden />
               </button>
@@ -423,16 +428,16 @@ export function ScoresView() {
           )}
 
           <div className="reveal">
-            <AdSlot placement="SIDEBAR" />
+            <AdSlot placement="SIDEBAR" className="min-h-[250px]" />
           </div>
 
           {isLoading ? (
-            <Skeleton className="h-[236px] rounded-xl" />
+            <Skeleton className="h-[236px] bg-white/[0.04]" />
           ) : (
             topCompetitions.length > 0 && (
-              <div className="reveal overflow-hidden rounded-xl border border-border bg-card">
-                <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-                  <Trophy className="h-3.5 w-3.5 text-primary" aria-hidden />
+              <div className="reveal overflow-hidden border border-white/[0.07] bg-[#0d0d10]">
+                <p className="flex items-center gap-2 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-white/60">
+                  <Trophy className="h-3.5 w-3.5 text-amber-500" aria-hidden />
                   Top Competitions
                 </p>
                 <div className="grid grid-cols-2 gap-2 p-3">
@@ -441,14 +446,14 @@ export function ScoresView() {
                       key={c.id}
                       onClick={() => navigate({ name: "competition-detail", id: c.id })}
                       title={c.name}
-                      className="group flex items-center gap-2 rounded-lg border border-border bg-elevated/50 px-2.5 py-2 text-left transition-colors hover:border-primary/40"
+                      className="group flex items-center gap-2 border border-white/[0.08] bg-white/[0.03] px-2.5 py-2 text-left transition-colors hover:border-red-500/40 hover:bg-white/[0.06]"
                     >
                       <span
-                        className="h-2 w-2 shrink-0 rounded-[3px]"
-                        style={{ backgroundColor: c.accentColor ?? "var(--primary)" }}
+                        className="h-2 w-2 shrink-0 rounded-full"
+                        style={{ backgroundColor: c.accentColor ?? "#dc2626" }}
                         aria-hidden
                       />
-                      <span className="min-w-0 truncate text-[11.5px] font-bold text-foreground/90 transition-colors group-hover:text-primary">
+                      <span className="min-w-0 truncate text-[11px] font-black uppercase tracking-wider text-white/80 transition-colors group-hover:text-white">
                         {c.shortName}
                       </span>
                     </button>

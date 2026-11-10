@@ -54,6 +54,7 @@ function ZoneLegend() {
    ═══════════════════════════════════════════════════════════════════ */
 export function CompetitionsView() {
   const navigate = useAppStore((s) => s.navigate);
+  const language = useAppStore((s) => s.language);
   useReveal();
 
   const { data, isLoading } = useQuery<{ competitions: Competition[] }>({
@@ -67,26 +68,38 @@ export function CompetitionsView() {
   const comps = data?.competitions ?? [];
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      <PageHeader
-        title="Competitions"
-        kicker="competitions"
-        subtitle="Leagues and tournaments we cover"
-        icon={<Shield className="h-5 w-5" aria-hidden />}
-      />
+    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+      {/* ── Editorial Header ── */}
+      <div className="mb-6 border-b border-white/[0.07] pb-4">
+        <div className="flex items-center gap-2 mb-1.5">
+          <span className="h-5 w-1 bg-red-600 shrink-0" aria-hidden />
+          <span className="text-[10px] font-black uppercase tracking-widest text-red-500">
+            OFFICIAL LEAGUES & TOURNAMENTS
+          </span>
+        </div>
+        <h1 className="font-black text-[26px] sm:text-[34px] text-white leading-tight">
+          {language === "bn" ? "প্রতিযোগিতা ও টুর্নামেন্ট" : "Competitions Hub"}
+        </h1>
+        <p className="text-[12.5px] text-white/40 mt-1">
+          Full coverage of the Bangladesh Premier League (BFL), Federation Cup, UEFA Champions League, and top domestic leagues.
+        </p>
+      </div>
+
+      {/* Leaderboard ad */}
+      <div className="reveal mb-8">
+        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
+      </div>
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} className="h-44 rounded-xl" />
+            <Skeleton key={i} className="h-44 bg-white/[0.04]" />
           ))}
         </div>
       ) : comps.length === 0 ? (
-        <div className="edge-lit rounded-xl border border-border bg-card p-12 text-center">
-          <span className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-muted text-muted-foreground">
-            <Shield className="h-6 w-6" aria-hidden />
-          </span>
-          <p className="text-sm text-muted-foreground">No competitions are being tracked yet. Check back soon.</p>
+        <div className="border border-white/[0.07] bg-[#0d0d10] p-12 text-center">
+          <Shield className="mx-auto mb-3 h-10 w-10 text-white/20" />
+          <p className="text-sm font-bold text-white/60">No competitions found.</p>
         </div>
       ) : (
         <>
@@ -95,62 +108,52 @@ export function CompetitionsView() {
               <div key={c.id} className="reveal h-full">
                 <button
                   onClick={() => navigate({ name: "competition-detail", id: c.id })}
-                  className="card-lift edge-lit group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border bg-card p-4 pl-5 text-left sm:p-5 sm:pl-6"
+                  className="group relative flex h-full w-full flex-col justify-between border border-white/[0.07] bg-[#0d0d10] p-5 text-left transition-all hover:border-white/20 hover:bg-white/[0.02]"
                   aria-label={`View ${c.name} table and fixtures`}
                 >
                   {/* Accent edge bar */}
                   <span
                     aria-hidden
                     className="absolute inset-y-0 left-0 w-[3px]"
-                    style={{ backgroundColor: c.accentColor ?? "var(--primary)" }}
+                    style={{ backgroundColor: c.accentColor ?? "#dc2626" }}
                   />
 
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex min-w-0 items-center gap-3.5">
-                      <span
-                        aria-hidden
-                        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg font-display text-[13px] font-bold tracking-wide text-white"
-                        style={{
-                          backgroundColor: c.accentColor ?? "var(--primary)",
-                          boxShadow: "inset 0 0 0 1.5px rgba(255,255,255,0.22), inset 0 -3px 6px rgba(0,0,0,0.28)",
-                        }}
-                      >
-                        {(c.shortName || c.name).slice(0, 3).toUpperCase()}
-                      </span>
-                      <div className="min-w-0">
-                        <h3 className="truncate font-display text-[15px] font-bold tracking-[-0.01em] text-foreground transition-colors group-hover:text-primary">
-                          {c.name}
-                        </h3>
-                        <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] text-muted-foreground">
-                          <span className="rounded bg-muted px-1.5 py-0.5 font-display text-[10px] font-bold text-muted-foreground">
-                            {c.shortName || c.name.slice(0, 3).toUpperCase()}
-                          </span>
-                          {c.country}
-                        </p>
+                  <div>
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="flex h-11 w-11 shrink-0 items-center justify-center font-black text-sm text-white"
+                          style={{ backgroundColor: c.accentColor ?? "#dc2626" }}
+                        >
+                          {(c.shortName || c.name).slice(0, 3).toUpperCase()}
+                        </span>
+                        <div>
+                          <h3 className="font-black text-[15px] text-white transition-colors group-hover:text-red-400">
+                            {c.name}
+                          </h3>
+                          <p className="text-[11px] font-bold text-white/40 uppercase tracking-wider mt-0.5">
+                            {c.country} · {TYPE_LABELS[c.type] ?? c.type}
+                          </p>
+                        </div>
                       </div>
+                      <span className="border border-white/10 bg-white/[0.04] px-2 py-0.5 text-[9px] font-black uppercase text-white/60">
+                        {c.season}
+                      </span>
                     </div>
-                    <span className="shrink-0 rounded-md bg-muted px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
-                      {TYPE_LABELS[c.type] ?? c.type}
-                    </span>
+
+                    {c.description && (
+                      <p className="line-clamp-2 text-xs text-white/50 leading-relaxed">{c.description}</p>
+                    )}
                   </div>
 
-                  {c.description && (
-                    <p className="mt-3.5 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{c.description}</p>
-                  )}
-
-                  <div className="mt-auto pt-4">
-                    <p className="flex items-center justify-between gap-3 border-t border-border/60 pt-3 text-[11px] font-semibold">
-                      <span className="tabular flex min-w-0 items-center gap-1.5 text-muted-foreground">
-                        <CalendarDays className="h-3.5 w-3.5 shrink-0 text-primary/80" aria-hidden />
-                        <span className="truncate">
-                          Season {c.season} · {fmtNum(c._count?.matches ?? 0)} matches
-                        </span>
-                      </span>
-                      <span className="flex shrink-0 items-center gap-1 text-primary">
-                        Table &amp; fixtures
-                        <ChevronRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
-                      </span>
-                    </p>
+                  <div className="mt-4 pt-3 border-t border-white/[0.05] flex items-center justify-between text-[11px] font-bold text-white/40">
+                    <span className="flex items-center gap-1.5">
+                      <CalendarDays className="h-3.5 w-3.5 text-red-500" />
+                      {fmtNum(c._count?.matches ?? 0)} Matches
+                    </span>
+                    <span className="flex items-center gap-1 text-red-400 group-hover:translate-x-0.5 transition-transform">
+                      Standings &amp; Fixtures <ChevronRight className="h-3.5 w-3.5" />
+                    </span>
                   </div>
                 </button>
               </div>

@@ -6,8 +6,8 @@ import { cn } from "@/lib/utils";
 import type { View } from "@/store/app-store";
 
 /**
- * Editorial section header — restrained kicker + display title + quiet action.
- * No decorative bars; hairline rule below.
+ * FHB 3.0 — Sky Sports-grade section header.
+ * Red accent bar left of title, tight uppercase tracking.
  */
 export function SectionHeader({
   title,
@@ -20,47 +20,54 @@ export function SectionHeader({
 }: {
   title: string;
   kicker?: string;
-  accent?: "primary" | "red" | "gold";
+  accent?: "primary" | "red" | "gold" | "blue" | "green";
   icon?: React.ReactNode;
   actionLabel?: string;
   actionView?: View;
   className?: string;
 }) {
   const navigate = useAppStore((s) => s.navigate);
-  const accentText =
-    accent === "red" ? "text-fhb-red" : accent === "gold" ? "text-fhb-gold" : "text-primary";
+  const barColor = {
+    primary: "bg-red-600",
+    red: "bg-red-600",
+    gold: "bg-amber-500",
+    blue: "bg-blue-600",
+    green: "bg-emerald-600",
+  }[accent];
 
   return (
-    <div className={cn("mb-4", className)}>
-      <div className="flex items-end justify-between gap-4">
-        <div className="min-w-0">
-          {kicker && (
-            <p className={cn("eyebrow mb-1.5 flex items-center gap-1.5", accentText)}>
-              {icon && <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>}
-              {kicker}
-            </p>
-          )}
-          <h2 className="font-display text-[1.35rem] font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-[1.55rem]">
-            {title}
-          </h2>
+    <div className={cn("mb-5", className)}>
+      <div className="flex items-center justify-between gap-4 border-b border-white/[0.07] pb-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <div className={cn("h-5 w-1 shrink-0", barColor)} aria-hidden />
+          <div className="min-w-0">
+            {kicker && (
+              <p className="eyebrow text-[9px] text-white/35 mb-0.5 flex items-center gap-1.5">
+                {icon && <span className="[&>svg]:h-3 [&>svg]:w-3">{icon}</span>}
+                {kicker}
+              </p>
+            )}
+            <h2 className="font-black text-[14px] uppercase tracking-[0.05em] text-white sm:text-[15px]">
+              {title}
+            </h2>
+          </div>
         </div>
         {actionLabel && actionView && (
           <button
             onClick={() => navigate(actionView)}
-            className="group flex shrink-0 items-center gap-1 pb-0.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-primary"
+            className="group flex shrink-0 items-center gap-1 text-[10.5px] font-bold uppercase tracking-wider text-white/35 transition-colors hover:text-red-400"
           >
             {actionLabel}
             <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </button>
         )}
       </div>
-      <div className="mt-3 h-px w-full bg-border/70" aria-hidden />
     </div>
   );
 }
 
 /**
- * Page header for top-level views — display title, back affordance, actions slot.
+ * Page hero header — full-bleed, broadcast style.
  */
 export function PageHeader({
   title,
@@ -79,16 +86,15 @@ export function PageHeader({
   children?: React.ReactNode;
   className?: string;
 }) {
-  const navigate = useAppStore((s) => s.navigate);
   const goBack = useAppStore((s) => s.back);
   return (
-    <div className={cn("mb-6", className)}>
+    <div className={cn("mb-7 border-b border-white/[0.07] pb-6", className)}>
       <div className="flex flex-wrap items-end justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-3.5">
+        <div className="flex min-w-0 items-center gap-4">
           {back && (
             <button
               onClick={goBack}
-              className="tap-target flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-all hover:border-primary/40 hover:text-primary active:scale-95"
+              className="flex h-10 w-10 shrink-0 items-center justify-center border border-white/[0.1] bg-white/[0.04] text-white/50 transition-all hover:border-white/20 hover:text-white active:scale-95"
               aria-label="Go back"
             >
               <ArrowLeft className="h-4 w-4" aria-hidden />
@@ -96,15 +102,15 @@ export function PageHeader({
           )}
           <div className="min-w-0">
             {kicker && (
-              <p className="eyebrow mb-1 flex items-center gap-1.5 text-primary">
+              <p className="eyebrow text-[9.5px] text-red-500 mb-1.5 flex items-center gap-1.5">
                 {icon && <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>}
                 {kicker}
               </p>
             )}
-            <h1 className="font-display text-[1.7rem] font-bold leading-tight tracking-[-0.015em] text-foreground sm:text-3xl">
+            <h1 className="font-black text-[26px] leading-tight text-white sm:text-[32px] lg:text-[36px]">
               {title}
             </h1>
-            {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+            {subtitle && <p className="mt-1.5 text-[13px] text-white/40">{subtitle}</p>}
           </div>
         </div>
         {children}

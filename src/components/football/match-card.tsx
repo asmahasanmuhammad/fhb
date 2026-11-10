@@ -7,9 +7,8 @@ import type { Match, MatchEvent } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
 import { useLiveScores } from "@/components/providers/live-score-provider";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Tv } from "lucide-react";
 
-/** Aggregate scorers: "N. Williams 23', 45'" instead of repeated rows. */
 function aggregateScorers(events: MatchEvent[] | undefined, side: "home" | "away") {
   const goals = (events ?? []).filter((e) => e.type === "GOAL" && e.teamSide === side);
   const byName = new Map<string, number[]>();
@@ -27,9 +26,8 @@ function shortName(name: string) {
 }
 
 /**
- * Broadcast match row (FotMob/SofaScore style).
- * Dense list row: compact status column, stacked teams with real crests,
- * right-anchored score cluster, aggregated goal scorers.
+ * FHB 3.0 — FotMob / LiveScore style match row.
+ * Sharp, dense, broadcast — no rounded corners, tight layout.
  */
 export function MatchRow({
   match,
@@ -62,30 +60,37 @@ export function MatchRow({
       onClick={onClick ?? (() => navigate({ name: "match-detail", id: match.id }))}
       className={cn(
         "group relative flex w-full items-stretch text-left transition-colors",
-        status === "LIVE" ? "bg-fhb-red/[0.045]" : "hover:bg-white/[0.025]",
+        status === "LIVE"
+          ? "bg-red-600/[0.04] hover:bg-red-600/[0.07]"
+          : "hover:bg-white/[0.025]",
         className
       )}
-      aria-label={`View match: ${match.homeTeam.name} vs ${match.awayTeam.name}`}
+      aria-label={`${match.homeTeam.name} vs ${match.awayTeam.name}`}
     >
+      {/* Live indicator bar — left edge */}
+      {status === "LIVE" && (
+        <span className="absolute inset-y-0 left-0 w-[2px] bg-red-500" aria-hidden />
+      )}
+
       {/* Status column */}
-      <div className="flex w-[46px] shrink-0 flex-col items-center justify-center gap-0.5 border-r border-border/50 sm:w-[52px]">
+      <div className="flex w-[48px] shrink-0 flex-col items-center justify-center gap-0.5 border-r border-white/[0.05] py-3 sm:w-[56px]">
         {status === "LIVE" ? (
           <>
-            <span className="tabular font-display text-[15px] font-bold leading-none text-fhb-red">
-              {period === "HT" ? "HT" : `${fmtNum(minute ?? 0)}′`}
+            <span className="tabular font-black text-[14px] leading-none text-red-500 tracking-tight">
+              {period === "HT" ? "HT" : `${fmtNum(minute ?? 0)}'`}
             </span>
-            <span className="live-dot h-1 w-1 rounded-full bg-fhb-red" aria-hidden />
+            <span className="live-dot mt-0.5 h-1 w-1 rounded-full bg-red-500" aria-hidden />
           </>
         ) : status === "FINISHED" ? (
-          <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-muted-foreground">FT</span>
+          <span className="text-[9.5px] font-black uppercase tracking-widest text-white/30">FT</span>
         ) : (
           <>
-            <span className="tabular font-display text-[13px] font-semibold leading-none text-foreground/85">
+            <span className="tabular font-bold text-[13px] leading-none text-white/75">
               {ko.time}
             </span>
-            <span className="text-[9px] font-medium leading-none text-muted-foreground">
+            <span className="text-[9px] font-medium leading-none text-white/30 mt-0.5">
               {ko.relative === "Today" || ko.relative === "Tomorrow" || ko.relative === "Yesterday"
-                ? ko.relative
+                ? ko.relative.slice(0, 3).toUpperCase()
                 : ko.date.split(",")[0]}
             </span>
           </>
@@ -95,15 +100,15 @@ export function MatchRow({
       {/* Teams + scorers */}
       <div className="min-w-0 flex-1 py-2.5 pl-3 sm:pl-4">
         {showCompetition && (
-          <p className="mb-1.5 flex items-center gap-1.5 text-[10.5px] font-medium text-muted-foreground">
+          <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-bold text-white/30">
             <span
-              className="h-[7px] w-[7px] shrink-0 rounded-[2px]"
-              style={{ backgroundColor: match.competition.accentColor ?? "var(--primary)" }}
+              className="h-[6px] w-[6px] shrink-0"
+              style={{ backgroundColor: match.competition.accentColor ?? "#dc2626" }}
               aria-hidden
             />
-            <span className="truncate">
+            <span className="truncate uppercase tracking-wide">
               {match.competition.shortName ?? match.competition.name}
-              {match.round ? ` · ${match.round}` : match.matchday ? ` · MD ${fmtNum(match.matchday)}` : ""}
+              {match.round ? ` · ${match.round}` : match.matchday ? ` · MD${fmtNum(match.matchday)}` : ""}
             </span>
           </p>
         )}
@@ -114,22 +119,15 @@ export function MatchRow({
       </div>
 
       {/* Chevron */}
-      <div className="flex w-7 shrink-0 items-center justify-center pr-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-        <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden />
+      <div className="flex w-6 shrink-0 items-center justify-center pr-1 opacity-0 transition-opacity group-hover:opacity-100">
+        <ChevronRight className="h-3.5 w-3.5 text-white/40" aria-hidden />
       </div>
-
-      {status === "LIVE" && <span aria-hidden className="absolute inset-y-0 left-0 w-[2.5px] bg-fhb-red" />}
     </button>
   );
 }
 
-/** One team line: crest, name, aggregated scorer sub-line, tabular score. */
 function TeamLine({
-  team,
-  score,
-  won,
-  status,
-  scorers,
+  team, score, won, status, scorers,
 }: {
   team: Match["homeTeam"];
   score: number | null;
@@ -142,40 +140,36 @@ function TeamLine({
     <div className="flex min-w-0 items-center gap-2.5">
       <TeamCrest team={team} size="sm" />
       <div className="min-w-0 flex-1">
-        <span
-          className={cn(
-            "block truncate text-[13px] leading-tight",
-            won || status === "LIVE" || status === "SCHEDULED"
-              ? "font-semibold text-foreground"
-              : "font-medium text-muted-foreground"
-          )}
-        >
+        <span className={cn(
+          "block truncate text-[12.5px] leading-tight",
+          won || status === "LIVE" || status === "SCHEDULED"
+            ? "font-bold text-white/85"
+            : "font-medium text-white/40"
+        )}>
           {team.name}
         </span>
         {status === "FINISHED" && scorers.length > 0 && (
-          <span className="mt-0.5 block truncate text-[10.5px] leading-tight text-muted-foreground/85">
+          <span className="mt-0.5 block truncate text-[10px] leading-tight text-white/30">
             {scorers.slice(0, 2).map((s, i) => (
               <span key={s.name}>
                 {i > 0 && ", "}
-                {shortName(s.name)} {s.minutes.map((m) => `${fmtNum(m)}′`).join(", ")}
+                {shortName(s.name)} {s.minutes.map((m) => `${fmtNum(m)}'`).join(", ")}
               </span>
             ))}
-            {scorers.length > 2 && ` +${scorers.length - 2} more`}
+            {scorers.length > 2 && ` +${scorers.length - 2}`}
           </span>
         )}
       </div>
-      <span
-        className={cn(
-          "tabular w-6 shrink-0 text-right font-display text-[15px] font-bold leading-none",
-          status === "SCHEDULED"
-            ? "hidden"
-            : status === "LIVE"
-              ? "text-fhb-red"
-              : won
-                ? "text-foreground"
-                : "text-muted-foreground"
-        )}
-      >
+      <span className={cn(
+        "tabular w-5 shrink-0 text-right font-black text-[14px] leading-none",
+        status === "SCHEDULED"
+          ? "invisible"
+          : status === "LIVE"
+            ? "text-red-500"
+            : won
+              ? "text-white"
+              : "text-white/35"
+      )}>
         {showScore && fmtNum(score ?? 0)}
       </span>
     </div>
@@ -183,8 +177,8 @@ function TeamLine({
 }
 
 /**
- * Featured match card — hero/broadcast treatment for the top match.
- * Panel with depth, big crests, prominent score/time, venue + CTA footer.
+ * FHB 3.0 — Featured match card.
+ * Broadcast-grade panel: deep carbon, big team crests, sharp score display.
  */
 export function MatchCard({
   match,
@@ -214,61 +208,76 @@ export function MatchCard({
     <button
       onClick={onClick ?? (() => navigate({ name: "match-detail", id: match.id }))}
       className={cn(
-        "stadium-panel pitch-pattern edge-lit card-lift group relative flex h-full w-full flex-col overflow-hidden rounded-xl border text-left",
-        status === "LIVE" ? "border-fhb-red/40" : "border-border",
+        "group relative flex h-full w-full flex-col overflow-hidden border text-left transition-all",
+        "carbon-panel pitch-pattern",
+        status === "LIVE"
+          ? "border-red-600/40 hover:border-red-500/60"
+          : "border-white/[0.07] hover:border-white/15",
         className
       )}
-      aria-label={`View match: ${match.homeTeam.name} vs ${match.awayTeam.name}`}
+      aria-label={`${match.homeTeam.name} vs ${match.awayTeam.name}`}
     >
+      {/* Stadium glow */}
+      <div className={cn(
+        "absolute inset-0 pointer-events-none",
+        status === "LIVE" ? "stadium-glow-red" : "stadium-glow"
+      )} />
+
       {/* Competition strip */}
       {showCompetition && (
-        <div className="relative flex items-center justify-between gap-2 border-b border-border/70 px-4 py-2.5">
-          <span className="flex min-w-0 items-center gap-2 text-[11px] font-semibold text-foreground/90">
+        <div className="relative flex items-center justify-between gap-2 border-b border-white/[0.07] px-4 py-2.5 bg-black/30">
+          <span className="flex min-w-0 items-center gap-2 text-[10.5px] font-bold text-white/50">
             <span
-              className="h-[8px] w-[8px] shrink-0 rounded-[2px]"
-              style={{ backgroundColor: match.competition.accentColor ?? "var(--primary)" }}
+              className="h-[6px] w-[6px] shrink-0"
+              style={{ backgroundColor: match.competition.accentColor ?? "#dc2626" }}
               aria-hidden
             />
-            <span className="truncate">{match.competition.name}</span>
-            {match.round && (
-              <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
-                {match.round}
-              </span>
-            )}
+            <span className="truncate uppercase tracking-wider">
+              {match.competition.name}
+              {match.round && (
+                <span className="ml-1.5 text-white/30">· {match.round}</span>
+              )}
+            </span>
           </span>
           {status === "LIVE" ? (
             <LiveBadge minute={minute} period={period} size="sm" />
           ) : status === "FINISHED" ? (
-            <span className="shrink-0 rounded bg-muted px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">FT</span>
+            <span className="shrink-0 px-2 py-0.5 text-[9px] font-black uppercase tracking-widest text-white/40 bg-white/[0.06]">FT</span>
           ) : (
-            <span className="shrink-0 rounded bg-primary/12 px-1.5 py-0.5 text-[10px] font-bold text-primary">
+            <span className="shrink-0 px-2 py-0.5 text-[9px] font-black text-red-400 bg-red-600/15">
               {ko.relative === "Today" || ko.relative === "Tomorrow" || ko.relative === "Yesterday"
-                ? ko.relative
-                : ko.date.split(",")[0]}
+                ? ko.relative.toUpperCase()
+                : ko.date.split(",")[0].toUpperCase()}
             </span>
           )}
         </div>
       )}
 
-      {/* Teams + score */}
-      <div className="relative grid flex-1 grid-cols-[1fr_auto_1fr] items-center gap-2 px-4 py-6 sm:gap-4 sm:px-6 sm:py-8">
+      {/* Teams + Score — main body */}
+      <div className="relative grid flex-1 grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 py-6 sm:gap-4 sm:px-5 sm:py-7">
         <TeamBlock team={match.homeTeam} scorers={homeScorers} status={status} />
-        <div className="px-1 text-center">
+
+        {/* Score / time center */}
+        <div className="shrink-0 px-1 text-center">
           {status === "SCHEDULED" ? (
             <>
-              <p className="tabular font-display text-[30px] font-bold leading-none text-foreground sm:text-[34px]">
+              <p className="tabular font-black text-[32px] leading-none text-white sm:text-[36px]">
                 {ko.time}
               </p>
-              <p className="mt-2.5 inline-block rounded-full border border-border bg-card/70 px-3 py-1 text-[10px] font-semibold text-muted-foreground">
+              <p className="mt-3 inline-block border border-white/[0.1] px-3 py-1 text-[9.5px] font-bold text-white/40 uppercase tracking-wider">
                 Kick-off {ko.relative}
               </p>
             </>
           ) : (
             <>
-              <p className="tabular font-display text-[32px] font-bold leading-none text-foreground sm:text-4xl">
-                {fmtNum(homeScore ?? 0)}
-                <span className="mx-1.5 font-semibold text-muted-foreground/40">–</span>
-                {fmtNum(awayScore ?? 0)}
+              <p className="tabular font-black leading-none text-[34px] sm:text-[40px]">
+                <span className={status === "LIVE" ? "text-red-500" : "text-white"}>
+                  {fmtNum(homeScore ?? 0)}
+                </span>
+                <span className="text-white/20 mx-1.5">–</span>
+                <span className={status === "LIVE" ? "text-red-500" : "text-white"}>
+                  {fmtNum(awayScore ?? 0)}
+                </span>
               </p>
               <p className="mt-2.5">
                 <LiveBadge minute={minute} period={period} size="sm" />
@@ -276,18 +285,18 @@ export function MatchCard({
             </>
           )}
         </div>
+
         <TeamBlock team={match.awayTeam} scorers={awayScorers} status={status} />
       </div>
 
-      {/* Footer with CTA */}
-      <div className="relative flex items-center justify-between gap-2 border-t border-border/70 bg-card/40 px-4 py-2.5 sm:px-6">
-        <span className="flex min-w-0 items-center gap-1.5 text-[11px] text-muted-foreground">
-          <span className="h-1 w-1 shrink-0 rounded-full bg-primary/70" aria-hidden />
+      {/* Footer */}
+      <div className="relative flex items-center justify-between gap-2 border-t border-white/[0.06] bg-black/30 px-4 py-2.5 sm:px-5">
+        <span className="flex min-w-0 items-center gap-1.5 text-[10.5px] text-white/30">
+          <span className="h-1 w-1 shrink-0 rounded-full bg-red-500/60" aria-hidden />
           <span className="truncate">{match.venue ?? match.competition.name}</span>
         </span>
-        <span className="flex shrink-0 items-center gap-1 rounded-md bg-primary/12 px-2.5 py-1 text-[11px] font-bold text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
-          Match Centre
-          <ChevronRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" aria-hidden />
+        <span className="flex shrink-0 items-center gap-1 bg-red-600/15 px-2.5 py-1 text-[10.5px] font-black text-red-400 transition-colors group-hover:bg-red-600 group-hover:text-white">
+          {status === "LIVE" ? <><Tv className="h-3 w-3" /> Watch Live</> : <>Match Centre <ChevronRight className="h-3 w-3" /></>}
         </span>
       </div>
     </button>
@@ -295,9 +304,7 @@ export function MatchCard({
 }
 
 function TeamBlock({
-  team,
-  scorers,
-  status,
+  team, scorers, status,
 }: {
   team: Match["homeTeam"];
   scorers: Array<{ name: string; minutes: number[] }>;
@@ -306,16 +313,16 @@ function TeamBlock({
   return (
     <div className="flex min-w-0 flex-col items-center gap-2.5 text-center">
       <TeamCrest team={team} size="match" />
-      <div className="min-w-0">
-        <p className="line-clamp-2 text-[13px] font-semibold leading-tight text-foreground sm:text-sm">
+      <div className="min-w-0 w-full">
+        <p className="line-clamp-2 text-[12.5px] font-bold leading-tight text-white/80 sm:text-[13px]">
           {team.name}
         </p>
         {status === "FINISHED" && scorers.length > 0 && (
-          <p className="mt-1 line-clamp-2 text-[10px] leading-tight text-muted-foreground/85">
+          <p className="mt-1 line-clamp-2 text-[9.5px] leading-tight text-white/35">
             {scorers.map((s, i) => (
               <span key={s.name}>
                 {i > 0 && ", "}
-                {shortName(s.name)} {s.minutes.map((m) => `${fmtNum(m)}′`).join(", ")}
+                {shortName(s.name)} {s.minutes.map((m) => `${fmtNum(m)}'`).join(", ")}
               </span>
             ))}
           </p>

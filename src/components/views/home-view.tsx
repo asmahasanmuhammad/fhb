@@ -11,22 +11,55 @@ import { MatchCard, MatchRow } from "@/components/football/match-card";
 import { StandingsTable } from "@/components/football/standings-table";
 import { NewsCard } from "@/components/football/news-card";
 import { AdSlot } from "@/components/football/ad-slot";
-import { SectionHeader } from "@/components/football/section-header";
 import { TeamCrest } from "@/components/football/team-badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatKickoff, fmtNum, fmtCompact, timeAgo } from "@/lib/format";
 import { TacticalPitch } from "@/components/football/tactical-pitch";
 import {
   Zap, Newspaper, Video as VideoIcon, Flame, Play, ChevronRight,
-  Trophy, Users, Crown, Goal, Tv, Clock, CalendarDays,
+  Trophy, Users, Crown, Goal, Tv, Clock, CalendarDays, ArrowRight,
+  TrendingUp, Globe, Radio, Wifi, Star, ChevronLeft,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/** Section header — The Athletic / Sky Sports style */
+function SectionLabel({
+  label, labelBn, accent = "red", action, onAction, className,
+}: {
+  label: string; labelBn?: string; accent?: "red" | "gold" | "blue" | "green";
+  action?: string; onAction?: () => void; className?: string;
+}) {
+  const language = useAppStore((s) => s.language);
+  const colors = {
+    red: "bg-red-600", gold: "bg-amber-500", blue: "bg-blue-600", green: "bg-emerald-600",
+  };
+  return (
+    <div className={cn("flex items-center justify-between mb-4", className)}>
+      <div className="flex items-center gap-2.5">
+        <div className={cn("h-5 w-1 shrink-0", colors[accent])} aria-hidden />
+        <h2 className="text-[14px] font-black uppercase tracking-[0.06em] text-white">
+          {language === "bn" && labelBn ? labelBn : label}
+        </h2>
+      </div>
+      {action && onAction && (
+        <button
+          onClick={onAction}
+          className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-white/40 transition-colors hover:text-red-400"
+        >
+          {action} <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </div>
+  );
+}
+
 export function HomeView() {
   const navigate = useAppStore((s) => s.navigate);
+  const language = useAppStore((s) => s.language);
   const live = useLiveScores();
   useReveal();
-  const [dayOffset, setDayOffset] = useState(0); // -1 yesterday, 0 today, 1 tomorrow
+  const [dayOffset, setDayOffset] = useState(0);
+  const [newsTab, setNewsTab] = useState<"all" | "bd" | "world" | "transfers">("all");
 
   const { data: matchesData, isLoading: matchesLoading } = useQuery<{ matches: Match[] }>({
     queryKey: ["matches", "home"],
@@ -38,7 +71,7 @@ export function HomeView() {
   const { data: newsData } = useQuery<{ articles: NewsArticle[] }>({
     queryKey: ["news", "home"],
     queryFn: async () => {
-      const res = await fetch("/api/news?limit=8");
+      const res = await fetch("/api/news?limit=12");
       return res.json().then((j) => j.data);
     },
   });
@@ -59,17 +92,16 @@ export function HomeView() {
 
   const matches = matchesData?.matches ?? [];
   const liveNow = matches.filter((m) => m.status === "LIVE" || live.matches.some((lm) => lm.id === m.id));
-  const upcoming = matches.filter((m) => m.status === "SCHEDULED").slice(0, 4);
+  const upcoming = matches.filter((m) => m.status === "SCHEDULED").slice(0, 6);
   const recent = matches
     .filter((m) => m.status === "FINISHED")
     .sort((a, b) => +new Date(b.kickoff) - +new Date(a.kickoff))
-    .slice(0, 4);
+    .slice(0, 6);
   const heroMatch =
     matches.find((m) => m.featured && m.status === "SCHEDULED") ??
     (liveNow.length > 0 ? liveNow[0] : undefined) ??
     upcoming[0];
 
-  // day-filtered match list for the scores strip
   const dayMatches = useMemo(() => {
     const base = new Date();
     base.setHours(0, 0, 0, 0);
@@ -81,41 +113,306 @@ export function HomeView() {
         return d.getTime() === target;
       })
       .sort((a, b) => +new Date(a.kickoff) - +new Date(b.kickoff))
-      .slice(0, 8);
+      .slice(0, 10);
   }, [matches, dayOffset]);
 
   const articles = newsData?.articles ?? [];
   const leadStory = articles.find((a) => a.featured) ?? articles[0];
-  const secondaryNews = articles.filter((a) => a.id !== leadStory?.id).slice(0, 5);
+  const secondaryNews = articles.filter((a) => a.id !== leadStory?.id).slice(0, 6);
   const mostRead = [...articles].sort((a, b) => b.views - a.views).slice(0, 5);
   const standings = standingsData?.standings ?? [];
   const videos = videosData?.videos ?? [];
 
   return (
-    <div className="mx-auto w-full max-w-[1320px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
-      {/* ═══════════ HERO — featured match + lead story ═══════════ */}
-      <section className="grid gap-4 lg:grid-cols-12" aria-label="Featured">
-        {heroMatch && (
-          <div className="reveal lg:col-span-5">
-            <MatchCard match={heroMatch} className="h-full" />
+    <div className="mx-auto w-full max-w-[1440px] px-4 pb-14 pt-5 sm:px-6 sm:pt-6">
+
+      {/* ══════════ HERO SECTION — Full editorial lead ══════════ */}
+      <section className="reveal mb-8" aria-label="Featured">
+        <div className="grid gap-3 lg:grid-cols-12">
+          {/* Lead Story — Full image hero */}
+          {leadStory && (
+            <button
+              onClick={() => navigate({ name: "news-detail", id: leadStory.id })}
+              className="group relative lg:col-span-7 overflow-hidden border border-white/[0.07] bg-[#0d0d10] min-h-[340px] text-left"
+              aria-label={leadStory.title}
+            >
+              {leadStory.coverUrl ? (
+                <Image
+                  src={leadStory.coverUrl}
+                  alt={leadStory.title}
+                  fill
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  className="object-cover brightness-[0.65] transition-transform duration-700 group-hover:scale-[1.03]"
+                  unoptimized
+                />
+              ) : (
+                <div className="absolute inset-0 carbon-panel" />
+              )}
+              <div className="photo-scrim absolute inset-0" />
+              {/* Category badge */}
+              <span className="absolute left-4 top-4 z-10 px-2 py-1 text-[9.5px] font-black uppercase tracking-widest text-white bg-red-600">
+                {leadStory.category}
+              </span>
+              {/* Content */}
+              <div className="absolute inset-x-0 bottom-0 z-10 p-5 sm:p-7">
+                <h2 className="mb-2.5 font-black text-white leading-tight text-[22px] sm:text-[28px] lg:text-[26px] drop-shadow-lg line-clamp-3">
+                  {leadStory.title}
+                </h2>
+                <p className="mb-4 line-clamp-2 text-[13px] text-white/70 leading-relaxed hidden sm:block">
+                  {leadStory.excerpt}
+                </p>
+                <div className="flex items-center gap-3 text-[11px] text-white/50">
+                  <span className="font-semibold text-white/80">{leadStory.author.name}</span>
+                  <span>·</span>
+                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {timeAgo(leadStory.createdAt)}</span>
+                  <span>·</span>
+                  <span>{fmtCompact(leadStory.views)} views</span>
+                </div>
+              </div>
+            </button>
+          )}
+
+          {/* Right column — featured match + 2 secondary news */}
+          <div className="lg:col-span-5 flex flex-col gap-3">
+            {heroMatch && <MatchCard match={heroMatch} className="flex-shrink-0" />}
+            {secondaryNews.slice(0, 2).map((a) => (
+              <NewsCard key={a.id} article={a} size="compact" className="border border-white/[0.07] bg-[#0d0d10]" />
+            ))}
           </div>
-        )}
-        {leadStory && (
-          <div className="reveal lg:col-span-7">
-            <NewsCard article={leadStory} size="lg" className="h-full min-h-[320px]" />
-          </div>
-        )}
+        </div>
       </section>
 
-      {/* ═══════════ 2D TACTICAL PITCH COMMAND CENTER ═══════════ */}
+      {/* ══════════ LEADERBOARD AD ══════════ */}
+      <div className="reveal mb-8">
+        <AdSlot placement="HEADER_BANNER" className="h-[90px]" />
+      </div>
+
+      {/* ══════════ LIVE SCORES + FIXTURES ══════════ */}
+      <section className="reveal mb-8 grid gap-5 lg:grid-cols-12" aria-label="Scores and Fixtures">
+        {/* Main Scores Column */}
+        <div className="lg:col-span-8">
+          <SectionLabel
+            label="Scores & Fixtures"
+            labelBn="স্কোর ও ফিক্সচার"
+            accent="red"
+            action="All Matches"
+            onAction={() => navigate({ name: "scores" })}
+          />
+
+          <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
+            {/* Date pill rail */}
+            <div className="flex items-center gap-0 border-b border-white/[0.07] bg-[#060608] px-0">
+              {[
+                { label: "Yesterday", offset: -1 },
+                { label: "Today", offset: 0 },
+                { label: "Tomorrow", offset: 1 },
+              ].map((d) => (
+                <button
+                  key={d.label}
+                  onClick={() => setDayOffset(d.offset)}
+                  className={cn(
+                    "flex-1 py-2.5 text-[11px] font-black uppercase tracking-wider transition-colors",
+                    dayOffset === d.offset
+                      ? "bg-red-600 text-white"
+                      : "text-white/35 hover:text-white/70 hover:bg-white/[0.03]"
+                  )}
+                >
+                  {d.label}
+                </button>
+              ))}
+              {liveNow.length > 0 && (
+                <div className="flex shrink-0 items-center gap-1.5 px-4 text-[10px] font-black text-red-400 uppercase tracking-widest">
+                  <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+                  {fmtNum(liveNow.length)} LIVE
+                </div>
+              )}
+            </div>
+
+            {/* Match rows */}
+            {matchesLoading ? (
+              <div className="space-y-px">
+                {[1, 2, 3, 4].map((i) => (
+                  <Skeleton key={i} className="h-14 rounded-none bg-white/[0.03]" />
+                ))}
+              </div>
+            ) : dayMatches.length > 0 ? (
+              <div className="divide-y divide-white/[0.04]">
+                {dayMatches.map((m) => <MatchRow key={m.id} match={m} showCompetition />)}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 py-12 text-center">
+                <CalendarDays className="h-8 w-8 text-white/15" />
+                <p className="text-[13px] font-bold text-white/40">No matches scheduled</p>
+                <p className="text-[11px] text-white/25">
+                  {dayOffset === -1 ? "Yesterday" : dayOffset === 1 ? "Tomorrow" : "Today"} has no fixtures.
+                </p>
+              </div>
+            )}
+
+            <button
+              onClick={() => navigate({ name: "scores" })}
+              className="flex w-full items-center justify-center gap-1.5 border-t border-white/[0.06] py-3 text-[11px] font-black uppercase tracking-widest text-white/35 transition-colors hover:bg-white/[0.03] hover:text-white/70"
+            >
+              View all fixtures <ChevronRight className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Right sidebar */}
+        <div className="space-y-5 lg:col-span-4">
+          {/* Live now */}
+          {liveNow.length > 0 && (
+            <div className="border border-red-600/30 bg-[#0d0d10] overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-red-600/20 bg-red-600/10 px-4 py-2.5">
+                <span className="live-dot h-2 w-2 rounded-full bg-red-500" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-red-400">
+                  Live Now · {fmtNum(liveNow.length)} Match{liveNow.length !== 1 ? "es" : ""}
+                </span>
+              </div>
+              <div className="divide-y divide-white/[0.04]">
+                {liveNow.slice(0, 4).map((m) => <MatchRow key={m.id} match={m} showCompetition={false} />)}
+              </div>
+              <button
+                onClick={() => navigate({ name: "scores" })}
+                className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-red-400 transition-colors hover:bg-red-600/5"
+              >
+                All live <ChevronRight className="h-3 w-3" />
+              </button>
+            </div>
+          )}
+
+          {/* Next Up */}
+          <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
+            <div className="flex items-center gap-2 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5">
+              <CalendarDays className="h-3.5 w-3.5 text-white/40" />
+              <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Next Up</span>
+            </div>
+            <div className="divide-y divide-white/[0.04]">
+              {upcoming.slice(0, 5).map((m) => <MatchRow key={m.id} match={m} showCompetition />)}
+            </div>
+            <button
+              onClick={() => navigate({ name: "scores" })}
+              className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-white/35 transition-colors hover:bg-white/[0.03] hover:text-white/60"
+            >
+              Full fixture list <ChevronRight className="h-3 w-3" />
+            </button>
+          </div>
+
+          {/* Sidebar Ad */}
+          <AdSlot placement="SIDEBAR" className="min-h-[200px]" />
+        </div>
+      </section>
+
+      {/* ══════════ NEWS GRID — The Athletic style ══════════ */}
+      <section className="reveal mb-8" aria-label="Football News">
+        <SectionLabel
+          label="Football News"
+          labelBn="ফুটবল সংবাদ"
+          accent="red"
+          action="All News"
+          onAction={() => navigate({ name: "news" })}
+        />
+
+        {/* Category filter tabs */}
+        <div className="mb-5 flex items-center gap-0 border-b border-white/[0.07] overflow-x-auto no-scrollbar">
+          {[
+            { key: "all", label: "All" },
+            { key: "bd", label: "Bangladesh" },
+            { key: "world", label: "World" },
+            { key: "transfers", label: "Transfers" },
+          ].map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setNewsTab(tab.key as typeof newsTab)}
+              className={cn(
+                "shrink-0 pb-2.5 pt-1 px-4 text-[11.5px] font-bold uppercase tracking-wider border-b-2 transition-colors",
+                newsTab === tab.key
+                  ? "border-red-500 text-white"
+                  : "border-transparent text-white/35 hover:text-white/70"
+              )}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid gap-5 lg:grid-cols-12">
+          {/* Main news column */}
+          <div className="lg:col-span-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {secondaryNews.map((a) => (
+              <NewsCard key={a.id} article={a} />
+            ))}
+          </div>
+
+          {/* Most Read rail */}
+          <aside className="lg:col-span-4 space-y-4">
+            <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5">
+                <Flame className="h-3.5 w-3.5 text-red-500" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Most Read</span>
+              </div>
+              <div className="divide-y divide-white/[0.04]">
+                {mostRead.map((a, i) => (
+                  <button
+                    key={a.id}
+                    onClick={() => navigate({ name: "news-detail", id: a.id })}
+                    className="group flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/[0.03]"
+                  >
+                    <span className={cn(
+                      "tabular w-7 shrink-0 font-black text-[22px] leading-none",
+                      i === 0 ? "text-red-500" : "text-white/15"
+                    )}>
+                      {i + 1}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 text-[12.5px] font-bold leading-snug text-white/80 transition-colors group-hover:text-white">
+                        {a.title}
+                      </span>
+                      <span className="mt-1.5 flex items-center gap-2 text-[10px] text-white/30">
+                        <Clock className="h-2.5 w-2.5" /> {timeAgo(a.createdAt)}
+                        <span>·</span>
+                        {fmtCompact(a.views)} reads
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* In-feed ad */}
+            <AdSlot placement="IN_FEED" />
+          </aside>
+        </div>
+      </section>
+
+      {/* ══════════ LEAGUE TABLE + TOP SCORERS ══════════ */}
+      <section className="reveal mb-8 grid gap-5 lg:grid-cols-12" aria-label="League Standings">
+        <div className="lg:col-span-8">
+          <SectionLabel
+            label="BFL Points Table"
+            labelBn="বিএফএল পয়েন্ট টেবিল"
+            accent="green"
+            action="Full Table"
+            onAction={() => navigate({ name: "standings" })}
+          />
+          <StandingsTable standings={standings} compact limit={8} />
+        </div>
+        <div className="lg:col-span-4 space-y-5">
+          <TopScorersMini />
+          <AdSlot placement="IN_FEED" />
+        </div>
+      </section>
+
+      {/* ══════════ TACTICAL PITCH ══════════ */}
       {heroMatch && (
-        <section className="reveal mt-8 space-y-3" aria-label="Tactical Command Center">
-          <SectionHeader
-            title="Matchday Tactical Pitch & Formation Radar"
-            kicker="tactical command"
-            icon={<Trophy className="h-3.5 w-3.5 text-primary" />}
-            actionLabel="Match Centre (1080p Stream)"
-            actionView={{ name: "match-detail", id: heroMatch.id }}
+        <section className="reveal mb-8" aria-label="Tactical Analysis">
+          <SectionLabel
+            label="Matchday Tactical Analysis"
+            labelBn="ট্যাকটিক্যাল বিশ্লেষণ"
+            accent="blue"
+            action="Match Centre"
+            onAction={() => navigate({ name: "match-detail", id: heroMatch.id })}
           />
           <TacticalPitch
             homeTeam={heroMatch.homeTeam}
@@ -126,319 +423,132 @@ export function HomeView() {
         </section>
       )}
 
-      {/* ═══════════ MATCHDAY — date rail + dense rows + side rail ═══════════ */}
-      <section className="reveal mt-8 grid gap-6 lg:grid-cols-12" aria-label="Matchday scores">
-        <div className="lg:col-span-8">
-          <SectionHeader
-            title="Matchday Scores"
-            kicker="live scores"
-            accent={liveNow.length > 0 ? "red" : "primary"}
-            icon={<Zap className="h-3.5 w-3.5" aria-hidden />}
-            actionLabel="All Matches"
-            actionView={{ name: "scores" }}
-          />
-          <div className="overflow-hidden rounded-xl border border-border bg-card">
-            {/* Date rail */}
-            <div className="flex items-center gap-1 border-b border-border bg-muted/30 px-3 py-2">
-              {[
-                { label: "Yesterday", offset: -1 },
-                { label: "Today", offset: 0 },
-                { label: "Tomorrow", offset: 1 },
-              ].map((d) => (
-                <button
-                  key={d.label}
-                  onClick={() => setDayOffset(d.offset)}
-                  className={cn(
-                    "rounded-md px-3 py-1.5 text-[11.5px] font-semibold transition-colors",
-                    dayOffset === d.offset
-                      ? "bg-elevated text-foreground"
-                      : "text-muted-foreground hover:bg-white/[0.04] hover:text-foreground"
-                  )}
-                  aria-pressed={dayOffset === d.offset}
-                >
-                  {d.label}
-                </button>
-              ))}
-              <span className="ml-auto hidden items-center gap-1.5 text-[10.5px] text-muted-foreground sm:flex">
-                {liveNow.length > 0 ? (
-                  <>
-                    <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
-                    {fmtNum(liveNow.length)} live right now
-                  </>
-                ) : (
-                  "All times BST (UTC+6)"
-                )}
-              </span>
-            </div>
-            {/* Rows */}
-            {matchesLoading ? (
-              <div className="space-y-2 p-4">
-                {[1, 2, 3].map((i) => (
-                  <Skeleton key={i} className="h-14 rounded-lg" />
-                ))}
-              </div>
-            ) : dayMatches.length > 0 ? (
-              <div className="divide-y divide-border/60">
-                {dayMatches.map((m) => (
-                  <MatchRow key={m.id} match={m} showCompetition />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
-                <p className="text-sm font-semibold text-foreground">No matches scheduled</p>
-                <p className="text-xs text-muted-foreground">
-                  {dayOffset === -1 ? "Yesterday" : dayOffset === 1 ? "Tomorrow" : "Today"} has no fixtures in the calendar.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Side rail — live now + next up */}
-        <div className="space-y-4 lg:col-span-4">
-          {liveNow.length > 0 && (
-            <div className="overflow-hidden rounded-xl border border-fhb-red/30 bg-card">
-              <p className="flex items-center gap-2 border-b border-border bg-fhb-red/[0.07] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-fhb-red">
-                <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
-                Live Now — {fmtNum(liveNow.length)}
-              </p>
-              <div className="divide-y divide-border/60">
-                {liveNow.slice(0, 3).map((m) => (
-                  <MatchRow key={m.id} match={m} showCompetition={false} />
-                ))}
-              </div>
-              <button
-                onClick={() => navigate({ name: "scores" })}
-                className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
-              >
-                All live matches <ChevronRight className="h-3 w-3" aria-hidden />
-              </button>
-            </div>
-          )}
-          <div className="overflow-hidden rounded-xl border border-border bg-card">
-            <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-              <CalendarDays className="h-3.5 w-3.5 text-primary" aria-hidden />
-              Next Up
-            </p>
-            <div className="divide-y divide-border/60">
-              {upcoming.slice(0, 4).map((m) => (
-                <MatchRow key={m.id} match={m} showCompetition />
-              ))}
-            </div>
-            <button
-              onClick={() => navigate({ name: "scores" })}
-              className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
-            >
-              Full fixture list <ChevronRight className="h-3 w-3" aria-hidden />
-            </button>
-          </div>
-          <AdSlot placement="SIDEBAR" />
-        </div>
-      </section>
-
-      {/* Header banner ad */}
-      <div className="reveal mt-8">
-        <AdSlot placement="HEADER_BANNER" />
-      </div>
-
-      {/* ═══════════ NEWS — editorial grid + most read ═══════════ */}
-      <section className="reveal mt-8" aria-label="Latest news">
-        <SectionHeader
-          title="Football News & Transfers"
-          kicker="latest stories"
-          icon={<Newspaper className="h-3.5 w-3.5" aria-hidden />}
-          actionLabel="All News"
-          actionView={{ name: "news" }}
-        />
-        <div className="grid gap-6 lg:grid-cols-12">
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-8 lg:grid-cols-2">
-            {secondaryNews.slice(0, 4).map((a) => (
-              <NewsCard key={a.id} article={a} />
-            ))}
-          </div>
-          {/* Most read rail */}
-          <aside className="lg:col-span-4">
-            <div className="overflow-hidden rounded-xl border border-border bg-card">
-              <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-                <Flame className="h-3.5 w-3.5 text-fhb-red" aria-hidden />
-                Most Read
-              </p>
-              <div className="divide-y divide-border/50">
-                {mostRead.map((a, i) => (
-                  <button
-                    key={a.id}
-                    onClick={() => navigate({ name: "news-detail", id: a.id })}
-                    className="group flex w-full items-start gap-3 px-4 py-3 text-left transition-colors hover:bg-white/[0.03]"
-                  >
-                    <span
-                      className={cn(
-                        "tabular font-display text-xl font-bold leading-none",
-                        i === 0 ? "text-primary" : "text-muted-foreground/60"
-                      )}
-                    >
-                      {i + 1}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="line-clamp-2 text-[12.5px] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
-                        {a.title}
-                      </span>
-                      <span className="mt-1 flex items-center gap-1 text-[10px] text-muted-foreground">
-                        <Clock className="h-2.5 w-2.5" aria-hidden /> {timeAgo(a.createdAt)} · {fmtCompact(a.views)} reads
-                      </span>
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div className="mt-4">
-              <AdSlot placement="IN_FEED" />
-            </div>
-          </aside>
-        </div>
-      </section>
-
-      {/* ═══════════ STANDINGS + TOP SCORERS ═══════════ */}
-      <section className="reveal mt-8 grid gap-6 lg:grid-cols-12" aria-label="League table">
-        <div className="lg:col-span-8">
-          <SectionHeader
-            title="BFL Points Table"
-            kicker="bangladesh football league"
-            icon={<Trophy className="h-3.5 w-3.5" aria-hidden />}
-            actionLabel="Full Table"
-            actionView={{ name: "standings" }}
-          />
-          <StandingsTable standings={standings} compact limit={6} />
-        </div>
-        <div className="space-y-4 lg:col-span-4">
-          <TopScorersMini />
-        </div>
-      </section>
-
-      {/* ═══════════ TRENDING SHORTS ═══════════ */}
+      {/* ══════════ TRENDING SHORTS ══════════ */}
       {videos.length > 0 && (
-        <section className="reveal mt-8" aria-label="Trending shorts">
-          <SectionHeader
-            title="Trending Shorts"
+        <section className="reveal mb-8" aria-label="Trending shorts">
+          <SectionLabel
+            label="Trending Shorts"
+            labelBn="ট্রেন্ডিং শর্টস"
             accent="gold"
-            kicker="fan originals"
-            icon={<Flame className="h-3.5 w-3.5" aria-hidden />}
-            actionLabel="All Shorts"
-            actionView={{ name: "shorts" }}
+            action="All Shorts"
+            onAction={() => navigate({ name: "shorts" })}
           />
-          <div className="no-scrollbar relative -mx-4 overflow-x-auto px-4 pb-1.5 sm:mx-0 sm:px-0">
-            <div className="flex gap-3.5">
-              {videos.slice(0, 8).map((v, i) => (
+          <div className="no-scrollbar relative -mx-4 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
+            <div className="flex gap-3">
+              {videos.slice(0, 10).map((v, i) => (
                 <button
                   key={v.id}
                   onClick={() => navigate({ name: "shorts" })}
-                  className="group relative h-60 w-40 shrink-0 overflow-hidden rounded-xl border border-border bg-card sm:h-64 sm:w-44"
-                  aria-label={`Watch shorts: ${v.title}`}
+                  className="group relative h-[220px] w-[130px] shrink-0 overflow-hidden border border-white/[0.07] bg-[#0d0d10] sm:h-[240px] sm:w-[145px]"
+                  aria-label={`Watch: ${v.title}`}
                 >
                   {v.thumbnailUrl && (
                     <Image
                       src={v.thumbnailUrl}
                       alt={v.title}
                       fill
-                      sizes="176px"
-                      loading="eager"
-                      className="img-zoom object-cover"
+                      sizes="145px"
+                      className="object-cover transition-transform duration-700 group-hover:scale-[1.06]"
                       unoptimized
                     />
                   )}
-                  <span
-                    className={cn(
-                      "tabular absolute left-2.5 top-2.5 rounded-md px-2 py-1 font-display text-[11px] font-bold backdrop-blur-md",
-                      i === 0 ? "bg-fhb-gold/90 text-black" : "bg-black/60 text-white"
-                    )}
-                  >
+                  {/* Rank badge */}
+                  <span className={cn(
+                    "absolute left-2 top-2 px-1.5 py-0.5 font-black text-[10px]",
+                    i === 0 ? "bg-amber-500 text-black" : "bg-black/70 text-white/90 backdrop-blur-sm"
+                  )}>
                     #{i + 1}
                   </span>
-                  <span
-                    className="absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/25 bg-black/45 text-white opacity-0 backdrop-blur-md transition-all duration-300 group-hover:scale-110 group-hover:opacity-100"
-                    aria-hidden
-                  >
-                    <Play className="h-5 w-5 fill-white" />
+                  {/* Play button */}
+                  <span className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <span className="flex h-11 w-11 items-center justify-center bg-red-600/90 backdrop-blur-sm">
+                      <Play className="h-5 w-5 fill-white text-white" />
+                    </span>
                   </span>
-                  <div className="photo-scrim absolute inset-0" aria-hidden />
-                  <div className="absolute inset-x-3 bottom-3 text-left">
-                    <p className="line-clamp-2 text-xs font-semibold leading-snug text-white">{v.title}</p>
-                    <p className="mt-1 flex items-center gap-1.5 text-[10px] text-white/70">
-                      <Play className="h-2.5 w-2.5 fill-white/70" aria-hidden /> {fmtCompact(v.views)} views
+                  <div className="photo-scrim absolute inset-0" />
+                  <div className="absolute inset-x-2 bottom-2.5 text-left">
+                    <p className="line-clamp-2 text-[11px] font-bold leading-snug text-white">{v.title}</p>
+                    <p className="mt-1 flex items-center gap-1 text-[9.5px] text-white/50">
+                      <Play className="h-2.5 w-2.5 fill-white/50" /> {fmtCompact(v.views)}
                     </p>
                   </div>
                 </button>
               ))}
             </div>
-            <span className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-background to-transparent" aria-hidden />
           </div>
         </section>
       )}
 
-      {/* ═══════════ LIVE TV + PREMIUM band ═══════════ */}
-      <section className="reveal mt-8 grid gap-4 lg:grid-cols-2" aria-label="Live TV and premium">
+      {/* ══════════ LIVE TV + PREMIUM BAND ══════════ */}
+      <section className="reveal mb-6 grid gap-3 lg:grid-cols-2" aria-label="Live TV and Premium">
+        {/* Live TV card */}
         <button
           onClick={() => navigate({ name: "live-tv" })}
-          className="stadium-panel pitch-pattern card-lift group relative flex flex-col gap-4 overflow-hidden rounded-xl border border-border p-5 text-left sm:flex-row sm:items-center"
+          className="carbon-panel pitch-pattern group relative flex gap-5 overflow-hidden border border-white/[0.07] p-5 text-left transition-all hover:border-red-500/30 sm:items-center"
         >
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-fhb-red/15 text-fhb-red">
-            <Tv className="h-6 w-6" aria-hidden />
+          {/* Background TV glow */}
+          <div className="absolute inset-0 stadium-glow-red pointer-events-none" />
+          <span className="relative flex h-12 w-12 shrink-0 items-center justify-center bg-red-600/15 text-red-400">
+            <Tv className="h-6 w-6" />
           </span>
           <span className="relative min-w-0 flex-1">
-            <span className="flex items-center gap-2">
-              <span className="text-[15px] font-bold text-foreground sm:text-base">Live TV — 13 channels</span>
-              <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-label="Live" />
+            <span className="mb-1 flex items-center gap-2">
+              <span className="text-[15px] font-black text-white">Live TV — 13 Channels</span>
+              <span className="live-dot inline-block h-1.5 w-1.5 rounded-full bg-red-500" />
             </span>
-            <span className="mt-1 block text-[12.5px] leading-relaxed text-muted-foreground">
-              BFL nights, European matchdays and 24/7 football channels — multi-server streaming.
+            <span className="block text-[12.5px] text-white/45 leading-relaxed">
+              BFL nights, European matchdays and 24/7 football — multi-server streaming.
             </span>
           </span>
-          <span className="flex h-10 shrink-0 items-center gap-2 self-start rounded-lg bg-fhb-red px-4 text-xs font-bold text-white transition-transform group-hover:scale-[1.03] sm:self-center">
-            <Play className="h-3.5 w-3.5 fill-white" aria-hidden />
-            Watch now
+          <span className="relative flex h-10 shrink-0 items-center gap-2 bg-red-600 px-4 text-[11px] font-black text-white transition-transform group-hover:scale-[1.03] self-start sm:self-center sheen">
+            <Play className="h-3.5 w-3.5 fill-white" /> Watch Live
           </span>
         </button>
 
+        {/* Premium card */}
         <button
           onClick={() => navigate({ name: "premium" })}
-          className="gold-panel card-lift group relative flex flex-col gap-4 overflow-hidden rounded-xl border border-fhb-gold/25 p-5 text-left sm:flex-row sm:items-center"
+          className="gold-panel group relative flex gap-5 overflow-hidden border border-amber-500/20 p-5 text-left transition-all hover:border-amber-500/40 sm:items-center"
         >
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-fhb-gold/25 bg-fhb-gold/15 text-fhb-gold">
-            <Crown className="h-6 w-6" aria-hidden />
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center border border-amber-500/20 bg-amber-500/10 text-amber-400">
+            <Crown className="h-6 w-6" />
           </span>
-          <span className="relative min-w-0 flex-1">
-            <span className="eyebrow text-[10px] text-fhb-gold">FHB Premium</span>
-            <span className="mt-0.5 block text-[15px] font-bold leading-snug text-foreground sm:text-base">
-              Ad-free football, from <span className="gold-text">Tk 99/month</span>
+          <span className="min-w-0 flex-1">
+            <span className="eyebrow text-[9px] text-amber-500 mb-1 block">FHB Premium</span>
+            <span className="block text-[15px] font-black text-white mb-1">
+              Ad-free football from <span className="gold-text">Tk 99/month</span>
             </span>
-            <span className="mt-1 block text-[12.5px] leading-relaxed text-muted-foreground">
-              Exclusive transfer news, HD highlights and bigger creator earnings.
+            <span className="block text-[12.5px] text-white/45">
+              Exclusive transfers, HD highlights, bigger creator earnings.
             </span>
           </span>
-          <span className="flex h-10 shrink-0 items-center gap-2 self-start rounded-lg bg-fhb-gold px-4 text-xs font-bold text-black transition-transform group-hover:scale-[1.03] sm:self-center">
-            Upgrade
-            <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+          <span className="flex h-10 shrink-0 items-center gap-2 bg-amber-500 px-4 text-[11px] font-black text-black transition-transform group-hover:scale-[1.03] self-start sm:self-center">
+            Upgrade <ChevronRight className="h-3.5 w-3.5" />
           </span>
         </button>
       </section>
 
-      {/* ═══════════ COMMUNITY CTA ═══════════ */}
-      <section className="reveal mt-4" aria-label="Fan community">
+      {/* ══════════ COMMUNITY CTA ══════════ */}
+      <section className="reveal mb-6" aria-label="Community">
         <button
           onClick={() => navigate({ name: "community" })}
-          className="card-lift group relative flex w-full items-center gap-4 overflow-hidden rounded-xl border border-border bg-card p-5 text-left"
+          className="group relative flex w-full items-center gap-5 border border-white/[0.07] bg-[#0d0d10] p-5 text-left transition-colors hover:border-white/15 hover:bg-white/[0.02]"
         >
-          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/12 text-primary">
-            <Users className="h-6 w-6" aria-hidden />
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center bg-blue-600/10 text-blue-400">
+            <Users className="h-6 w-6" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[15px] font-bold text-foreground">Join the Fan Community</span>
-            <span className="mt-1 block text-[12.5px] leading-relaxed text-muted-foreground">
+            <span className="block text-[15px] font-black text-white">Join the Fan Community</span>
+            <span className="mt-1 block text-[12.5px] text-white/45">
               Share your takes, react to every matchday and connect with fans across Bangladesh.
             </span>
           </span>
-          <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-1.5 group-hover:text-primary" aria-hidden />
+          <ChevronRight className="h-5 w-5 shrink-0 text-white/25 transition-transform group-hover:translate-x-1 group-hover:text-white/60" />
         </button>
       </section>
+
+      {/* Sticky footer ad on mobile */}
+      <AdSlot placement="STICKY_FOOTER" />
     </div>
   );
 }
@@ -451,35 +561,36 @@ function TopScorersMini() {
       return res.json().then((j) => j.data);
     },
   });
-  const scorers = (data?.topScorers ?? []).slice(0, 5);
+  const scorers = (data?.topScorers ?? []).slice(0, 6);
   const navigate = useAppStore((s) => s.navigate);
   if (scorers.length === 0) return null;
+
   return (
-    <div className="overflow-hidden rounded-xl border border-border bg-card">
-      <p className="flex items-center gap-2 border-b border-border bg-muted/40 px-4 py-3 text-[11px] font-bold uppercase tracking-[0.1em] text-foreground">
-        <span className="flex h-6 w-6 items-center justify-center rounded-md bg-fhb-gold/15 text-fhb-gold">
-          <Goal className="h-3.5 w-3.5" aria-hidden />
+    <div className="border border-white/[0.07] bg-[#0d0d10] overflow-hidden">
+      <div className="flex items-center gap-2 border-b border-white/[0.07] bg-[#060608] px-4 py-2.5">
+        <span className="flex h-5 w-5 items-center justify-center bg-amber-500/15 text-amber-400">
+          <Goal className="h-3.5 w-3.5" />
         </span>
-        Top Scorers
-      </p>
-      <div className="divide-y divide-border/50">
+        <span className="text-[10px] font-black uppercase tracking-widest text-white/60">Top Scorers</span>
+      </div>
+      <div className="divide-y divide-white/[0.04]">
         {scorers.map((p, i) => (
           <button
             key={p.id}
             onClick={() => navigate({ name: "player-detail", id: p.id })}
             className="group flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
           >
-            <span
-              className={
-                "tabular flex h-6 w-6 shrink-0 items-center justify-center rounded-md font-display text-[11px] font-bold " +
-                (i === 0 ? "bg-fhb-gold/20 text-fhb-gold" : i < 3 ? "bg-primary/12 text-primary" : "bg-muted text-muted-foreground")
-              }
-            >
+            <span className={cn(
+              "tabular flex h-6 w-6 shrink-0 items-center justify-center font-black text-[11px]",
+              i === 0 ? "bg-amber-500/20 text-amber-400" : i < 3 ? "bg-red-600/15 text-red-400" : "bg-white/[0.05] text-white/30"
+            )}>
               {i + 1}
             </span>
             {p.team && <TeamCrest team={p.team} size="xs" />}
-            <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-foreground group-hover:text-primary">{p.name}</span>
-            <span className="tabular shrink-0 rounded-md bg-primary/10 px-2 py-0.5 font-display text-[13px] font-bold text-primary">
+            <span className="min-w-0 flex-1 truncate text-[12.5px] font-bold text-white/70 transition-colors group-hover:text-white">
+              {p.name}
+            </span>
+            <span className="tabular shrink-0 font-black text-[14px] text-white/80">
               {fmtNum(p.goals)}
             </span>
           </button>
@@ -487,9 +598,9 @@ function TopScorersMini() {
       </div>
       <button
         onClick={() => navigate({ name: "standings" })}
-        className="flex w-full items-center justify-center gap-1 border-t border-border py-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/5"
+        className="flex w-full items-center justify-center gap-1 border-t border-white/[0.06] py-2.5 text-[10.5px] font-black uppercase tracking-widest text-white/30 transition-colors hover:bg-white/[0.03] hover:text-white/60"
       >
-        Full list <ChevronRight className="h-3 w-3" aria-hidden />
+        Full list <ChevronRight className="h-3 w-3" />
       </button>
     </div>
   );

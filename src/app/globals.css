@@ -42,95 +42,103 @@
   --color-fhb-red: var(--fhb-red);
   --color-fhb-gold: var(--fhb-gold);
   --color-fhb-green: var(--fhb-green);
+  --color-fhb-blue: var(--fhb-blue);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
+/* ═══ FHB 3.0 — Sky Sports / ESPN FC Level Broadcast Design ═══ */
+/* Deep carbon base, editorial white foreground, single crimson accent */
+
 :root {
-  --radius: 0.5rem;
+  --radius: 0.25rem;
   /* Light theme (secondary — site is dark-first) */
-  --background: oklch(0.975 0.003 250);
-  --foreground: oklch(0.21 0.01 250);
+  --background: oklch(0.97 0.002 265);
+  --foreground: oklch(0.12 0.01 265);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.01 250);
-  --elevated: oklch(1 0 0);
-  --elevated-foreground: oklch(0.21 0.01 250);
+  --card-foreground: oklch(0.12 0.01 265);
+  --elevated: oklch(0.98 0.002 265);
+  --elevated-foreground: oklch(0.12 0.01 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.01 250);
-  --primary: oklch(0.55 0.13 152);
-  --primary-foreground: oklch(0.985 0.005 150);
-  --secondary: oklch(0.955 0.005 250);
-  --secondary-foreground: oklch(0.3 0.01 250);
-  --muted: oklch(0.95 0.005 250);
-  --muted-foreground: oklch(0.47 0.015 250);
-  --accent: oklch(0.94 0.006 250);
-  --accent-foreground: oklch(0.3 0.01 250);
-  --destructive: oklch(0.55 0.22 27);
-  --border: oklch(0.89 0.005 250);
-  --input: oklch(0.89 0.005 250);
-  --ring: oklch(0.55 0.13 152);
-  --chart-1: oklch(0.55 0.13 152);
-  --chart-2: oklch(0.6 0.2 25);
-  --chart-3: oklch(0.72 0.14 85);
-  --chart-4: oklch(0.5 0.01 250);
-  --chart-5: oklch(0.68 0.12 85);
-  --sidebar: oklch(0.975 0.003 250);
-  --sidebar-foreground: oklch(0.21 0.01 250);
-  --sidebar-primary: oklch(0.55 0.13 152);
-  --sidebar-primary-foreground: oklch(0.985 0.005 150);
-  --sidebar-accent: oklch(0.94 0.006 250);
-  --sidebar-accent-foreground: oklch(0.3 0.01 250);
-  --sidebar-border: oklch(0.89 0.005 250);
-  --sidebar-ring: oklch(0.55 0.13 152);
-  --fhb-red: oklch(0.56 0.23 27);
-  --fhb-gold: oklch(0.75 0.14 85);
-  --fhb-green: oklch(0.55 0.13 152);
+  --popover-foreground: oklch(0.12 0.01 265);
+  --primary: oklch(0.5 0.22 25); /* Crimson */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.945 0.004 265);
+  --secondary-foreground: oklch(0.2 0.01 265);
+  --muted: oklch(0.945 0.004 265);
+  --muted-foreground: oklch(0.5 0.01 265);
+  --accent: oklch(0.935 0.004 265);
+  --accent-foreground: oklch(0.2 0.01 265);
+  --destructive: oklch(0.5 0.22 25);
+  --border: oklch(0.88 0.004 265);
+  --input: oklch(0.88 0.004 265);
+  --ring: oklch(0.5 0.22 25);
+  --chart-1: oklch(0.5 0.22 25);
+  --chart-2: oklch(0.72 0.14 85);
+  --chart-3: oklch(0.6 0.15 220);
+  --chart-4: oklch(0.5 0.01 265);
+  --chart-5: oklch(0.65 0.1 160);
+  --sidebar: oklch(0.97 0.002 265);
+  --sidebar-foreground: oklch(0.12 0.01 265);
+  --sidebar-primary: oklch(0.5 0.22 25);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.935 0.004 265);
+  --sidebar-accent-foreground: oklch(0.2 0.01 265);
+  --sidebar-border: oklch(0.88 0.004 265);
+  --sidebar-ring: oklch(0.5 0.22 25);
+  --fhb-red: oklch(0.52 0.235 25);
+  --fhb-gold: oklch(0.78 0.14 85);
+  --fhb-green: oklch(0.52 0.165 152);
+  --fhb-blue: oklch(0.52 0.18 220);
 }
 
 .dark {
-  /* ═══ FHB 2.0 — Broadcast Editorial ═══
-     True charcoal base (no green cast), layered neutral surfaces,
-     one disciplined green accent, semantic red/gold only. */
-  --background: oklch(0.145 0.005 255);
-  --foreground: oklch(0.955 0.004 250);
-  --card: oklch(0.175 0.005 255);
-  --card-foreground: oklch(0.955 0.004 250);
-  --elevated: oklch(0.21 0.006 255);
-  --elevated-foreground: oklch(0.955 0.004 250);
-  --popover: oklch(0.195 0.006 255);
-  --popover-foreground: oklch(0.955 0.004 250);
-  --primary: oklch(0.735 0.155 152);
-  --primary-foreground: oklch(0.16 0.04 152);
-  --secondary: oklch(0.225 0.006 255);
-  --secondary-foreground: oklch(0.955 0.004 250);
-  --muted: oklch(0.215 0.006 255);
-  --muted-foreground: oklch(0.652 0.012 250);
-  --accent: oklch(0.235 0.007 255);
-  --accent-foreground: oklch(0.955 0.004 250);
-  --destructive: oklch(0.62 0.23 25);
-  --border: oklch(1 0 0 / 8.5%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: oklch(0.735 0.155 152);
-  --chart-1: oklch(0.735 0.155 152);
-  --chart-2: oklch(0.62 0.23 25);
-  --chart-3: oklch(0.8 0.125 88);
-  --chart-4: oklch(0.6 0.01 250);
-  --chart-5: oklch(0.72 0.1 85);
-  --sidebar: oklch(0.165 0.005 255);
-  --sidebar-foreground: oklch(0.955 0.004 250);
-  --sidebar-primary: oklch(0.735 0.155 152);
-  --sidebar-primary-foreground: oklch(0.16 0.04 152);
-  --sidebar-accent: oklch(0.235 0.007 255);
-  --sidebar-accent-foreground: oklch(0.955 0.004 250);
-  --sidebar-border: oklch(1 0 0 / 8.5%);
-  --sidebar-ring: oklch(0.735 0.155 152);
-  --fhb-red: oklch(0.63 0.235 26);
-  --fhb-gold: oklch(0.8 0.125 88);
-  --fhb-green: oklch(0.735 0.155 152);
+  /* ═══ FHB 3.0 — Carbon Black Broadcast Editorial ═══
+     Pure carbon base, no blue/green cast.
+     Typography-first: sharp white on deep black.
+     Red accent only where it counts. */
+  --background: oklch(0.082 0.004 265);     /* Near-black carbon #0d0d0f */
+  --foreground: oklch(0.96 0.003 265);      /* Editorial white */
+  --card: oklch(0.108 0.004 265);           /* Card surface #161619 */
+  --card-foreground: oklch(0.96 0.003 265);
+  --elevated: oklch(0.135 0.004 265);       /* Elevated surface #1c1c20 */
+  --elevated-foreground: oklch(0.96 0.003 265);
+  --popover: oklch(0.12 0.004 265);
+  --popover-foreground: oklch(0.96 0.003 265);
+  --primary: oklch(0.6 0.235 25);           /* Sky Sports crimson */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.145 0.004 265);
+  --secondary-foreground: oklch(0.96 0.003 265);
+  --muted: oklch(0.138 0.004 265);
+  --muted-foreground: oklch(0.58 0.008 265);
+  --accent: oklch(0.148 0.004 265);
+  --accent-foreground: oklch(0.96 0.003 265);
+  --destructive: oklch(0.62 0.235 25);
+  --border: oklch(1 0 0 / 7%);
+  --input: oklch(1 0 0 / 10%);
+  --ring: oklch(0.6 0.235 25);
+  --chart-1: oklch(0.6 0.235 25);
+  --chart-2: oklch(0.78 0.14 85);
+  --chart-3: oklch(0.6 0.15 220);
+  --chart-4: oklch(0.55 0.01 265);
+  --chart-5: oklch(0.65 0.12 152);
+  --sidebar: oklch(0.095 0.004 265);
+  --sidebar-foreground: oklch(0.96 0.003 265);
+  --sidebar-primary: oklch(0.6 0.235 25);
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.148 0.004 265);
+  --sidebar-accent-foreground: oklch(0.96 0.003 265);
+  --sidebar-border: oklch(1 0 0 / 7%);
+  --sidebar-ring: oklch(0.6 0.235 25);
+  --fhb-red: oklch(0.62 0.24 25);
+  --fhb-gold: oklch(0.8 0.14 86);
+  --fhb-green: oklch(0.65 0.165 152);
+  --fhb-blue: oklch(0.62 0.18 222);
 }
 
+/* ═══ BASE RESET ═══ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -143,29 +151,43 @@
     font-family: var(--font-body), system-ui, sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
-  h1, h2, h3, h4 {
+  h1, h2, h3, h4, h5 {
     text-wrap: balance;
   }
   ::selection {
-    background: color-mix(in oklab, var(--primary) 40%, transparent);
+    background: oklch(0.6 0.235 25 / 0.3);
     color: #fff;
   }
 }
 
-/* ═══════════════ FHB 2.0 — Broadcast Editorial ═══════════════ */
+/* ═══════════════ FHB 3.0 — Broadcast Editorial System ═══════════════ */
 
-/* Display font — Archivo (sporty grotesque, tight tracking) */
+/* ── Typography ───────────────────────────────────────────────────────── */
+
+/* Display — Barlow Condensed / Archivo tight editorial */
 .font-display {
-  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-family: var(--font-display), var(--font-body), "Arial Narrow", sans-serif;
 }
 
-/* Headline defaults: tight, confident */
+/* Condensed broadcast — sports scoreboard style */
+.font-condensed {
+  font-family: var(--font-condensed), var(--font-display), "Arial Narrow", sans-serif;
+  letter-spacing: 0.01em;
+}
+
+/* Bangla / Bengali typography */
+.font-bangla {
+  font-family: var(--font-bangla), "Hind Siliguri", system-ui, sans-serif;
+}
+
+/* Hero/display heading — ESPN FC / Sky Sports level */
 .display-hero {
   font-family: var(--font-display), var(--font-body), sans-serif;
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.025em;
+  font-weight: 900;
+  line-height: 1.0;
+  letter-spacing: -0.03em;
   text-wrap: balance;
 }
 
@@ -175,16 +197,31 @@
   font-feature-settings: "tnum";
 }
 
-/* ── Surfaces ─────────────────────────────── */
-
-/* Frosted header bar */
-.glass {
-  background: color-mix(in oklab, var(--background) 82%, transparent);
-  backdrop-filter: blur(16px) saturate(1.3);
-  -webkit-backdrop-filter: blur(16px) saturate(1.3);
+/* Micro-label uppercase */
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  font-size: 0.65rem;
+  font-family: var(--font-body), sans-serif;
 }
 
-/* Top hairline highlight on dark surfaces */
+/* ── Surfaces & Panels ────────────────────────────────────────────────── */
+
+/* Frosted glass nav — backdrop */
+.glass {
+  background: oklch(0.082 0.004 265 / 0.92);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+}
+
+.glass-light {
+  background: oklch(1 0 0 / 0.92);
+  backdrop-filter: blur(16px) saturate(1.2);
+  -webkit-backdrop-filter: blur(16px) saturate(1.2);
+}
+
+/* Top hairline on dark surfaces */
 .edge-lit {
   position: relative;
 }
@@ -193,119 +230,155 @@
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 16%), transparent);
+  background: linear-gradient(90deg, transparent, oklch(1 0 0 / 12%), transparent);
   pointer-events: none;
 }
 
-/* Cinematic panel — restrained, for hero only */
+/* Carbon panel — deep base used for hero sections */
+.carbon-panel {
+  background:
+    radial-gradient(130% 160% at 85% -15%, oklch(0.6 0.235 25 / 0.12), transparent 55%),
+    linear-gradient(170deg, oklch(0.14 0.005 265), oklch(0.08 0.004 265) 65%);
+}
+
+/* Match card broadcast panel */
 .stadium-panel {
   background:
-    radial-gradient(110% 130% at 88% -8%, oklch(0.735 0.155 152 / 10%), transparent 52%),
-    linear-gradient(165deg, oklch(0.21 0.008 255), oklch(0.155 0.006 255) 60%);
+    radial-gradient(110% 130% at 88% -8%, oklch(0.6 0.235 25 / 0.1), transparent 52%),
+    linear-gradient(165deg, oklch(0.145 0.006 265), oklch(0.1 0.004 265) 60%);
 }
 
-/* Gold panel — premium surfaces only */
+/* Gold/premium surface */
 .gold-panel {
   background:
-    radial-gradient(110% 140% at 88% -10%, oklch(0.8 0.125 88 / 14%), transparent 55%),
-    linear-gradient(165deg, oklch(0.215 0.018 88), oklch(0.16 0.012 85) 62%);
+    radial-gradient(110% 140% at 88% -10%, oklch(0.8 0.14 86 / 0.14), transparent 55%),
+    linear-gradient(165deg, oklch(0.155 0.016 86), oklch(0.105 0.01 85) 62%);
 }
 
-/* Fine pitch mow stripes */
+/* Sky blue/UEFA panel */
+.blue-panel {
+  background:
+    radial-gradient(100% 150% at 90% -5%, oklch(0.62 0.18 222 / 0.14), transparent 55%),
+    linear-gradient(170deg, oklch(0.14 0.01 222), oklch(0.095 0.005 265) 65%);
+}
+
+/* Fine pitch grass texture */
 .pitch-pattern {
   background-image: repeating-linear-gradient(
-    115deg,
-    oklch(1 0 0 / 1.6%) 0px,
-    oklch(1 0 0 / 1.6%) 2px,
+    112deg,
+    oklch(1 0 0 / 1.2%) 0px,
+    oklch(1 0 0 / 1.2%) 2px,
     transparent 2px,
-    transparent 14px
+    transparent 18px
   );
 }
 
-/* Film-grain noise overlay — hero imagery only */
+/* Full football pitch texture for tactical */
+.bg-tactical-pitch {
+  background-color: #0a3d2e;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 32px,
+      rgba(255, 255, 255, 0.04) 32px,
+      rgba(255, 255, 255, 0.04) 33px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 32px,
+      rgba(255, 255, 255, 0.04) 32px,
+      rgba(255, 255, 255, 0.04) 33px
+    );
+}
+
+/* Stadium glow effects */
+.stadium-glow {
+  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.12), transparent 70%);
+}
+.stadium-glow-red {
+  background: radial-gradient(circle at 50% 0%, rgba(220, 38, 38, 0.1), transparent 70%);
+}
+.stadium-glow-blue {
+  background: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.1), transparent 70%);
+}
+
+/* Film grain noise */
 .noise::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  opacity: 0.4;
+  opacity: 0.35;
   mix-blend-mode: overlay;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 240 240' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
 }
 
-/* Cinematic photo scrim (bottom-up) */
+/* Photo scrim overlay */
 .photo-scrim {
   background: linear-gradient(
     180deg,
-    oklch(0.14 0.005 255 / 0) 22%,
-    oklch(0.14 0.005 255 / 0.62) 58%,
-    oklch(0.13 0.005 255 / 0.96) 100%
+    oklch(0.08 0.004 265 / 0) 20%,
+    oklch(0.08 0.004 265 / 0.65) 60%,
+    oklch(0.08 0.004 265 / 0.97) 100%
   );
 }
 
-/* ── Typography helpers ────────────────────── */
-
-/* Micro kicker label — restrained uppercase */
-.eyebrow {
-  font-family: var(--font-body), sans-serif;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-weight: 650;
-  font-size: 0.6875rem;
+/* Side scrim for wide banners */
+.side-scrim {
+  background: linear-gradient(
+    90deg,
+    oklch(0.08 0.004 265 / 0.95) 0%,
+    oklch(0.08 0.004 265 / 0.75) 45%,
+    transparent 100%
+  );
 }
 
-/* Gold shimmer text — premium accents only */
+/* Gold shimmer text */
 .gold-text {
-  background: linear-gradient(100deg, oklch(0.86 0.09 90), oklch(0.78 0.13 78) 45%, oklch(0.88 0.07 96));
+  background: linear-gradient(100deg, oklch(0.88 0.1 90), oklch(0.78 0.14 78) 45%, oklch(0.9 0.08 96));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* ── Scrollbars ───────────────────────────── */
-
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+/* Red crimson text */
+.red-text {
+  background: linear-gradient(100deg, oklch(0.68 0.24 22), oklch(0.58 0.235 28));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
-.fhb-scroll::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-.fhb-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
+/* ── Scrollbars ───────────────────────────────────────────────────────── */
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.fhb-scroll::-webkit-scrollbar { width: 4px; height: 4px; }
+.fhb-scroll::-webkit-scrollbar-track { background: transparent; }
 .fhb-scroll::-webkit-scrollbar-thumb {
-  background: oklch(1 0 0 / 13%);
+  background: oklch(1 0 0 / 12%);
   border-radius: 999px;
 }
-.fhb-scroll::-webkit-scrollbar-thumb:hover {
-  background: oklch(1 0 0 / 24%);
-}
+.fhb-scroll::-webkit-scrollbar-thumb:hover { background: oklch(1 0 0 / 22%); }
 
-/* ── Motion & interaction ─────────────────── */
+/* ── Motion & Animation ───────────────────────────────────────────────── */
 
-/* Ad creative rotation fade */
+/* Sky Sports-style ad fade */
 @keyframes ad-fade {
-  from { opacity: 0; transform: translateY(3px); }
+  from { opacity: 0; transform: translateY(4px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.ad-creative {
-  animation: ad-fade 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
+.ad-creative { animation: ad-fade 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-/* LIVE pulse */
+/* LIVE pulse dot */
 @keyframes live-pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(0.78); }
+  50% { opacity: 0.4; transform: scale(0.75); }
 }
-.live-dot {
-  animation: live-pulse 1.3s ease-in-out infinite;
-}
+.live-dot { animation: live-pulse 1.4s ease-in-out infinite; }
 
 /* Score ticker marquee */
 @keyframes marquee {
@@ -315,28 +388,44 @@
 .marquee-track {
   animation: marquee 55s linear infinite;
 }
-.marquee-track:hover {
-  animation-play-state: paused;
-}
+.marquee-track:hover { animation-play-state: paused; }
 
-/* Row/card hover — quiet, no bounce */
+/* Smooth marquee variant */
+@keyframes marquee-smooth {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee-smooth {
+  display: inline-flex;
+  animation: marquee-smooth 42s linear infinite;
+}
+.animate-marquee-smooth:hover { animation-play-state: paused; }
+
+/* Card hover — editorial restrained */
 .card-lift {
-  transition: background-color 0.2s ease, border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 .card-lift:hover {
-  border-color: color-mix(in oklab, var(--primary) 26%, transparent);
-  background-color: color-mix(in oklab, var(--card) 92%, var(--primary) 3%);
+  border-color: oklch(1 0 0 / 14%);
+  background-color: oklch(1 0 0 / 2.5%);
 }
 
-/* Image zoom on hover */
+/* Sharp card — no border radius change */
+.card-sharp {
+  transition: background-color 0.18s ease, box-shadow 0.2s ease;
+}
+.card-sharp:hover {
+  background-color: oklch(1 0 0 / 3%);
+  box-shadow: inset 2px 0 0 var(--fhb-red);
+}
+
+/* Image zoom */
 .img-zoom {
-  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), filter 0.35s ease;
 }
-.group:hover .img-zoom {
-  transform: scale(1.045);
-}
+.group:hover .img-zoom { transform: scale(1.05); }
 
-/* Button sheen sweep — primary CTAs only */
+/* Sheen sweep CTA */
 .sheen {
   position: relative;
   overflow: hidden;
@@ -345,42 +434,48 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(105deg, transparent 38%, oklch(1 0 0 / 18%) 50%, transparent 62%);
+  background: linear-gradient(105deg, transparent 38%, oklch(1 0 0 / 16%) 50%, transparent 62%);
   transform: translateX(-120%);
-  transition: transform 0.7s ease;
+  transition: transform 0.65s ease;
   pointer-events: none;
 }
-.sheen:hover::after {
-  transform: translateX(120%);
-}
+.sheen:hover::after { transform: translateX(120%); }
 
-/* Scroll reveal — conservative */
+/* Scroll reveal */
 .reveal {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1), transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(16px);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: opacity, transform;
 }
-.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal.is-visible { opacity: 1; transform: translateY(0); }
+
 @media (prefers-reduced-motion: reduce) {
   .reveal { opacity: 1; transform: none; transition: none; }
-  .marquee-track { animation: none; }
+  .marquee-track, .animate-marquee-smooth { animation: none; }
   .live-dot { animation: none; }
 }
 
-/* Staggered mobile menu items */
+/* Staggered mobile menu */
 @keyframes menu-in {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(12px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.menu-item {
-  animation: menu-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
+.menu-item { animation: menu-in 0.35s cubic-bezier(0.22, 1, 0.36, 1) both; }
 
-/* ── Shorts feed ──────────────────────────── */
+/* ── Soundwave Radio ──────────────────────────────────────────────────── */
+
+@keyframes wave-bounce {
+  0%, 100% { height: 3px; }
+  50% { height: 14px; }
+}
+.soundwave-bar-1 { animation: wave-bounce 1.1s ease-in-out infinite; }
+.soundwave-bar-2 { animation: wave-bounce 0.75s ease-in-out infinite 0.2s; }
+.soundwave-bar-3 { animation: wave-bounce 1.3s ease-in-out infinite 0.4s; }
+.soundwave-bar-4 { animation: wave-bounce 0.85s ease-in-out infinite 0.1s; }
+.soundwave-bar-5 { animation: wave-bounce 1.0s ease-in-out infinite 0.3s; }
+
+/* ── Shorts feed ──────────────────────────────────────────────────────── */
 
 .shorts-feed {
   scroll-snap-type: y mandatory;
@@ -390,83 +485,134 @@
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
+.video-progress { background: var(--fhb-red); }
 
-.video-progress {
-  background: var(--primary);
-}
+/* ── Utility ──────────────────────────────────────────────────────────── */
 
 /* Touch target safety */
-.tap-target {
-  min-height: 44px;
-  min-width: 44px;
-}
+.tap-target { min-height: 44px; min-width: 44px; }
 
-/* Subtle dashed divider */
+/* Dashed rule */
 .rule-dash {
   background-image: repeating-linear-gradient(
     90deg,
-    oklch(1 0 0 / 10%) 0 6px,
+    oklch(1 0 0 / 8%) 0 6px,
     transparent 6px 12px
   );
   height: 1px;
 }
 
-/* ── Broadcast Graphics & Pitch Styles ──────────────────────────── */
-
-.font-condensed {
-  font-family: var(--font-condensed), var(--font-display), system-ui, sans-serif;
-  letter-spacing: 0.02em;
+/* Slim red left-border accent for news items */
+.border-accent-red {
+  border-left: 3px solid var(--fhb-red);
+  padding-left: 0.75rem;
 }
 
-.font-bangla {
-  font-family: var(--font-bangla), system-ui, sans-serif;
+/* Score number badge */
+.score-badge {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 800;
+  letter-spacing: -0.02em;
 }
 
-.bg-tactical-pitch {
-  background-color: #064e3b;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-
-.stadium-glow {
-  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.15), transparent 70%);
-}
-
-.stadium-glow-red {
-  background: radial-gradient(circle at 50% 0%, rgba(225, 29, 72, 0.12), transparent 70%);
-}
-
-@keyframes marquee-smooth {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
-}
-
-.animate-marquee-smooth {
-  display: inline-flex;
-  animation: marquee-smooth 38s linear infinite;
-}
-.animate-marquee-smooth:hover {
-  animation-play-state: paused;
-}
-
-@keyframes wave-bounce {
-  0%, 100% { height: 4px; }
-  50% { height: 16px; }
-}
-
-.soundwave-bar-1 { animation: wave-bounce 1.1s ease-in-out infinite; }
-.soundwave-bar-2 { animation: wave-bounce 0.8s ease-in-out infinite 0.2s; }
-.soundwave-bar-3 { animation: wave-bounce 1.3s ease-in-out infinite 0.4s; }
-.soundwave-bar-4 { animation: wave-bounce 0.9s ease-in-out infinite 0.1s; }
-
+/* Pulse ring for live indicators */
 @keyframes pulse-ring {
-  0% { transform: scale(0.95); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 0.3; }
-  100% { transform: scale(0.95); opacity: 0.8; }
+  0% { transform: scale(0.95); opacity: 0.9; }
+  50% { transform: scale(1.2); opacity: 0.3; }
+  100% { transform: scale(0.95); opacity: 0.9; }
+}
+.animate-pulse-ring { animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+
+/* ── Ad Slots ─────────────────────────────────────────────────────────── */
+
+/* IAB leaderboard 728×90 */
+.ad-leaderboard {
+  min-height: 90px;
+  min-width: min(100%, 728px);
+}
+/* IAB medium rectangle 300×250 */
+.ad-mrec {
+  width: 300px;
+  min-height: 250px;
+}
+/* IAB half-page 300×600 */
+.ad-halfpage {
+  width: 300px;
+  min-height: 600px;
+}
+/* Native/in-feed ad */
+.ad-native {
+  min-height: 100px;
 }
 
-.animate-pulse-ring {
-  animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Premium gradient border for ad containers */
+.ad-premium-border {
+  position: relative;
+}
+.ad-premium-border::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, oklch(0.6 0.235 25 / 0.4), transparent 60%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ── Broadcast Graphics ────────────────────────────────────────────────── */
+
+/* Sky Sports lower-third style scoreline bar */
+.lower-third {
+  background: linear-gradient(90deg, oklch(0.6 0.235 25) 0%, oklch(0.5 0.22 25) 100%);
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 100%, 0 100%);
+}
+
+/* ESPN FC style competition badge tab */
+.competition-tab {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+}
+
+/* Breaking news banner pulse */
+@keyframes breaking-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+.breaking-banner { animation: breaking-pulse 2s ease-in-out infinite; }
+
+/* ── Responsive grid helpers ────────────────────────────────────────────── */
+
+/* Editorial magazine-style 12-col grid */
+.editorial-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .editorial-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .editorial-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+}
+
+/* Full-bleed hero wrapper */
+.full-bleed {
+  margin-inline: calc(-50vw + 50%);
+  width: 100vw;
+}
+
+/* ── Live Score Ticker ────────────────────────────────────────────────── */
+
+/* Sky Sports-grade ticker strip */
+.ticker-strip {
+  background: oklch(0.6 0.235 25);
+  color: white;
+}
+
+/* Score separator */
+.score-sep::before {
+  content: "·";
+  color: oklch(1 0 0 / 0.5);
+  margin: 0 0.4rem;
 }

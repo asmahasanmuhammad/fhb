@@ -22,32 +22,32 @@ import { cn } from "@/lib/utils";
 import {
   Trophy, Calendar, Newspaper, Users, Video, Shield, LayoutDashboard, LogOut, User2,
   Crown, Upload, Wallet, Menu, X, ChevronRight, Radio, Facebook, Youtube,
-  Twitter, Instagram, Zap, Flame, Tv, Search,
+  Twitter, Instagram, Zap, Flame, Tv, Search, Bell, TrendingUp, Globe,
+  ChevronDown, Wifi,
 } from "lucide-react";
 
-const NAV_ITEMS: Array<{ label: string; view: View }> = [
-  { label: "Live Scores", view: { name: "scores" } },
-  { label: "Live TV", view: { name: "live-tv" } },
-  { label: "Tables", view: { name: "standings" } },
-  { label: "News", view: { name: "news" } },
-  { label: "Teams", view: { name: "teams" } },
-  { label: "Players", view: { name: "players" } },
-  { label: "Competitions", view: { name: "competitions" } },
-  { label: "Shorts", view: { name: "shorts" } },
-  { label: "Community", view: { name: "community" } },
+const NAV_ITEMS: Array<{ label: string; labelBn: string; view: View; badge?: string }> = [
+  { label: "Live Scores", labelBn: "লাইভ স্কোর", view: { name: "scores" }, badge: "LIVE" },
+  { label: "Live TV", labelBn: "লাইভ টিভি", view: { name: "live-tv" }, badge: "NEW" },
+  { label: "Tables", labelBn: "পয়েন্ট টেবিল", view: { name: "standings" } },
+  { label: "News", labelBn: "সংবাদ", view: { name: "news" } },
+  { label: "Teams", labelBn: "দলসমূহ", view: { name: "teams" } },
+  { label: "Players", labelBn: "খেলোয়াড়", view: { name: "players" } },
+  { label: "Competitions", labelBn: "লিগ", view: { name: "competitions" } },
+  { label: "Shorts", labelBn: "শর্টস", view: { name: "shorts" } },
+  { label: "Community", labelBn: "কমিউনিটি", view: { name: "community" } },
 ];
 
-/** League quick-rail — the competitions shortcut strip (desktop). */
-const LEAGUE_RAIL: Array<{ label: string; view: View }> = [
-  { label: "BFL", view: { name: "competitions" } },
-  { label: "Premier League", view: { name: "competitions" } },
-  { label: "Champions League", view: { name: "competitions" } },
-  { label: "LaLiga", view: { name: "competitions" } },
-  { label: "Serie A", view: { name: "competitions" } },
-  { label: "Bundesliga", view: { name: "competitions" } },
-  { label: "Ligue 1", view: { name: "competitions" } },
-  { label: "SAFF", view: { name: "competitions" } },
-  { label: "World Cup 2026", view: { name: "competitions" } },
+const LEAGUE_RAIL: Array<{ label: string; abbr: string; view: View; color: string; flag?: string }> = [
+  { label: "BFL", abbr: "BFL", view: { name: "competitions" }, color: "#006A4E", flag: "🇧🇩" },
+  { label: "Premier League", abbr: "EPL", view: { name: "competitions" }, color: "#3D195B" },
+  { label: "Champions League", abbr: "UCL", view: { name: "competitions" }, color: "#0B1F3F" },
+  { label: "La Liga", abbr: "LaLiga", view: { name: "competitions" }, color: "#E5322D" },
+  { label: "Serie A", abbr: "SerieA", view: { name: "competitions" }, color: "#0A2240" },
+  { label: "Bundesliga", abbr: "BL", view: { name: "competitions" }, color: "#D20515" },
+  { label: "Ligue 1", abbr: "L1", view: { name: "competitions" }, color: "#DBE00A" },
+  { label: "SAFF", abbr: "SAFF", view: { name: "competitions" }, color: "#005AAB" },
+  { label: "World Cup 2026", abbr: "WC26", view: { name: "competitions" }, color: "#7A1F3D" },
 ];
 
 const MOBILE_NAV: Array<{ label: string; view: View; icon: React.ReactNode }> = [
@@ -58,54 +58,63 @@ const MOBILE_NAV: Array<{ label: string; view: View; icon: React.ReactNode }> = 
   { label: "Profile", view: { name: "profile" }, icon: <User2 className="h-5 w-5" aria-hidden /> },
 ];
 
-/** Premium SVG shield crest — club-grade brand mark. */
+/** Sky Sports–grade shield crest */
 export function LogoMark({ size = 9 }: { size?: number }) {
+  const w = size === 9 ? 32 : 38;
+  const h = size === 9 ? 36 : 42;
   return (
     <svg
-      width={size === 9 ? 34 : 40}
-      height={size === 9 ? 38 : 44}
+      width={w}
+      height={h}
       viewBox="0 0 44 49"
       fill="none"
       aria-hidden
-      className="shrink-0 drop-shadow-[0_3px_8px_rgba(0,0,0,0.4)]"
+      className="shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]"
     >
       <defs>
-        <linearGradient id="fhb-shield" x1="4" y1="2" x2="40" y2="47" gradientUnits="userSpaceOnUse">
-          <stop stopColor="oklch(0.36 0.07 160)" />
-          <stop offset="0.55" stopColor="oklch(0.3 0.06 162)" />
-          <stop offset="1" stopColor="oklch(0.21 0.04 165)" />
+        <linearGradient id="fhb-sh" x1="4" y1="2" x2="40" y2="47" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#1a1a1e" />
+          <stop offset="0.6" stopColor="#141418" />
+          <stop offset="1" stopColor="#0d0d10" />
         </linearGradient>
-        <linearGradient id="fhb-gloss" x1="22" y1="2" x2="22" y2="26" gradientUnits="userSpaceOnUse">
-          <stop stopColor="oklch(1 0 0 / 0.22)" />
-          <stop offset="1" stopColor="oklch(1 0 0 / 0)" />
+        <linearGradient id="fhb-g2" x1="22" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+          <stop stopColor="rgba(255,255,255,0.18)" />
+          <stop offset="1" stopColor="rgba(255,255,255,0)" />
         </linearGradient>
       </defs>
+      {/* Shield base */}
       <path
         d="M22 1.5 L41.5 7.5 V23.5 C41.5 35.5 33.5 43.5 22 47.5 C10.5 43.5 2.5 35.5 2.5 23.5 V7.5 Z"
-        fill="url(#fhb-shield)"
-        stroke="oklch(0.735 0.155 152 / 0.7)"
+        fill="url(#fhb-sh)"
+        stroke="oklch(0.6 0.235 25 / 0.8)"
         strokeWidth="1.5"
       />
       <path
         d="M22 1.5 L41.5 7.5 V23.5 C41.5 35.5 33.5 43.5 22 47.5 C10.5 43.5 2.5 35.5 2.5 23.5 V7.5 Z"
-        fill="url(#fhb-gloss)"
+        fill="url(#fhb-g2)"
       />
-      <path d="M2.5 30.5 C8.5 33.2 15 34.6 22 34.6 C29 34.6 35.5 33.2 41.5 30.5 V23.5 C35.5 26.6 29 28.2 22 28.2 C15 28.2 8.5 26.6 2.5 23.5 Z" fill="oklch(0.63 0.235 26)" opacity="0.92" />
+      {/* Red stripe */}
+      <path
+        d="M2.5 30 C8.5 32.8 15 34.2 22 34.2 C29 34.2 35.5 32.8 41.5 30 V24 C35.5 26.8 29 28.2 22 28.2 C15 28.2 8.5 26.8 2.5 24 Z"
+        fill="oklch(0.6 0.235 25)"
+        opacity="0.95"
+      />
+      {/* FHB Text */}
       <text
-        x="22"
-        y="21"
+        x="22" y="20"
         textAnchor="middle"
-        fontFamily="Archivo, var(--font-display), sans-serif"
-        fontWeight="700"
-        fontSize="15.5"
-        letterSpacing="0.5"
-        fill="oklch(0.97 0.02 150)"
+        fontFamily="Arial Black, sans-serif"
+        fontWeight="900"
+        fontSize="13"
+        letterSpacing="0.8"
+        fill="white"
       >
         FHB
       </text>
+      {/* Star */}
       <path
-        d="M22 36.2 l1.3 2.7 3 .4 -2.2 2.1 .5 3 -2.6 -1.4 -2.6 1.4 .5 -3 -2.2 -2.1 3 -.4 Z"
-        fill="oklch(0.8 0.125 88)"
+        d="M22 36 l1 2.5 2.7 .4 -1.95 1.9 .46 2.7 -2.21 -1.16 -2.21 1.16 .46 -2.7 -1.95 -1.9 2.7 -.4 Z"
+        fill="oklch(0.8 0.14 86)"
       />
     </svg>
   );
@@ -118,16 +127,26 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [bstTime, setBstTime] = useState("");
+  const [bstDate, setBstDate] = useState("");
 
   useEffect(() => {
     const updateTime = () => {
+      const now = new Date();
       setBstTime(
-        new Date().toLocaleTimeString("en-US", {
+        now.toLocaleTimeString("en-GB", {
           timeZone: "Asia/Dhaka",
           hour: "2-digit",
           minute: "2-digit",
           second: "2-digit",
-          hour12: true,
+          hour12: false,
+        })
+      );
+      setBstDate(
+        now.toLocaleDateString("en-GB", {
+          timeZone: "Asia/Dhaka",
+          weekday: "short",
+          day: "numeric",
+          month: "short",
         })
       );
     };
@@ -137,7 +156,7 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10);
+    const onScroll = () => setScrolled(window.scrollY > 4);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
@@ -145,9 +164,7 @@ export function Header() {
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? "hidden" : "";
-    return () => {
-      document.body.style.overflow = "";
-    };
+    return () => { document.body.style.overflow = ""; };
   }, [mobileOpen]);
 
   const isActive = (v: View) => view.name === v.name;
@@ -155,62 +172,87 @@ export function Header() {
 
   const handleLogout = async () => {
     await logout();
-    toast({ title: "Logged out", description: "See you again!" });
+    toast({ title: "Logged out", description: "See you next match!" });
     navigate({ name: "home" });
   };
 
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b transition-colors duration-200",
+        "sticky top-0 z-50 w-full transition-all duration-200",
         scrolled
-          ? "border-border/90 bg-background/92 shadow-[0_8px_30px_-16px_rgba(0,0,0,0.7)] backdrop-blur-xl"
-          : "border-border/60 bg-background/80 backdrop-blur-lg"
+          ? "shadow-[0_4px_24px_-8px_rgba(0,0,0,0.9)]"
+          : ""
       )}
     >
-      {/* ── Top Utility Strip: BST Time, FIFA Rank, Edition & Radio ── */}
-      <div className="bg-[#030712] border-b border-white/[0.08] px-4 sm:px-6 py-1.5 text-[11px] text-slate-400">
-        <div className="mx-auto max-w-[1320px] flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 font-mono text-emerald-400 font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{bstTime || "BST --:--"} (Dhaka)</span>
+      {/* ── Top utility bar: Sky Sports-grade broadcast strip ── */}
+      <div className="bg-[#0a0a0c] border-b border-white/[0.06] px-4 sm:px-6 py-1 text-[10.5px]">
+        <div className="mx-auto max-w-[1440px] flex items-center justify-between gap-4">
+          {/* Left: BST Clock + FIFA Rank */}
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-1.5 font-mono text-emerald-400 font-bold tracking-tight">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+              </span>
+              <span className="text-emerald-300">{bstTime || "00:00:00"}</span>
+              <span className="text-white/30 hidden sm:inline">|</span>
+              <span className="text-white/50 hidden sm:inline">{bstDate}</span>
             </div>
-            <span className="hidden sm:inline text-white/20">|</span>
-            <div className="hidden sm:flex items-center gap-1.5 text-slate-300">
-              <span className="text-[10px] uppercase font-black tracking-widest text-emerald-400">FIFA RANK</span>
+            <div className="hidden sm:flex items-center gap-1.5 text-white/40">
+              <span className="w-px h-3 bg-white/15" />
+              <span className="text-[9px] uppercase font-black tracking-widest text-white/40">FIFA BD</span>
               <span className="font-mono font-bold text-white">#183</span>
-              <span className="text-[10px] text-emerald-400 font-bold">▲ +2</span>
+              <span className="text-emerald-400 font-bold text-[9px]">▲2</span>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Live Audio / Radio soundwave */}
-            <div className="hidden md:flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-rose-950/60 border border-rose-500/30 text-rose-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
-              <span className="font-bold text-[10px] tracking-wider uppercase">FHB Radio Live</span>
-              <div className="flex items-end gap-0.5 h-3">
-                <span className="w-0.5 bg-rose-400 soundwave-bar-1" />
-                <span className="w-0.5 bg-rose-400 soundwave-bar-2" />
-                <span className="w-0.5 bg-rose-400 soundwave-bar-3" />
-                <span className="w-0.5 bg-rose-400 soundwave-bar-4" />
+          {/* Center: Breaking News Ticker */}
+          {liveCount === 0 && (
+            <div className="hidden lg:flex items-center gap-2 flex-1 justify-center max-w-lg">
+              <span className="shrink-0 px-2 py-0.5 bg-red-600 text-[9px] font-black uppercase tracking-widest text-white rounded-sm">
+                LIVE
+              </span>
+              <span className="text-white/50 text-[10.5px] truncate">
+                Bangladesh Premier League • Matchday 15 Underway
+              </span>
+            </div>
+          )}
+
+          {/* Right: Radio + Language */}
+          <div className="flex items-center gap-2.5">
+            {/* FHB Radio */}
+            <div className="hidden md:flex items-center gap-1.5 px-2.5 py-0.5 rounded-sm bg-red-950/50 border border-red-800/40 text-red-300 cursor-pointer hover:bg-red-950/70 transition-colors">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-red-500" />
+              </span>
+              <span className="font-bold text-[9.5px] tracking-widest uppercase text-red-300">FHB Radio</span>
+              <div className="flex items-end gap-[2px] h-3 ml-0.5">
+                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-1" style={{ minHeight: "3px" }} />
+                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-2" style={{ minHeight: "3px" }} />
+                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-3" style={{ minHeight: "3px" }} />
+                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-4" style={{ minHeight: "3px" }} />
+                <span className="w-[2px] bg-red-400 rounded-full soundwave-bar-5" style={{ minHeight: "3px" }} />
               </div>
             </div>
 
-            {/* Language Switcher */}
+            {/* Edition / Language Toggle */}
             <button
               onClick={() => setLanguage(language === "bn" ? "en" : "bn")}
-              className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-900 hover:bg-slate-800 border border-white/[0.1] text-[10px] font-bold text-slate-200 transition-colors cursor-pointer"
+              className="flex items-center gap-1 px-2 py-0.5 rounded-sm bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-[9.5px] font-bold text-white/70 transition-colors cursor-pointer"
             >
-              <span>{language === "bn" ? "🇧🇩 বাংলা" : "🇬🇧 English"}</span>
+              {language === "bn" ? "🇧🇩 বাংলা" : "🇬🇧 English"}
             </button>
           </div>
         </div>
       </div>
+
       {/* ── Live score ticker ── */}
       {liveCount > 0 && (
-        <div className="relative flex h-8 items-center overflow-hidden border-b border-border/50 bg-card/60">
-          <span className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-fhb-red px-3 text-[10px] font-bold uppercase tracking-[0.14em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-7px)_100%,0_100%)]">
+        <div className="relative flex h-[30px] items-center overflow-hidden border-b border-white/[0.06] bg-[#0d0d10]">
+          {/* LIVE badge — angled cut */}
+          <span className="z-10 flex h-full shrink-0 items-center gap-1.5 bg-red-600 px-3 pr-5 text-[9.5px] font-black uppercase tracking-[0.15em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-8px)_100%,0_100%)]">
             <span className="live-dot h-1.5 w-1.5 rounded-full bg-white" aria-hidden />
             LIVE {fmtNum(liveCount)}
           </span>
@@ -218,323 +260,344 @@ export function Header() {
             <div className="marquee-track flex whitespace-nowrap">
               {[0, 1].map((dup) => (
                 <div key={dup} className="flex" aria-hidden={dup === 1}>
-                  {/* repeat the loop so short lists still fill wide screens */}
                   {[0, 1, 2].map((rep) =>
                     live.matches.map((m) => (
                       <button
                         key={`${dup}-${rep}-${m.id}`}
                         onClick={() => navigate({ name: "match-detail", id: m.id })}
-                        className="mx-4 flex items-center gap-2 text-[11px] font-semibold tracking-wide text-foreground/80 transition-colors hover:text-primary"
+                        className="mx-5 flex items-center gap-2 text-[10.5px] font-semibold tracking-wide text-white/70 transition-colors hover:text-white"
                       >
-                        <span>{m.homeTeam.name}</span>
-                        <span className="tabular rounded bg-fhb-red/12 px-1.5 py-0.5 font-bold text-fhb-red">
-                          {fmtNum(m.homeScore)} - {fmtNum(m.awayScore)}
+                        <span className="text-white/60">{m.homeTeam.name}</span>
+                        <span className="tabular font-mono font-black text-white px-1.5 py-0.5 bg-red-600/20 rounded text-[11px]">
+                          {fmtNum(m.homeScore)} – {fmtNum(m.awayScore)}
                         </span>
-                        <span>{m.awayTeam.name}</span>
-                        <span className="text-muted-foreground">
-                          ({m.period === "HT" ? "HT" : `${fmtNum(m.minute)}′`})
+                        <span className="text-white/60">{m.awayTeam.name}</span>
+                        <span className="text-red-400 text-[9.5px] font-bold">
+                          {m.period === "HT" ? "HT" : `${fmtNum(m.minute)}'`}
                         </span>
-                        <span className="ml-3 h-1 w-1 rounded-full bg-primary/50" aria-hidden />
+                        <span className="text-white/20 ml-2">|</span>
                       </button>
                     ))
                   )}
                 </div>
               ))}
             </div>
-            <span className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-10 bg-gradient-to-r from-card to-transparent" aria-hidden />
-            <span className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-10 bg-gradient-to-l from-card to-transparent" aria-hidden />
+            <span className="pointer-events-none absolute inset-y-0 left-0 z-[5] w-8 bg-gradient-to-r from-[#0d0d10] to-transparent" aria-hidden />
+            <span className="pointer-events-none absolute inset-y-0 right-0 z-[5] w-8 bg-gradient-to-l from-[#0d0d10] to-transparent" aria-hidden />
           </div>
         </div>
       )}
 
-      {/* ── Main bar ── */}
-      <div className="mx-auto flex h-14 max-w-[1320px] items-center justify-between gap-3 px-4 sm:h-[60px] sm:px-6">
-        {/* Logo + wordmark */}
-        <Link
-          href="/"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate({ name: "home" });
-          }}
-          className="group flex shrink-0 items-center gap-2.5"
-          aria-label="Football Hub Bangladesh homepage"
-        >
-          <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
-            <LogoMark />
-          </span>
-          <span className="hidden flex-col leading-none sm:flex">
-            <span className="font-display text-[16px] font-bold tracking-[0.04em] text-foreground">
-              FOOTBALL HUB <span className="text-primary">BD</span>
-            </span>
-            <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-              Bangladesh&rsquo;s Football Network
-            </span>
-          </span>
-        </Link>
-
-        {/* Desktop nav — underline tabs */}
-        <nav className="hidden h-full items-center lg:flex" aria-label="Main menu">
-          {NAV_ITEMS.map((item) => (
-            <button
-              key={item.label}
-              onClick={() => navigate(item.view)}
-              className={cn(
-                "relative flex h-full items-center px-2.5 text-[12.5px] font-semibold transition-colors xl:px-3",
-                isActive(item.view)
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:text-foreground"
-              )}
-              aria-current={isActive(item.view) ? "page" : undefined}
-            >
-              {item.label}
-              {liveCount > 0 && item.view.name === "scores" && (
-                <span className="live-dot ml-1.5 h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
-              )}
-              <span
-                aria-hidden
-                className={cn(
-                  "absolute inset-x-2.5 bottom-0 h-[2.5px] rounded-full transition-all duration-200",
-                  isActive(item.view) ? "bg-primary opacity-100" : "bg-primary opacity-0"
-                )}
-              />
-            </button>
-          ))}
-        </nav>
-
-        {/* Right cluster */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          <button
-            onClick={() => navigate({ name: "teams" })}
-            className="tap-target hidden h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground md:flex"
-            aria-label="Search teams and players"
+      {/* ── Main brand bar ── */}
+      <div
+        className={cn(
+          "w-full border-b border-white/[0.07] transition-all duration-200",
+          scrolled ? "bg-[#0d0d10]/96 backdrop-blur-xl" : "bg-[#0d0d10]"
+        )}
+      >
+        <div className="mx-auto flex h-[58px] max-w-[1440px] items-center justify-between gap-3 px-4 sm:px-6">
+          {/* Logo + wordmark */}
+          <Link
+            href="/"
+            onClick={(e) => { e.preventDefault(); navigate({ name: "home" }); }}
+            className="group flex shrink-0 items-center gap-2.5"
+            aria-label="Football Hub Bangladesh homepage"
           >
-            <Search className="h-[18px] w-[18px]" aria-hidden />
-          </button>
+            <span className="transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
+              <LogoMark />
+            </span>
+            <span className="hidden flex-col leading-none sm:flex">
+              <span className="font-black text-[17px] tracking-[-0.01em] text-white leading-none">
+                FOOTBALL HUB
+              </span>
+              <span className="text-[10px] font-black tracking-[0.12em] uppercase" style={{ color: "oklch(0.6 0.235 25)" }}>
+                BANGLADESH · BFL OFFICIAL
+              </span>
+            </span>
+          </Link>
 
-          {liveCount > 0 && (
-            <button
-              onClick={() => navigate({ name: "scores" })}
-              className="hidden items-center gap-1.5 rounded-full border border-fhb-red/40 bg-fhb-red/10 px-3 py-1.5 text-[10.5px] font-bold uppercase tracking-wider text-fhb-red transition-all hover:bg-fhb-red/20 sm:flex"
-              aria-label={`${fmtNum(liveCount)} matches live right now — view scores`}
-            >
-              <span className="live-dot h-1.5 w-1.5 rounded-full bg-fhb-red" aria-hidden />
-              LIVE {fmtNum(liveCount)}
-            </button>
-          )}
-
-          <button
-            onClick={() => navigate({ name: "premium" })}
-            className="hidden items-center gap-1.5 rounded-full border border-fhb-gold/40 bg-fhb-gold/10 px-3 py-1.5 text-[11px] font-bold text-fhb-gold transition-all hover:border-fhb-gold/60 hover:bg-fhb-gold/15 sm:flex"
-          >
-            <Crown className="h-3.5 w-3.5" aria-hidden />
-            Premium
-          </button>
-
-          {user ? (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
+          {/* Desktop nav — Sky Sports underline style */}
+          <nav className="hidden h-full items-center gap-0.5 lg:flex" aria-label="Main navigation">
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(item.view);
+              return (
                 <button
-                  className="flex items-center gap-2 rounded-full border border-border bg-card p-1 pr-2.5 transition-all hover:border-primary/40"
-                  aria-label="Account menu"
+                  key={item.label}
+                  onClick={() => navigate(item.view)}
+                  className={cn(
+                    "relative flex h-[58px] items-center px-3 text-[12px] font-bold tracking-wide transition-colors xl:px-3.5",
+                    active ? "text-white" : "text-white/55 hover:text-white/90"
+                  )}
+                  aria-current={active ? "page" : undefined}
                 >
-                  <Avatar className="h-7 w-7 border border-border/60">
-                    <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
-                    <AvatarFallback className="bg-primary/15 text-[11px] font-bold text-primary">{user.name.slice(0, 2)}</AvatarFallback>
-                  </Avatar>
-                  <span className="hidden max-w-[90px] truncate text-xs font-semibold sm:block">{user.name}</span>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-60 rounded-xl border-border/80 p-1.5">
-                <DropdownMenuLabel className="rounded-lg py-2 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-2">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/15 font-display text-xs font-bold text-primary">
-                      {user.name.slice(0, 2).toUpperCase()}
-                    </span>
-                    <span className="min-w-0 flex-col">
-                      <span className="block truncate font-semibold text-foreground">{user.name}</span>
-                      <span className="block truncate text-[10px]">{user.email}</span>
-                    </span>
-                  </span>
-                  {user.isPremium && (
-                    <span className="mt-2 inline-flex items-center gap-1 rounded-md bg-fhb-gold/15 px-1.5 py-0.5 text-[10px] font-bold text-fhb-gold">
-                      <Crown className="h-3 w-3" aria-hidden /> Premium Member
+                  {language === "bn" ? item.labelBn : item.label}
+                  {item.badge && item.badge === "LIVE" && liveCount > 0 && (
+                    <span className="ml-1.5 live-dot inline-block h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden />
+                  )}
+                  {item.badge && item.badge === "NEW" && (
+                    <span className="ml-1.5 inline-block px-1 py-px text-[7.5px] font-black uppercase tracking-wider bg-emerald-500 text-white rounded-sm">
+                      NEW
                     </span>
                   )}
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator className="my-1" />
-                <DropdownMenuItem onClick={() => navigate({ name: "profile" })} className="gap-2.5 rounded-lg text-xs">
-                  <User2 className="h-4 w-4 text-primary" aria-hidden /> My Profile
-                </DropdownMenuItem>
-                {(user.role === "CREATOR" || user.role === "ADMIN") && (
-                  <>
-                    <DropdownMenuItem onClick={() => navigate({ name: "upload" })} className="gap-2.5 rounded-lg text-xs">
-                      <Upload className="h-4 w-4 text-primary" aria-hidden /> Upload Video
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate({ name: "earnings" })} className="gap-2.5 rounded-lg text-xs">
-                      <Wallet className="h-4 w-4 text-primary" aria-hidden /> Earnings Dashboard
-                    </DropdownMenuItem>
-                  </>
-                )}
-                {user.role === "ADMIN" && (
-                  <DropdownMenuItem onClick={() => navigate({ name: "admin" })} className="gap-2.5 rounded-lg text-xs">
-                    <LayoutDashboard className="h-4 w-4 text-primary" aria-hidden /> Admin Panel
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuItem onClick={() => navigate({ name: "premium" })} className="gap-2.5 rounded-lg text-xs">
-                  <Crown className="h-4 w-4 text-fhb-gold" aria-hidden /> Premium Membership
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="my-1" />
-                <DropdownMenuItem onClick={handleLogout} className="gap-2.5 rounded-lg text-xs text-fhb-red focus:text-fhb-red">
-                  <LogOut className="h-4 w-4" aria-hidden /> Log Out
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          ) : (
-            <>
-              <Button variant="ghost" size="sm" onClick={() => navigate({ name: "auth" })} className="text-xs font-semibold">
-                Log In
-              </Button>
-              <Button
-                size="sm"
-                onClick={() => navigate({ name: "auth" })}
-                className="h-8 rounded-full bg-primary px-4 text-xs font-bold text-primary-foreground hover:bg-primary/90"
-              >
-                Join Free
-              </Button>
-            </>
-          )}
+                  {/* Active underline — solid red bar, flush bottom */}
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "absolute inset-x-2 bottom-0 h-[3px] transition-all duration-200",
+                      active ? "bg-red-500 opacity-100" : "opacity-0"
+                    )}
+                  />
+                </button>
+              );
+            })}
+          </nav>
 
-          {/* Mobile menu trigger */}
-          <button
-            className="tap-target flex items-center justify-center rounded-lg border border-border bg-card text-foreground lg:hidden"
-            onClick={() => setMobileOpen((v) => !v)}
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Right cluster */}
+          <div className="flex items-center gap-1.5">
+            {/* Search */}
+            <button
+              onClick={() => navigate({ name: "teams" })}
+              className="tap-target hidden h-9 w-9 items-center justify-center rounded text-white/50 transition-colors hover:bg-white/[0.06] hover:text-white md:flex"
+              aria-label="Search"
+            >
+              <Search className="h-4.5 w-4.5" aria-hidden />
+            </button>
+
+            {/* LIVE counter pill */}
+            {liveCount > 0 && (
+              <button
+                onClick={() => navigate({ name: "scores" })}
+                className="hidden items-center gap-1.5 rounded-sm border border-red-600/50 bg-red-600/15 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-widest text-red-400 transition-all hover:bg-red-600/25 sm:flex"
+              >
+                <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" aria-hidden />
+                LIVE {fmtNum(liveCount)}
+              </button>
+            )}
+
+            {/* Premium */}
+            <button
+              onClick={() => navigate({ name: "premium" })}
+              className="hidden items-center gap-1.5 rounded-sm border border-amber-500/40 bg-amber-500/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-amber-400 transition-all hover:border-amber-500/60 hover:bg-amber-500/18 sm:flex"
+            >
+              <Crown className="h-3 w-3" aria-hidden />
+              Premium
+            </button>
+
+            {/* User menu */}
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="flex items-center gap-2 rounded border border-white/10 bg-white/[0.05] p-1 pr-2.5 transition-all hover:border-white/20 hover:bg-white/[0.08]"
+                    aria-label="Account menu"
+                  >
+                    <Avatar className="h-7 w-7">
+                      <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name} />
+                      <AvatarFallback className="bg-red-600/20 text-[11px] font-black text-red-400">
+                        {user.name.slice(0, 2).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden max-w-[90px] truncate text-xs font-semibold text-white/80 sm:block">{user.name}</span>
+                    <ChevronDown className="h-3 w-3 text-white/40" aria-hidden />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-60 rounded border border-white/10 bg-[#161619] p-1.5 shadow-2xl">
+                  <DropdownMenuLabel className="rounded py-2.5 text-xs text-white/50">
+                    <span className="flex items-center gap-2">
+                      <span className="flex h-9 w-9 items-center justify-center rounded bg-red-600/20 font-black text-sm text-red-400">
+                        {user.name.slice(0, 2).toUpperCase()}
+                      </span>
+                      <span className="min-w-0 flex-col">
+                        <span className="block truncate font-bold text-white">{user.name}</span>
+                        <span className="block truncate text-[10px] text-white/40">{user.email}</span>
+                      </span>
+                    </span>
+                    {user.isPremium && (
+                      <span className="mt-2 inline-flex items-center gap-1 rounded bg-amber-500/15 px-2 py-0.5 text-[10px] font-black uppercase tracking-wide text-amber-400">
+                        <Crown className="h-3 w-3" aria-hidden /> Premium
+                      </span>
+                    )}
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator className="my-1 bg-white/[0.06]" />
+                  <DropdownMenuItem onClick={() => navigate({ name: "profile" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                    <User2 className="h-4 w-4 text-red-400" aria-hidden /> My Profile
+                  </DropdownMenuItem>
+                  {(user.role === "CREATOR" || user.role === "ADMIN") && (
+                    <>
+                      <DropdownMenuItem onClick={() => navigate({ name: "upload" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                        <Upload className="h-4 w-4 text-red-400" aria-hidden /> Upload Video
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => navigate({ name: "earnings" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                        <Wallet className="h-4 w-4 text-red-400" aria-hidden /> Earnings Dashboard
+                      </DropdownMenuItem>
+                    </>
+                  )}
+                  {user.role === "ADMIN" && (
+                    <DropdownMenuItem onClick={() => navigate({ name: "admin" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                      <LayoutDashboard className="h-4 w-4 text-red-400" aria-hidden /> Admin Panel
+                    </DropdownMenuItem>
+                  )}
+                  <DropdownMenuItem onClick={() => navigate({ name: "premium" })} className="gap-2.5 rounded text-xs text-white/70 focus:bg-white/[0.06] focus:text-white">
+                    <Crown className="h-4 w-4 text-amber-400" aria-hidden /> Premium Membership
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="my-1 bg-white/[0.06]" />
+                  <DropdownMenuItem onClick={handleLogout} className="gap-2.5 rounded text-xs text-red-400 focus:bg-red-600/10 focus:text-red-400">
+                    <LogOut className="h-4 w-4" aria-hidden /> Log Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <>
+                <button
+                  onClick={() => navigate({ name: "auth" })}
+                  className="hidden h-9 items-center px-4 text-[11px] font-bold text-white/60 transition-colors hover:text-white lg:flex"
+                >
+                  Log In
+                </button>
+                <button
+                  onClick={() => navigate({ name: "auth" })}
+                  className="flex h-9 items-center rounded-sm bg-red-600 px-4 text-[11px] font-black text-white transition-colors hover:bg-red-500 sheen"
+                >
+                  Join Free
+                </button>
+              </>
+            )}
+
+            {/* Mobile menu */}
+            <button
+              className="tap-target flex h-9 w-9 items-center justify-center rounded border border-white/10 bg-white/[0.05] text-white/70 lg:hidden"
+              onClick={() => setMobileOpen((v) => !v)}
+              aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            >
+              {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ── League quick-rail (desktop) ── */}
-      <div className="hidden border-t border-border/50 bg-background/60 lg:block">
-        <div className="no-scrollbar mx-auto flex max-w-[1320px] items-center gap-1 overflow-x-auto px-4 py-1.5 sm:px-6">
-          {LEAGUE_RAIL.map((l, i) => (
+      {/* ── League quick-rail ── */}
+      <div className="hidden border-b border-white/[0.06] bg-[#101013] lg:block">
+        <div className="no-scrollbar mx-auto flex max-w-[1440px] items-center gap-0 overflow-x-auto px-4 sm:px-6">
+          {LEAGUE_RAIL.map((l) => (
             <button
               key={l.label}
               onClick={() => navigate(l.view)}
-              className="group flex shrink-0 items-center gap-1.5 rounded-md px-2.5 py-1 text-[11.5px] font-medium text-muted-foreground transition-colors hover:bg-white/[0.04] hover:text-foreground"
+              className="group flex shrink-0 items-center gap-1.5 border-r border-white/[0.05] px-3 py-2 text-[11px] font-bold text-white/45 transition-colors hover:bg-white/[0.03] hover:text-white/90 first:pl-0"
             >
+              {l.flag && <span className="text-[11px]">{l.flag}</span>}
               <span
-                className="h-[7px] w-[7px] rounded-[2px]"
-                style={{ backgroundColor: ["#1E9E50", "#3D195B", "#0B1F3F", "#E5322D", "#0A2240", "#D20515", "#DBE00A", "#005AAB", "#7A1F3D"][i % 9] }}
+                className="h-[6px] w-[6px] rounded-[1px] shrink-0"
+                style={{ backgroundColor: l.color }}
                 aria-hidden
               />
               {l.label}
             </button>
           ))}
+          {/* Live Matches Indicator on Rail */}
+          {liveCount > 0 && (
+            <button
+              onClick={() => navigate({ name: "scores" })}
+              className="ml-auto flex shrink-0 items-center gap-1.5 px-3 py-2 text-[10.5px] font-black text-red-400 uppercase tracking-wider"
+            >
+              <span className="live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+              {fmtNum(liveCount)} Live Now
+            </button>
+          )}
         </div>
       </div>
 
-      {/* ── Mobile full menu (portal) ── */}
-      {mobileOpen &&
+      {/* ── Mobile menu portal ── */}
+      {mobileOpen && typeof document !== "undefined" &&
         createPortal(
           <div
-            className={cn(
-              "fixed inset-x-0 bottom-0 z-40 overflow-y-auto border-t border-border bg-background/98 backdrop-blur-2xl lg:hidden",
-              liveCount > 0 ? "top-[96px]" : "top-14"
-            )}
+            className="fixed inset-x-0 bottom-0 z-40 overflow-y-auto border-t border-white/[0.08] bg-[#0d0d10]/98 backdrop-blur-2xl lg:hidden"
+            style={{ top: liveCount > 0 ? "112px" : "82px" }}
           >
-            <div className="px-4 pb-24 pt-5">
-              <nav className="grid grid-cols-2 gap-2.5" aria-label="Mobile menu">
+            <div className="px-4 pb-28 pt-4">
+              {/* Nav grid */}
+              <nav className="grid grid-cols-2 gap-2" aria-label="Mobile navigation">
                 {NAV_ITEMS.map((item, i) => (
                   <button
                     key={item.label}
-                    style={{ animationDelay: `${i * 35}ms` }}
-                    onClick={() => {
-                      navigate(item.view);
-                      setMobileOpen(false);
-                    }}
+                    style={{ animationDelay: `${i * 30}ms` }}
+                    onClick={() => { navigate(item.view); setMobileOpen(false); }}
                     className={cn(
-                      "menu-item flex items-center gap-3 rounded-xl border px-4 py-3.5 text-sm font-semibold transition-all active:scale-[0.97]",
+                      "menu-item flex items-center gap-3 border px-4 py-3.5 text-sm font-bold transition-all active:scale-[0.97]",
                       isActive(item.view)
-                        ? "border-primary/50 bg-primary/10 text-primary"
-                        : "border-border bg-card text-foreground"
+                        ? "border-red-600/50 bg-red-600/10 text-white"
+                        : "border-white/[0.08] bg-white/[0.03] text-white/60"
                     )}
                   >
-                    {item.label}
+                    {language === "bn" ? item.labelBn : item.label}
+                    {item.badge === "LIVE" && liveCount > 0 && (
+                      <span className="ml-auto live-dot h-1.5 w-1.5 rounded-full bg-red-500" />
+                    )}
                   </button>
                 ))}
               </nav>
 
+              {/* Premium CTA */}
               <button
-                style={{ animationDelay: "330ms" }}
-                onClick={() => {
-                  navigate({ name: "premium" });
-                  setMobileOpen(false);
-                }}
-                className="menu-item gold-panel relative mt-4 flex w-full items-center gap-4 overflow-hidden rounded-xl border border-fhb-gold/30 p-4 text-left"
+                style={{ animationDelay: "300ms" }}
+                onClick={() => { navigate({ name: "premium" }); setMobileOpen(false); }}
+                className="menu-item gold-panel relative mt-3 flex w-full items-center gap-4 overflow-hidden border border-amber-500/25 p-4 text-left"
               >
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-fhb-gold/20 text-fhb-gold">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center bg-amber-500/15 text-amber-400">
                   <Crown className="h-5 w-5" aria-hidden />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-sm font-bold text-foreground">
-                    Premium <span className="text-fhb-gold">PRO</span>
+                  <span className="block text-[13px] font-black text-white">
+                    Premium <span className="text-amber-400">PRO</span>
                   </span>
-                  <span className="mt-0.5 block text-[11px] text-muted-foreground">
-                    Ad-free + exclusive content
+                  <span className="mt-0.5 block text-[11px] text-white/40">
+                    Ad-free · Exclusive content
                   </span>
                 </span>
-                <ChevronRight className="h-5 w-5 shrink-0 text-fhb-gold" aria-hidden />
+                <ChevronRight className="h-4 w-4 text-amber-400" />
               </button>
 
-              <div className="menu-item mt-4" style={{ animationDelay: "400ms" }}>
+              {/* Mobile Ad */}
+              <div className="menu-item mt-3" style={{ animationDelay: "360ms" }}>
                 <AdSlot placement="MOBILE_BANNER" className="h-20" />
               </div>
 
+              {/* Auth buttons */}
               {!user && (
-                <div className="menu-item mt-5 grid grid-cols-2 gap-2.5" style={{ animationDelay: "440ms" }}>
-                  <Button
-                    variant="outline"
-                    className="h-12 rounded-xl text-sm font-semibold"
-                    onClick={() => {
-                      navigate({ name: "auth" });
-                      setMobileOpen(false);
-                    }}
+                <div className="menu-item mt-4 grid grid-cols-2 gap-2.5" style={{ animationDelay: "420ms" }}>
+                  <button
+                    onClick={() => { navigate({ name: "auth" }); setMobileOpen(false); }}
+                    className="h-12 border border-white/15 bg-white/[0.05] text-sm font-bold text-white/70 transition-colors hover:bg-white/[0.1]"
                   >
                     Log In
-                  </Button>
-                  <Button
-                    className="h-12 rounded-xl bg-primary text-sm font-bold text-primary-foreground"
-                    onClick={() => {
-                      navigate({ name: "auth" });
-                      setMobileOpen(false);
-                    }}
+                  </button>
+                  <button
+                    onClick={() => { navigate({ name: "auth" }); setMobileOpen(false); }}
+                    className="h-12 bg-red-600 text-sm font-black text-white transition-colors hover:bg-red-500"
                   >
                     Join Free
-                  </Button>
+                  </button>
                 </div>
               )}
 
-              <div className="menu-item mt-6 flex items-center justify-center gap-2" style={{ animationDelay: "480ms" }}>
+              {/* Social */}
+              <div className="menu-item mt-5 flex items-center gap-2" style={{ animationDelay: "480ms" }}>
                 {[
                   { label: "Facebook", icon: <Facebook className="h-4 w-4" /> },
                   { label: "YouTube", icon: <Youtube className="h-4 w-4" /> },
-                  { label: "X (Twitter)", icon: <Twitter className="h-4 w-4" /> },
+                  { label: "X", icon: <Twitter className="h-4 w-4" /> },
                   { label: "Instagram", icon: <Instagram className="h-4 w-4" /> },
                 ].map((s) => (
                   <button
                     key={s.label}
-                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
-                    aria-label={`FHB ${s.label}`}
+                    className="flex h-10 w-10 items-center justify-center border border-white/[0.08] bg-white/[0.04] text-white/40 transition-colors hover:border-red-500/40 hover:text-red-400"
+                    aria-label={`FHB on ${s.label}`}
                   >
                     {s.icon}
                   </button>
                 ))}
               </div>
-              <p className="menu-item mt-5 text-center text-[11px] text-muted-foreground" style={{ animationDelay: "520ms" }}>
-                Made for the football fans of Bangladesh — from Dhaka
+              <p className="menu-item mt-4 text-center text-[10.5px] text-white/25" style={{ animationDelay: "520ms" }}>
+                © {new Date().getFullYear()} Football Hub Bangladesh · footballhub.com.bd
               </p>
             </div>
           </div>,
@@ -545,47 +608,42 @@ export function Header() {
 }
 
 export function BottomNav() {
-  const { view, navigate, user } = useAppStore();
+  const { view, navigate } = useAppStore();
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-border/70 bg-background/92 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.07] bg-[#0d0d10]/96 pb-[env(safe-area-inset-bottom)] backdrop-blur-2xl lg:hidden"
       aria-label="Mobile navigation"
     >
       <div className="mx-auto grid max-w-lg grid-cols-5">
         {MOBILE_NAV.map((item) => {
           const active =
             view.name === item.view.name ||
-            (item.view.name === "profile" && (view.name === "profile" || view.name === "earnings" || view.name === "admin")) ||
+            (item.view.name === "profile" && ["profile", "earnings", "admin"].includes(view.name)) ||
             (item.view.name === "news" && view.name === "news-detail");
           return (
             <button
               key={item.label}
               onClick={() => navigate(item.view)}
               className={cn(
-                "tap-target relative flex flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-semibold transition-colors",
-                active ? "text-primary" : "text-muted-foreground"
+                "tap-target relative flex flex-col items-center justify-center gap-0.5 py-1.5 text-[10px] font-bold transition-colors",
+                active ? "text-red-400" : "text-white/35 hover:text-white/70"
               )}
               aria-current={active ? "page" : undefined}
             >
               <span
                 aria-hidden
                 className={cn(
-                  "absolute inset-x-5 top-0 h-[2.5px] rounded-full transition-all duration-200",
-                  active ? "bg-primary opacity-100" : "opacity-0"
+                  "absolute inset-x-4 top-0 h-[2px] transition-all duration-200",
+                  active ? "bg-red-500 opacity-100" : "opacity-0"
                 )}
               />
-              <span
-                className={cn(
-                  "flex h-7 w-12 items-center justify-center rounded-full transition-all duration-200",
-                  active && "bg-primary/15"
-                )}
-              >
+              <span className={cn(
+                "flex h-7 w-11 items-center justify-center transition-all duration-200",
+                active && "bg-red-600/15 rounded"
+              )}>
                 {item.icon}
               </span>
-              {item.label}
-              {item.label === "Profile" && user?.isPremium && (
-                <span className="absolute right-6 top-2 h-1.5 w-1.5 rounded-full bg-fhb-gold" aria-label="Premium" />
-              )}
+              <span className="tracking-wide">{item.label}</span>
             </button>
           );
         })}

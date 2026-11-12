@@ -12,7 +12,8 @@ export function fail(message: string, status = 400, extra?: Record<string, unkno
 export function handleError(e: unknown) {
   if (e instanceof AuthError) return fail(e.message, e.status);
   console.error("[API Error]", e);
-  return fail("Server error — please try again", 500);
+  const msg = e instanceof Error ? `${e.message} ${(e as any).code || ""}` : String(e);
+  return fail(`Server error: ${msg}`, 500);
 }
 
 // Basic in-memory rate limiter (per-process)

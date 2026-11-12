@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { MessageCircle, Send, Crown, LogIn } from "lucide-react";
+import { MessageCircle, Send, Crown, LogIn, Trash2 } from "lucide-react";
 
 /**
  * Shared comment section for NEWS / VIDEO / POST targets.
@@ -45,8 +45,32 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
     onSuccess: () => {
       setContent("");
       queryClient.invalidateQueries({ queryKey: ["comments", targetType, targetId] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["videos"] });
+      queryClient.invalidateQueries({ queryKey: ["news"] });
     },
     onError: (e: Error) => toast({ title: "Comment failed", description: e.message, variant: "destructive" }),
+  });
+
+  const deleteComment = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/comments?id=${id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      return json;
+    },
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["comments", targetType, targetId] });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["videos"] });
+      queryClient.invalidateQueries({ queryKey: ["news"] });
+      toast({
+        title: "Comment removed",
+        description: res?.data?.message ?? "The comment has been deleted.",
+      });
+    },
+    onError: (e: Error) =>
+      toast({ title: "Delete failed", description: e.message, variant: "destructive" }),
   });
 
   const comments = data?.comments ?? [];
@@ -108,31 +132,59 @@ export function CommentSection({ targetType, targetId }: { targetType: "NEWS" | 
         ) : comments.length === 0 ? (
           <p className="py-4 text-center text-sm text-muted-foreground">No comments yet — be the first to share your take.</p>
         ) : (
-          comments.map((c) => (
-            <div key={c.id} className="flex items-start gap-3 rounded-lg border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
-              <Avatar className="h-8 w-8 border">
-                <AvatarImage src={c.user.avatarUrl ?? undefined} alt={c.user.name} />
-                <AvatarFallback className="bg-primary/15 text-xs font-bold text-primary">{c.user.name.slice(0, 2)}</AvatarFallback>
-              </Avatar>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-1.5">
-                  <button
-                    onClick={() => navigate({ name: "profile", username: c.user.username })}
-                    className="text-xs font-bold transition-colors hover:text-primary"
-                  >
-                    {c.user.name}
-                  </button>
-                  {c.user.isPremium && (
-                    <span className="flex items-center gap-0.5 rounded-sm bg-fhb-gold/15 px-1 py-0.5 text-[9px] font-bold text-fhb-gold">
-                      <Crown className="h-2.5 w-2.5" aria-hidden /> Premium
-                    </span>
-                  )}
-                  <span className="text-[10px] text-muted-foreground">{timeAgo(c.createdAt)}</span>
+          comments.map((c) => {
+            const isAdmin = user?.role === "ADMIN";
+            const isAuthor = user?.id === c.user.id;
+            const canDelete = isAdmin || isAuthor;
+
+            return (
+              <div key={c.id} className="group relative flex items-start gap-3 rounded-lg border border-border bg-card p-3.5 transition-colors hover:border-primary/25">
+                <Avatar className="h-8 w-8 border">
+                  <AvatarImage src={c.user.avatarUrl ?? undefined} alt={c.user.name} />
+                  <AvatarFallback className="bg-primary/15 text-xs font-bold text-primary">{c.user.name.slice(0, 2)}</AvatarFallback>
+                </Avatar>
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <button
+                      onClick={() => navigate({ name: "profile", username: c.user.username })}
+                      className="text-xs font-bold transition-colors hover:text-primary"
+                    >
+                      {c.user.name}
+                    </button>
+                    {c.user.role === "ADMIN" && (
+                      <span className="rounded bg-primary/15 px-1 py-0.5 text-[9px] font-bold text-primary">
+                        Staff
+                      </span>
+                    )}
+                    {c.user.isPremium && (
+                      <span className="flex items-center gap-0.5 rounded-sm bg-fhb-gold/15 px-1 py-0.5 text-[9px] font-bold text-fhb-gold">
+                        <Crown className="h-2.5 w-2.5" aria-hidden /> Premium
+                      </span>
+                    )}
+                    <span className="text-[10px] text-muted-foreground">{timeAgo(c.createdAt)}</span>
+
+                    {/* Admin or Author Delete affordance */}
+                    {canDelete && (
+                      <button
+                        onClick={() => {
+                          if (confirm(isAdmin && !isAuthor ? "Delete this comment as Admin?" : "Delete your comment?")) {
+                            deleteComment.mutate(c.id);
+                          }
+                        }}
+                        disabled={deleteComment.isPending}
+                        title={isAdmin && !isAuthor ? "Delete comment (Admin)" : "Delete comment"}
+                        className="ml-auto opacity-70 hover:opacity-100 transition-opacity text-muted-foreground hover:text-red-500 p-1 rounded hover:bg-red-500/10"
+                        aria-label="Delete comment"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    )}
+                  </div>
+                  <p className="mt-1 whitespace-pre-line break-words text-sm leading-relaxed">{c.content}</p>
                 </div>
-                <p className="mt-1 whitespace-pre-line break-words text-sm leading-relaxed">{c.content}</p>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </section>

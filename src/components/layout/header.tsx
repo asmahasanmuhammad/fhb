@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAppStore, type View } from "@/store/app-store";
 import { useLiveScores } from "@/components/providers/live-score-provider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,54 +25,91 @@ import { cn } from "@/lib/utils";
 import type { TeamRef, Player, NewsArticle } from "@/lib/types";
 import { TeamCrest } from "@/components/football/team-badge";
 import { fmtNum } from "@/lib/format";
+import { ThemeToggle, ThemeSegmentControl } from "@/components/layout/theme-toggle";
 import {
   Home, Zap, Table2, Newspaper, Shield, Users, User, Trophy, Video, Tv,
   MessageSquare, Crown, Upload, Wallet, LayoutDashboard, LogOut, Search,
-  Menu, X, ChevronRight, MoreHorizontal, Radio,
+  Menu, X, ChevronRight, MoreHorizontal, Radio, Bell,
 } from "lucide-react";
 
 /* ════════════════════════════════════════════════════════════════
-   FHB 4.0 — App chrome: brand mark, quick search, header bar,
+   FHB 5.0 — App chrome: brand mark, quick search, header bar,
    desktop left rail nav, mobile sheet menu, mobile bottom nav.
    Flat, dense, institutional — FotMob/Sofascore shell pattern.
    ════════════════════════════════════════════════════════════════ */
 
-/* ── Brand mark — green tile, condensed F, national red dot ── */
-export function LogoMark({ size = 32 }: { size?: number }) {
+/* ── useScrolled — tracks whether page has scrolled >10px ── */
+function useScrolled(threshold = 10): boolean {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > threshold);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [threshold]);
+  return scrolled;
+}
+
+/* ── useClock — live date + time string updated every second ── */
+function useClock(): string {
+  const [display, setDisplay] = useState("");
+  useEffect(() => {
+    const fmt = () => {
+      const now = new Date();
+      return now.toLocaleDateString("en-GB", {
+        weekday: "short", day: "numeric", month: "short",
+      }) + " · " + now.toLocaleTimeString("en-GB", {
+        hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false,
+      });
+    };
+    setDisplay(fmt());
+    const id = setInterval(() => setDisplay(fmt()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  return display;
+}
+
+/* ── Brand mark — ESPN-Style Bold Red Slab with Transparent White Speed Letters ── */
+/* hasLive triggers a subtle glow-pulse CSS animation   */
+export function LogoMark({
+  size = 40,
+  hasLive = false,
+  className,
+}: {
+  size?: number;
+  hasLive?: boolean;
+  className?: string;
+}) {
   return (
     <span
-      className="relative flex shrink-0 select-none items-center justify-center rounded-[7px] bg-primary"
-      style={{ width: size, height: size }}
-      aria-hidden
+      className={cn(
+        "group relative inline-flex shrink-0 select-none items-center justify-center rounded-[7px] bg-[#DC0714] px-3.5 sm:px-4 py-1.5 shadow-md shadow-black/30 transition-all duration-200 hover:brightness-110 active:scale-95",
+        hasLive && "ring-2 ring-fhb-red/40",
+        className
+      )}
+      style={{ height: size }}
+      aria-label="Football Hub Bangladesh"
     >
-      <span
-        className="font-display font-extrabold leading-none text-primary-foreground"
-        style={{ fontSize: Math.round(size * 0.58) }}
-      >
-        F
-      </span>
-      <span
-        className="absolute rounded-full bg-fhb-red"
-        style={{ width: Math.max(4, size * 0.16), height: Math.max(4, size * 0.16), right: size * 0.14, bottom: size * 0.14 }}
+      <img
+        src="/logos/fhb-white.svg"
+        alt="Football Hub Bangladesh"
+        className="h-full w-auto object-contain transition-transform duration-200 group-hover:scale-[1.03]"
       />
+      {hasLive && (
+        <span
+          className="absolute -top-1 -right-1 flex h-2.5 w-2.5"
+          title="Matches live right now"
+        >
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-90" />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white ring-2 ring-[#DC0714]" />
+        </span>
+      )}
     </span>
   );
 }
 
-function Wordmark({ compact = false }: { compact?: boolean }) {
-  return (
-    <span className="flex items-center gap-2.5">
-      <LogoMark size={compact ? 28 : 30} />
-      <span className="hidden leading-none sm:block">
-        <span className="label-cond block text-[15px] font-bold tracking-[0.06em] text-foreground">
-          FOOTBALL HUB
-        </span>
-        <span className="mt-[3px] block text-[8.5px] font-semibold uppercase tracking-[0.28em] text-muted-foreground">
-          Bangladesh
-        </span>
-      </span>
-    </span>
-  );
+function Wordmark({ compact = false, hasLive = false }: { compact?: boolean; hasLive?: boolean }) {
+  return <LogoMark size={compact ? 36 : 40} hasLive={hasLive} />;
 }
 
 /* ── Navigation model (single source of truth) ── */
@@ -143,9 +181,39 @@ function useLiveCount() {
 
 /* ════════════════════════════════════════════════════════════════
    QuickSearch — global fuzzy search across teams / players / news.
-   Debounced, keyboard-dismissible, result-grouped.
+   Debounced, keyboard-navigable, result-grouped, animated panel.
    ════════════════════════════════════════════════════════════════ */
 type SearchResults = { teams: TeamRef[]; players: Player[]; articles: NewsArticle[] };
+
+/** Flatten all navigable results into a single ordered list for keyboard nav. */
+type FlatResult =
+  | { kind: "team"; item: TeamRef }
+  | { kind: "player"; item: Player }
+  | { kind: "article"; item: NewsArticle };
+
+function flattenResults(r: SearchResults): FlatResult[] {
+  return [
+    ...r.teams.map((item): FlatResult => ({ kind: "team", item })),
+    ...r.players.map((item): FlatResult => ({ kind: "player", item })),
+    ...r.articles.map((item): FlatResult => ({ kind: "article", item })),
+  ];
+}
+
+/* Animated loading dots */
+function LoadingDots() {
+  return (
+    <span className="inline-flex items-center gap-[3px]" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <motion.span
+          key={i}
+          className="block h-[5px] w-[5px] rounded-full bg-muted-foreground/60"
+          animate={{ opacity: [0.3, 1, 0.3], scale: [0.8, 1, 0.8] }}
+          transition={{ duration: 0.9, repeat: Infinity, delay: i * 0.18, ease: "easeInOut" }}
+        />
+      ))}
+    </span>
+  );
+}
 
 function QuickSearch({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useAppStore((s) => s.navigate);
@@ -153,13 +221,17 @@ function QuickSearch({ onNavigate }: { onNavigate?: () => void }) {
   const [open, setOpen] = useState(false);
   const [results, setResults] = useState<SearchResults>({ teams: [], players: [], articles: [] });
   const [loading, setLoading] = useState(false);
+  const [cursor, setCursor] = useState(-1);
   const boxRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
+  /* ── Data fetching ── */
   useEffect(() => {
     const term = q.trim();
     if (term.length < 2) {
       setResults({ teams: [], players: [], articles: [] });
       setLoading(false);
+      setCursor(-1);
       return;
     }
     setLoading(true);
@@ -183,17 +255,22 @@ function QuickSearch({ onNavigate }: { onNavigate?: () => void }) {
         setResults({ teams: [], players: [], articles: [] });
       } finally {
         setLoading(false);
+        setCursor(-1);
       }
     }, 260);
     return () => clearTimeout(t);
   }, [q]);
 
+  /* ── Click-outside & Escape ── */
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
       if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+        inputRef.current?.blur();
+      }
     };
     document.addEventListener("mousedown", onDown);
     document.addEventListener("keydown", onKey);
@@ -203,105 +280,181 @@ function QuickSearch({ onNavigate }: { onNavigate?: () => void }) {
     };
   }, []);
 
-  const go = (view: View) => {
+  const go = useCallback((view: View) => {
     navigate(view);
     setOpen(false);
     setQ("");
+    setCursor(-1);
     onNavigate?.();
-  };
+  }, [navigate, onNavigate]);
 
-  const total = results.teams.length + results.players.length + results.articles.length;
+  const flat = useMemo(() => flattenResults(results), [results]);
+  const total = flat.length;
   const showPanel = open && q.trim().length >= 2;
+
+  /* ── Keyboard navigation ── */
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showPanel) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setCursor((c) => Math.min(c + 1, total - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setCursor((c) => Math.max(c - 1, -1));
+    } else if (e.key === "Enter" && cursor >= 0 && cursor < total) {
+      e.preventDefault();
+      const sel = flat[cursor];
+      if (!sel) return;
+      if (sel.kind === "team") go({ name: "team-detail", id: sel.item.id });
+      else if (sel.kind === "player") go({ name: "player-detail", id: sel.item.id });
+      else go({ name: "news-detail", id: sel.item.id });
+    }
+  }, [showPanel, total, cursor, flat, go]);
+
+  /* ── Result index tracker for keyboard highlight ── */
+  let globalIdx = -1;
+  const nextIdx = () => {
+    globalIdx++;
+    return globalIdx;
+  };
 
   return (
     <div ref={boxRef} className="relative w-full max-w-[420px]">
-      <label className="flex h-9 w-full items-center gap-2.5 rounded-[7px] border border-input bg-white/[0.03] px-3 transition-colors focus-within:border-primary/50 focus-within:bg-white/[0.05]">
-        <Search className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden />
+      <label className="flex h-10 w-full items-center gap-2.5 rounded-[8px] border border-input bg-muted/40 dark:bg-white/[0.04] px-3.5 transition-colors focus-within:border-primary/50 focus-within:bg-card">
+        <Search className="h-4 w-4 shrink-0 text-muted-foreground" aria-hidden />
         <input
+          ref={inputRef}
           value={q}
           onChange={(e) => {
             setQ(e.target.value);
             setOpen(true);
           }}
           onFocus={() => setOpen(true)}
+          onKeyDown={handleKeyDown}
           placeholder="Search teams, players, news…"
-          className="h-full w-full bg-transparent text-[13px] text-foreground outline-none placeholder:text-muted-foreground/70"
+          className="h-full w-full bg-transparent text-[14.5px] text-foreground outline-none placeholder:text-muted-foreground/75"
           aria-label="Search Football Hub"
+          aria-autocomplete="list"
+          aria-expanded={showPanel}
+          role="combobox"
         />
         {q && (
           <button
-            onClick={() => {
-              setQ("");
-            }}
+            onClick={() => { setQ(""); setCursor(-1); }}
             className="flex h-5 w-5 shrink-0 items-center justify-center rounded-[4px] text-muted-foreground hover:bg-white/10 hover:text-foreground"
             aria-label="Clear search"
+            tabIndex={-1}
           >
             <X className="h-3 w-3" aria-hidden />
           </button>
         )}
       </label>
 
-      {showPanel && (
-        <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-lg border border-border bg-popover shadow-[0_16px_48px_-12px_rgba(0,0,0,0.7)]">
-          {loading && (
-            <p className="px-4 py-5 text-[12px] text-muted-foreground">Searching…</p>
-          )}
-          {!loading && total === 0 && (
-            <p className="px-4 py-5 text-[12px] text-muted-foreground">
-              No results for “{q.trim()}”. Try a team, player or keyword.
-            </p>
-          )}
-          {!loading && total > 0 && (
-            <div className="max-h-[min(70vh,480px)] overflow-y-auto fhb-scroll py-1.5">
-              {results.teams.length > 0 && (
-                <SearchGroup title="Teams">
-                  {results.teams.map((t) => (
-                    <SearchRow key={t.id} onClick={() => go({ name: "team-detail", id: t.id })}>
-                      <TeamCrest team={t} size="xs" />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-medium text-foreground">{t.name}</span>
-                        {t.city && <span className="block truncate text-[11px] text-muted-foreground">{t.city}</span>}
-                      </span>
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
-                    </SearchRow>
-                  ))}
-                </SearchGroup>
-              )}
-              {results.players.length > 0 && (
-                <SearchGroup title="Players">
-                  {results.players.map((p) => (
-                    <SearchRow key={p.id} onClick={() => go({ name: "player-detail", id: p.id })}>
-                      <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[5px] bg-elevated text-[9px] font-bold text-muted-foreground">
-                        {p.position}
-                      </span>
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-medium text-foreground">{p.name}</span>
-                        <span className="block truncate text-[11px] text-muted-foreground">
-                          {p.team?.name ?? "Free agent"} · {fmtNum(p.goals)} goals
-                        </span>
-                      </span>
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
-                    </SearchRow>
-                  ))}
-                </SearchGroup>
-              )}
-              {results.articles.length > 0 && (
-                <SearchGroup title="News">
-                  {results.articles.map((a) => (
-                    <SearchRow key={a.id} onClick={() => go({ name: "news-detail", id: a.id })}>
-                      <Newspaper className="h-[18px] w-[18px] shrink-0 text-muted-foreground/70" aria-hidden />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate text-[13px] font-medium text-foreground">{a.title}</span>
-                      </span>
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
-                    </SearchRow>
-                  ))}
-                </SearchGroup>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+      <AnimatePresence>
+        {showPanel && (
+          <motion.div
+            key="search-panel"
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.14, ease: "easeOut" }}
+            className="absolute left-0 right-0 top-[calc(100%+8px)] z-[80] overflow-hidden rounded-lg border border-border bg-popover shadow-[0_16px_48px_-12px_rgba(0,0,0,0.7)]"
+            role="listbox"
+          >
+            {loading && (
+              <p className="flex items-center gap-2 px-4 py-5 text-[12px] text-muted-foreground">
+                Searching <LoadingDots />
+              </p>
+            )}
+            {!loading && total === 0 && (
+              <p className="px-4 py-5 text-[12px] text-muted-foreground">
+                No results for &ldquo;{q.trim()}&rdquo;. Try a team, player or keyword.
+              </p>
+            )}
+            {!loading && total > 0 && (
+              <div className="max-h-[min(70vh,480px)] overflow-y-auto fhb-scroll py-1.5">
+                {results.teams.length > 0 && (
+                  <SearchGroup title="Teams">
+                    {results.teams.map((t) => {
+                      const idx = nextIdx();
+                      return (
+                        <SearchRow
+                          key={t.id}
+                          onClick={() => go({ name: "team-detail", id: t.id })}
+                          isHighlighted={cursor === idx}
+                        >
+                          <TeamCrest team={t} size="xs" />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13px] font-medium text-foreground">{t.name}</span>
+                            {t.city && <span className="block truncate text-[11px] text-muted-foreground">{t.city}</span>}
+                          </span>
+                          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
+                        </SearchRow>
+                      );
+                    })}
+                  </SearchGroup>
+                )}
+                {results.players.length > 0 && (
+                  <SearchGroup title="Players">
+                    {results.players.map((p) => {
+                      const idx = nextIdx();
+                      return (
+                        <SearchRow
+                          key={p.id}
+                          onClick={() => go({ name: "player-detail", id: p.id })}
+                          isHighlighted={cursor === idx}
+                        >
+                          <span className="flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[5px] bg-elevated text-[9px] font-bold text-muted-foreground">
+                            {p.position}
+                          </span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13px] font-medium text-foreground">{p.name}</span>
+                            <span className="block truncate text-[11px] text-muted-foreground">
+                              {p.team?.name ?? "Free agent"} · {fmtNum(p.goals)} goals
+                            </span>
+                          </span>
+                          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
+                        </SearchRow>
+                      );
+                    })}
+                  </SearchGroup>
+                )}
+                {results.articles.length > 0 && (
+                  <SearchGroup title="News">
+                    {results.articles.map((a) => {
+                      const idx = nextIdx();
+                      return (
+                        <SearchRow
+                          key={a.id}
+                          onClick={() => go({ name: "news-detail", id: a.id })}
+                          isHighlighted={cursor === idx}
+                        >
+                          <Newspaper className="h-[18px] w-[18px] shrink-0 text-muted-foreground/70" aria-hidden />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13px] font-medium text-foreground">{a.title}</span>
+                          </span>
+                          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/60" aria-hidden />
+                        </SearchRow>
+                      );
+                    })}
+                  </SearchGroup>
+                )}
+
+                {/* Command palette hint */}
+                <div className="flex items-center justify-end border-t border-border/50 px-4 py-2">
+                  <span className="text-[10.5px] text-muted-foreground/60">
+                    Press{" "}
+                    <kbd className="inline-flex h-4 items-center rounded border border-border px-1 font-mono text-[9px] text-muted-foreground">
+                      ↵
+                    </kbd>{" "}
+                    to navigate
+                  </span>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
@@ -312,18 +465,58 @@ function SearchGroup({ title, children }: { title: string; children: React.React
       <p className="px-4 pb-1 pt-2 text-[10px] font-bold uppercase tracking-[0.14em] text-muted-foreground/70">
         {title}
       </p>
-      <div>{children}</div>
+      <div role="group" aria-label={title}>{children}</div>
     </div>
   );
 }
 
-function SearchRow({ children, onClick }: { children: React.ReactNode; onClick: () => void }) {
+function SearchRow({
+  children,
+  onClick,
+  isHighlighted = false,
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  isHighlighted?: boolean;
+}) {
+  const ref = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (isHighlighted) ref.current?.scrollIntoView({ block: "nearest" });
+  }, [isHighlighted]);
   return (
     <button
+      ref={ref}
       onClick={onClick}
-      className="flex w-full items-center gap-3 px-4 py-2 text-left transition-colors hover:bg-white/[0.05]"
+      role="option"
+      aria-selected={isHighlighted}
+      className={cn(
+        "flex w-full items-center gap-3 px-4 py-2 text-left transition-colors",
+        isHighlighted ? "bg-white/[0.08]" : "hover:bg-white/[0.05]"
+      )}
     >
       {children}
+    </button>
+  );
+}
+
+/* ════════════════════════════════════════════════════════════════
+   Notifications Bell — desktop-only, unread dot badge (UI only).
+   ════════════════════════════════════════════════════════════════ */
+function NotificationsBell() {
+  /* hasUnread is a static stub — not wired to an API */
+  const hasUnread = true;
+  return (
+    <button
+      className="relative hidden h-9 w-9 items-center justify-center rounded-[7px] text-foreground/75 transition-colors hover:bg-white/[0.06] hover:text-foreground sm:flex"
+      aria-label={hasUnread ? "Notifications — unread items" : "Notifications"}
+    >
+      <Bell className="h-[17px] w-[17px]" aria-hidden />
+      {hasUnread && (
+        <span
+          className="absolute right-[9px] top-[9px] h-[7px] w-[7px] rounded-full bg-fhb-red ring-[1.5px] ring-background"
+          aria-hidden
+        />
+      )}
     </button>
   );
 }
@@ -361,7 +554,7 @@ function AccountControl({ onNavigate }: { onNavigate?: () => void }) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex h-9 items-center gap-2 rounded-[7px] border border-border bg-white/[0.02] pr-2.5 pl-1.5 transition-colors hover:border-white/20"
+          className="flex h-9 items-center gap-2 rounded-[7px] border border-border bg-card pr-2.5 pl-1.5 transition-colors hover:border-primary/40 hover:bg-muted"
           aria-label="Account menu"
         >
           <Avatar className="h-6.5 w-6.5 h-[26px] w-[26px]">
@@ -417,15 +610,24 @@ function AccountControl({ onNavigate }: { onNavigate?: () => void }) {
 
 /* ════════════════════════════════════════════════════════════════
    Header — 56px sticky bar: menu (mobile) · brand · search · actions
+   useScrolled adds shadow on scroll ≥ 10px.
    ════════════════════════════════════════════════════════════════ */
 export function Header() {
   const navigate = useAppStore((s) => s.navigate);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileSearch, setMobileSearch] = useState(false);
+  const live = useLiveScores();
+  const hasLive = live.matches.length > 0;
+  const scrolled = useScrolled(10);
 
   return (
-    <header className="w-full">
-      <div className="flex h-14 items-center gap-3 px-3 sm:px-4 lg:px-5">
+    <header
+      className={cn(
+        "w-full transition-shadow duration-200",
+        scrolled && "shadow-lg shadow-black/40"
+      )}
+    >
+      <div className="mx-auto flex h-14 w-full max-w-[1720px] items-center gap-3 px-3 sm:px-4 lg:px-6">
         {/* Mobile: hamburger */}
         <button
           onClick={() => setMobileOpen(true)}
@@ -441,7 +643,7 @@ export function Header() {
           className="flex shrink-0 items-center"
           aria-label="Football Hub Bangladesh — home"
         >
-          <Wordmark compact />
+          <Wordmark compact hasLive={hasLive} />
         </button>
 
         {/* Search — desktop inline, mobile toggle */}
@@ -462,19 +664,25 @@ export function Header() {
 
           <button
             onClick={() => navigate({ name: "live-tv" })}
-            className="hidden h-9 items-center gap-2 rounded-[7px] border border-border bg-white/[0.02] px-3 text-[12px] font-semibold text-foreground/85 transition-colors hover:border-white/20 sm:flex"
+            className="hidden h-10 items-center gap-2 rounded-[8px] border border-border bg-card px-3.5 text-[13.5px] font-bold text-foreground/90 transition-colors hover:border-primary/40 hover:bg-muted sm:flex"
           >
-            <Radio className="h-3.5 w-3.5 text-fhb-red" aria-hidden />
+            <Radio className="h-4 w-4 text-fhb-red" aria-hidden />
             Live TV
           </button>
 
+          {/* Notifications bell — desktop only, between Live TV and Account */}
+          <NotificationsBell />
+
           <button
             onClick={() => navigate({ name: "premium" })}
-            className="hidden h-9 items-center gap-1.5 rounded-[7px] px-2.5 text-[12px] font-semibold text-fhb-gold transition-colors hover:bg-fhb-gold/10 xl:flex"
+            className="hidden h-10 items-center gap-2 rounded-[8px] px-3 text-[13.5px] font-bold text-fhb-gold transition-colors hover:bg-fhb-gold/10 xl:flex"
           >
-            <Crown className="h-3.5 w-3.5" aria-hidden />
+            <Crown className="h-4 w-4" aria-hidden />
             Premium
           </button>
+
+          {/* Theme switcher toggle (Dark / Light) */}
+          <ThemeToggle />
 
           <AccountControl />
         </div>
@@ -489,23 +697,25 @@ export function Header() {
 
       {/* Mobile nav sheet */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        <SheetContent side="left" className="w-[300px] border-r border-border bg-sidebar p-0">
+        <SheetContent side="left" className="flex w-[300px] flex-col border-r border-border bg-sidebar p-0">
           <SheetHeader className="border-b border-border px-4 pb-4 pt-5">
             <SheetTitle asChild>
               <div className="flex items-center gap-2.5">
-                <LogoMark size={30} />
+                <LogoMark size={28} hasLive={hasLive} />
                 <span className="leading-none">
-                  <span className="label-cond block text-[14px] font-bold tracking-[0.06em] text-foreground">
+                  <span className="font-display block text-[15px] font-extrabold tracking-[0.06em] text-foreground">
                     FOOTBALL HUB
                   </span>
-                  <span className="mt-[3px] block text-[8px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
+                  <span className="mt-[2.5px] flex items-center gap-1.5 text-[8.5px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
+                    <span className="inline-block h-1 w-1 rounded-full bg-fhb-red" />
                     Bangladesh
                   </span>
                 </span>
               </div>
             </SheetTitle>
           </SheetHeader>
-          <nav aria-label="Site menu" className="fhb-scroll max-h-[calc(100vh-88px)] overflow-y-auto px-3 py-4">
+
+          <nav aria-label="Site menu" className="fhb-scroll flex-1 overflow-y-auto px-3 py-4">
             {NAV_SECTIONS.map((section, si) => (
               <div key={si} className="mb-1">
                 {section.title && (
@@ -519,9 +729,31 @@ export function Header() {
               </div>
             ))}
           </nav>
+
+          {/* Mobile sheet footer — date + time */}
+          <MobileSheetFooter />
         </SheetContent>
       </Sheet>
     </header>
+  );
+}
+
+/* ── Mobile sheet footer with live date/time & theme switcher ── */
+function MobileSheetFooter() {
+  const clock = useClock();
+  return (
+    <div className="flex flex-col gap-3 border-t border-border px-4 py-3.5">
+      <div className="flex items-center justify-between">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Theme</span>
+        <ThemeSegmentControl className="w-44" />
+      </div>
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground/60">
+        <span className="tabular-nums" aria-live="polite" aria-atomic>
+          {clock}
+        </span>
+        <span className="font-semibold">Football Hub BD</span>
+      </div>
+    </div>
   );
 }
 
@@ -536,12 +768,12 @@ function MobileNavItem({ item, onGo }: { item: NavItem; onGo: () => void }) {
         onGo();
       }}
       className={cn(
-        "menu-item flex h-10 w-full items-center gap-3 rounded-[7px] px-2.5 text-left transition-colors",
-        isActive ? "bg-white/[0.06] text-primary" : "text-foreground/80 hover:bg-white/[0.04]"
+        "menu-item flex h-11 w-full items-center gap-3.5 rounded-[8px] px-3 text-left transition-colors",
+        isActive ? "bg-primary/10 dark:bg-white/[0.08] text-primary font-bold" : "text-foreground/80 hover:bg-muted dark:hover:bg-white/[0.04]"
       )}
     >
-      <Icon className={cn("h-[17px] w-[17px]", item.premium && "text-fhb-gold")} aria-hidden />
-      <span className="text-[13.5px] font-medium">{item.label}</span>
+      <Icon className={cn("h-[19px] w-[19px]", item.premium && "text-fhb-gold")} aria-hidden />
+      <span className="text-[15px] font-semibold">{item.label}</span>
       {isActive && <span className="ml-auto h-4 w-[3px] rounded-full bg-primary" aria-hidden />}
     </button>
   );
@@ -551,6 +783,7 @@ function MobileNavItem({ item, onGo }: { item: NavItem; onGo: () => void }) {
    LeftRailNav — desktop persistent navigation (lg+).
    Institutional sidebar, FotMob-style: icon + label, flat active
    state, live-count badge on Live Scores.
+   Framer Motion layoutId="nav-bg" for smooth active indicator.
    ════════════════════════════════════════════════════════════════ */
 export function LeftRailNav() {
   const navigate = useAppStore((s) => s.navigate);
@@ -559,14 +792,14 @@ export function LeftRailNav() {
 
   return (
     <aside
-      className="sticky top-[92px] hidden h-[calc(100vh-92px)] w-[216px] shrink-0 flex-col border-r border-border pr-0 lg:flex"
+      className="sticky top-[92px] hidden h-[calc(100vh-92px)] w-[232px] shrink-0 flex-col border-r border-border pr-0 lg:flex"
       aria-label="Primary navigation"
     >
-      <nav className="fhb-scroll flex-1 overflow-y-auto px-3 py-5">
+      <nav className="fhb-scroll flex-1 overflow-y-auto px-3.5 py-5">
         {NAV_SECTIONS.map((section, si) => (
-          <div key={si} className="mb-1.5">
+          <div key={si} className="mb-2">
             {section.title && (
-              <p className="px-2.5 pb-1.5 pt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground/85">
+              <p className="px-3 pb-1.5 pt-4 text-[11.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground/85">
                 {section.title}
               </p>
             )}
@@ -574,31 +807,14 @@ export function LeftRailNav() {
               const active = isActive(item);
               const Icon = item.icon;
               return (
-                <button
+                <RailNavItem
                   key={item.label}
+                  item={item}
+                  active={active}
+                  Icon={Icon}
+                  liveCount={liveCount}
                   onClick={() => navigate(item.view)}
-                  className={cn(
-                    "group relative flex h-[34px] w-full items-center gap-2.5 rounded-[7px] px-2.5 text-left transition-colors",
-                    active
-                      ? "bg-white/[0.06] text-primary"
-                      : "text-foreground/75 hover:bg-white/[0.04] hover:text-foreground"
-                  )}
-                  aria-current={active ? "page" : undefined}
-                >
-                  {active && (
-                    <span className="absolute left-0 top-1/2 h-[18px] w-[3px] -translate-y-1/2 rounded-r-full bg-primary" aria-hidden />
-                  )}
-                  <Icon
-                    className={cn("h-4 w-4 shrink-0 transition-colors", item.premium && !active && "text-fhb-gold")}
-                    aria-hidden
-                  />
-                  <span className="truncate text-[13px] font-medium">{item.label}</span>
-                  {item.view.name === "scores" && liveCount > 0 && (
-                    <span className="tabular ml-auto flex h-[18px] min-w-[18px] items-center justify-center rounded-[4px] bg-fhb-red px-1 text-[10px] font-bold text-white">
-                      {fmtNum(liveCount)}
-                    </span>
-                  )}
-                </button>
+                />
               );
             })}
           </div>
@@ -611,18 +827,109 @@ export function LeftRailNav() {
   );
 }
 
+/* Individual left-rail item with Framer Motion hover + active bg animations */
+function RailNavItem({
+  item,
+  active,
+  Icon,
+  liveCount,
+  onClick,
+}: {
+  item: NavItem;
+  active: boolean;
+  Icon: React.ElementType;
+  liveCount: number;
+  onClick: () => void;
+}) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={cn(
+        "group relative flex h-[38px] w-full items-center gap-3 rounded-[8px] px-3 text-left transition-colors",
+        active ? "text-primary font-bold" : "text-foreground/80 hover:text-foreground font-medium"
+      )}
+      aria-current={active ? "page" : undefined}
+    >
+      {/* Animated background fill — shared layoutId for smooth morphing */}
+      <AnimatePresence>
+        {(active || hovered) && (
+          <motion.span
+            layoutId="nav-bg"
+            key={active ? "active-bg" : "hover-bg"}
+            className={cn(
+              "absolute inset-0 rounded-[8px]",
+              active ? "bg-primary/10 dark:bg-white/[0.08]" : "bg-muted/70 dark:bg-white/[0.04]"
+            )}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.15, ease: "easeOut" }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Active left accent bar */}
+      <AnimatePresence>
+        {active && (
+          <motion.span
+            key="accent"
+            className="absolute left-0 top-1/2 h-[20px] w-[3px] -translate-y-1/2 rounded-r-full bg-primary"
+            initial={{ scaleY: 0, opacity: 0 }}
+            animate={{ scaleY: 1, opacity: 1 }}
+            exit={{ scaleY: 0, opacity: 0 }}
+            transition={{ duration: 0.18, ease: "easeOut" }}
+            aria-hidden
+          />
+        )}
+      </AnimatePresence>
+
+      <Icon
+        className={cn(
+          "relative h-[18px] w-[18px] shrink-0 transition-colors",
+          item.premium && !active && "text-fhb-gold"
+        )}
+        aria-hidden
+      />
+      <span className="relative truncate text-[14.5px]">{item.label}</span>
+      {item.view.name === "scores" && liveCount > 0 && (
+        <span className="tabular relative ml-auto flex h-[20px] min-w-[20px] items-center justify-center rounded-[5px] bg-fhb-red px-1.5 text-[11px] font-bold text-white">
+          {fmtNum(liveCount)}
+        </span>
+      )}
+    </button>
+  );
+}
+
 function AdminRailItem() {
   const user = useAppStore((s) => s.user);
   const navigate = useAppStore((s) => s.navigate);
+  const [hovered, setHovered] = useState(false);
   if (user?.role !== "ADMIN") return null;
   return (
-    <div className="mt-1 border-t border-border pt-3">
+    <div className="mt-2 border-t border-border pt-3">
       <button
         onClick={() => navigate({ name: "admin" })}
-        className="flex h-[34px] w-full items-center gap-2.5 rounded-[7px] px-2.5 text-left text-foreground/75 transition-colors hover:bg-white/[0.04] hover:text-foreground"
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        className="relative flex h-[38px] w-full items-center gap-3 rounded-[8px] px-3 text-left text-foreground/80 hover:text-foreground font-medium transition-colors"
       >
-        <LayoutDashboard className="h-4 w-4 shrink-0" aria-hidden />
-        <span className="text-[13px] font-medium">Admin Console</span>
+        <AnimatePresence>
+          {hovered && (
+            <motion.span
+              className="absolute inset-0 rounded-[8px] bg-muted/70 dark:bg-white/[0.04]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+            />
+          )}
+        </AnimatePresence>
+        <LayoutDashboard className="relative h-[18px] w-[18px] shrink-0" aria-hidden />
+        <span className="relative text-[14.5px]">Admin Console</span>
       </button>
     </div>
   );
@@ -650,7 +957,7 @@ export function BottomNav() {
   return (
     <>
       <nav
-        className="glass fixed inset-x-0 bottom-0 z-[58] flex h-[calc(56px+env(safe-area-inset-bottom))] items-stretch border-t border-border pb-[env(safe-area-inset-bottom)] lg:hidden"
+        className="fixed inset-x-0 bottom-0 z-[58] flex h-[calc(62px+env(safe-area-inset-bottom))] items-stretch border-t border-border bg-background/95 dark:bg-[#06080f]/95 backdrop-blur-xl shadow-2xl pb-[env(safe-area-inset-bottom)] lg:hidden"
         aria-label="Primary"
       >
         {BOTTOM_ITEMS.map((item) => {
@@ -667,12 +974,12 @@ export function BottomNav() {
               aria-current={active ? "page" : undefined}
             >
               <span className="relative">
-                <Icon className="h-[19px] w-[19px]" aria-hidden />
+                <Icon className="h-[21px] w-[21px]" aria-hidden />
                 {item.view.name === "scores" && hasLive && (
-                  <span className="live-dot absolute -right-1.5 -top-0.5 h-[7px] w-[7px] rounded-full bg-fhb-red" aria-hidden />
+                  <span className="live-dot absolute -right-1.5 -top-0.5 h-[8px] w-[8px] rounded-full bg-fhb-red" aria-hidden />
                 )}
               </span>
-              <span className={cn("text-[10px] font-semibold", active && "font-bold")}>{item.label}</span>
+              <span className={cn("text-[11.5px] font-semibold", active && "font-bold")}>{item.label}</span>
             </button>
           );
         })}
@@ -686,8 +993,8 @@ export function BottomNav() {
           )}
           aria-label="More sections"
         >
-          <MoreHorizontal className="h-[19px] w-[19px]" aria-hidden />
-          <span className="text-[10px] font-semibold">More</span>
+          <MoreHorizontal className="h-[21px] w-[21px]" aria-hidden />
+          <span className="text-[11.5px] font-semibold">More</span>
         </button>
       </nav>
 

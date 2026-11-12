@@ -57,26 +57,26 @@ export function MatchRow({
     <button
       onClick={() => navigate({ name: "match-detail", id: match.id })}
       className={cn(
-        "row-hover group flex w-full flex-col px-4 text-left",
-        showCompetition ? "py-1.5" : "py-[6px]",
-        isLive && "bg-fhb-red/[0.045]",
+        "row-hover group flex w-full flex-col px-4 text-left transition-colors",
+        showCompetition ? "py-2 sm:py-2.5" : "py-2.5 sm:py-3",
+        isLive && "match-row-live bg-fhb-red/[0.045]",
         className
       )}
     >
       {showCompetition && (
-        <span className="mb-1 flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+        <span className="mb-1.5 flex items-center gap-1.5 text-[11.5px] sm:text-[12px] text-muted-foreground font-medium">
           <span
             aria-hidden
             className="h-[8px] w-[8px] rounded-[2px]"
             style={{ backgroundColor: match.competition.accentColor ?? "var(--primary)" }}
           />
-          <span className="truncate font-medium">{match.competition.shortName ?? match.competition.name}</span>
-          {match.round && <span className="truncate opacity-70">· {match.round}</span>}
+          <span className="truncate">{match.competition.shortName ?? match.competition.name}</span>
+          {match.round && <span className="truncate opacity-75">· {match.round}</span>}
         </span>
       )}
-      <span className="flex items-center gap-2">
+      <span className="flex items-center gap-2.5">
         {/* status cell */}
-        <span className="tabular w-[44px] shrink-0 text-center text-[11px] font-bold">
+        <span className="tabular w-[48px] shrink-0 text-center text-[12.5px] sm:text-[13px] font-bold">
           {isLive ? (
             <span className={cn(match.period === "HT" ? "text-fhb-gold" : "text-fhb-red")}>
               {match.period === "HT" ? "HT" : `${fmtNum(match.minute)}′`}
@@ -89,40 +89,40 @@ export function MatchRow({
         </span>
 
         {/* home */}
-        <span className="flex min-w-0 flex-1 items-center justify-end gap-2">
+        <span className="flex min-w-0 flex-1 items-center justify-end gap-2.5">
           <span
             className={cn(
-              "truncate text-right text-[13px] leading-tight",
+              "truncate text-right text-[14px] sm:text-[15.5px] leading-tight",
               homeWon
                 ? "font-bold text-foreground"
                 : isFinished
-                  ? "font-medium text-foreground/55"
-                  : "font-medium text-foreground/85"
+                  ? "font-medium text-foreground/60"
+                  : "font-semibold text-foreground/90"
             )}
           >
             {teamDisplayName(match.homeTeam)}
           </span>
-          <TeamCrest team={match.homeTeam} size="xs" />
+          <TeamCrest team={match.homeTeam} size="sm" />
         </span>
 
         {/* score */}
-        <span className="flex w-[58px] shrink-0 items-center justify-center gap-1">
+        <span className="flex w-[64px] shrink-0 items-center justify-center gap-1.5">
           {isScheduled ? (
-            <span className="text-[11px] font-medium text-muted-foreground/60">–</span>
+            <span className="text-[13px] font-medium text-muted-foreground/60">–</span>
           ) : (
             <>
               <span
                 className={cn(
-                  "tabular text-[14px] font-bold",
+                  "tabular text-[15.5px] sm:text-[16.5px] font-extrabold",
                   homeWon || isLive ? "text-foreground" : isFinished ? "text-foreground/60" : "text-foreground/80"
                 )}
               >
                 {fmtNum(match.homeScore)}
               </span>
-              <span className="text-[11px] text-muted-foreground/60">–</span>
+              <span className="text-[13px] text-muted-foreground/60">–</span>
               <span
                 className={cn(
-                  "tabular text-[14px] font-bold",
+                  "tabular text-[15.5px] sm:text-[16.5px] font-extrabold",
                   awayWon || isLive ? "text-foreground" : isFinished ? "text-foreground/60" : "text-foreground/80"
                 )}
               >
@@ -133,16 +133,16 @@ export function MatchRow({
         </span>
 
         {/* away */}
-        <span className="flex min-w-0 flex-1 items-center gap-2">
-          <TeamCrest team={match.awayTeam} size="xs" />
+        <span className="flex min-w-0 flex-1 items-center gap-2.5">
+          <TeamCrest team={match.awayTeam} size="sm" />
           <span
             className={cn(
-              "truncate text-[13px] leading-tight",
+              "truncate text-[14px] sm:text-[15.5px] leading-tight",
               awayWon
                 ? "font-bold text-foreground"
                 : isFinished
-                  ? "font-medium text-foreground/55"
-                  : "font-medium text-foreground/85"
+                  ? "font-medium text-foreground/60"
+                  : "font-semibold text-foreground/90"
             )}
           >
             {teamDisplayName(match.awayTeam)}
@@ -151,7 +151,7 @@ export function MatchRow({
       </span>
 
       {showVenue && match.venue && (
-        <span className="mt-0.5 pl-[52px] text-[10.5px] text-muted-foreground/70">{match.venue}</span>
+        <span className="mt-1 pl-[56px] text-[11.5px] text-muted-foreground/75">{match.venue}</span>
       )}
     </button>
   );
@@ -262,11 +262,18 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
   return (
     <div
       className={cn(
-        "relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 sm:p-6",
-        isLive && "border-t-2 border-t-fhb-red",
+        "relative flex h-full flex-col overflow-hidden rounded-xl border border-border bg-card p-5 sm:p-6 transition-all duration-300",
+        isLive && "border-t-2 border-t-fhb-red shadow-lg shadow-fhb-red/5",
         className
       )}
     >
+      {/* Live ambient glow */}
+      {isLive && (
+        <div
+          className="pointer-events-none absolute -top-20 left-1/2 h-44 w-80 -translate-x-1/2 rounded-full bg-fhb-red/10 blur-3xl"
+          aria-hidden
+        />
+      )}
       {/* competition strip */}
       <div className="flex items-center justify-between gap-2">
         <span className="flex min-w-0 items-center gap-2">
@@ -275,11 +282,11 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
             className="h-[10px] w-[10px] shrink-0 rounded-[3px]"
             style={{ backgroundColor: match.competition.accentColor ?? "var(--primary)" }}
           />
-          <span className="label-cond truncate text-[13px] font-bold tracking-[0.06em] text-foreground/90">
+          <span className="label-cond truncate text-[13.5px] sm:text-[14.5px] font-bold tracking-[0.06em] text-foreground/90">
             {match.competition.shortName ?? match.competition.name}
           </span>
           {(match.round || match.matchday) && (
-            <span className="hidden shrink-0 text-[11px] text-muted-foreground sm:inline">
+            <span className="hidden shrink-0 text-[12px] text-muted-foreground sm:inline">
               {match.round ?? `Matchday ${fmtNum(match.matchday)}`}
             </span>
           )}
@@ -287,12 +294,12 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
         {isLive ? (
           <LiveBadge minute={match.minute} period={match.period} />
         ) : match.status === "FINISHED" ? (
-          <span className="label-cond shrink-0 rounded-[4px] bg-secondary px-2 py-1 text-[10px] font-bold tracking-wider text-muted-foreground">
+          <span className="label-cond shrink-0 rounded-[4px] bg-secondary px-2.5 py-1 text-[11.5px] font-bold tracking-wider text-muted-foreground">
             Full Time
           </span>
         ) : (
-          <span className="flex shrink-0 items-center gap-1.5 rounded-[4px] bg-secondary px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-            <Clock className="h-3 w-3" aria-hidden />
+          <span className="flex shrink-0 items-center gap-1.5 rounded-[4px] bg-secondary px-2.5 py-1 text-[11.5px] font-bold uppercase tracking-wider text-muted-foreground">
+            <Clock className="h-3.5 w-3.5" aria-hidden />
             <span className="hidden sm:inline">{relative}</span>
             <span className="sm:hidden">Kick-off {time}</span>
           </span>
@@ -301,7 +308,7 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
 
       {/* scoreboard — stacked Sofascore-style rows: crest · name · score.
           Never clips at any card width. */}
-      <div className="mt-5 flex flex-1 flex-col justify-center gap-1.5">
+      <div className="mt-5 flex flex-1 flex-col justify-center gap-2">
         {[
           { team: match.homeTeam, score: match.homeScore, side: "Home" as const },
           { team: match.awayTeam, score: match.awayScore, side: "Away" as const },
@@ -318,21 +325,21 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
               <span className="min-w-0 flex-1">
                 <span
                   className={cn(
-                    "label-cond block truncate text-[15px] font-semibold leading-tight tracking-[0.04em] sm:text-[17px]",
+                    "label-cond block truncate text-[16px] font-bold leading-tight tracking-[0.03em] sm:text-[18px]",
                     isWinner || isLive || isScheduled ? "text-foreground" : "text-foreground/60"
                   )}
                   title={row.team.name}
                 >
                   {teamDisplayName(row.team)}
                 </span>
-                <span className="mt-0.5 block text-[9.5px] font-bold uppercase tracking-[0.16em] text-muted-foreground/60">
+                <span className="mt-0.5 block text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground/75">
                   {row.side}
                 </span>
               </span>
               {!isScheduled && (
                 <span
                   className={cn(
-                    "score-num tabular shrink-0 text-[30px] sm:text-[38px]",
+                    "score-num tabular shrink-0 text-[32px] sm:text-[40px] font-extrabold",
                     isWinner ? "text-foreground" : "text-foreground/60"
                   )}
                 >
@@ -347,17 +354,17 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
           <span className="h-px flex-1 bg-border" aria-hidden />
           {isScheduled ? (
             <span className="flex items-baseline gap-2">
-              <span className="score-num text-[22px] text-foreground sm:text-[26px]">{time}</span>
-              <span className="text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+              <span className="score-num text-[24px] text-foreground sm:text-[28px] font-bold">{time}</span>
+              <span className="text-[11.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
                 {relative}
               </span>
             </span>
           ) : isLive ? (
-            <p className="tabular text-[11px] font-bold uppercase tracking-[0.16em] text-fhb-red">
+            <p className="tabular text-[12px] font-bold uppercase tracking-[0.16em] text-fhb-red">
               {match.period === "HT" ? "Half-Time" : `${fmtNum(match.minute)}′`}
             </p>
           ) : (
-            <span className="label-cond text-[10.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+            <span className="label-cond text-[11.5px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
               Full Time
             </span>
           )}
@@ -367,12 +374,12 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
 
       {/* footer strip */}
       <div className="mt-5 flex items-center justify-between gap-3 border-t border-border pt-4">
-        <p className="min-w-0 truncate text-[11.5px] text-muted-foreground">
+        <p className="min-w-0 truncate text-[12.5px] text-muted-foreground font-medium">
           {match.venue ?? "Venue TBC"} · {date}
         </p>
         <button
           onClick={() => navigate({ name: "match-detail", id: match.id })}
-          className="group/cta flex h-8 shrink-0 items-center gap-1.5 rounded-[6px] bg-primary px-3.5 text-[11px] font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110 active:scale-95"
+          className="group/cta flex h-9 shrink-0 items-center gap-1.5 rounded-[7px] bg-primary px-4 text-[12.5px] font-bold uppercase tracking-wider text-primary-foreground transition-all hover:brightness-110 active:scale-95 shadow-md"
         >
           Match Centre
           <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover/cta:translate-x-0.5" aria-hidden />

@@ -224,6 +224,7 @@ model Post {
   authorId     String
   author       User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   content      String
+  imageUrl     String?
   matchTag     String?  // e.g. team support badge
   likeCount    Int      @default(0)
   commentCount Int      @default(0)

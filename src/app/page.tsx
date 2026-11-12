@@ -22,6 +22,8 @@ import { AuthView } from "@/components/views/auth-view";
 import { ProfileView } from "@/components/views/profile-view";
 import { EarningsView } from "@/components/views/earnings-view";
 import { AdminView } from "@/components/views/admin-view";
+import { LegalView } from "@/components/views/legal-view";
+import { CookieBanner } from "@/components/layout/cookie-banner";
 
 export default function Page() {
   const { view, user, authLoading, refreshUser } = useAppStore();
@@ -37,8 +39,37 @@ export default function Page() {
     const valid = [
       "home", "scores", "live-tv", "standings", "news", "teams",
       "players", "competitions", "shorts", "community", "premium", "auth",
+      "upload", "earnings", "admin", "profile", "news-detail", "team-detail",
+      "player-detail", "competition-detail", "match-detail",
+      "terms", "privacy", "cookies", "contact", "advertise", "press", "careers",
     ];
-    if (v && valid.includes(v)) useAppStore.getState().navigate({ name: v } as never);
+    if (v && valid.includes(v)) {
+      const id = sp.get("id");
+      const username = sp.get("username");
+      useAppStore.getState().navigate(
+        { name: v, id: id ?? undefined, username: username ?? undefined } as never,
+        false
+      );
+    }
+
+    const onPop = (e: PopStateEvent) => {
+      if (e.state?.view) {
+        useAppStore.getState().navigate(e.state.view, false);
+      } else {
+        const curSp = new URLSearchParams(window.location.search);
+        const curV = curSp.get("view");
+        if (curV && valid.includes(curV)) {
+          useAppStore.getState().navigate(
+            { name: curV, id: curSp.get("id") ?? undefined, username: curSp.get("username") ?? undefined } as never,
+            false
+          );
+        } else {
+          useAppStore.getState().navigate({ name: "home" }, false);
+        }
+      }
+    };
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
   }, []);
 
   const renderView = () => {
@@ -85,6 +116,14 @@ export default function Page() {
         return <EarningsView />;
       case "admin":
         return <AdminView />;
+      case "terms":
+      case "privacy":
+      case "cookies":
+      case "contact":
+      case "advertise":
+      case "press":
+      case "careers":
+        return <LegalView currentTab={view.name} />;
       default:
         return <HomeView />;
     }
@@ -103,38 +142,27 @@ export default function Page() {
       </a>
 
       {!isImmersive && (
-        <div className="sticky top-0 z-[60] w-full border-b border-border bg-[#06080f]/95 backdrop-blur-md">
+        <div className="sticky top-0 z-[60] w-full border-b border-border bg-background/95 backdrop-blur-md transition-colors duration-200">
           <ScoreTicker />
           <Header />
         </div>
       )}
 
-      <div className="mx-auto flex w-full max-w-[1480px] flex-1">
+      <div className="mx-auto flex w-full max-w-[1720px] flex-1">
         {!isImmersive && <LeftRailNav />}
         <main
           id="main"
           className={`min-w-0 flex-1 ${isImmersive ? "" : "pb-16 lg:pb-0"}`}
           aria-live="polite"
         >
-          {authLoading && !user ? (
-            <div className="flex min-h-[60vh] items-center justify-center">
-              <div className="flex flex-col items-center gap-4">
-                <span className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-primary font-display text-xl font-bold text-primary-foreground">
-                  F<span className="text-fhb-red">·</span>
-                  <span className="absolute -inset-1.5 animate-ping rounded-[14px] border border-primary/30" aria-hidden />
-                </span>
-                <p className="animate-pulse text-xs font-medium text-muted-foreground">Loading FHB…</p>
-              </div>
-            </div>
-          ) : (
-            renderView()
-          )}
+          {renderView()}
         </main>
       </div>
 
       {!isImmersive && <Footer />}
       {!isImmersive && <BottomNav />}
       {!isImmersive && <StickyMobileAd />}
+      {!isImmersive && <CookieBanner />}
     </div>
   );
 }

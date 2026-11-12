@@ -26,7 +26,7 @@ const TRANSFER_DEALS: TransferDeal[] = [
   {
     id: "tr1",
     playerName: "Sheikh Morsalin",
-    playerPhoto: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=240&h=240&fit=crop&crop=face",
+    playerPhoto: "/players/sheikh_morsalin.jpg",
     fromTeam: "Bashundhara Kings",
     toTeam: "Royal Antwerp (Belgium)",
     feeBDT: "BDT 12.5 Cr",
@@ -41,7 +41,7 @@ const TRANSFER_DEALS: TransferDeal[] = [
   {
     id: "tr2",
     playerName: "Jamal Bhuyan",
-    playerPhoto: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=240&h=240&fit=crop&crop=face",
+    playerPhoto: "/players/jamal_bhuyan.jpg",
     fromTeam: "Club Sol de Mayo",
     toTeam: "Abahani Limited Dhaka",
     feeBDT: "Free Transfer",
@@ -56,7 +56,7 @@ const TRANSFER_DEALS: TransferDeal[] = [
   {
     id: "tr3",
     playerName: "Hamza Choudhury",
-    playerPhoto: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=240&h=240&fit=crop&crop=face",
+    playerPhoto: "/players/hamza_choudhury.jpg",
     fromTeam: "Leicester City (EPL)",
     toTeam: "Bangladesh National Team",
     feeBDT: "FIFA Clearance",
@@ -71,7 +71,7 @@ const TRANSFER_DEALS: TransferDeal[] = [
   {
     id: "tr4",
     playerName: "Tariq Kazi",
-    playerPhoto: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=240&h=240&fit=crop&crop=face",
+    playerPhoto: "/players/tariq_kazi.jpg",
     fromTeam: "Bashundhara Kings",
     toTeam: "Tampines Rovers (Singapore)",
     feeBDT: "BDT 4.8 Cr",
@@ -86,7 +86,7 @@ const TRANSFER_DEALS: TransferDeal[] = [
   {
     id: "tr5",
     playerName: "Dorielton Gomes",
-    playerPhoto: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=240&h=240&fit=crop&crop=face",
+    playerPhoto: "/players/dorielton_gomes.jpg",
     fromTeam: "Bashundhara Kings",
     toTeam: "Persib Bandung (Indonesia)",
     feeBDT: "BDT 8.2 Cr",
@@ -101,7 +101,7 @@ const TRANSFER_DEALS: TransferDeal[] = [
   {
     id: "tr6",
     playerName: "Cornelius Stewart",
-    playerPhoto: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=240&h=240&fit=crop&crop=face",
+    playerPhoto: "/players/cornelius_stewart.jpg",
     fromTeam: "Abahani Limited Dhaka",
     toTeam: "Mohammedan SC",
     feeBDT: "BDT 5.5 Cr",
@@ -126,23 +126,23 @@ export function TransferRadar() {
   return (
     <div className="space-y-6">
       {/* Transfer Radar Header */}
-      <div className="rounded-2xl border border-white/15 bg-[#0b101d] p-5 sm:p-7 shadow-2xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="rounded-2xl border border-border bg-card p-5 sm:p-7 shadow-xl">
+        <div className="flex flex-col gap-4">
           <div>
-            <div className="flex items-center gap-2 text-red-400 text-xs font-black uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-wider mb-1">
               <TrendingUp className="w-4 h-4" />
               <span>FHB Transfer Desk &amp; Reliability Meter</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white uppercase tracking-tight drop-shadow-sm">
+            <h2 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">
               Domestic &amp; Global Transfer Radar
             </h2>
-            <p className="text-xs sm:text-sm text-slate-300 font-medium mt-1 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-1 max-w-2xl leading-relaxed">
               5-Tier source reliability calibration covering Bangladesh Premier League (BPL), diaspora stars, and international verified valuations.
             </p>
           </div>
 
           {/* Filter Pills */}
-          <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#06080f] border border-white/15 text-xs font-bold self-start md:self-auto overflow-x-auto no-scrollbar">
+          <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-xl bg-muted/60 border border-border text-xs font-bold w-fit">
             {[
               { id: "all", label: "All Deals" },
               { id: "confirmed", label: "Confirmed" },
@@ -153,10 +153,10 @@ export function TransferRadar() {
                 key={tab.id}
                 onClick={() => setStatusFilter(tab.id as typeof statusFilter)}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg whitespace-nowrap transition-all cursor-pointer text-xs font-black tracking-wider",
+                  "px-3.5 py-1.5 rounded-lg whitespace-nowrap transition-all cursor-pointer text-xs font-black tracking-wider",
                   statusFilter === tab.id
-                    ? "bg-red-600 text-white shadow-md font-black shadow-red-600/30"
-                    : "text-slate-300 hover:text-white"
+                    ? "bg-primary text-primary-foreground shadow-md font-black shadow-primary/30"
+                    : "text-muted-foreground hover:text-foreground hover:bg-card/80"
                 )}
               >
                 {tab.label}
@@ -175,7 +175,7 @@ export function TransferRadar() {
           return (
             <div
               key={item.id}
-              className="rounded-2xl border border-white/15 bg-[#0b101d] hover:border-red-500/50 hover:bg-[#11172a] p-5 shadow-xl transition-all duration-300 flex flex-col justify-between"
+              className="rounded-2xl border border-border bg-card hover:border-primary/50 hover:bg-accent/40 p-5 shadow-lg transition-all duration-300 flex flex-col justify-between"
             >
               <div>
                 {/* Player & Status */}
@@ -184,14 +184,14 @@ export function TransferRadar() {
                     <img
                       src={item.playerPhoto}
                       alt={item.playerName}
-                      className="w-12 h-12 rounded-2xl object-cover ring-2 ring-white/15 p-0.5 bg-[#06080f] shadow-md"
+                      className="w-12 h-12 rounded-2xl object-cover ring-2 ring-border p-0.5 bg-muted shadow-sm"
                     />
                     <div>
-                      <h3 className="font-black text-sm sm:text-base text-white uppercase tracking-tight drop-shadow-sm">
+                      <h3 className="font-black text-sm sm:text-base text-foreground uppercase tracking-tight">
                         {item.playerName}
                       </h3>
-                      <p className="text-[11.5px] text-slate-300 font-semibold">
-                        Contract: <strong className="text-white font-bold">{item.contractUntil}</strong>
+                      <p className="text-[11.5px] text-muted-foreground font-semibold">
+                        Contract: <strong className="text-foreground font-bold">{item.contractUntil}</strong>
                       </p>
                     </div>
                   </div>
@@ -200,10 +200,10 @@ export function TransferRadar() {
                     className={cn(
                       "px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider",
                       isConfirmed
-                        ? "bg-emerald-950 text-emerald-300 border border-emerald-500/40"
+                        ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30"
                         : isAdvanced
-                        ? "bg-blue-950 text-blue-300 border border-blue-500/40"
-                        : "bg-amber-950 text-amber-300 border border-amber-500/40"
+                        ? "bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30"
+                        : "bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30"
                     )}
                   >
                     {item.status.replace("_", " ")}
@@ -211,41 +211,41 @@ export function TransferRadar() {
                 </div>
 
                 {/* Club to Club Badge Flow */}
-                <div className="rounded-xl bg-[#06080f] p-3.5 border border-white/10 mb-3.5 flex items-center justify-between gap-3">
-                  <div className="flex-1 text-left min-w-0">
-                    <span className="text-[10px] uppercase font-black text-slate-400 block truncate">FROM</span>
-                    <span className="text-xs sm:text-sm font-black text-white truncate block">{item.fromTeam}</span>
+                <div className="rounded-xl bg-muted/40 p-3.5 border border-border mb-3.5 flex items-center justify-between gap-3">
+                  <div className="flex-1 text-left min-w-0" title={item.fromTeam}>
+                    <span className="text-[10px] uppercase font-black text-muted-foreground/80 block">FROM</span>
+                    <span className="text-xs sm:text-sm font-black text-foreground leading-snug line-clamp-2 block">{item.fromTeam}</span>
                   </div>
 
-                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-[#11172a] text-red-400 border border-white/15">
+                  <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-card text-primary border border-border shadow-sm">
                     <ArrowRight className="w-4 h-4" />
                   </div>
 
-                  <div className="flex-1 text-right min-w-0">
-                    <span className="text-[10px] uppercase font-black text-slate-400 block truncate">TO</span>
-                    <span className="text-xs sm:text-sm font-black text-emerald-400 truncate block">{item.toTeam}</span>
+                  <div className="flex-1 text-right min-w-0" title={item.toTeam}>
+                    <span className="text-[10px] uppercase font-black text-muted-foreground/80 block">TO</span>
+                    <span className="text-xs sm:text-sm font-black text-emerald-600 dark:text-emerald-400 leading-snug line-clamp-2 block">{item.toTeam}</span>
                   </div>
                 </div>
 
                 {/* Transfer Financial Valuation */}
                 <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="bg-[#06080f] p-2.5 rounded-xl border border-white/10">
-                    <span className="text-[10px] font-black uppercase text-slate-400 block">Fee (BDT)</span>
-                    <span className="font-mono font-black text-emerald-400 text-sm sm:text-base">{item.feeBDT}</span>
+                  <div className="bg-muted/40 p-2.5 rounded-xl border border-border">
+                    <span className="text-[10px] font-black uppercase text-muted-foreground/80 block">Fee (BDT)</span>
+                    <span className="font-mono font-black text-emerald-600 dark:text-emerald-400 text-sm sm:text-base">{item.feeBDT}</span>
                   </div>
-                  <div className="bg-[#06080f] p-2.5 rounded-xl border border-white/10">
-                    <span className="text-[10px] font-black uppercase text-slate-400 block">Fee (EUR)</span>
-                    <span className="font-mono font-black text-white text-sm sm:text-base">{item.feeEUR}</span>
+                  <div className="bg-muted/40 p-2.5 rounded-xl border border-border">
+                    <span className="text-[10px] font-black uppercase text-muted-foreground/80 block">Fee (EUR)</span>
+                    <span className="font-mono font-black text-foreground text-sm sm:text-base">{item.feeEUR}</span>
                   </div>
                 </div>
 
-                <p className="text-xs text-slate-200 font-medium leading-relaxed mb-4">{item.summary}</p>
+                <p className="text-xs text-muted-foreground font-medium leading-relaxed mb-4">{item.summary}</p>
               </div>
 
               {/* Source Reliability Meter (5-Tier) */}
-              <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs">
+              <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
                 <div>
-                  <span className="text-[10px] font-black uppercase text-slate-400 block mb-0.5">
+                  <span className="text-[10px] font-black uppercase text-muted-foreground/80 block mb-0.5">
                     Source Reliability ({item.tier === 1 ? "Tier 1: Confirmed" : item.tier === 2 ? "Tier 2: High" : "Tier 3: Moderate"})
                   </span>
                   <div className="flex items-center gap-1">
@@ -254,7 +254,7 @@ export function TransferRadar() {
                         key={star}
                         className={cn(
                           "w-2.5 h-2.5 rounded-full",
-                          star <= (6 - item.tier) ? "bg-amber-400 shadow-sm" : "bg-slate-800"
+                          star <= (6 - item.tier) ? "bg-amber-400 shadow-sm" : "bg-muted-foreground/30"
                         )}
                       />
                     ))}

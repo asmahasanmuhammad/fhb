@@ -28,9 +28,10 @@ import { AdBrandLogo } from "@/components/football/ad-slot";
 import {
   LayoutDashboard, Newspaper, Zap, Users, Megaphone, Wallet, Plus, Pencil, Trash2,
   Eye, Clapperboard, MessageSquare, PenLine, Crown, Ban, RotateCcw,
-  ShieldCheck, Info, Star, CheckCircle2, XCircle, Inbox, Search,
+  ShieldCheck, Info, Star, CheckCircle2, XCircle, Inbox, Search, Shirt, LogIn,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { PlayerManager } from "@/components/admin/player-manager";
 
 /* ── Types (API contracts kept identical) ─────────────────── */
 
@@ -50,6 +51,7 @@ type AdminAd = {
   brandInitials: string | null;
   logoUrl: string | null;
   logoTheme: string | null;
+  imageHint: string | null;
 };
 
 type AdminStats = {
@@ -90,6 +92,7 @@ type Payout = { id: string; amount: number; method: string; account: string; sta
 const SECTIONS = [
   { id: "overview", label: "Overview", Icon: LayoutDashboard },
   { id: "matches", label: "Matches", Icon: Zap },
+  { id: "players", label: "Players", Icon: Shirt },
   { id: "news", label: "News", Icon: Newspaper },
   { id: "users", label: "Users", Icon: Users },
   { id: "ads", label: "Ads", Icon: Megaphone },
@@ -268,6 +271,7 @@ export function AdminView() {
   const user = useAppStore((s) => s.user);
   useReveal();
   const [section, setSection] = useState<SectionId>("overview");
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const { data, isLoading } = useQuery<AdminStats>({
     queryKey: ["admin", "stats"],
@@ -277,21 +281,61 @@ export function AdminView() {
       if (!json.success) throw new Error(json.error);
       return json.data;
     },
+    enabled: Boolean(user && user.role === "ADMIN"),
     retry: false,
     refetchInterval: 30_000,
   });
 
-  if (user && user.role !== "ADMIN") {
+  const handleAdminSignIn = async () => {
+    setLoggingIn(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: "admin@fhb.com.bd", password: "Admin@2025" }),
+      });
+      const json = await res.json();
+      if (json.success && json.data) {
+        useAppStore.getState().setUser(json.data);
+        window.location.reload();
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoggingIn(false);
+    }
+  };
+
+  if (!user || user.role !== "ADMIN") {
     return (
-      <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-3 px-4 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-md border border-fhb-red/25 bg-fhb-red/10">
-          <Ban className="h-6 w-6 text-fhb-red" aria-hidden />
+      <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-4 px-4 py-16 text-center">
+        <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
+          <ShieldCheck className="h-7 w-7" aria-hidden />
         </span>
-        <p className="label-cond text-[18px] font-bold text-foreground">Access denied</p>
-        <p className="text-xs leading-relaxed text-muted-foreground">
-          This area is reserved for administrators. To preview the demo, log in with{" "}
-          <b className="text-foreground">admin@fhb.com.bd / Admin@2025</b>.
-        </p>
+        <div>
+          <p className="label-cond text-[20px] font-bold text-foreground">Admin Console Access</p>
+          <p className="text-xs leading-relaxed text-muted-foreground mt-1.5">
+            This management control center requires administrator privileges. You can quickly sign in using the official demo admin account.
+          </p>
+        </div>
+        <div className="w-full rounded-lg border border-border bg-card p-3.5 text-left text-xs">
+          <div className="flex justify-between items-center py-1">
+            <span className="text-muted-foreground">Demo Email:</span>
+            <span className="font-mono font-semibold text-foreground">admin@fhb.com.bd</span>
+          </div>
+          <div className="flex justify-between items-center py-1 border-t border-border/50">
+            <span className="text-muted-foreground">Demo Password:</span>
+            <span className="font-mono font-semibold text-foreground">Admin@2025</span>
+          </div>
+        </div>
+        <Button
+          onClick={handleAdminSignIn}
+          disabled={loggingIn}
+          className="w-full gap-2 bg-primary font-bold shadow-md h-9 text-xs cursor-pointer"
+        >
+          <LogIn className="h-4 w-4" />
+          {loggingIn ? "Signing In…" : "One-Click Admin Sign In"}
+        </Button>
       </div>
     );
   }
@@ -357,6 +401,7 @@ export function AdminView() {
         <div className="min-w-0">
           {section === "overview" && <Overview data={data} />}
           {section === "matches" && <MatchManager />}
+          {section === "players" && <PlayerManager />}
           {section === "news" && <NewsManager />}
           {section === "users" && <UserManager />}
           {section === "ads" && <AdManager ads={data.ads} />}
@@ -1300,13 +1345,13 @@ function AdManager({ ads }: { ads: AdminAd[] }) {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAd, setEditingAd] = useState<AdminAd | null>(null);
   const [adForm, setAdForm] = useState({
-    name: "", headline: "", bodyText: "", ctaLabel: "", linkUrl: "", brandColor: "", brandInitials: "", logoUrl: "", logoTheme: "LIGHT", adCode: "",
+    name: "", headline: "", bodyText: "", ctaLabel: "", linkUrl: "", brandColor: "", brandInitials: "", logoUrl: "", logoTheme: "LIGHT", imageHint: "", adCode: "",
   });
 
   const update = useMutation({
     mutationFn: async (payload: {
       id: string; active?: boolean; adCode?: string; name?: string; headline?: string; bodyText?: string;
-      ctaLabel?: string; brandColor?: string; brandInitials?: string; logoUrl?: string; logoTheme?: string; linkUrl?: string;
+      ctaLabel?: string; brandColor?: string; brandInitials?: string; logoUrl?: string; logoTheme?: string; imageHint?: string; linkUrl?: string;
     }) => {
       const res = await fetch("/api/admin/ads", {
         method: "PUT",
@@ -1341,6 +1386,7 @@ function AdManager({ ads }: { ads: AdminAd[] }) {
       brandInitials: ad.brandInitials ?? "",
       logoUrl: ad.logoUrl ?? "",
       logoTheme: ad.logoTheme ?? "LIGHT",
+      imageHint: ad.imageHint ?? "",
       adCode: ad.adCode ?? "",
     });
     setDialogOpen(true);
@@ -1359,6 +1405,7 @@ function AdManager({ ads }: { ads: AdminAd[] }) {
       brandInitials: adForm.brandInitials,
       logoUrl: adForm.logoUrl,
       logoTheme: adForm.logoTheme,
+      imageHint: adForm.imageHint,
       adCode: adForm.adCode,
     });
   };
@@ -1614,6 +1661,18 @@ function AdManager({ ads }: { ads: AdminAd[] }) {
                   <option value="DARK">Brand-colour chip (white logos)</option>
                 </select>
               </div>
+            </div>
+            <div>
+              <label htmlFor="ad-imagehint" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">
+                Campaign Banner / Poster Image URL
+              </label>
+              <input
+                id="ad-imagehint"
+                value={adForm.imageHint}
+                onChange={(e) => setAdForm((f) => ({ ...f, imageHint: e.target.value }))}
+                placeholder="/ads/walton_tv_banner.jpg"
+                className={cn(inputCls, "font-mono text-[11px]")}
+              />
             </div>
             <div>
               <label htmlFor="ad-code" className="label-cond mb-1.5 block text-[11px] text-muted-foreground">

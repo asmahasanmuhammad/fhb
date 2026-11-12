@@ -1,20 +1,19 @@
 "use client";
 
 /**
- * FHB 4.0 — Shorts: immersive vertical feed + creator upload studio.
+ * FHB v5 — Shorts: immersive TikTok/Instagram-Reels-style vertical feed + creator upload studio.
  *
- * Feed: full-viewport scroll-snap 9:16 stage ("desktop theater" — a
- * centered 420px column with side chevrons on large screens).
- * IntersectionObserver drives autoplay/view-counting, the right action
- * rail handles like / comments / share / views, and the session video
- * pre-roll plays once before the first short. Keyboard: ArrowUp /
- * ArrowDown jump between shorts.
- * Upload: creator-studio form (drop-zone preview, sample library,
- * hosted-URL contract) with review card, monetization toggle and the
- * same POST /api/videos JSON contract.
+ * Feed: full-viewport scroll-snap 9:16 stage ("desktop theater" — a centered 420px column
+ * with side chevrons on large screens). IntersectionObserver drives autoplay / view-counting.
+ * Right action rail: Framer Motion heart bounce on like, comment sheet, share.
+ * Top progress bar: thin red line. Volume toggle top-right. Keyboard ArrowUp/Down navigation.
+ * Beautiful skeleton loading state. Illustrated empty state.
+ * Upload: creator-studio form (drop-zone, sample library, hosted-URL contract) with review
+ * card, monetization toggle and POST /api/videos JSON contract.
  */
 
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { Video } from "@/lib/types";
 import { useAppStore } from "@/store/app-store";
@@ -38,11 +37,11 @@ import { cn } from "@/lib/utils";
 import { fmtCompact, timeAgo } from "@/lib/format";
 import {
   Check, ChevronDown, ChevronRight, ChevronUp, Clapperboard, Crown, Eye, FileVideo,
-  Info, Lightbulb, MessageCircle, Play, Share2, Upload, UserCheck, UserPlus,
-  Video as VideoIcon, Volume2, VolumeX, X,
+  Heart, Info, Lightbulb, MessageCircle, Pause, Play, Share2, Upload, UserCheck,
+  UserPlus, Video as VideoIcon, Volume2, VolumeX, X, Trash2,
 } from "lucide-react";
 
-/** Demo sample library — bundled vertical clips for the creator studio. */
+/* ── Demo sample library — bundled vertical clips for the creator studio ── */
 const SAMPLE_VIDEOS = [
   "/videos/bkb1.mp4",
   "/videos/sintel1.mp4",
@@ -51,7 +50,6 @@ const SAMPLE_VIDEOS = [
   "/videos/friday.mp4",
   "/videos/bkb2.mp4",
 ];
-
 const SAMPLE_THUMBS = [
   "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ce3c35abf03c.jpeg",
   "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/2c2982ffcc12.jpg",
@@ -59,7 +57,9 @@ const SAMPLE_THUMBS = [
   "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/bf8288a20516.jpg",
 ];
 
-/* ════════════════════════ Shorts feed ════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════
+   ShortsView — immersive feed
+══════════════════════════════════════════════════════════════════════════ */
 
 export function ShortsView() {
   useReveal();
@@ -80,10 +80,9 @@ export function ShortsView() {
   const videos = data?.videos ?? [];
   const canUpload = user?.role === "CREATOR" || user?.role === "ADMIN";
   const showInFeedAds = !user?.isPremium;
-  const activeVideo = activeId ? videos.find((v) => v.id === activeId) : undefined;
   const activeIndex = Math.max(0, videos.findIndex((v) => v.id === activeId));
 
-  /** Smooth-scroll the feed to a video by id (robust with interleaved ad items). */
+  /* Smooth-scroll feed to a video by id — robust with interleaved ad items */
   const scrollToVideo = useCallback((id: string) => {
     feedRef.current
       ?.querySelector(`[data-video-id="${id}"]`)
@@ -99,7 +98,7 @@ export function ShortsView() {
     [videos, scrollToVideo]
   );
 
-  // Keyboard navigation — ArrowUp / ArrowDown between shorts
+  /* Keyboard navigation — ArrowUp / ArrowDown between shorts */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
@@ -114,28 +113,30 @@ export function ShortsView() {
 
   return (
     <div className="relative flex h-[calc(100dvh-56px)] w-full items-stretch justify-center gap-4 overflow-hidden bg-[oklch(0.105_0.004_264)] lg:py-5 lg:gap-4">
-      {/* ── Feed stage: full-bleed mobile, centered rounded card on desktop ── */}
+      {/* ── Feed stage ── */}
       <div
         className="relative h-full w-full max-w-[420px] shrink-0 overflow-hidden bg-black lg:rounded-xl lg:border lg:border-border"
         role="region"
         aria-label="Shorts feed"
       >
-        {/* Top chrome — close, brand, creator upload */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-b from-black/75 via-black/35 to-transparent px-3 pb-9 pt-3 sm:px-4">
+        {/* Top chrome — close, brand, counter, upload */}
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-20 flex items-center justify-between gap-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-3 pb-10 pt-3 sm:px-4">
           <button
             onClick={back}
-            className="tap-target pointer-events-auto flex h-9 w-9 items-center justify-center rounded-[7px] border border-white/15 bg-black/50 text-white transition-colors hover:bg-black/75 active:scale-95"
+            className="tap-target pointer-events-auto flex h-9 w-9 items-center justify-center rounded-[7px] border border-white/15 bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/75 active:scale-95"
             aria-label="Close shorts and go back"
           >
             <X className="h-[18px] w-[18px]" aria-hidden />
           </button>
-          <p className="label-cond flex items-center gap-2.5 text-[13px] font-bold tracking-[0.14em] text-white">
+
+          <p className="label-cond flex items-center gap-2 text-[13px] font-bold tracking-[0.14em] text-white drop-shadow-md">
             <Clapperboard className="h-4 w-4 text-primary" aria-hidden />
             Shorts
             <span className="tabular rounded-[4px] bg-white/12 px-1.5 py-0.5 text-[10px] font-bold tracking-normal text-white/85">
               {Math.min(activeIndex + 1, Math.max(videos.length, 1))}/{Math.max(videos.length, 1)}
             </span>
           </p>
+
           {canUpload ? (
             <button
               onClick={() => navigate({ name: "upload" })}
@@ -148,33 +149,17 @@ export function ShortsView() {
           )}
         </div>
 
+        {/* ── States: loading / empty / feed ── */}
         {isLoading ? (
-          <div className="flex h-full flex-col justify-center gap-4 px-6 pt-14">
-            <span className="sr-only">Loading shorts</span>
-            {[...Array(3)].map((_, i) => (
-              <Skeleton key={i} className={cn("h-3 rounded", i === 1 ? "w-1/2" : "w-3/4")} />
-            ))}
-          </div>
+          <ShortsSkeleton />
         ) : videos.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 px-10 text-center">
-            <span className="flex h-14 w-14 items-center justify-center rounded-lg border border-white/15 bg-white/[0.05]">
-              <VideoIcon className="h-6 w-6 text-white/60" aria-hidden />
-            </span>
-            <p className="label-cond text-[15px] font-bold text-white">No shorts yet</p>
-            <p className="max-w-[260px] text-[12.5px] leading-relaxed text-white/60">
-              The feed is warming up. Creator uploads appear here the moment they publish.
-            </p>
-            {canUpload && (
-              <button
-                onClick={() => navigate({ name: "upload" })}
-                className="label-cond mt-1.5 flex h-9 items-center gap-1.5 rounded-[6px] bg-primary px-4 text-[11.5px] font-bold text-primary-foreground transition-transform hover:brightness-110 active:scale-95"
-              >
-                <Upload className="h-3.5 w-3.5" aria-hidden /> Upload the first short
-              </button>
-            )}
-          </div>
+          <ShortsEmptyState canUpload={canUpload} onUpload={() => navigate({ name: "upload" })} />
         ) : (
-          <div ref={feedRef} className="shorts-feed no-scrollbar h-full overflow-y-scroll" data-testid="shorts-feed">
+          <div
+            ref={feedRef}
+            className="shorts-feed no-scrollbar h-full overflow-y-scroll"
+            data-testid="shorts-feed"
+          >
             {videos.map((v, i) => (
               <Fragment key={v.id}>
                 <ShortsItem video={v} onActive={setActiveId} />
@@ -197,7 +182,7 @@ export function ShortsView() {
         {videos.length > 0 && <VideoPreroll />}
       </div>
 
-      {/* ── Desktop theater: side control rail (TikTok-style, right of stage) ── */}
+      {/* ── Desktop theater: side navigation rail ── */}
       <div className="hidden shrink-0 flex-col items-center justify-center gap-2.5 lg:flex">
         <button
           onClick={() => goIndex(activeIndex - 1)}
@@ -220,7 +205,109 @@ export function ShortsView() {
   );
 }
 
-/* ─────────────────── Single feed item ─────────────────── */
+/* ══════════════════════════════════════════════════════════════════════════
+   ShortsSkeleton — full-bleed skeleton that mirrors the video layout
+══════════════════════════════════════════════════════════════════════════ */
+
+function ShortsSkeleton() {
+  return (
+    <div className="relative flex h-full w-full flex-col overflow-hidden bg-background" aria-busy aria-label="Loading shorts">
+      {/* Fake video area */}
+      <Skeleton className="flex-1 rounded-none" />
+
+      {/* Right action rail skeleton */}
+      <div className="absolute bottom-24 right-3.5 flex flex-col items-center gap-5">
+        {[0, 1, 2].map((i) => (
+          <div key={i} className="flex flex-col items-center gap-1.5">
+            <Skeleton className="h-11 w-11 rounded-full" />
+            <Skeleton className="h-3 w-7 rounded" />
+          </div>
+        ))}
+      </div>
+
+      {/* Bottom creator overlay skeleton */}
+      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 to-transparent p-4 pb-6 pr-[76px]">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="flex flex-col gap-1.5">
+            <Skeleton className="h-3.5 w-28 rounded" />
+            <Skeleton className="h-2.5 w-20 rounded" />
+          </div>
+          <Skeleton className="ml-auto h-7 w-20 rounded-[6px]" />
+        </div>
+        <div className="mt-3 space-y-2">
+          <Skeleton className="h-3 w-3/4 rounded" />
+          <Skeleton className="h-3 w-1/2 rounded" />
+        </div>
+        <div className="mt-2.5 flex gap-1.5">
+          <Skeleton className="h-5 w-14 rounded-[4px]" />
+          <Skeleton className="h-5 w-10 rounded-[4px]" />
+        </div>
+      </div>
+
+      {/* Progress bar skeleton */}
+      <div className="absolute inset-x-0 bottom-0 h-[3px] bg-white/10" aria-hidden>
+        <div className="h-full w-1/3 animate-pulse rounded-r-full bg-primary/60" />
+      </div>
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ShortsEmptyState — illustrated empty state
+══════════════════════════════════════════════════════════════════════════ */
+
+function ShortsEmptyState({
+  canUpload,
+  onUpload,
+}: {
+  canUpload: boolean;
+  onUpload: () => void;
+}) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-4 px-10 text-center">
+      {/* Illustrated icon */}
+      <motion.div
+        initial={{ scale: 0.7, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 20 }}
+        className="relative flex h-20 w-20 items-center justify-center"
+      >
+        <span className="absolute inset-0 rounded-2xl border border-white/10 bg-white/[0.04]" aria-hidden />
+        <span className="absolute inset-2 rounded-xl border border-primary/20 bg-primary/[0.08]" aria-hidden />
+        <VideoIcon className="relative h-8 w-8 text-primary/80" aria-hidden />
+      </motion.div>
+
+      <motion.div
+        initial={{ y: 10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ delay: 0.12 }}
+        className="space-y-2"
+      >
+        <p className="label-cond text-[16px] font-bold text-white">No shorts yet</p>
+        <p className="max-w-[260px] text-[12.5px] leading-relaxed text-white/55">
+          The feed is warming up. Creator uploads appear here the moment they publish.
+        </p>
+      </motion.div>
+
+      {canUpload && (
+        <motion.button
+          initial={{ y: 10, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.22 }}
+          onClick={onUpload}
+          className="label-cond mt-1 flex h-10 items-center gap-2 rounded-[8px] bg-primary px-5 text-[11.5px] font-bold text-primary-foreground transition-transform hover:brightness-110 active:scale-95"
+        >
+          <Upload className="h-3.5 w-3.5" aria-hidden /> Upload the first short
+        </motion.button>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ShortsItem — single full-screen feed item
+══════════════════════════════════════════════════════════════════════════ */
 
 function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string) => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -230,14 +317,16 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [showPauseIndicator, setShowPauseIndicator] = useState(false);
   const viewCounted = useRef(false);
+  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const user = useAppStore((s) => s.user);
   const navigate = useAppStore((s) => s.navigate);
   const isMobile = useIsMobile();
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Intersection observer for autoplay + active tracking
+  /* ── Intersection observer: autoplay + active tracking ── */
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
@@ -253,6 +342,7 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
     return () => observer.disconnect();
   }, [video.id, onActive]);
 
+  /* ── Autoplay / pause based on visibility + user toggle ── */
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
@@ -267,61 +357,109 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
     }
   }, [visible, paused, video.id]);
 
-  // Tap: first tap on a muted short unmutes, further taps toggle playback
-  const onStageTap = () => {
-    if (muted) {
-      setMuted(false);
-      return;
-    }
-    setPaused((p) => !p);
-  };
-
+  /* ── Progress bar ── */
   const onTimeUpdate = () => {
     const v = videoRef.current;
     if (v && v.duration) setProgress((v.currentTime / v.duration) * 100);
   };
 
+  /* ── Stage tap: unmute first, then toggle play/pause ── */
+  const onStageTap = () => {
+    if (muted) {
+      setMuted(false);
+      return;
+    }
+    const next = !paused;
+    setPaused(next);
+    if (next) {
+      // Show pause overlay briefly then fade
+      setShowPauseIndicator(true);
+    } else {
+      setShowPauseIndicator(false);
+    }
+  };
+
+  // Auto-hide pause indicator after 1.2s when paused
+  useEffect(() => {
+    if (paused && visible) {
+      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+      setShowPauseIndicator(true);
+    } else {
+      setShowPauseIndicator(false);
+    }
+    return () => { if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current); };
+  }, [paused, visible]);
+
+  /* ── Share ── */
   const share = async () => {
     try {
       await navigator.clipboard.writeText(`${window.location.origin}/?shorts=1&v=${video.id}`);
-      toast({ title: "Link copied", description: "Share this short." });
+      toast({ title: "Link copied", description: "Share this short with your crew." });
     } catch {
       /* clipboard unavailable */
     }
   };
 
-  // follow state
+  /* ── Follow query + mutation ── */
+  const creatorId = video.creator?.id;
   const { data: followData } = useQuery<{ following: boolean }>({
-    queryKey: ["follow", video.creator.id, user?.id],
+    queryKey: ["follow", creatorId, user?.id],
     queryFn: async () => {
-      const res = await fetch(`/api/follow?followingId=${video.creator.id}`);
+      if (!creatorId) return { following: false };
+      const res = await fetch(`/api/follow?followingId=${creatorId}`);
       return res.json().then((j) => j.data);
     },
-    enabled: !!user && user.id !== video.creator.id,
+    enabled: !!user && !!creatorId && user.id !== creatorId,
   });
 
   const followMutation = useMutation({
     mutationFn: async () => {
+      if (!creatorId) return;
       const res = await fetch("/api/follow", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ followingId: video.creator.id }),
+        body: JSON.stringify({ followingId: creatorId }),
       });
       const json = await res.json();
       if (!json.success) throw new Error(json.error);
       return json.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["follow", video.creator.id] });
+      if (creatorId) {
+        queryClient.invalidateQueries({ queryKey: ["follow", creatorId] });
+      }
     },
-    onError: (e: Error) => toast({ title: "Follow failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) =>
+      toast({ title: "Follow failed", description: e.message, variant: "destructive" }),
+  });
+
+  const isAdmin = user?.role === "ADMIN";
+  const isCreator = user?.id === creatorId;
+  const canDeleteVideo = isAdmin || isCreator;
+
+  const deleteVideo = useMutation({
+    mutationFn: async () => {
+      const res = await fetch(`/api/videos?id=${video.id}`, { method: "DELETE" });
+      const json = await res.json();
+      if (!json.success) throw new Error(json.error);
+      return json;
+    },
+    onSuccess: (res) => {
+      queryClient.invalidateQueries({ queryKey: ["videos"] });
+      toast({
+        title: "Short deleted",
+        description: res?.data?.message ?? "The video short has been removed.",
+      });
+    },
+    onError: (e: Error) =>
+      toast({ title: "Delete failed", description: e.message, variant: "destructive" }),
   });
 
   const following = followData?.following ?? false;
 
   return (
     <div ref={containerRef} data-video-id={video.id} className="shorts-item relative h-full w-full">
-      {/* Video — playback logic preserved */}
+      {/* ── Full-bleed video ── */}
       <video
         ref={videoRef}
         src={video.videoUrl}
@@ -336,47 +474,114 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
         aria-label={video.title}
       />
 
-      {/* Functional media scrims — text legibility only */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/55 to-transparent" aria-hidden />
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/85 via-black/35 to-transparent" aria-hidden />
+      {/* ── Gradient scrims for text legibility ── */}
+      <div
+        className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 via-black/20 to-transparent"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-gradient-to-t from-black/90 via-black/50 to-transparent"
+        aria-hidden
+      />
 
-      {/* Pause indicator */}
-      {paused && visible && (
-        <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
-          <span className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-black/55">
-            <Play className="ml-1 h-8 w-8 fill-white/90 text-white/90" />
-          </span>
-        </div>
-      )}
+      {/* ── Pause / Play indicator (animated) ── */}
+      <AnimatePresence>
+        {showPauseIndicator && visible && (
+          <motion.div
+            key="pause-indicator"
+            className="pointer-events-none absolute inset-0 flex items-center justify-center"
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.15 }}
+            transition={{ type: "spring", stiffness: 300, damping: 24 }}
+            aria-hidden
+          >
+            <span className="flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-black/55 backdrop-blur-sm">
+              {paused ? (
+                <Play className="ml-1 h-9 w-9 fill-white/90 text-white/90" />
+              ) : (
+                <Pause className="h-9 w-9 fill-white/90 text-white/90" />
+              )}
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* Mute toggle — sits under the top chrome bar */}
+      {/* ── Mute indicator overlay (shown when muted) ── */}
+      <AnimatePresence>
+        {muted && visible && (
+          <motion.div
+            key="mute-hint"
+            className="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-center"
+            initial={{ opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -4 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+            aria-hidden
+          >
+            <span className="flex items-center gap-2 rounded-full bg-black/60 px-4 py-2 text-[12px] font-semibold text-white/90 backdrop-blur-sm">
+              <VolumeX className="h-4 w-4 text-primary" />
+              Tap to unmute
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Progress bar — top of video ── */}
+      <div className="absolute inset-x-0 top-0 z-30 h-[3px] bg-white/10" aria-hidden>
+        <div
+          className="h-full bg-primary transition-[width] duration-150"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      {/* ── Volume toggle — top-right (below the top chrome bar) ── */}
       <button
         onClick={() => setMuted((m) => !m)}
-        className="absolute right-3 top-[58px] z-10 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white transition-colors hover:bg-black/75 active:scale-95"
+        className="absolute right-3 top-[58px] z-20 flex h-9 w-9 items-center justify-center rounded-full bg-black/50 text-white backdrop-blur-sm transition-colors hover:bg-black/75 active:scale-95"
         aria-label={muted ? "Unmute" : "Mute"}
       >
-        {muted ? <VolumeX className="h-4 w-4" aria-hidden /> : <Volume2 className="h-4 w-4" aria-hidden />}
+        {muted ? (
+          <VolumeX className="h-4 w-4" aria-hidden />
+        ) : (
+          <Volume2 className="h-4 w-4" aria-hidden />
+        )}
       </button>
 
-      {/* Right action rail — like / comments / share / views */}
-      <div className="absolute bottom-6 right-3.5 z-10 flex flex-col items-center gap-3.5">
-        <LikeButton targetType="VIDEO" targetId={video.id} initialCount={video.likeCount} variant="shorts" />
+      {/* ── Right action panel ── */}
+      <div className="absolute bottom-6 right-3.5 z-10 flex flex-col items-center gap-4">
+        {/* Like button */}
+        <LikeButton
+          targetType="VIDEO"
+          targetId={video.id}
+          initialCount={video.likeCount ?? 0}
+          variant="shorts"
+        />
 
+        {/* Comments */}
         <Sheet>
           <SheetTrigger asChild>
-            <button className="tap-target flex flex-col items-center gap-1 text-white" aria-label="View comments">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 transition-colors hover:bg-black/75 active:scale-90">
+            <button
+              className="tap-target flex flex-col items-center gap-1 text-white"
+              aria-label={`View ${fmtCompact(video.commentCount ?? 0)} comments`}
+            >
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 active:scale-90">
                 <MessageCircle className="h-5 w-5" aria-hidden />
               </span>
-              <span className="tabular font-display text-xs font-semibold">{fmtCompact(video.commentCount)}</span>
+              <span className="tabular font-display text-xs font-semibold drop-shadow">
+                {fmtCompact(video.commentCount ?? 0)}
+              </span>
             </button>
           </SheetTrigger>
           <SheetContent
             side={isMobile ? "bottom" : "right"}
-            className={cn("overflow-y-auto p-0", isMobile ? "max-h-[75vh] rounded-t-lg" : "sm:max-w-md")}
+            className={cn(
+              "overflow-y-auto p-0",
+              isMobile ? "max-h-[75vh] rounded-t-xl" : "sm:max-w-md"
+            )}
           >
             <SheetHeader className="border-b border-border px-4 py-4">
-              <SheetTitle className="text-sm">{fmtCompact(video.commentCount)} Comments</SheetTitle>
+              <SheetTitle className="text-sm">{fmtCompact(video.commentCount ?? 0)} Comments</SheetTitle>
             </SheetHeader>
             <div className="px-4 pb-6 pt-3">
               <CommentSection targetType="VIDEO" targetId={video.id} />
@@ -384,55 +589,95 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
           </SheetContent>
         </Sheet>
 
-        <button onClick={share} className="tap-target flex flex-col items-center gap-1 text-white" aria-label="Share">
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 transition-colors hover:bg-black/75 active:scale-90">
+        {/* Share */}
+        <button
+          onClick={share}
+          className="tap-target flex flex-col items-center gap-1 text-white"
+          aria-label="Share this short"
+        >
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-black/70 active:scale-90">
             <Share2 className="h-5 w-5" aria-hidden />
           </span>
-          <span className="font-display text-xs font-semibold">Share</span>
+          <span className="font-display text-xs font-semibold drop-shadow">Share</span>
         </button>
 
-        <span className="tap-target flex flex-col items-center gap-1 text-white" title={`${video.views.toLocaleString("en-US")} views`}>
-          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50">
+        {/* Views */}
+        <span
+          className="tap-target flex flex-col items-center gap-1 text-white"
+          title={`${(video.views ?? 0).toLocaleString("en-US")} views`}
+        >
+          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm">
             <Eye className="h-5 w-5" aria-hidden />
           </span>
-          <span className="tabular font-display text-xs font-semibold">{fmtCompact(video.views)}</span>
+          <span className="tabular font-display text-xs font-semibold drop-shadow">
+            {fmtCompact(video.views ?? 0)}
+          </span>
         </span>
+
+        {/* Delete (Admin or Creator) */}
+        {canDeleteVideo && (
+          <button
+            onClick={() => {
+              if (confirm(isAdmin && !isCreator ? "Delete this short video as Admin?" : "Delete your short video?")) {
+                deleteVideo.mutate();
+              }
+            }}
+            disabled={deleteVideo.isPending}
+            className="tap-target flex flex-col items-center gap-1 text-white hover:text-red-400 transition-colors"
+            aria-label="Delete short"
+            title={isAdmin && !isCreator ? "Delete short (Admin)" : "Delete short"}
+          >
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-black/50 backdrop-blur-sm transition-colors hover:bg-red-500/30 active:scale-90">
+              <Trash2 className="h-5 w-5 text-red-400" aria-hidden />
+            </span>
+            <span className="font-display text-[10px] font-semibold drop-shadow text-red-400">
+              {isAdmin && !isCreator ? "Remove" : "Delete"}
+            </span>
+          </button>
+        )}
       </div>
 
-      {/* Bottom creator + caption overlay */}
+      {/* ── Bottom creator + caption overlay ── */}
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-4 pb-5 pr-[76px]">
+        {/* Creator row */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => navigate({ name: "profile", username: video.creator.username })}
-            className="pointer-events-auto"
-            aria-label={`${video.creator.name}'s profile`}
+            onClick={() => video.creator?.username && navigate({ name: "profile", username: video.creator.username })}
+            className="pointer-events-auto shrink-0"
+            aria-label={`${video.creator?.name ?? "Creator"}'s profile`}
           >
-            <Avatar className="h-10 w-10 border-2 border-white/75">
-              <AvatarImage src={video.creator.avatarUrl ?? undefined} alt={video.creator.name} />
-              <AvatarFallback className="bg-primary text-sm font-bold">{video.creator.name.slice(0, 2)}</AvatarFallback>
+            <Avatar className="h-10 w-10 border-2 border-white/80 shadow-lg">
+              <AvatarImage src={video.creator?.avatarUrl ?? undefined} alt={video.creator?.name ?? "Creator"} />
+              <AvatarFallback className="bg-primary text-sm font-bold text-primary-foreground">
+                {(video.creator?.name ?? "FB").slice(0, 2)}
+              </AvatarFallback>
             </Avatar>
           </button>
-          <div className="min-w-0">
+
+          <div className="min-w-0 flex-1">
             <button
-              onClick={() => navigate({ name: "profile", username: video.creator.username })}
-              className="pointer-events-auto flex items-center gap-1.5 text-sm font-bold text-white"
+              onClick={() => video.creator?.username && navigate({ name: "profile", username: video.creator.username })}
+              className="pointer-events-auto flex items-center gap-1.5 text-sm font-bold text-white drop-shadow"
             >
-              @{video.creator.username}
-              {video.creator.isPremium && <Crown className="h-3 w-3 text-fhb-gold" aria-label="Premium creator" />}
+              @{video.creator?.username ?? "creator"}
+              {video.creator?.isPremium && (
+                <Crown className="h-3 w-3 text-fhb-gold" aria-label="Premium creator" />
+              )}
             </button>
-            <p className="tabular text-[10.5px] text-white/70">
-              {fmtCompact(video.creator.followerCount ?? 0)} followers · {timeAgo(video.createdAt)}
+            <p className="tabular text-[10.5px] text-white/65 drop-shadow">
+              {fmtCompact(video.creator?.followerCount ?? 0)} followers · {timeAgo(video.createdAt)}
             </p>
           </div>
-          {user && user.id !== video.creator.id && (
+
+          {user && creatorId && user.id !== creatorId && (
             <Button
               size="sm"
               onClick={() => followMutation.mutate()}
               disabled={followMutation.isPending}
               className={cn(
-                "label-cond pointer-events-auto ml-auto h-8 shrink-0 rounded-[6px] px-4 text-[11px] font-bold",
+                "label-cond pointer-events-auto ml-auto h-8 shrink-0 rounded-[6px] px-4 text-[11px] font-bold shadow-lg",
                 following
-                  ? "border border-white/25 bg-white/10 text-white hover:bg-white/20"
+                  ? "border border-white/25 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20"
                   : "bg-primary text-primary-foreground hover:brightness-110"
               )}
             >
@@ -449,43 +694,69 @@ function ShortsItem({ video, onActive }: { video: Video; onActive?: (id: string)
           )}
         </div>
 
-        {video.title.length > 60 ? (
-          <p className="pointer-events-none mt-3 text-[13px] font-medium leading-snug text-white">
-            <span className={cn(!expanded && "line-clamp-2")}>{video.title}</span>{" "}
-            <button
-              onClick={() => setExpanded((e) => !e)}
-              className="pointer-events-auto text-[11.5px] font-bold text-white/70 underline-offset-2 hover:text-white hover:underline"
-            >
-              {expanded ? "less" : "more"}
-            </button>
-          </p>
-        ) : (
-          <p className="pointer-events-none mt-3 line-clamp-2 text-[13px] font-medium leading-snug text-white">{video.title}</p>
-        )}
+        {/* Title + category chip */}
+        <div className="mt-3">
+          {/* Category chip */}
+          {video.tags && (
+            <div className="mb-1.5 flex flex-wrap gap-1">
+              {video.tags
+                .split(",")
+                .filter((t) => t.trim())
+                .slice(0, 2)
+                .map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-[4px] bg-primary/25 px-2 py-0.5 text-[9.5px] font-bold uppercase tracking-wider text-primary"
+                  >
+                    #{t.trim()}
+                  </span>
+                ))}
+            </div>
+          )}
 
-        {video.tags && (
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {video.tags.split(",").filter((t) => t.trim()).map((t) => (
-              <span
-                key={t}
-                className="rounded-[4px] bg-white/12 px-2 py-0.5 text-[10px] font-semibold text-white"
+          {/* Video title with expand/collapse */}
+          {video.title.length > 60 ? (
+            <p className="pointer-events-none text-[13px] font-medium leading-snug text-white drop-shadow-md">
+              <span className={cn(!expanded && "line-clamp-2")}>{video.title}</span>{" "}
+              <button
+                onClick={() => setExpanded((e) => !e)}
+                className="pointer-events-auto text-[11.5px] font-bold text-white/70 underline-offset-2 hover:text-white hover:underline"
               >
-                #{t.trim()}
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
+                {expanded ? "less" : "more"}
+              </button>
+            </p>
+          ) : (
+            <p className="pointer-events-none line-clamp-2 text-[13px] font-medium leading-snug text-white drop-shadow-md">
+              {video.title}
+            </p>
+          )}
 
-      {/* Progress bar */}
-      <div className="absolute inset-x-0 bottom-0 z-20 h-[3px] bg-white/15" aria-hidden>
-        <div className="video-progress h-full transition-[width] duration-150" style={{ width: `${progress}%` }} />
+          {/* Remaining tags */}
+          {video.tags && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {video.tags
+                .split(",")
+                .filter((t) => t.trim())
+                .slice(2)
+                .map((t) => (
+                  <span
+                    key={t}
+                    className="rounded-[4px] bg-white/12 px-1.5 py-0.5 text-[10px] font-semibold text-white/70"
+                  >
+                    #{t.trim()}
+                  </span>
+                ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
 }
 
-/* ════════════════════════ Creator studio upload ════════════════════════ */
+/* ══════════════════════════════════════════════════════════════════════════
+   UploadView — creator studio form
+══════════════════════════════════════════════════════════════════════════ */
 
 export function UploadView() {
   useReveal();
@@ -493,7 +764,13 @@ export function UploadView() {
   const user = useAppStore((s) => s.user);
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [form, setForm] = useState({ title: "", description: "", videoUrl: "", thumbnailUrl: "", tags: "" });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    videoUrl: "",
+    thumbnailUrl: "",
+    tags: "",
+  });
   const [monetized, setMonetized] = useState(true);
   const [dragActive, setDragActive] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -502,7 +779,7 @@ export function UploadView() {
 
   const isCreator = user?.role === "CREATOR" || user?.role === "ADMIN";
 
-  // Revoke the local blob preview when leaving the studio
+  /* Revoke the local blob preview when leaving the studio */
   useEffect(
     () => () => {
       if (localUrlRef.current) URL.revokeObjectURL(localUrlRef.current);
@@ -522,17 +799,21 @@ export function UploadView() {
       return json;
     },
     onSuccess: () => {
-      toast({ title: "Upload successful", description: "Your shorts are now live in the feed." });
+      toast({ title: "Upload successful", description: "Your short is now live in the feed." });
       queryClient.invalidateQueries({ queryKey: ["videos"] });
       navigate({ name: "shorts" });
     },
-    onError: (e: Error) => toast({ title: "Upload failed", description: e.message, variant: "destructive" }),
+    onError: (e: Error) =>
+      toast({ title: "Upload failed", description: e.message, variant: "destructive" }),
   });
 
   const isLocalPreview = form.videoUrl.startsWith("blob:");
-  const canPublish = form.title.trim().length >= 3 && form.videoUrl.trim().length >= 3 && !isLocalPreview;
+  const canPublish =
+    form.title.trim().length >= 3 &&
+    form.videoUrl.trim().length >= 3 &&
+    !isLocalPreview;
 
-  /** Attach a dropped/browsed local file as a preview-only blob URL. */
+  /* Attach a dropped/browsed local file as a preview-only blob URL */
   const attachLocalFile = (file: File | undefined | null) => {
     if (!file) return;
     if (!file.type.startsWith("video/")) {
@@ -551,7 +832,7 @@ export function UploadView() {
     attachLocalFile(e.dataTransfer.files?.[0]);
   };
 
-  /* ── Gate panels — sign-in / creator-role requirements ── */
+  /* ── Gate: sign-in required ── */
   if (!user) {
     return (
       <div className="mx-auto w-full max-w-[760px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7">
@@ -567,7 +848,8 @@ export function UploadView() {
           </span>
           <h2 className="mt-4 text-[17px] font-bold text-foreground">Sign in to upload</h2>
           <p className="mx-auto mt-2 max-w-sm text-[13px] leading-relaxed text-muted-foreground">
-            Creator accounts publish vertical video to the FHB shorts feed. Sign in to continue to the studio.
+            Creator accounts publish vertical video to the FHB shorts feed. Sign in to continue
+            to the studio.
           </p>
           <button
             onClick={() => navigate({ name: "auth" })}
@@ -580,6 +862,7 @@ export function UploadView() {
     );
   }
 
+  /* ── Gate: creator role required ── */
   if (!isCreator) {
     return (
       <div className="mx-auto w-full max-w-[760px] px-4 pb-16 pt-5 sm:px-6 lg:pt-7">
@@ -596,7 +879,8 @@ export function UploadView() {
           <h2 className="mt-4 text-[17px] font-bold text-foreground">Creator account required</h2>
           <p className="mx-auto mt-2 max-w-md text-[13px] leading-relaxed text-muted-foreground">
             Only approved creators and admins can publish shorts. In the demo, sign in with{" "}
-            <span className="font-semibold text-foreground">creator@fhb.com.bd</span> to open the studio.
+            <span className="font-semibold text-foreground">creator@fhb.com.bd</span> to open
+            the studio.
           </p>
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
             <button
@@ -629,7 +913,7 @@ export function UploadView() {
       />
 
       <section className="reveal overflow-hidden rounded-lg border border-border bg-card" aria-label="Upload short">
-        {/* ── Video source ── */}
+        {/* ── Step 1: Video source ── */}
         <header className="border-b border-border px-5 py-4">
           <p className="kicker flex items-center gap-1.5 text-primary">
             <FileVideo className="h-3.5 w-3.5" aria-hidden /> Step 1 · Source
@@ -638,12 +922,9 @@ export function UploadView() {
         </header>
 
         <div className="space-y-5 px-5 py-5">
-          {/* Drop zone — flat dashed border */}
+          {/* Drop zone */}
           <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragActive(true);
-            }}
+            onDragOver={(e) => { e.preventDefault(); setDragActive(true); }}
             onDragLeave={() => setDragActive(false)}
             onDrop={onDrop}
             className={cn(
@@ -685,10 +966,7 @@ export function UploadView() {
               type="file"
               accept="video/*"
               className="hidden"
-              onChange={(e) => {
-                attachLocalFile(e.target.files?.[0]);
-                e.target.value = "";
-              }}
+              onChange={(e) => { attachLocalFile(e.target.files?.[0]); e.target.value = ""; }}
               aria-hidden
               tabIndex={-1}
             />
@@ -697,7 +975,8 @@ export function UploadView() {
           {isLocalPreview && (
             <p className="flex items-start gap-2 rounded-md border border-fhb-gold/25 bg-fhb-gold/[0.06] px-3.5 py-2.5 text-[11.5px] leading-relaxed text-muted-foreground">
               <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-fhb-gold" aria-hidden />
-              Local file attached for preview only. To publish, pick a sample below or paste a hosted video URL.
+              Local file attached for preview only. To publish, pick a sample below or paste a
+              hosted video URL.
             </p>
           )}
 
@@ -709,7 +988,11 @@ export function UploadView() {
                 <button
                   key={url}
                   onClick={() =>
-                    setForm((f) => ({ ...f, videoUrl: url, thumbnailUrl: SAMPLE_THUMBS[i % SAMPLE_THUMBS.length] }))
+                    setForm((f) => ({
+                      ...f,
+                      videoUrl: url,
+                      thumbnailUrl: SAMPLE_THUMBS[i % SAMPLE_THUMBS.length],
+                    }))
                   }
                   className={cn(
                     "flex shrink-0 items-center gap-2 rounded-[6px] border px-3.5 py-2.5 text-[11px] font-bold transition-colors",
@@ -742,6 +1025,7 @@ export function UploadView() {
               Direct .mp4 file or .m3u8 HLS playlist. Vertical 9:16 works best in the feed.
             </p>
           </div>
+
           <div>
             <label htmlFor="thumb" className="mb-2 block text-xs font-bold text-foreground">
               Thumbnail URL
@@ -759,7 +1043,7 @@ export function UploadView() {
           </div>
         </div>
 
-        {/* ── Details ── */}
+        {/* ── Step 2: Details ── */}
         <div className="border-t border-border px-5 py-5">
           <p className="kicker flex items-center gap-1.5 text-primary">
             <Clapperboard className="h-3.5 w-3.5" aria-hidden /> Step 2 · Details
@@ -770,7 +1054,9 @@ export function UploadView() {
                 <label htmlFor="title" className="text-xs font-bold text-foreground">
                   Title <span className="text-primary">*</span>
                 </label>
-                <span className="tabular text-[10px] text-muted-foreground">{form.title.length}/120</span>
+                <span className="tabular text-[10px] text-muted-foreground">
+                  {form.title.length}/120
+                </span>
               </div>
               <Input
                 id="title"
@@ -781,12 +1067,15 @@ export function UploadView() {
                 className="h-11 rounded-lg bg-background"
               />
             </div>
+
             <div>
               <div className="mb-2 flex items-baseline justify-between gap-3">
                 <label htmlFor="desc" className="text-xs font-bold text-foreground">
                   Description
                 </label>
-                <span className="tabular text-[10px] text-muted-foreground">{form.description.length}/500</span>
+                <span className="tabular text-[10px] text-muted-foreground">
+                  {form.description.length}/500
+                </span>
               </div>
               <Textarea
                 id="desc"
@@ -798,12 +1087,15 @@ export function UploadView() {
                 className="min-h-[88px] resize-none rounded-lg bg-background"
               />
             </div>
+
             <div>
               <div className="mb-2 flex items-baseline justify-between gap-3">
                 <label htmlFor="tags" className="text-xs font-bold text-foreground">
                   Tags
                 </label>
-                <span className="tabular text-[10px] text-muted-foreground">{form.tags.length}/120</span>
+                <span className="tabular text-[10px] text-muted-foreground">
+                  {form.tags.length}/120
+                </span>
               </div>
               <Input
                 id="tags"
@@ -820,7 +1112,7 @@ export function UploadView() {
           </div>
         </div>
 
-        {/* ── Review & publish ── */}
+        {/* ── Step 3: Review & publish ── */}
         <div className="border-t border-border px-5 py-5">
           <p className="kicker flex items-center gap-1.5 text-primary">
             <Play className="h-3.5 w-3.5 fill-current" aria-hidden /> Step 3 · Publish
@@ -842,7 +1134,9 @@ export function UploadView() {
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="line-clamp-2 text-sm font-bold text-foreground">{form.title || "Untitled short"}</p>
+                  <p className="line-clamp-2 text-sm font-bold text-foreground">
+                    {form.title || "Untitled short"}
+                  </p>
                   <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-muted-foreground">
                     {form.description || "No description yet."}
                   </p>
@@ -869,7 +1163,8 @@ export function UploadView() {
                       </AvatarFallback>
                     </Avatar>
                     <p className="truncate text-[11px] text-muted-foreground">
-                      Publishing as <span className="font-semibold text-foreground">@{user.username}</span>
+                      Publishing as{" "}
+                      <span className="font-semibold text-foreground">@{user.username}</span>
                     </p>
                   </div>
                 </div>
@@ -893,11 +1188,17 @@ export function UploadView() {
                   Serve pre-roll and in-feed ads on this short and earn per 1,000 views.
                 </p>
               </div>
-              <Switch checked={monetized} onCheckedChange={setMonetized} aria-label="Monetize this short" />
+              <Switch
+                checked={monetized}
+                onCheckedChange={setMonetized}
+                aria-label="Monetize this short"
+              />
             </div>
 
             <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-[11px] text-muted-foreground">Uploads appear in the shorts feed immediately.</p>
+              <p className="text-[11px] text-muted-foreground">
+                Uploads appear in the shorts feed immediately.
+              </p>
               <div className="flex gap-2.5">
                 <Button
                   variant="outline"
@@ -912,7 +1213,7 @@ export function UploadView() {
                   disabled={!canPublish || submit.isPending}
                 >
                   <Upload className="h-4 w-4" aria-hidden />
-                  {submit.isPending ? "Uploading..." : "Publish short"}
+                  {submit.isPending ? "Uploading…" : "Publish short"}
                 </Button>
               </div>
             </div>
@@ -920,7 +1221,7 @@ export function UploadView() {
         </div>
       </section>
 
-      {/* ── Tips + ad ── */}
+      {/* ── Tips + earnings rail ── */}
       <div className="reveal mt-6">
         <RailCard title="Upload tips">
           <ul className="divide-y divide-border/40 px-5">
@@ -930,7 +1231,10 @@ export function UploadView() {
               "Tags power search — add the competition, club and player names.",
               "Monetized shorts serve pre-roll ads once per viewer session.",
             ].map((tip) => (
-              <li key={tip} className="flex items-start gap-2.5 py-2.5 text-xs leading-relaxed text-muted-foreground">
+              <li
+                key={tip}
+                className="flex items-start gap-2.5 py-2.5 text-xs leading-relaxed text-muted-foreground"
+              >
                 <Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" aria-hidden />
                 {tip}
               </li>

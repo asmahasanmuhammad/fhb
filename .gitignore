@@ -59,3 +59,17 @@ db/*.db-shm
 server.log
 # Skills directory
 /skills/
+*.apk
+*.png.bak
+
+public/ads/generated/banners_v4_template.html
+news_view_*.png
+news_review_*.png
+verified_scores_*.png
+
+/*.png
+old_custom.*
+prisma/*.db
+check_crests.js
+inspect_db.js
+mini-services/live-service/index.js

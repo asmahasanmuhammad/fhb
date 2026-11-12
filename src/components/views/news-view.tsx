@@ -102,10 +102,10 @@ export function NewsView() {
             onClick={() => setCategory(c.key)}
             aria-pressed={category === c.key}
             className={cn(
-              "h-8 shrink-0 rounded-full border px-3.5 text-[12px] font-semibold transition-colors",
+              "h-9 shrink-0 rounded-full border px-4 text-[13px] sm:text-[13.5px] font-semibold transition-colors",
               category === c.key
                 ? "border-primary/50 bg-primary/10 text-primary"
-                : "border-border bg-card text-foreground/75 hover:border-white/20"
+                : "border-border bg-card text-foreground/80 hover:border-white/20"
             )}
           >
             {c.label}

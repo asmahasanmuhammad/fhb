@@ -90,11 +90,14 @@ function FeaturedCompetitionCard({ competition }: { competition: Competition }) 
     >
       <div className="flex items-start gap-4">
         <span
-          aria-hidden
-          className="flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-[10px]"
-          style={{ backgroundColor: `${accent}22`, color: accent }}
+          className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-white/5 ring-1 ring-white/10 p-2"
+          style={{ backgroundColor: `${accent}15` }}
         >
-          <Trophy className="h-6 w-6" aria-hidden />
+          {competition.logoUrl ? (
+            <img src={competition.logoUrl} alt={`${competition.name} logo`} className="h-full w-full object-contain" />
+          ) : (
+            <Trophy className="h-6 w-6" style={{ color: accent }} aria-hidden />
+          )}
         </span>
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -152,11 +155,14 @@ function CompetitionTile({ competition }: { competition: Competition }) {
       aria-label={`View ${competition.name}`}
     >
       <span
-        aria-hidden
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px]"
-        style={{ backgroundColor: `${accent}22`, color: accent }}
+        className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-[8px] bg-white/5 ring-1 ring-white/10 p-1"
+        style={{ backgroundColor: `${accent}15` }}
       >
-        <Trophy className="h-4 w-4" aria-hidden />
+        {competition.logoUrl ? (
+          <img src={competition.logoUrl} alt={`${competition.name} logo`} className="h-full w-full object-contain" />
+        ) : (
+          <Trophy className="h-4 w-4" style={{ color: accent }} aria-hidden />
+        )}
       </span>
       <span className="min-w-0 flex-1">
         <span className="label-cond block truncate text-[13.5px] font-bold text-foreground">

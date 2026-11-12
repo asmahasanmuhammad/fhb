@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 576" width="1024" height="576">
+  
+  <!-- ═══════════════ LETTER F ═══════════════ -->
+  <!-- F Top Bar -->
+  <path d="M 164 193 L 397 193 L 387 238 L 155 238 Z" fill="#FF1E46" />
+  <!-- F Lower Part (Middle Bar + Stem) -->
+  <path d="M 151 254 L 385 254 L 374 296 L 221 296 L 205 372 L 125 372 Z" fill="#FF1E46" />
+
+  <!-- ═══════════════ LETTER H ═══════════════ -->
+  <!-- H Top Left Pillar -->
+  <path d="M 415 193 L 495 193 L 485 238 L 405 238 Z" fill="#FF1E46" />
+  <!-- H Top Right Pillar -->
+  <path d="M 589 193 L 668 193 L 659 238 L 579 238 Z" fill="#FF1E46" />
+  <!-- H Lower Body with Crossbar & Arch Window -->
+  <path d="M 401 254 L 655 254 L 630 372 L 550 372 L 566 296 L 472 296 L 456 372 L 376 372 Z" fill="#FF1E46" />
+
+  <!-- ═══════════════ LETTER B ═══════════════ -->
+  <!-- B Top Lobe -->
+  <path d="M 686 193 L 886 193 Q 922 205 920 238 L 676 238 Z" fill="#FF1E46" />
+  <!-- B Lower Body with Middle Slot -->
+  <path d="M 673 254
+           L 908 254
+           Q 918 274 898 296
+           Q 888 302 894 308
+           Q 914 322 905 348
+           Q 892 372 840 372
+           L 648 372
+           Z
+           M 739 296
+           L 826 296
+           Q 838 296 836 310
+           Q 834 324 822 324
+           L 733 324
+           Q 722 324 725 310
+           Q 728 296 739 296 Z"
+        fill-rule="evenodd"
+        fill="#FF1E46" />
+</svg>

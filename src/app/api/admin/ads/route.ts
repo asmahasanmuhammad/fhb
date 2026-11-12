@@ -21,6 +21,7 @@ const updateSchema = z.object({
   logoUrl: z.string().optional(),
   logoTheme: z.string().optional(),
   linkUrl: z.string().optional(),
+  imageHint: z.string().optional(),
 });
 
 export async function PUT(req: NextRequest) {

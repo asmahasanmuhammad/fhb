@@ -39,13 +39,13 @@ function TickerPill({ match }: { match: Match }) {
   return (
     <button
       onClick={() => navigate({ name: "match-detail", id: match.id })}
-      className="group flex h-[26px] shrink-0 items-center gap-2 rounded-[5px] px-2.5 text-left transition-colors hover:bg-white/[0.06]"
+      className="group flex h-[30px] sm:h-[32px] shrink-0 items-center gap-2.5 rounded-[6px] px-3 text-left transition-colors hover:bg-white/[0.08]"
       aria-label={`${match.homeTeam.name} vs ${match.awayTeam.name}${isLive ? " — live" : ""}`}
     >
       <span
         className={cn(
-          "label-cond tabular w-[34px] shrink-0 text-center text-[11px] font-bold leading-none",
-          isLive ? "text-fhb-red" : "text-muted-foreground/80"
+          "label-cond tabular w-[42px] shrink-0 text-center text-[12.5px] sm:text-[13px] font-bold leading-none",
+          isLive ? "text-fhb-red font-black" : "text-muted-foreground/80"
         )}
       >
         {isLive
@@ -56,19 +56,19 @@ function TickerPill({ match }: { match: Match }) {
             ? "FT"
             : "—"}
       </span>
-      <span className="flex items-center gap-1.5">
-        <span className="text-[11.5px] font-semibold leading-none text-foreground/85">
+      <span className="flex items-center gap-2">
+        <span className="text-[13px] sm:text-[13.5px] font-bold leading-none text-foreground">
           {match.homeTeam.shortName?.slice(0, 3).toUpperCase() ?? shortLabel(match.homeTeam.name, match.homeTeam.initials)}
         </span>
         <span
           className={cn(
-            "tabular rounded-[3px] px-1.5 py-[2px] text-[11px] font-bold leading-none",
-            isLive ? "bg-white/[0.08] text-foreground" : "text-foreground/90"
+            "tabular rounded-[4px] px-2 py-[2.5px] text-[12.5px] sm:text-[13px] font-extrabold leading-none",
+            isLive ? "bg-white/[0.12] text-foreground" : "bg-muted/60 text-foreground/90"
           )}
         >
           {isLive || isFinished ? `${fmtNum(home)} - ${fmtNum(away)}` : "vs"}
         </span>
-        <span className="text-[11.5px] font-semibold leading-none text-foreground/85">
+        <span className="text-[13px] sm:text-[13.5px] font-bold leading-none text-foreground">
           {match.awayTeam.shortName?.slice(0, 3).toUpperCase() ?? shortLabel(match.awayTeam.name, match.awayTeam.initials)}
         </span>
       </span>
@@ -77,37 +77,52 @@ function TickerPill({ match }: { match: Match }) {
 }
 
 export function ScoreTicker() {
+  const live = useLiveScores();
   const { data } = useQuery<{ matches: Match[] }>({
     queryKey: ["matches", "ticker"],
     queryFn: async () => {
       const res = await fetch("/api/matches?status=ALL&days=10&limit=80");
       return res.json().then((j) => j.data);
     },
-    refetchInterval: 60_000,
-    staleTime: 30_000,
+    refetchInterval: 4000,
   });
 
   const navigate = useAppStore((s) => s.navigate);
 
   const items = useMemo(() => {
-    const all = data?.matches ?? [];
-    const live = all.filter((m) => m.status === "LIVE");
-    const todayStr = new Date().toDateString();
+    const raw = data?.matches ?? [];
+    const all = raw.map((m) => {
+      const lm = live.matches.find((x) => x.id === m.id);
+      return lm
+        ? {
+            ...m,
+            status: "LIVE" as const,
+            minute: lm.minute,
+            period: lm.period,
+            homeScore: lm.homeScore,
+            awayScore: lm.awayScore,
+          }
+        : m;
+    });
+
+    const liveMatches = all.filter((m) => m.status === "LIVE");
+    const now = new Date();
+    const todayUtc = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())).toISOString().slice(0, 10);
     const finishedToday = all.filter(
-      (m) => m.status === "FINISHED" && new Date(m.kickoff).toDateString() === todayStr
+      (m) => m.status === "FINISHED" && new Date(m.kickoff).toISOString().slice(0, 10) === todayUtc
     );
     const next = all
       .filter((m) => m.status === "SCHEDULED")
       .sort((a, b) => +new Date(a.kickoff) - +new Date(b.kickoff))
       .slice(0, 10);
-    return [...live, ...finishedToday, ...next].slice(0, 18);
-  }, [data]);
+    return [...liveMatches, ...finishedToday, ...next].slice(0, 18);
+  }, [data, live.matches]);
 
   const liveCount = items.filter((m) => m.status === "LIVE").length;
 
   return (
     <div
-      className="relative z-[60] flex h-9 items-stretch border-b border-border bg-[#080d1a]/95"
+      className="relative z-[60] flex h-9 items-stretch border-b border-border bg-background/95 transition-colors duration-200"
       role="region"
       aria-label="Live score ticker"
     >
@@ -155,8 +170,8 @@ export function ScoreTicker() {
             {/* Desktop: marquee only when there are enough items to loop
                 without visible repetition; otherwise a static scroll row */}
             <div className="relative hidden h-full md:block">
-              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-[oklch(0.108_0.004_264)] to-transparent" aria-hidden />
-              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-40 bg-gradient-to-l from-[oklch(0.108_0.004_264)] to-transparent" aria-hidden />
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-background to-transparent" aria-hidden />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-40 bg-gradient-to-l from-background to-transparent" aria-hidden />
               <div className="fhb-scroll h-full overflow-x-auto">
                 <div
                   className={

@@ -1,0 +1,58 @@
+const fs = require('fs');
+const path = require('path');
+
+function getNormalizedSvg(letterColor = '#FFFFFF') {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 796 179" width="796" height="179" fill="none">
+  <!-- ═══════════════ LETTER F ═══════════════ -->
+  <!-- F Top Bar (Above Speed Slit y=0..45) -->
+  <path d="M 39 0 L 272 0 L 262 45 L 30 45 Z" fill="${letterColor}" />
+  <!-- F Lower Body (Middle Bar + Stem y=61..179) -->
+  <path d="M 26 61 L 260 61 L 249 103 L 96 103 L 80 179 L 0 179 Z" fill="${letterColor}" />
+
+  <!-- ═══════════════ LETTER H ═══════════════ -->
+  <!-- H Top Left Pillar -->
+  <path d="M 290 0 L 370 0 L 360 45 L 280 45 Z" fill="${letterColor}" />
+  <!-- H Top Right Pillar -->
+  <path d="M 464 0 L 543 0 L 534 45 L 454 45 Z" fill="${letterColor}" />
+  <!-- H Lower Body with Crossbar & Arch Window -->
+  <path d="M 276 61 L 530 61 L 505 179 L 425 179 L 441 103 L 347 103 L 331 179 L 251 179 Z" fill="${letterColor}" />
+
+  <!-- ═══════════════ LETTER B ═══════════════ -->
+  <!-- B Top Lobe -->
+  <path d="M 561 0 L 761 0 Q 797 12 795 45 L 551 45 Z" fill="${letterColor}" />
+  <!-- B Lower Body with Middle Slot -->
+  <path d="M 548 61
+           L 783 61
+           Q 793 81 773 103
+           Q 763 109 769 115
+           Q 789 129 780 155
+           Q 767 179 715 179
+           L 523 179 Z
+           M 614 103
+           L 701 103
+           Q 713 103 711 117
+           Q 709 131 697 131
+           L 608 131
+           Q 597 131 600 117
+           Q 603 103 614 103 Z"
+        fill-rule="evenodd"
+        fill="${letterColor}" />
+</svg>`;
+}
+
+// 1. Transparent white letters (like logo-espn@2x.png on ESPN DevTools)
+fs.writeFileSync(path.join(__dirname, '../public/logos/fhb-white.svg'), getNormalizedSvg('#FFFFFF'));
+fs.writeFileSync(path.join(__dirname, '../public/logos/fhb-red.svg'), getNormalizedSvg('#FF1E46'));
+
+// 2. Full badge with red background (aspect ratio 880x260, tightly padded)
+const badgeSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 260" width="880" height="260">
+  <rect width="880" height="260" rx="14" fill="#DC0714"/>
+  <g transform="translate(42, 40)">
+    ${getNormalizedSvg('#FFFFFF').replace(/<svg[^>]*>|<\/svg>/g, '')}
+  </g>
+</svg>`;
+
+fs.writeFileSync(path.join(__dirname, '../public/logo.svg'), badgeSvg);
+fs.writeFileSync(path.join(__dirname, '../src/app/icon.svg'), badgeSvg);
+
+console.log("Generated normalized SVGs successfully!");

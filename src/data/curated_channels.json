@@ -1,0 +1,2018 @@
+[
+  {
+    "id": "asports_hd",
+    "name": "A Sports HD",
+    "url": "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/tracks-v1a1/mono.ts.m3u8",
+    "logo": "/logos/channels/asports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "tsports_hd",
+    "name": "T Sports HD",
+    "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  },
+  {
+    "id": "tsports_isp",
+    "name": "T Sports ISP",
+    "url": "https://tvex.easypecker.com/TSportsHD_sf_bdix/tracks-v1a1/mono.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  },
+  {
+    "id": "willow_sports",
+    "name": "Willow TV Sports",
+    "url": "https://tvsen7.aynaott.com/rEBp38Ax/tracks-v1a1/mono.ts.m3u8",
+    "logo": "/logos/channels/willow.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "realmadrid_tv",
+    "name": "Real Madrid TV",
+    "url": "https://rmtv.akamaized.net/hls/live/2043153/rmtv-es-web/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/real-madrid-tv.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "fifa_plus",
+    "name": "FIFA+",
+    "url": "https://4397879b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWRlX0ZJRkFQbHVzR2VybWFuX0hMUw/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fifa.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "bahrain_sports1",
+    "name": "Bahrain Sports 1",
+    "url": "https://5c7b683162943.streamlock.net/live/ngrp:sportsone_all/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bahrain-sports-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "redbull_tv",
+    "name": "Red Bull TV",
+    "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_928.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_2_4y9x",
+    "name": "T Sports HD",
+    "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_8b38d691dfaf072e6c964dea814a44ba_playmist_t_sports_hd400x400.jpg",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  },
+  {
+    "id": "sp_1_4_tqqn",
+    "name": "Bahrain Sports 2",
+    "url": "https://tvsen6.aynaott.com/BahrainSports2/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bahrain-sports-2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_5_lalm",
+    "name": "beIN SPORTS",
+    "url": "http://fl1.moveonjoy.com/BEIN_SPORTS/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_d42ab13fe207d824670f04d717bfd88b_playmist_mbein_sports_m.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_6_t6mi",
+    "name": "Bein Sports 1",
+    "url": "https://1nyaler.streamhostingcdn.top/stream/23/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_02eb54f07cbc8c01db3c545aca60d37c_playmist_4g.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_7_fiyu",
+    "name": "Bleav Football",
+    "url": "https://linear-493.frequency.stream/dist/glewedtv/493/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_c1c4607b44cda506121e777ebeafffce_playmist_bleav_football_400x400.jpg",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "sp_1_8_j0dj",
+    "name": "Cricket Gold",
+    "url": "https://tvsen6.aynaott.com/M2W2UR49dmeKbZnmdRzN/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cricket-gold.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_9_12hq",
+    "name": "DD Sports",
+    "url": "https://cdn-6.pishow.tv/live/13/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/dd-sports-fb997548.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_10_rr7y",
+    "name": "Dubai Sports 1",
+    "url": "https://tvsen6.aynaott.com/dubaisports1/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_178fd67f7c1b0e4143333962bc7600e7_playmist_dubai_sports_2_400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_11_ufvw",
+    "name": "Dubai Sports 2",
+    "url": "https://tvsen6.aynaott.com/DubaiSports2/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_cf039e1adb9e7c68fe5db6edf7a45dff_playmist_dubai_sports_2_400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_12_qzkj",
+    "name": "Dubai Sports 3",
+    "url": "https://tvsen6.aynaott.com/DubaiSports3/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_254a740621cd7010c72d50aea5e78253_playmist_dubai_sports_3.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_13_ia1e",
+    "name": "ESPN",
+    "url": "https://tvsen7.aynaott.com/espn/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/espn.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_15_abcq",
+    "name": "Fox Sports 1",
+    "url": "https://fl3.moveonjoy.com/FOX_Sports_1/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fox-sports-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_16_82l7",
+    "name": "Fox Sports 2",
+    "url": "https://tvpass.org/live/FoxSports2/sd",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_1798e8f27d0dcf7ecfdbea8390ff4366_playmist_fox_sports_2400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_17_bew5",
+    "name": "Goal TV",
+    "url": "https://streams2.sofast.tv/sofastplayout/WiseM3U8_1/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/goal-tv-237cfbed.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "sp_1_18_kvgw",
+    "name": "KTV Sport Plus",
+    "url": "https://kwtsplta.cdn.mangomolo.com/spl/smil:spl.stream.smil/chunklist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/ktvsportplus.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_19_d1w0",
+    "name": "Marquee Sports Network",
+    "url": "https://tvsen6.aynaott.com/MarqueeSportsNetwork/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/d59971a29af79ba0f40aff4c18d29aae.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_20_lrq1",
+    "name": "More Then Sports TV",
+    "url": "https://tvsen6.aynaott.com/mtstv/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/3ce4f626598fec3837ba3f590e34005d.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_21_je67",
+    "name": "PTV Sports",
+    "url": "https://tvsen5.aynaott.com/kP9vX2mZ7qL5wN3t/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/ptv-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_22_ftn2",
+    "name": "Sharjah Sports TV",
+    "url": "https://tvsen6.aynaott.com/SharjahSportsTV/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_3fb60482217bd1827b359461e167230d_playmist_sharjah_sports_tv400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_23_rss1",
+    "name": "Sports First TV",
+    "url": "https://d4ddgdmj1cvnm.cloudfront.net/scheduler/scheduleMaster/409.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-first-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_24_miu8",
+    "name": "Sports Fishing TV",
+    "url": "https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/eea68b79-bfe2-451e-a227-d637a5b9548a/manifest.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sportsfishingtv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_25_5hje",
+    "name": "Talk Sport",
+    "url": "https://tvsen6.aynaott.com/talkSPORT/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/e190f393ddda707426d58a0f295bd7cd.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_26_8029",
+    "name": "TNT Sport 1",
+    "url": "https://tvsen5.aynaott.com/asdfadsf/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_4af9a282522f487a6ed41692f99baad6_playmist_tnt_sports_1400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_27_hxwq",
+    "name": "TSN 1",
+    "url": "https://tvsen7.aynaott.com/tsn1/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_d165c628a0db9286da3914ca916a4971_playmist_tsn_1400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_28_8k8j",
+    "name": "TSN 2",
+    "url": "https://tvsen7.aynaott.com/tsn2/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_c92bf4f46958e65be6cc370e3fc1f0dd_playmist_tsn_2_400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_29_azms",
+    "name": "TSN 3",
+    "url": "https://tvsen7.aynaott.com/tsn3/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_905f151dfde79e14a2b9e7b934683ba6_playmist_tsn3_300.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_30_ooze",
+    "name": "Willow Sports 2",
+    "url": "https://tvsen7.aynaott.com/Sports1/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_b682a582e7041a8083aa53cefbe9546e_playmist_willow_sports_2.jpg",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_31_732k",
+    "name": "Willow TV",
+    "url": "https://tvsen7.aynaott.com/rEBp38Ax/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_1bb4b50bd8e39a63808ed6fa38beb0df_playmist_willow_hd_tv_400x400.jpg",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_32_wx5f",
+    "name": "Xtrem Sports",
+    "url": "https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/e0b81a5c-6ab5-48cd-aaa9-f82de4ab5bf9/manifest.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/m-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_33_dgeg",
+    "name": "Oman Sports TV HD",
+    "url": "https://partneta.cdn.mgmlcdn.com/omsport/smil:omsport.stream.smil/chunklist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_db7e2ba86e75cc789ccffacd59521127_playmist_oman_sports_tv_hd400x400.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_37_cvly",
+    "name": "ACCDN",
+    "url": "https://raycom-accdn-firetv.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/accdn.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_38_78hi",
+    "name": "ACI Sport TV",
+    "url": "https://webstream.multistream.it/memfs/e2cb3629-c1a2-495b-b43a-9eb386f04ed8.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/aci-sport-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_39_fglg",
+    "name": "ATG Live",
+    "url": "https://kanal75xto-llhls.akamaized.net/live/Data/atg-kanal-15-02a-rr/HLS-Legacy-HL/atg-kanal-15-02a-rr.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/atg-live.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_40_6z5c",
+    "name": "beIN SPORTS XTRA",
+    "url": "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bein-sports-xtra.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_41_ih7a",
+    "name": "beIN Sports XTRA en Espanol",
+    "url": "https://dc1644a9jazgj.cloudfront.net/beIN_Sports_Xtra_Espanol.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bein-sports-xtra-en-espanol.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_42_j4wc",
+    "name": "DraftKings Network",
+    "url": "https://na.linear.zype.com/e0bd0e23-a958-4e43-8164-4f2fef8876a8/fd3614bd-90bf-4530-a277-65ae3a1720c8-zype/live.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/draftkings-network.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_43_of6x",
+    "name": "ESPN8 The Ocho",
+    "url": "https://d3b6q2ou5kp8ke.cloudfront.net/ESPNTheOcho.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/espn8-the-ocho.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_44_bca0",
+    "name": "Fight Network",
+    "url": "https://amg00966-amg00966c10-amgplt0201.playout.now3.amagi.tv/ts-eu-w1-n2/playlist/amg00966-amg00966c10-amgplt0201/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fight-network.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_45_gchq",
+    "name": "FITE 24/7",
+    "url": "https://d3d85c7qkywguj.cloudfront.net/scheduler/scheduleMaster/263.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fite-24-7.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_46_3ozq",
+    "name": "Fuel TV",
+    "url": "https://amg01074-fueltv-fueltvau-samsungau-g09kq.amagi.tv/playlist/amg01074-fueltv-fueltvau-samsungau/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fuel-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_47_fqp7",
+    "name": "Horse & Country",
+    "url": "https://hncfree-samsungau.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/horse-country.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_48_hn34",
+    "name": "Inter TV (Italy)",
+    "url": "https://d3k8wzt41aflvx.cloudfront.net/INTERTV/Live.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/inter-tv-italy-014d12b302.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "sp_1_49_67uu",
+    "name": "MTRSPT1",
+    "url": "https://amg02873-kravemedia-mtrspt1-sportstribal-ajosc.amagi.tv/playlist/amg02873-kravemedia-mtrspt1-sportstribal/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/mtrspt1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_50_63pc",
+    "name": "NHL Network",
+    "url": "https://nhl-firetv.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nhl-network.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_51_4zf6",
+    "name": "Pac 12 Insider",
+    "url": "https://pac12-firetv.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/pac-12-insider.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_52_bfbl",
+    "name": "PGA Tour",
+    "url": "https://d11k1mnrgfposz.cloudfront.net/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/pga-tour.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_53_yric",
+    "name": "Rally TV",
+    "url": "https://rally-tv-live.akamaized.net/hls/live/2117704/RallyTV-Pri/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/rally-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_55_vrfh",
+    "name": "Realitatea Sportiva",
+    "url": "https://stream.realitatea.net/realitatea/sportiva_md/ts:playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/realitatea-sportiva.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_56_xl8v",
+    "name": "Red Bull TV",
+    "url": "https://3ea22335.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWdiX1JlZEJ1bGxUVl9ITFM/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_57_3d42",
+    "name": "Sky Racing 1",
+    "url": "https://636ffd31f0e12.streamlock.net/RacingStream1/RacingStream1/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sky-racing-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_58_dci8",
+    "name": "Sportivnyy",
+    "url": "https://live-3.otcnet.ru/sportivny/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sportivnyy.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_59_l98a",
+    "name": "Sports Grid",
+    "url": "https://tvsen6.aynaott.com/SportsGrid/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-grid.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_60_m1t5",
+    "name": "Star Sports 1 Hindi",
+    "url": "https://starsportshindiii.pages.dev/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/star-sports-1-hindi.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_61_ztpc",
+    "name": "Star Sports 2",
+    "url": "https://tvsen7.aynaott.com/ssport2hd/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/star-sports-2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_62_jm6g",
+    "name": "Swerve Combat",
+    "url": "https://linear-253.frequency.stream/mt/roku/253/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/swerve-combat.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_63_qifo",
+    "name": "talkSPORT",
+    "url": "https://af7a8b4e.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/TEctZ2JfdGFsa1NQT1JUX0hMUw/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/talksport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_64_g513",
+    "name": "TR Sport",
+    "url": "https://livetr.teleromagna.it/mia/live/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tr-sport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_65_f7a4",
+    "name": "Trace Sport",
+    "url": "https://lightning-tracesport-samsungau.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/trace-sport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_66_m5j1",
+    "name": "TSN The Ocho",
+    "url": "https://d3pnbvng3bx2nj.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-rds8g35qfqrnv/TSN_The_Ocho.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tsn-the-ocho.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_67_c98b",
+    "name": "TYC Sports",
+    "url": "https://amg26268-amg26268c14-freelivesports-emea-10267.playouts.now.amagi.tv/ts-us-e2-n2/playlist/amg26268-sportsstudio-tycsports-freelivesportsemea/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tyc-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_68_y0se",
+    "name": "Unbeaten",
+    "url": "https://d1t5afz6qed3xk.cloudfront.net/Unbeaten.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/unbeaten.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_69_hlgj",
+    "name": "World of Freesports",
+    "url": "https://mainstreammedia-worldoffreesportsintl-rakuten.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/world-of-freesports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_70_jrol",
+    "name": "ABC Sport in 90 Seconds",
+    "url": "https://c.mjh.nz/sport_in_90_seconds",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_72_6mtc",
+    "name": "BEK TV Sports West",
+    "url": "https://cdn3.wowza.com/5/ZWQ1K2NYTmpFbGsr/BEK-WOWZA-1/smil:BEKPRIMEW.smil/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_73_t01d",
+    "name": "Big 12 Studios",
+    "url": "https://d18pj8s9gbivdq.cloudfront.net/The_Big_12.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_74_ddhp",
+    "name": "Billiards+",
+    "url": "https://streams2.sofast.tv/WiseM3U8_18/sofast/cleanhls/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cctv-billiards-1080p-b0f7f58939.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_75_bfif",
+    "name": "Bowling TV",
+    "url": "https://bozztv.com/gusa/gusa-tvsbowling/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_76_xbil",
+    "name": "Channel Fight",
+    "url": "https://d15wqvt0xm15k4.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/ChannelFight-Nuestra/266.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_78_ddqt",
+    "name": "Cowboy + Channel",
+    "url": "https://amg17292-amg17292c1-distrotv-us-4170.playouts.now.amagi.tv/playlist/amg17292-tetonridgellc-tetonridgefast-distrotvus/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_79_61xd",
+    "name": "Dazn Ringside",
+    "url": "https://aegis-cloudfront-1.tubi.video/bfad29e2-5bee-44f3-8256-127324e8b106/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_80_1dwq",
+    "name": "DD Sports HD",
+    "url": "https://fta.ektv.in/live/280/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_81_yxch",
+    "name": "DD Sports SD",
+    "url": "https://mumbai-edge.smartplaytv.in/DDSports/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_82_1fsw",
+    "name": "Eleven Sports 1",
+    "url": "http://92.114.85.87:8002/play/a00e/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eleven-sports-1-bd5e086a03.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_83_m9y3",
+    "name": "Eleven Sports 2",
+    "url": "http://92.114.85.87:8002/play/a00f/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eleven-sports-2-161fe39928.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_84_kc03",
+    "name": "Eleven Sports 3",
+    "url": "http://92.114.85.87:8002/play/a00g/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eleven-sports-3-98ba597232.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_85_fdmy",
+    "name": "Eleven Sports 4",
+    "url": "http://92.114.85.87:8002/play/a00h/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eleven-sports-4-f285951d2f.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_86_37f9",
+    "name": "Equus TV",
+    "url": "https://d2gwqf8gdwq1zs.cloudfront.net/scheduler/scheduleMaster/426.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_87_6kke",
+    "name": "ESPN HD",
+    "url": "http://85.237.89.160:9590/usa-s/ESPN-HD/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_88_0d1b",
+    "name": "ESPN2 HD",
+    "url": "http://85.237.89.160:9590/usa-s/ESPN-2-HD/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_89_c4yn",
+    "name": "Eurosport",
+    "url": "http://103.253.74.210:7070/stream/122/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eurosport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_90_4wou",
+    "name": "Eurosport 1 Romania",
+    "url": "http://89.44.231.73:7000/eurosport",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eurosport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_91_9vii",
+    "name": "Eurosport 2 Romania",
+    "url": "http://89.44.231.73:7000/eurosport2",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eurosport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_92_xeoh",
+    "name": "Eurosport 4K Romania",
+    "url": "https://vip-acasatv.online:25463/lrZuGxAuP3/6782859900/5449.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eurosport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_93_02qx",
+    "name": "Eurosport HD",
+    "url": "https://livetv.shamon-cable.net:8443/Eurosport-HD/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/euro-sport-hd.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_94_6l4b",
+    "name": "Eurovision Sport",
+    "url": "https://amg26268-amg26268c34-amgplt0018.playout.now3.amagi.tv/ts-us-e2-n1/playlist/amg26268-amg26268c34-amgplt0018/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/vision.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_95_n7wz",
+    "name": "FIFA+ Women",
+    "url": "https://cffda8ff.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/U2Ftc3VuZy1nYl9GSUZBUGx1c3dvbWVuX0hMUw/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "sp_1_96_6mhc",
+    "name": "Fight TV",
+    "url": "https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/70e45fc8-1f6c-4492-ac26-9868f70f4e02/manifest.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_97_0vli",
+    "name": "FIGHT | MVMT Culture",
+    "url": "https://d15g7z5n3epv7t.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/TheGrapplingNetwork-SportsTribal/236.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_98_zaoq",
+    "name": "FIGHT | PFL",
+    "url": "https://d2w9b8sam7j3zv.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-5g55ahrn9ajah/v1/pfl_pflmma_1/samsungheadend_us/latest/main/hls/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_99_wq3u",
+    "name": "FITE 24",
+    "url": "https://d3d85c7qkywguj.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/FiteTV-Nuestra/263.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fite-24-7.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_100_lm9w",
+    "name": "Five Stars Sports",
+    "url": "http://38.75.136.137:98/gslb/dsdqpub/wxtyhd.m3u8?auth=testpub",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_101_8aa4",
+    "name": "FloHockey 24",
+    "url": "https://amg02278-amg02278c2-flosports-worldwide-9916.playouts.now.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_102_0tjy",
+    "name": "FOX Sports",
+    "url": "https://d1jzu95oc8fgt3.cloudfront.net/FOX_Sports.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fox-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_103_tc0u",
+    "name": "Fox Sports News",
+    "url": "https://skynewsau-live-premium.akamaized.net/hls/live/2105307/foxsportsnews/live_1080p.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fox-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_104_zhso",
+    "name": "FTF Sports",
+    "url": "https://1657061170.rsc.cdn77.org/HLS/FTF-LINEAR.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/ftf-sports-e8272afb13.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_105_m0sf",
+    "name": "Futbol",
+    "url": "http://185.121.1.163:8083/FootballHD/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/futbol-tv-068fcbdde9.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_106_o5m6",
+    "name": "Futbol TV",
+    "url": "http://stream3.cinerama.uz/1010/tracks-v1a1/mono.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/futbol-tv-068fcbdde9.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_107_iuup",
+    "name": "Golf Channel",
+    "url": "https://tvsen6.aynaott.com/golfchannel/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/golf-channel-73bed53091.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_108_gmt5",
+    "name": "GOLF | GOLFPASS",
+    "url": "https://d2icntm6fhxrry.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-egqimi4i6n3rh/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_109_fqsk",
+    "name": "GolfPass",
+    "url": "https://d2icntm6fhxrry.cloudfront.net/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_110_wk4q",
+    "name": "Hard Knocks",
+    "url": "https://d3uyzhwvmemdyf.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/HardKnocks-PLEX/121.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nvisionbd-hard-knocks.svg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_111_580g",
+    "name": "Homerun TV",
+    "url": "https://streams2.sofast.tv/WiseM3U8_29/sofast/cleanhls/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_112_8odu",
+    "name": "Hoop TV",
+    "url": "https://streams2.sofast.tv/WiseM3U8_28/sofast/cleanhls/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_113_ce8y",
+    "name": "Horse & Country TV",
+    "url": "https://hnc-free-viewlift.amagi.tv/HNC_AUSTRALIA.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/horse-country.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_114_kg0a",
+    "name": "Horse TV",
+    "url": "https://streams2.sofast.tv/vglive-sk-469239/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/horse-tv-97d2ca3236.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_116_3vtt",
+    "name": "Kozoom TV",
+    "url": "https://streams2.sofast.tv/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/fdd6f243-f971-4a1a-9510-97ac01d6b37f/manifest.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/kozoom-tv-43858e0b25.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_117_4bl1",
+    "name": "KTV Sport",
+    "url": "https://kwtspta.cdn.mangomolo.com/sp/smil:sp.stream.smil/chunklist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/ktv-sport-8d1b170c61.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_118_ak1h",
+    "name": "M Sports",
+    "url": "https://cdn.rabta.stream/M-Sports/tracks-v1a1/mono.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/m-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_119_e57x",
+    "name": "Major League Cricket",
+    "url": "https://bl.rutube.ru/livestream/7c13a51576b9ff2601f08f5d57dd5169/index.m3u8?s=uiXES2ePt7xTpQnbJxn7Dg&e=2074684474&scheme=https|user-agent=Mozilla",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_120_rezn",
+    "name": "MIXER | Red Bull TV UK",
+    "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_121_7549",
+    "name": "MIXER | SportsGrid",
+    "url": "https://sportsgrid-tribal.amagi.tv/playlistR432p.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-grid.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_122_uxuz",
+    "name": "MIXER | Strongman Champions League",
+    "url": "https://3f4b9dde8740443b9b90459fc7b67cdd.mediatailor.us-east-1.amazonaws.com/v1/master/04fd913bb278d8775298c26fdca9d9841f37601f/Samsung-gb_StrongmanChampionsLeague/playlist.m3u8?ads.wurl_channel=1102&ads.wurl_name=StrongmanChampionsLeague&ads.coppa=0&ads.psid=%7BPSID%7D&ads.targetopt=%7BTARGETOPT%7D&ads.app_domain=%7BAPP_DOMAIN%7D&ads.app_name=%7BAPP_NAME%7D&ads.consent=%7BTC_STRING%7D",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_123_o2jb",
+    "name": "MIXER | Trace Sports Stars",
+    "url": "https://trace-sportstars-samsungnz.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/trace-sport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_124_3p40",
+    "name": "MIXER | World of Freesports",
+    "url": "https://amg01866-mainstreammedia-freesportsinc-sportstribal-b3zdo.amagi.tv/ts-eu-w1-n2/playlist/amg01866-mainstreammedia-freesportsinc-sportstribal/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/world-of-freesports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_125_5yu4",
+    "name": "MLB",
+    "url": "https://aegis-cloudfront-1.tubi.video/36ef2f9d-7100-4c4d-b41a-dbf41ab7e461/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/mlb-strike-zone-4930a654ce.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_126_1r86",
+    "name": "MMA TV.com 格斗",
+    "url": "https://streams2.sofast.tv/vglive-sk-462904/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/mma-tv-com-85ca206b32.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_127_7abe",
+    "name": "MMA-TV.com",
+    "url": "https://stream8.cinerama.uz/1226/tracks-v1a1/mono.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/mma-tv-com-85ca206b32.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_128_wuws",
+    "name": "MNB Sport",
+    "url": "https://live.mnb.mn/hls/mnb_sport.stream.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/mnb-sport-037e6fd069.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_129_b9xc",
+    "name": "MSG SportsZone",
+    "url": "https://d2a31kzot4f8t3.cloudfront.net/v1/amc_msgsportszone_1/samsungheadend_us/latest/main/hls/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_131_27ni",
+    "name": "Nautical Channel",
+    "url": "https://streams2.sofast.tv/vglive-sk-231198/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nautical-channel-e60e83b7d0.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_132_r7oi",
+    "name": "NBA TV",
+    "url": "http://23.237.104.106:8080/USA_NBA/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nba-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_133_3ysv",
+    "name": "NBC Sports Now",
+    "url": "https://d1m1xk35ma8qfl.cloudfront.net/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nbc-sports-now-48667e2ba4.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_134_2de5",
+    "name": "NHL Network HD",
+    "url": "https://aegis-cloudfront-1.tubi.video/1f4cbb33-cb23-40ab-b54b-2965cc551b32/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nhl-network.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_137_arli",
+    "name": "PBR RidePass 24",
+    "url": "https://amg17573-amg17573c1-flosports-worldwide-8159.playouts.now.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_138_74vp",
+    "name": "PFL",
+    "url": "https://d2w9b8sam7j3zv.cloudfront.net/v1/pfl_pflmma_1/samsungheadend_us/latest/main/hls/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_139_2rll",
+    "name": "Powder TV",
+    "url": "https://linear-265.frequency.stream/dist/plex/265/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_140_cj3s",
+    "name": "Prima Sport Czechia",
+    "url": "http://rpprod.hbbtv.cdn.cra.cz:8080/hbbTV/prima_sport/live_mq?offsetSeconds=0",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/prima-sport-czechia-dbfebefa13.svg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_141_80mf",
+    "name": "QazSport",
+    "url": "https://qazsporttv-stream.qazcdn.com/qazsporttv/qazsporttv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_142_y0h3",
+    "name": "RACING | Hagerty",
+    "url": "https://dqw6u0upa8l21.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-0etl87ne2tj77/Hagerty.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_143_v2hg",
+    "name": "REAL MADRID",
+    "url": "https://rmtv.akamaized.net/hls/live/2043153/rmtv-es-web/bitrate_3.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/real-madrid-tv-a93e7915a6.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_144_emd8",
+    "name": "Real Madrid TV English",
+    "url": "http://88.212.15.50/live/real_madrid_tv/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/real-madrid-tv-english.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_145_e8jp",
+    "name": "Red Bull TV AU",
+    "url": "https://db34cc6127ac459db55cab5f97cd66b9.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-680-WORBAUENFAST-WHALETVPLUS/680/whaletvplus/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv-au-4ec4c704c2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_146_w0z8",
+    "name": "Red Bull TV BR",
+    "url": "https://d03ae6b5c6724c24867e97a3dc04934a.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-1026-WORBBRPTFAST-WHALETVPLUS/1026/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv-br-4ec4c704c2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_147_wu90",
+    "name": "Red Bull TV DE",
+    "url": "https://46cfeb23c7f74853bba7a256655a3119.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-582-WORBDACHDEFAST-WHALETVPLUS/582/whaletvplus/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv-de-4ec4c704c2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_148_s9bw",
+    "name": "Red Bull TV ES",
+    "url": "https://886bd3fbc782459f8de7555d32d7e9ce.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-957-WORBLATAMESFAST-WHALETVPLUS/957/whaletvplus/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv-es-4ec4c704c2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_149_x85i",
+    "name": "Red Bull TV UK",
+    "url": "https://1a3566cb46914c5499fbc86fbc4ac87e.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-932-WORBUKENFAST-WHALETVPLUS/932/whaletvplus/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv-uk-4ec4c704c2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_150_6o7l",
+    "name": "Red Bull TV US",
+    "url": "https://0b73ace69ebb45eaa249bb87837cb958.mediatailor.us-west-2.amazonaws.com/v1/master/ba62fe743df0fe93366eba3a257d792884136c7f/LINEAR-644-WORBUSENFAST-LG_US/644/lgtv/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv-us-4ec4c704c2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_151_lyka",
+    "name": "RedBull",
+    "url": "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master_6660.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv-au-4ec4c704c2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_152_9gck",
+    "name": "Setanta Sports 2 Eurasia",
+    "url": "http://stream.mcquack.net/235/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/setanta-sports-2-eurasia-889272f9bb.svg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_153_snzo",
+    "name": "Shooting Sports Life",
+    "url": "https://linear-1312.frequency.stream/dist/stirr/1312/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_154_3fj2",
+    "name": "SN TV",
+    "url": "https://linear-502.frequency.stream/dist/plex/502/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_155_jyfx",
+    "name": "SOLOCALCIO ITALIA",
+    "url": "https://italiansport-solocalcio-samsung.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_156_38d0",
+    "name": "Sport 1 Baltic",
+    "url": "http://stream.mcquack.net/461/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sport-1-baltic-5a353d04ad.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_158_7eqo",
+    "name": "Stadium",
+    "url": "https://aegis-cloudfront-1.tubi.video/74681dcc-e6d0-4add-ad67-a22ad9c152e6/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/stadium-164c0cfda7.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_159_q3pb",
+    "name": "Star Sports 2 Telugu HD",
+    "url": "https://real-vk.proxy.nellaiiptv.com/SDMEDIA/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/star-sports-2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_160_0fki",
+    "name": "Surfer TV",
+    "url": "https://dgwfm675921lp.cloudfront.net/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_161_1dg0",
+    "name": "Surfing+ 冲浪",
+    "url": "https://dr4jwhk0sty71.cloudfront.net/scheduler/scheduleMaster/444.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_162_3wqc",
+    "name": "Swerve Sports",
+    "url": "https://linear-1013.frequency.stream/dist/plex/1013/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/swerve-sports-5bcc3e9a7f.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_163_41yu",
+    "name": "Tennis Channel",
+    "url": "http://23.237.104.106:8080/USA_TENNIS/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tennis-channel.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_164_dsf3",
+    "name": "Tennis Channel 2",
+    "url": "https://mumbai-edge.smartplaytv.in/Tennis2/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tennis-channel-2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_165_jcz2",
+    "name": "Tennis Channel HD",
+    "url": "https://cdn-uw2-prod.tsv2.amagi.tv/linear/amg01444-tennischannelth-tennischnlintl-lggb/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tennis-channel.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_166_task",
+    "name": "Tennis+",
+    "url": "https://amg01935-amg01935c1-amgplt0165.playout.now3.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cctv-golf-and-tennis-68e8bff175.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_167_9hjr",
+    "name": "The Grappling Network",
+    "url": "https://d1vwakhda3vp6p.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/STIRR-MuxIP-TheGrapplingNetwork/236.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_168_xmee",
+    "name": "TOP Barca",
+    "url": "https://amg17560-fcb-amg17560c1-rakuten-uk-4891.playouts.now.amagi.tv/playlist/amg17560-fcbarcelona-topbarcaenglish-rakutenuk/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_169_40ow",
+    "name": "Trace Sport Stars",
+    "url": "https://mumbai-edge.smartplaytv.in/TraceSport/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/trace-sport-stars.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_170_aw9o",
+    "name": "Trace Sport Stars SD",
+    "url": "https://channels.trace.plus/Traceprod/TRACE_SPORT_STARS_sd/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/trace-sport-stars.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_171_qn7m",
+    "name": "TVS Bowling Network",
+    "url": "https://rpn.bozztv.com/gusa/gusa-tvsbowling/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tvs-bowling-network-cf222fc786.jpg",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_172_nn23",
+    "name": "TVS Boxing",
+    "url": "https://rpn.bozztv.com/gusa/gusa-tvsboxing/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tvs-boxing-80caf1afe8.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_173_vhxa",
+    "name": "TVS Classic Sports",
+    "url": "https://rpn.bozztv.com/gusa/gusa-tvs/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tvs-classic-sports-07dffe759c.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_174_ffrf",
+    "name": "TVS Sports",
+    "url": "https://rpn.bozztv.com/gusa/gusa-tvssports/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tvs-sports-1a961bba94.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_175_13lo",
+    "name": "TVS Sports Bureau",
+    "url": "https://rpn.bozztv.com/gusa/gusa-tvssportsbureau/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_176_14bo",
+    "name": "TVS Women Sports",
+    "url": "https://rpn.bozztv.com/gusa/gusa-tvswsn/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tvs-women-sports-06d36b4271.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_177_ufuw",
+    "name": "Türkmenistan Sport",
+    "url": "https://alpha.tv.online.tm/hls/ch004.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_178_a978",
+    "name": "UFC",
+    "url": "https://linear-893.frequency.stream/dist/plex/893/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/ufc-tv.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_179_tf2j",
+    "name": "Women's Sports Network",
+    "url": "https://d39accvx65hq9o.cloudfront.net/Womens_Sports_Network.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/women-s-sports-network-d2bc35e249.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_180_h8uq",
+    "name": "World Poker Tour",
+    "url": "https://amg00477-samsungelectron-worldpokertour-samsunguk-81igb.amagi.tv/playlist/amg00477-samsungelectron-worldpokertour-samsunguk/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/world-poker-tour.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_181_h4mh",
+    "name": "WWE Superstar Central",
+    "url": "https://dpv6ceilvhyrw.cloudfront.net/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_182_usur",
+    "name": "广东体育",
+    "url": "http://hyde-ipv6.dynv6.net:8100/rtp/239.77.0.112:5146",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/1-1-international.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_183_m6yx",
+    "name": "SportsGrid",
+    "url": "https://sportsgrid-tribal.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-grid.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_184_g1hr",
+    "name": "PK Sports",
+    "url": "https://lbgo.bozztv.com/ssh101/ssh101/pksportshd/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/pk-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_185_ltwd",
+    "name": "Star Sports Select 1",
+    "url": "http://103.135.253.32:8080/STAR-SPORTS-SELECT-1/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/star-sports-select-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_186_9r00",
+    "name": "Star Sports Select 2",
+    "url": "http://tvsen7.aynascope.net/ssport2hd/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/star-sports-select-2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_187_chtn",
+    "name": "T Sports",
+    "url": "http://103.135.253.32:8080/T-SPORTS-FULL-HD/tracks-v1a1/mono.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  },
+  {
+    "id": "sp_1_190_tu52",
+    "name": "Willow Sports",
+    "url": "https://tvsen5.aynaott.com/willowhd/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/us-willow-sports-hd.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_191_yj2o",
+    "name": "Bahrain Sports 2_89",
+    "url": "https://5c7b683162943.streamlock.net/live/ngrp:bahrainsportstwo_all/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bahrain-sports-2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_192_vy0h",
+    "name": "Cricket Gold_90",
+    "url": "https://d1nj4u39ja4cn0.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/FLS-MuxIP-CricketGold/418.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cricket-gold.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_193_y1rm",
+    "name": "DD Sports_91",
+    "url": "https://d3qs3d2rkhfqrt.cloudfront.net/out/v1/b17adfe543354fdd8d189b110617cddd/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/dd-sports-fb997548.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_194_hgje",
+    "name": "ESPN_92",
+    "url": "http://181.78.197.59:8000/play/a07z/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/espn.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_195_ozby",
+    "name": "FIFA+_93",
+    "url": "https://d2w9q46ikgrcwx.cloudfront.net/v1/master/3722c60a815c199d9c0ef36c5b73da68a62b09d1/cc-of5cbk3sav3w5/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fifa.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "sp_1_196_hvpt",
+    "name": "Fox Sports 1_94",
+    "url": "http://85.237.89.160:9590/usa-s/FOX-SPORTS-1/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fox-sports-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_198_arwp",
+    "name": "Channel Fight_97",
+    "url": "https://d15wqvt0xm15k4.cloudfront.net/scheduler/scheduleMaster/266.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_199_foys",
+    "name": "Five Stars Sports_98",
+    "url": "http://rd.gavinping.top:8188/rtp/238.200.200.131:5540",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_200_kk3y",
+    "name": "FTF Sports_99",
+    "url": "https://1593604785.rsc.cdn77.org/FTF/FTF_SCTE.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/ftf-sports-e8272afb13.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_201_5rqf",
+    "name": "M Sports_101",
+    "url": "https://cdn.rabta.stream/M-Sports/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/m-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_202_ncn0",
+    "name": "M Sports_102",
+    "url": "https://cdn.rabta.stream/M-Sports/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/m-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_203_u45i",
+    "name": "NBC Sports Now_103",
+    "url": "https://xumo-xumoent-vc-122-sjv70.fast.nbcuni.com/live/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nbc-sports-now-48667e2ba4.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_204_oj8c",
+    "name": "NBC Sports Now_104",
+    "url": "https://d4whmvwm0rdvi.cloudfront.net/10007/99993008/hls/master.m3u8?ads.xumo_channelId=99993008",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/nbc-sports-now-48667e2ba4.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_205_0bsb",
+    "name": "Real Madrid TV English_106",
+    "url": "https://rmtv.akamaized.net/hls/live/2043154/rmtv-en-web/bitrate_3.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/real-madrid-tv-english.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_206_exgj",
+    "name": "Swerve Sports_109",
+    "url": "https://linear-253.frequency.stream/dist/stirr/253/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/swerve-sports-5bcc3e9a7f.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_207_q6lz",
+    "name": "Tennis Channel_110",
+    "url": "http://138.59.177.78:9999/play/a0gl/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tennis-channel.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_208_08rv",
+    "name": "TVS Boxing_111",
+    "url": "https://bozztv.com/gusa/gusa-tvsboxing/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/tvs-boxing-80caf1afe8.png",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_1_209_d0qx",
+    "name": "Türkmenistan Sport_112",
+    "url": "https://alpha.tv.online.tm/legacyhls/ch004.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/placeholder-channel-1.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_210_oqxp",
+    "name": "Women's Sports Network_113",
+    "url": "https://aegis-cloudfront-1.tubi.video/e974981b-bbcd-42a3-a6c1-6c25e14f10bd/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/women-s-sports-network-d2bc35e249.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_213_qyhd",
+    "name": "DD Sports_235",
+    "url": "https://cdn.pishow.tv/ott/live/1161/master.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/dd-sports-fb997548.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_214_kq8z",
+    "name": "DD Sports_236",
+    "url": "https://mumbai-edge.smartplaytv.in/DDSportsHD/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/dd-sports-fb997548.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_215_luzm",
+    "name": "Star Sports 2_462",
+    "url": "https://tvsen7.aynaott.com/ssport2hd/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/star-sports-2.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_216_h4fx",
+    "name": "BeIN Sports XTRA_553",
+    "url": "https://bein-beinxtrasports-firetv.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bein-sports-xtra.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_217_d1ve",
+    "name": "beIN SPORTS XTRA_554",
+    "url": "https://d9ssxzmclhfo4.cloudfront.net/bein_sports.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bein-sports-xtra.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_218_60vt",
+    "name": "BeIN Sports XTRA_555",
+    "url": "https://bein-xtra-bein.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bein-sports-xtra.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_219_ywnt",
+    "name": "Cricket Gold_556",
+    "url": "https://d382r3rgbxdixq.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/STIRR-MuxIP-CricketGold/418.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cricket-gold.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_220_322a",
+    "name": "Cricket Gold_557",
+    "url": "https://d382r3rgbxdixq.cloudfront.net/scheduler/scheduleMaster/418.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cricket-gold.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_221_ndxr",
+    "name": "Cricket Gold_558",
+    "url": "https://streams2.sofast.tv/scheduler/scheduleMaster/418.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cricket-gold.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_222_rwz1",
+    "name": "Cricket Gold_559",
+    "url": "https://streams2.sofast.tv/ptnr-yupptv/title-cricketgold/v1/master/611d79b11b77e2f571934fd80ca1413453772ac7/b2048bb8-1686-4432-aa50-647245383e0c/manifest.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/cricket-gold.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_1_223_2xa9",
+    "name": "DD Sports_560",
+    "url": "https://fta.ektv.in/live/64/64_0.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/dd-sports-fb997548.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_224_pmrp",
+    "name": "DD Sports_561",
+    "url": "https://mumt07.tangotv.in/zHjX9OFlDDSPORTS/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/dd-sports-fb997548.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_225_vv3b",
+    "name": "ESPN_562",
+    "url": "http://212.5.144.156:8080/espn/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/espn.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_226_uuci",
+    "name": "FIFA+_563",
+    "url": "https://d2w9q46ikgrcwx.cloudfront.net/v1/sysdata_s_p_a_fifa_7/samsungheadend_us/latest/main/hls/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fifa.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "sp_1_227_wtvr",
+    "name": "FIFA+_564",
+    "url": "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fifa.png",
+    "group": "Football",
+    "category": "Sports",
+    "sportType": "Football"
+  },
+  {
+    "id": "sp_1_228_cf9e",
+    "name": "PGA Tour_569",
+    "url": "https://linear-1006.frequency.stream/dist/plex/1006/hls/master/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/pga-tour.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_229_0ghd",
+    "name": "SportsGrid_573",
+    "url": "https://sportsgrid-samsungus.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-grid.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_230_6lyf",
+    "name": "SportsGrid_574",
+    "url": "https://sportsgrid-klowdtv.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-grid.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_231_92m2",
+    "name": "SportsGrid_575",
+    "url": "https://amg00315-sportsgrid-firetv.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-grid.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_232_ueg8",
+    "name": "SportsGrid_576",
+    "url": "https://sportsgrid-plex.amagi.tv/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/sports-grid.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_233_w032",
+    "name": "World of Freesports_578",
+    "url": "https://rakutenaa-mainstreammediafreesportsintl-rakuten-t7dc0.amagi.tv/playlist/rakutenAA-mainstreammediafreesportsintl-rakuten/playlist.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/world-of-freesports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_234_o79q",
+    "name": "Eurosport_640",
+    "url": "https://drk6xq0vhn.gpcdn.net/live/euro_sports_hd_abr/index.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/eurosport.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_1_235_c512",
+    "name": "PTV Sports_666",
+    "url": "http://103.135.253.32:8080/PTV-SPORTS/tracks-v1a1/mono.m3u8",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/ptv-sports.png",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  }
+]

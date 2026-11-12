@@ -36,22 +36,22 @@ export function SectionHeader({
       <div className="flex items-end justify-between gap-4">
         <div className="min-w-0">
           {kicker && (
-            <p className={cn("kicker mb-1.5 flex items-center gap-1.5", accentText)}>
-              {icon && <span className="[&>svg]:h-3.5 [&>svg]:w-3.5">{icon}</span>}
+            <p className={cn("kicker mb-1 flex items-center gap-1.5 text-[12px] sm:text-[12.5px] font-bold uppercase tracking-wider", accentText)}>
+              {icon && <span className="[&>svg]:h-4 [&>svg]:w-4">{icon}</span>}
               {kicker}
             </p>
           )}
-          <h2 className="text-[17px] font-bold leading-tight tracking-[-0.01em] text-foreground sm:text-[19px]">
+          <h2 className="text-[20px] font-bold leading-tight tracking-[-0.015em] text-foreground sm:text-[23px]">
             {title}
           </h2>
         </div>
         {actionLabel && actionView && (
           <button
             onClick={() => navigate(actionView)}
-            className="group flex shrink-0 items-center gap-1 pb-0.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
+            className="group flex shrink-0 items-center gap-1.5 pb-0.5 text-[12.5px] sm:text-[13px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
           >
             {actionLabel}
-            <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden />
+            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden />
           </button>
         )}
       </div>

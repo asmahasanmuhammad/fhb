@@ -12,13 +12,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     if (!competition) return fail("Competition not found", 404);
 
     const [standings, matches, topScorers] = await Promise.all([
-      competition.type === "LEAGUE"
-        ? db.standing.findMany({
-            where: { competitionId: id },
-            include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true, logoUrl: true } } },
-            orderBy: { position: "asc" },
-          })
-        : Promise.resolve([]),
+      db.standing.findMany({
+        where: { competitionId: id },
+        include: { team: { select: { id: true, name: true, shortName: true, initials: true, color: true, color2: true, city: true, logoUrl: true } } },
+        orderBy: { position: "asc" },
+      }),
       db.match.findMany({
         where: { competitionId: id },
         include: {

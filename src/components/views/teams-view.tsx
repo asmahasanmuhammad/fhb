@@ -667,16 +667,26 @@ export function TeamDetailView({ teamId }: { teamId: string }) {
 
 /* ── Squad row — number, name, position chip, season meta ── */
 
-function SquadRow({ player }: { player: Player }) {
+function SquadRow({ player }: { player: Player & { photoUrl?: string | null } }) {
   const navigate = useAppStore((s) => s.navigate);
   return (
     <button
       onClick={() => navigate({ name: "player-detail", id: player.id })}
       className="row-hover group flex w-full items-center gap-3 px-4 py-2.5 text-left"
     >
-      <span className="tabular w-7 shrink-0 text-center text-[13px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">
+      <span className="tabular w-6 shrink-0 text-center text-[13px] font-semibold text-muted-foreground transition-colors group-hover:text-primary">
         {player.jerseyNumber != null ? fmtNum(player.jerseyNumber) : "–"}
       </span>
+      {player.photoUrl ? (
+        <span className="relative block h-7 w-7 shrink-0 overflow-hidden rounded-full border border-border bg-muted">
+          <img
+            src={player.photoUrl}
+            alt={player.name}
+            className="h-full w-full object-cover object-top"
+            loading="lazy"
+          />
+        </span>
+      ) : null}
       <span className="min-w-0 flex-1 truncate text-[13px] font-medium text-foreground transition-colors group-hover:text-primary">
         {player.name}
       </span>

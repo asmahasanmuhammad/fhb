@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useAppStore } from "@/store/app-store";
 import { useLiveScores } from "@/components/providers/live-score-provider";
@@ -18,15 +18,22 @@ import { formatKickoff, fmtNum } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import {
   Zap, ChevronLeft, ChevronRight, MapPin, CalendarDays,
-  Activity, ListOrdered, BarChart3,
+  Activity, ListOrdered, BarChart3, Shield, RefreshCw, Radio, Sparkles,
 } from "lucide-react";
+import { TacticalPitch } from "@/components/football/tactical-pitch";
 
 /* ════════════════════════════════════════════════════════════════
    ScoresView — the day's football. 7-day date strip, league
    filter chips, live-pinned groups, fixture list per competition.
    ════════════════════════════════════════════════════════════════ */
 
-const DAYS_RANGE = 3; // -3 … +3 days around today
+const PAST_DAYS = 7; // 7 days past
+const FUTURE_DAYS = 14; // 14 days upcoming
+
+function getUtcDateForOffset(offset: number) {
+  const now = new Date();
+  return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + offset));
+}
 
 function DateStrip({
   offset,
@@ -35,44 +42,56 @@ function DateStrip({
   offset: number;
   onChange: (n: number) => void;
 }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const days = useMemo(
     () =>
-      Array.from({ length: DAYS_RANGE * 2 + 1 }, (_, i) => {
-        const d = new Date(Date.now() + (i - DAYS_RANGE) * 864e5);
+      Array.from({ length: PAST_DAYS + FUTURE_DAYS + 1 }, (_, i) => {
+        const dayOffset = i - PAST_DAYS;
+        const d = getUtcDateForOffset(dayOffset);
         return {
-          offset: i - DAYS_RANGE,
-          weekday: d.toLocaleDateString("en-US", { weekday: "short" }),
-          dayNum: d.getDate(),
-          month: d.toLocaleDateString("en-US", { month: "short" }),
+          offset: dayOffset,
+          weekday: d.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }),
+          dayNum: d.getUTCDate(),
+          month: d.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" }),
         };
       }),
     []
   );
+
+  useEffect(() => {
+    // Auto-scroll active item into view
+    const activeEl = scrollRef.current?.querySelector(`[data-offset="${offset}"]`);
+    if (activeEl) {
+      activeEl.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }, [offset]);
+
   return (
-    <div className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1" role="tablist" aria-label="Match day">
+    <div ref={scrollRef} className="no-scrollbar flex gap-1.5 overflow-x-auto pb-1 scroll-smooth" role="tablist" aria-label="Match day">
       {days.map((d) => {
         const active = offset === d.offset;
         return (
           <button
             key={d.offset}
+            data-offset={d.offset}
             onClick={() => onChange(d.offset)}
             role="tab"
             aria-selected={active}
             className={cn(
-              "flex h-[58px] w-[64px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg border transition-colors",
+              "flex h-[62px] w-[68px] shrink-0 flex-col items-center justify-center gap-0.5 rounded-lg border transition-colors cursor-pointer",
               active
-                ? "border-primary/50 bg-primary/10 text-primary"
+                ? "border-primary/50 bg-primary/10 text-primary ring-1 ring-primary/40"
                 : "border-border bg-card text-muted-foreground hover:border-white/15 hover:text-foreground"
             )}
           >
             {d.offset === 0 && (
-              <span className="text-[8.5px] font-bold uppercase tracking-[0.14em] text-fhb-red">Today</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-fhb-red">Today</span>
             )}
-            {d.offset !== 0 && <span className="text-[9.5px] font-bold uppercase tracking-wider">{d.weekday}</span>}
-            <span className={cn("tabular text-[16px] font-bold leading-none", active ? "text-primary" : "text-foreground/85")}>
+            {d.offset !== 0 && <span className="text-[11px] font-bold uppercase tracking-wider">{d.weekday}</span>}
+            <span className={cn("tabular text-[17px] font-bold leading-none", active ? "text-primary" : "text-foreground/85")}>
               {fmtNum(d.dayNum)}
             </span>
-            <span className="text-[8.5px] font-semibold uppercase tracking-wider opacity-70">{d.month}</span>
+            <span className="text-[10px] font-semibold uppercase tracking-wider opacity-75">{d.month}</span>
           </button>
         );
       })}
@@ -86,13 +105,39 @@ export function ScoresView() {
   const [leagueFilter, setLeagueFilter] = useState<string>("ALL");
   const navigate = useAppStore((s) => s.navigate);
 
-  const { data, isLoading } = useQuery<{ matches: Match[] }>({
-    queryKey: ["matches", "scores", dayOffset],
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncStatus, setSyncStatus] = useState<string | null>(null);
+
+  const { data, isLoading, refetch } = useQuery<{ matches: Match[] }>({
+    queryKey: ["matches", "scores"],
     queryFn: async () => {
-      const res = await fetch(`/api/matches?status=ALL&days=90&limit=200`);
+      const res = await fetch(`/api/matches?status=ALL&days=60&limit=1000`);
       return res.json().then((j) => j.data);
     },
+    refetchInterval: 10_000,
   });
+
+  const handleSyncReal = async () => {
+    setIsSyncing(true);
+    setSyncStatus("Connecting to live scoreboard API...");
+    try {
+      const res = await fetch("/api/matches/sync-real", { method: "POST" });
+      const json = await res.json();
+      if (json.success) {
+        setSyncStatus(`Synced ${json.data.synced} matches!`);
+        refetch();
+        setTimeout(() => setSyncStatus(null), 4000);
+      } else {
+        setSyncStatus("Sync failed.");
+        setTimeout(() => setSyncStatus(null), 3000);
+      }
+    } catch {
+      setSyncStatus("Sync error");
+      setTimeout(() => setSyncStatus(null), 3000);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
   const { data: standingsData } = useQuery<{ standings: Standing[] }>({
     queryKey: ["standings", "scores"],
     queryFn: async () => {
@@ -111,25 +156,23 @@ export function ScoresView() {
     });
   }, [data, live.matches]);
 
+  const selectedDateStr = useMemo(() => {
+    return getUtcDateForOffset(dayOffset).toISOString().slice(0, 10);
+  }, [dayOffset]);
+
   const dayMatches = useMemo(() => {
-    const target = new Date(Date.now() + dayOffset * 864e5);
-    target.setHours(0, 0, 0, 0);
     return allMatches
       .filter((m) => {
-        const d = new Date(m.kickoff);
-        d.setHours(0, 0, 0, 0);
-        return d.getTime() === target.getTime();
+        const matchDateStr = new Date(m.kickoff).toISOString().slice(0, 10);
+        return matchDateStr === selectedDateStr;
       })
       .sort((a, b) => +new Date(a.kickoff) - +new Date(b.kickoff));
-  }, [allMatches, dayOffset]);
+  }, [allMatches, selectedDateStr]);
 
   const liveMatches = allMatches.filter((m) => m.status === "LIVE");
 
   const groups = useMemo(() => {
-    const src = dayOffset === 0 && liveMatches.length > 0
-      ? dayMatches.filter((m) => m.status !== "LIVE")
-      : dayMatches;
-    const filtered = leagueFilter === "ALL" ? src : src.filter((m) => m.competition.id === leagueFilter);
+    const filtered = leagueFilter === "ALL" ? dayMatches : dayMatches.filter((m) => m.competition.id === leagueFilter);
     const map = new Map<string, { competition: Match["competition"]; matches: Match[] }>();
     for (const m of filtered) {
       const key = m.competition.id;
@@ -137,15 +180,16 @@ export function ScoresView() {
       map.set(key, existing ? { ...existing, matches: existing.matches.concat(m) } : { competition: m.competition, matches: [m] });
     }
     return Array.from(map.values());
-  }, [dayMatches, leagueFilter, liveMatches.length, dayOffset]);
+  }, [dayMatches, leagueFilter]);
 
   const leagues = useMemo(() => {
     const map = new Map<string, { id: string; name: string; shortName: string; accentColor?: string }>();
-    for (const m of dayMatches) {
+    const pool = dayOffset === 0 ? [...liveMatches, ...dayMatches] : dayMatches;
+    for (const m of pool) {
       if (!map.has(m.competition.id)) map.set(m.competition.id, m.competition);
     }
     return Array.from(map.values());
-  }, [dayMatches]);
+  }, [dayMatches, liveMatches, dayOffset]);
 
   const rail = (
     <>
@@ -154,7 +198,7 @@ export function ScoresView() {
         action={
           <button
             onClick={() => navigate({ name: "standings" })}
-            className="text-[10.5px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
+            className="text-[12px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-primary"
           >
             Full table
           </button>
@@ -168,30 +212,76 @@ export function ScoresView() {
 
   return (
     <PageLayout rail={rail}>
-      <PageHeader
-        title="Live Scores"
-        kicker="match centre"
-        icon={<Zap className="h-3.5 w-3.5" aria-hidden />}
-        subtitle="Fixtures, live results and match centres across every competition."
-      />
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <PageHeader
+          title="Live Scores"
+          kicker="match centre"
+          icon={<Zap className="h-3.5 w-3.5" aria-hidden />}
+          subtitle="Fixtures, live results and real-time match centres across every competition."
+        />
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          {syncStatus && (
+            <span className="text-[12px] font-semibold text-primary animate-pulse">{syncStatus}</span>
+          )}
+          <button
+            onClick={handleSyncReal}
+            disabled={isSyncing}
+            className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-1.5 text-[12px] font-bold text-foreground transition-all hover:border-primary/40 hover:bg-primary/5 active:scale-95 disabled:opacity-60 cursor-pointer shadow-sm"
+            title="Fetch live and recent matches from ESPN public soccer API"
+          >
+            <RefreshCw className={cn("h-3.5 w-3.5", isSyncing && "animate-spin text-primary")} />
+            <span>{isSyncing ? "Syncing..." : "Sync Real Matches"}</span>
+          </button>
+        </div>
+      </div>
 
-      {/* Date strip + arrows */}
+      {/* Live Events Flash Ticker */}
+      {live.events.length > 0 && (
+        <div className="mb-4 flex items-center gap-2.5 overflow-hidden rounded-lg border border-fhb-red/30 bg-fhb-red/[0.06] px-3.5 py-2">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-fhb-red opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-fhb-red" />
+          </span>
+          <span className="text-[11px] font-black uppercase tracking-wider text-fhb-red shrink-0">Live Event:</span>
+          <span className="truncate text-[12.5px] font-semibold text-foreground/90">
+            {live.events[0]?.text}
+          </span>
+          {live.events.length > 1 && (
+            <span className="ml-auto hidden text-[11px] font-medium text-muted-foreground sm:inline shrink-0">
+              +{live.events.length - 1} recent events
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Date strip + arrows + today reset */}
       <div className="mb-4 flex items-center gap-2">
         <button
-          onClick={() => setDayOffset((d) => Math.max(-DAYS_RANGE, d - 1))}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-border text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+          onClick={() => setDayOffset((d) => Math.max(-PAST_DAYS, d - 1))}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-border text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground cursor-pointer"
           aria-label="Previous day"
+          title="Previous day"
         >
           <ChevronLeft className="h-4 w-4" aria-hidden />
         </button>
         <DateStrip offset={dayOffset} onChange={setDayOffset} />
         <button
-          onClick={() => setDayOffset((d) => Math.min(DAYS_RANGE, d + 1))}
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-border text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
+          onClick={() => setDayOffset((d) => Math.min(FUTURE_DAYS, d + 1))}
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[6px] border border-border text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground cursor-pointer"
           aria-label="Next day"
+          title="Next day"
         >
           <ChevronRight className="h-4 w-4" aria-hidden />
         </button>
+        {dayOffset !== 0 && (
+          <button
+            onClick={() => setDayOffset(0)}
+            className="flex h-8 shrink-0 items-center gap-1 rounded-[6px] border border-primary/30 bg-primary/10 px-2.5 text-[11px] font-bold text-primary transition-colors hover:bg-primary/20 cursor-pointer"
+            title="Jump to today"
+          >
+            Today
+          </button>
+        )}
       </div>
 
       {/* League filter chips */}
@@ -257,12 +347,21 @@ export function ScoresView() {
           ))}
         </div>
       ) : groups.length === 0 ? (
-        <div className="rounded-lg border border-border bg-card px-4 py-12 text-center">
-          <p className="text-sm font-semibold text-foreground">No matches on this day</p>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Browse another date on the strip above.
-          </p>
-        </div>
+        dayOffset === 0 && liveMatches.length > 0 ? (
+          <div className="rounded-lg border border-border/50 bg-card/40 px-4 py-8 text-center">
+            <p className="text-sm font-semibold text-foreground/90">All scheduled matches for today are currently live</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Watch real-time live match actions above or select another date from the strip to view upcoming and completed fixtures.
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-border bg-card px-4 py-12 text-center">
+            <p className="text-sm font-semibold text-foreground">No matches on this day</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Browse another date on the strip above.
+            </p>
+          </div>
+        )
       ) : (
         <div className="space-y-5">
           {groups.map((g, gi) => (
@@ -302,7 +401,7 @@ type MatchDetailData = Match & { events: NonNullable<Match["events"]> };
 
 export function MatchDetailView({ matchId }: { matchId: string }) {
   const navigate = useAppStore((s) => s.navigate);
-  const [tab, setTab] = useState<"summary" | "stats">("summary");
+  const [tab, setTab] = useState<"summary" | "stats" | "lineups">("summary");
   const live = useLiveScores();
 
   const { data, isLoading } = useQuery<{ match: MatchDetailData }>({
@@ -311,6 +410,7 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
       const res = await fetch(`/api/matches/${matchId}`);
       return res.json().then((j) => j.data);
     },
+    refetchInterval: 3500,
   });
 
   const { data: compMatches } = useQuery<{ matches: Match[] }>({
@@ -328,12 +428,28 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
     ? { ...raw, status: "LIVE" as const, minute: lm.minute, period: lm.period, homeScore: lm.homeScore, awayScore: lm.awayScore }
     : raw;
 
-  if (isLoading || !match) {
+  if (isLoading) {
     return (
       <div className="mx-auto w-full max-w-[860px] px-4 py-8 sm:px-6">
         <Skeleton className="h-10 w-40 rounded-lg" />
         <Skeleton className="mt-6 h-56 w-full rounded-xl" />
         <Skeleton className="mt-6 h-64 w-full rounded-lg" />
+      </div>
+    );
+  }
+
+  if (!match) {
+    return (
+      <div className="mx-auto w-full max-w-[860px] px-4 py-16 text-center sm:px-6">
+        <h2 className="text-xl font-bold text-foreground">Match Not Found</h2>
+        <p className="mt-2 text-sm text-muted-foreground">The requested match could not be found or has been rescheduled.</p>
+        <button
+          onClick={() => navigate({ name: "scores" })}
+          className="mt-6 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary/90 cursor-pointer"
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Back to Live Scores
+        </button>
       </div>
     );
   }
@@ -470,6 +586,7 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
         {[
           { id: "summary" as const, label: "Summary", icon: ListOrdered },
           ...(hasStats ? [{ id: "stats" as const, label: "Stats", icon: BarChart3 }] : []),
+          { id: "lineups" as const, label: "Lineups & Tactics", icon: Shield },
         ].map((t) => {
           const Icon = t.icon;
           const active = tab === t.id;
@@ -493,14 +610,23 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
       </div>
 
       {/* Tab panels */}
-      <div className="mt-5 overflow-hidden rounded-lg border border-border bg-card">
+      <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
         {tab === "summary" ? (
           <MatchEventList events={events} homeTeam={match.homeTeam} awayTeam={match.awayTeam} />
-        ) : (
+        ) : tab === "stats" ? (
           <div className="divide-y divide-border/40">
             {stats.map((s) => (
               <StatBar key={s.label} label={s.label} home={s.home} away={s.away} suffix={s.suffix} />
             ))}
+          </div>
+        ) : (
+          <div className="p-2 sm:p-4">
+            <TacticalPitch
+              homeTeam={match.homeTeam}
+              awayTeam={match.awayTeam}
+              homePlayers={(match.homeTeam as any).players}
+              awayPlayers={(match.awayTeam as any).players}
+            />
           </div>
         )}
       </div>

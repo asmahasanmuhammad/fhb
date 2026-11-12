@@ -46,10 +46,10 @@ export function StandingsTable({
       {/* header row — compact (rail) keeps the narrow P/GD/Pts grid at every viewport */}
       <div
         className={cn(
-          "grid items-center gap-1 border-b border-border bg-elevated/60 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground",
+          "grid items-center gap-1 border-b border-border bg-elevated/70 px-4 py-2.5 text-[11.5px] sm:text-[12px] font-bold uppercase tracking-wider text-muted-foreground",
           compact
-            ? "grid-cols-[26px_1fr_repeat(2,24px)_32px]"
-            : "grid-cols-[26px_1fr_repeat(2,24px)_32px] md:grid-cols-[30px_1fr_repeat(5,30px)_36px_100px]"
+            ? "grid-cols-[28px_1fr_repeat(2,26px)_34px]"
+            : "grid-cols-[28px_1fr_repeat(2,26px)_34px] md:grid-cols-[32px_1fr_repeat(5,32px)_38px_100px]"
         )}
       >
         <span className="text-center">#</span>
@@ -73,17 +73,17 @@ export function StandingsTable({
               key={s.id}
               onClick={() => navigate({ name: "team-detail", id: s.team.id })}
               className={cn(
-                "row-hover grid w-full items-center gap-1 px-4 py-[9px] text-left",
+                "row-hover grid w-full items-center gap-1 px-4 py-2.5 sm:py-3 text-left transition-colors",
                 compact
-                  ? "grid-cols-[26px_1fr_repeat(2,24px)_32px]"
-                  : "grid-cols-[26px_1fr_repeat(2,24px)_32px] md:grid-cols-[30px_1fr_repeat(5,30px)_36px_100px]",
+                  ? "grid-cols-[28px_1fr_repeat(2,26px)_34px]"
+                  : "grid-cols-[28px_1fr_repeat(2,26px)_34px] md:grid-cols-[32px_1fr_repeat(5,32px)_38px_100px]",
                 isHighlighted && "bg-primary/[0.07]"
               )}
             >
               {/* position + zone chip */}
               <span className="relative flex items-center justify-center">
                 <span
-                  className="absolute -left-2 h-[62%] w-[3px] rounded-full"
+                  className="absolute -left-2 h-[68%] w-[3px] rounded-full"
                   style={{
                     backgroundColor:
                       zone === "champion" ? "var(--primary)" : zone === "relegation" ? "var(--fhb-red)" : "transparent",
@@ -92,7 +92,7 @@ export function StandingsTable({
                 />
                 <span
                   className={cn(
-                    "tabular text-[12px] font-bold",
+                    "tabular text-[13px] sm:text-[14px] font-bold",
                     zone === "champion" ? "text-primary" : zone === "relegation" ? "text-fhb-red" : "text-muted-foreground"
                   )}
                 >
@@ -101,21 +101,21 @@ export function StandingsTable({
               </span>
 
               {/* club */}
-              <span className="flex min-w-0 items-center gap-2">
-                <TeamCrest team={s.team} size="xs" />
-                <span className={cn("truncate text-[13px]", isHighlighted ? "font-bold text-primary" : "font-medium text-foreground/90")}>
+              <span className="flex min-w-0 items-center gap-2.5">
+                <TeamCrest team={s.team} size="sm" />
+                <span className={cn("truncate text-[14px] sm:text-[15px]", isHighlighted ? "font-bold text-primary" : "font-semibold text-foreground")}>
                   {s.team.name}
                 </span>
               </span>
 
-              <span className="tabular text-center text-[12px] text-muted-foreground">{fmtNum(s.played)}</span>
-              <span className={cn("tabular hidden text-center text-[12px] text-muted-foreground", !compact && "md:block")}>{fmtNum(s.won)}</span>
-              <span className={cn("tabular hidden text-center text-[12px] text-muted-foreground", !compact && "md:block")}>{fmtNum(s.drawn)}</span>
-              <span className={cn("tabular hidden text-center text-[12px] text-muted-foreground", !compact && "md:block")}>{fmtNum(s.lost)}</span>
-              <span className={cn("tabular text-center text-[12px]", gd > 0 ? "text-foreground/80" : "text-muted-foreground")}>
+              <span className="tabular text-center text-[13px] sm:text-[14px] text-muted-foreground">{fmtNum(s.played)}</span>
+              <span className={cn("tabular hidden text-center text-[13px] sm:text-[14px] text-muted-foreground", !compact && "md:block")}>{fmtNum(s.won)}</span>
+              <span className={cn("tabular hidden text-center text-[13px] sm:text-[14px] text-muted-foreground", !compact && "md:block")}>{fmtNum(s.drawn)}</span>
+              <span className={cn("tabular hidden text-center text-[13px] sm:text-[14px] text-muted-foreground", !compact && "md:block")}>{fmtNum(s.lost)}</span>
+              <span className={cn("tabular text-center text-[13px] sm:text-[14px] font-medium", gd > 0 ? "text-foreground" : "text-muted-foreground")}>
                 {gd > 0 ? `+${fmtNum(gd)}` : fmtNum(gd)}
               </span>
-              <span className="tabular text-center text-[13px] font-bold text-foreground">{fmtNum(s.points)}</span>
+              <span className="tabular text-center text-[14px] sm:text-[15px] font-extrabold text-foreground">{fmtNum(s.points)}</span>
               <span className={cn("hidden items-center justify-center", !compact && "md:flex")}>
                 <FormDots form={s.form?.slice(-5)} />
               </span>

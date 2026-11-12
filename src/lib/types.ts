@@ -131,6 +131,7 @@ export type Video = {
 export type Post = {
   id: string;
   content: string;
+  imageUrl?: string | null;
   matchTag: string | null;
   likeCount: number;
   commentCount: number;

@@ -20,57 +20,57 @@ function rint(min: number, max: number): number {
   return Math.floor(rnd() * (max - min + 1)) + min;
 }
 
-// ---------- image assets (OSS-hosted, reachable) ----------
+// ---------- image assets (High-Definition Unsplash Sports Photography) ----------
 const IMG = {
   stadium: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c80743607c26.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c310648b1512.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/41e83b0ccac0.jpg",
+    "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1516731415730-0c607149933a?w=1600&auto=format&fit=crop&q=90",
   ],
   action: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ce3c35abf03c.jpeg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/91cb72ce8290.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/47ce3d922168.jpg",
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=1600&auto=format&fit=crop&q=90",
   ],
   ball: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/09b0b2786b61.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/a1332fafe42c.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/33a032ecdab7.jpg",
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1563299796-17596ed6b017?w=1600&auto=format&fit=crop&q=90",
   ],
   celebrate: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/985750c52694.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/eb1564b3d3b6.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b5d6b6551d9a.jpg",
+    "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1600&auto=format&fit=crop&q=90",
   ],
   coach: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/04d047e7e1e7.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/33791d63308c.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/e01e4ff2a39a.jpg",
+    "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1553778263-73a83bab9b0c?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1543351611-58f69d7c1781?w=1600&auto=format&fit=crop&q=90",
   ],
   dribble: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/83c3219a4b39.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/ddab4fb90a30.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c693b80c1d84.jpg",
+    "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1511886929837-354d827aae26?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1517747614396-d21a78b850e8?w=1600&auto=format&fit=crop&q=90",
   ],
   fans: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/38d104f20d12.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b13bac242184.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3dbea23a5446.jpg",
+    "https://images.unsplash.com/photo-1526232761682-d26e03ac148e?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1516731415730-0c607149933a?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?w=1600&auto=format&fit=crop&q=90",
   ],
   goalkeeper: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/c9c992f0b9dd.jpeg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/b8531c920837.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/3c2bdf743c17.jpg",
+    "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1551958219-acbc608c6377?w=1600&auto=format&fit=crop&q=90",
   ],
   training: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/8c14149ceb3a.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/717e476fc3d9.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/68731a25f344.jpg",
+    "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1517466787929-bc90951d0974?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1577223625816-7546f13df25d?w=1600&auto=format&fit=crop&q=90",
   ],
   trophy: [
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/946e49a08e5d.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/1c0f2649feab.jpg",
-    "https://z-cdn.chatglm.cn/image-search-mcp/images-ppt/6d7074e06eea.jpg",
+    "https://images.unsplash.com/photo-1487466365202-1afdb86c764e?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=1600&auto=format&fit=crop&q=90",
+    "https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1600&auto=format&fit=crop&q=90",
   ],
 };
 
@@ -1137,23 +1137,23 @@ Better matchday experience naturally means bigger crowds. Supporters' groups hav
     linkUrl?: string; imageHint?: string; impressions: number; clicks: number;
   }> = [
     // HEADER_BANNER (728×90 leaderboard)
-    { name: "bKash — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Cashback Festival! 100% cashback on every payment", bodyText: "Pay your bills in the bKash app and win exciting prizes", ctaLabel: "Open App", brandColor: "#E2136E", brandInitials: "bK", logoUrl: "/brands/bkash.png", linkUrl: "https://www.bkash.com", impressions: 18420, clicks: 412 },
-    { name: "Grameenphone — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Score updates now free! GP Score Alert service", bodyText: "Get live scores of every match by SMS — no internet needed", ctaLabel: "Activate", brandColor: "#009FE3", brandInitials: "GP", logoUrl: "/brands/grameenphone.svg", linkUrl: "https://www.grameenphone.com", impressions: 16750, clicks: 356 },
-    { name: "Daraz — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "11.11 Mega Sale! Up to 70% off football jerseys & gear", bodyText: "Limited-time offer — order today", ctaLabel: "Shop Now", brandColor: "#F57224", brandInitials: "DZ", logoUrl: "/brands/daraz.png", linkUrl: "https://www.daraz.com.bd", impressions: 21980, clicks: 610 },
-    // SIDEBAR (300×600 skyscraper)
-    { name: "Walton — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Watch every live match on a Walton 4K Android TV", bodyText: "The stadium feeling, now in your living room — 0% interest EMI", ctaLabel: "Order Now", brandColor: "#0B4EA2", brandInitials: "W", logoUrl: "/brands/walton.png", linkUrl: "https://waltonhil.com", impressions: 9840, clicks: 187 },
-    { name: "Pathao — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Getting to the stadium just got cheaper — 40% off Pathao rides", bodyText: "Use code FHB40 on match day", ctaLabel: "Get Code", brandColor: "#FF4B63", brandInitials: "P", logoUrl: "/brands/pathao.png", linkUrl: "https://pathao.com", impressions: 8320, clicks: 205 },
-    { name: "Samsung — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Galaxy Buds — hear every word of the commentary in crystal-clear sound", bodyText: "Football season special price — limited stock", ctaLabel: "Learn More", brandColor: "#1428A0", brandInitials: "S", logoUrl: "/brands/samsung.png", linkUrl: "https://www.samsung.com/bd", impressions: 7690, clicks: 143 },
+    { name: "bKash — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Cashback Festival! 100% cashback on every payment", bodyText: "Pay your bills in the bKash app and win exciting prizes", ctaLabel: "Open App", brandColor: "#E2136E", brandInitials: "bK", logoUrl: "/brands/bkash.png", linkUrl: "https://www.bkash.com", imageHint: "/ads/generated/bkash_header_728x90.webp", impressions: 18420, clicks: 412 },
+    { name: "Grameenphone — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "Score updates now free! GP Score Alert service", bodyText: "Get live scores of every match by SMS — no internet needed", ctaLabel: "Activate", brandColor: "#009FE3", brandInitials: "GP", logoUrl: "/brands/grameenphone.svg", linkUrl: "https://www.grameenphone.com", imageHint: "/ads/generated/gp_header_728x90.webp", impressions: 16750, clicks: 356 },
+    { name: "Daraz — Header Leaderboard (Demo)", placement: "HEADER_BANNER", headline: "11.11 Mega Sale! Up to 70% off football jerseys & gear", bodyText: "Limited-time offer — order today", ctaLabel: "Shop Now", brandColor: "#F57224", brandInitials: "DZ", logoUrl: "/brands/daraz.png", linkUrl: "https://www.daraz.com.bd", imageHint: "/ads/generated/daraz_header_728x90.webp", impressions: 21980, clicks: 610 },
+    // SIDEBAR (300×250 MPU)
+    { name: "Walton — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Watch every live match on a Walton 4K Android TV", bodyText: "The stadium feeling, now in your living room — 0% interest EMI", ctaLabel: "Order Now", brandColor: "#0B4EA2", brandInitials: "W", logoUrl: "/brands/walton.png", linkUrl: "https://waltonhil.com", imageHint: "/ads/generated/walton_sidebar_300x250.webp", impressions: 9840, clicks: 187 },
+    { name: "Pathao — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Getting to the stadium just got cheaper — 40% off Pathao rides", bodyText: "Use code FHB40 on match day", ctaLabel: "Get Code", brandColor: "#FF4B63", brandInitials: "P", logoUrl: "/brands/pathao.png", linkUrl: "https://pathao.com", imageHint: "/ads/generated/pathao_sidebar_300x250.webp", impressions: 8320, clicks: 205 },
+    { name: "Samsung — Sidebar Skyscraper (Demo)", placement: "SIDEBAR", headline: "Galaxy Buds — hear every word of the commentary in crystal-clear sound", bodyText: "Football season special price — limited stock", ctaLabel: "Learn More", brandColor: "#1428A0", brandInitials: "S", logoUrl: "/brands/samsung.png", linkUrl: "https://www.samsung.com/bd", imageHint: "/ads/generated/samsung_sidebar_300x250.webp", impressions: 7690, clicks: 143 },
     // IN_FEED (native in-feed)
-    { name: "Pran-RFL — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Pran Chanachur — the perfect match-watching companion", bodyText: "Now 20% more in every family pack", ctaLabel: "Find a Store", brandColor: "#E30613", brandInitials: "PR", logoUrl: "/brands/pran.png", linkUrl: "https://www.pranfoods.net", impressions: 27310, clicks: 544 },
-    { name: "Chaldal — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Groceries delivered in 30 minutes", bodyText: "Tk 100 off your first order — code: FHB100", ctaLabel: "Order Now", brandColor: "#00A651", brandInitials: "C", logoUrl: "/brands/chaldal.png", linkUrl: "https://chaldal.com", impressions: 19870, clicks: 498 },
-    { name: "City Bank — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "City Touch Digital Banking — every transaction, anywhere", bodyText: "Open an account in just 10 minutes", ctaLabel: "Open Now", brandColor: "#0057B8", brandInitials: "CB", logoUrl: "/brands/citybank.png", logoTheme: "DARK", linkUrl: "https://www.thecitybank.com", impressions: 14230, clicks: 267 },
-    { name: "Foodpanda — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Match Night Special — free delivery code: FHB50", bodyText: "Order your favourites right at half-time", ctaLabel: "Order Now", brandColor: "#D70F64", brandInitials: "fp", logoUrl: "/brands/foodpanda.svg", linkUrl: "https://www.foodpanda.com.bd", impressions: 23650, clicks: 712 },
-    { name: "FHB House Ad — In-Feed (Demo)", placement: "IN_FEED", headline: "FHB Premium — an ad-free football experience", bodyText: "From just Tk 99/month — exclusive transfer news and HD highlights", ctaLabel: "Upgrade", brandColor: "#D4A017", brandInitials: "FHB", logoUrl: "/logo.svg", linkUrl: "#premium", imageHint: IMG.action[2], impressions: 12680, clicks: 389 },
+    { name: "Pran-RFL — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Pran Chanachur — the perfect match-watching companion", bodyText: "Now 20% more in every family pack", ctaLabel: "Find a Store", brandColor: "#E30613", brandInitials: "PR", logoUrl: "/brands/pran.png", linkUrl: "https://www.pranfoods.net", imageHint: "/ads/generated/pran_infeed_728x110.webp", impressions: 27310, clicks: 544 },
+    { name: "Chaldal — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Groceries delivered in 30 minutes", bodyText: "Tk 100 off your first order — code: FHB100", ctaLabel: "Order Now", brandColor: "#00A651", brandInitials: "C", logoUrl: "/brands/chaldal.png", linkUrl: "https://chaldal.com", imageHint: "/ads/generated/chaldal_infeed_728x110.webp", impressions: 19870, clicks: 498 },
+    { name: "City Bank — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "City Touch Digital Banking — every transaction, anywhere", bodyText: "Open an account in just 10 minutes", ctaLabel: "Open Now", brandColor: "#0057B8", brandInitials: "CB", logoUrl: "/brands/citybank.png", logoTheme: "DARK", linkUrl: "https://www.thecitybank.com", imageHint: "/ads/generated/citybank_sidebar_300x250.webp", impressions: 14230, clicks: 267 },
+    { name: "Foodpanda — In-Feed Banner (Demo)", placement: "IN_FEED", headline: "Match Night Special — free delivery code: FHB50", bodyText: "Order your favourites right at half-time", ctaLabel: "Order Now", brandColor: "#D70F64", brandInitials: "fp", logoUrl: "/brands/foodpanda.svg", linkUrl: "https://www.foodpanda.com.bd", imageHint: "/ads/generated/foodpanda_infeed_728x110.webp", impressions: 23650, clicks: 712 },
+    { name: "FHB House Ad — In-Feed (Demo)", placement: "IN_FEED", headline: "FHB Premium — an ad-free football experience", bodyText: "From just Tk 99/month — exclusive transfer news and HD highlights", ctaLabel: "Upgrade", brandColor: "#D4A017", brandInitials: "FHB", logoUrl: "/logo.svg", linkUrl: "#premium", imageHint: "/ads/generated/fhb_premium_infeed_728x110.webp", impressions: 12680, clicks: 389 },
     // MOBILE_BANNER (320×50/100 sticky)
-    { name: "bKash — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Instant cashback on bill payments in the bKash app", ctaLabel: "View", brandColor: "#E2136E", brandInitials: "bK", logoUrl: "/brands/bkash.png", linkUrl: "https://www.bkash.com", impressions: 41200, clicks: 690 },
-    { name: "Bata — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Sports Sneakers Collection — 25% Off", ctaLabel: "Shop Now", brandColor: "#D31145", brandInitials: "B", logoUrl: "/brands/bata.png", linkUrl: "https://www.batabd.com", impressions: 35400, clicks: 528 },
-    { name: "City Group (Teer) — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Teer Football Festival — find the code and win a signed jersey!", bodyText: "A City Group brand", ctaLabel: "Play Now", brandColor: "#1D3A6A", brandInitials: "CG", logoUrl: "/brands/citygroup.png", linkUrl: "https://www.citygroup.com.bd", impressions: 29850, clicks: 476 },
+    { name: "bKash — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Instant cashback on bill payments in the bKash app", ctaLabel: "View", brandColor: "#E2136E", brandInitials: "bK", logoUrl: "/brands/bkash.png", linkUrl: "https://www.bkash.com", imageHint: "/ads/generated/bkash_mobile_320x60.webp", impressions: 41200, clicks: 690 },
+    { name: "Bata — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Sports Sneakers Collection — 25% Off", ctaLabel: "Shop Now", brandColor: "#D31145", brandInitials: "B", logoUrl: "/brands/bata.png", linkUrl: "https://www.batabd.com", imageHint: "/ads/generated/bata_mobile_320x60.webp", impressions: 35400, clicks: 528 },
+    { name: "City Group (Teer) — Mobile Sticky Banner (Demo)", placement: "MOBILE_BANNER", headline: "Teer Football Festival — find the code and win a signed jersey!", bodyText: "A City Group brand", ctaLabel: "Play Now", brandColor: "#1D3A6A", brandInitials: "CG", logoUrl: "/brands/citygroup.png", linkUrl: "https://www.citygroup.com.bd", imageHint: "/ads/generated/daraz_header_728x90.webp", impressions: 29850, clicks: 476 },
     // VIDEO_PREROLL (shorts pre-roll)
     { name: "Grameenphone — Video Pre-Roll (Demo)", placement: "VIDEO_PREROLL", headline: "GP Internet — live scores and highlights, free of charge", bodyText: "Activate the free video pack in the MyGP app now", ctaLabel: "Subscribe", brandColor: "#009FE3", brandInitials: "GP", logoUrl: "/brands/grameenphone.svg", linkUrl: "https://www.grameenphone.com", impressions: 15760, clicks: 402 },
     { name: "Daraz — Video Pre-Roll (Demo)", placement: "VIDEO_PREROLL", headline: "Daraz 11.11 Mega Sale — football merch up to 70% off", bodyText: "Premium jerseys, boots and fan gear — limited stock", ctaLabel: "Shop Now", brandColor: "#F57224", brandInitials: "DZ", logoUrl: "/brands/daraz.png", linkUrl: "https://www.daraz.com.bd", impressions: 14230, clicks: 377 },

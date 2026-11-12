@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useQueries } from "@tanstack/react-query";
+import { motion, AnimatePresence } from "framer-motion";
 import type { CompetitionRef, Standing } from "@/lib/types";
 import { useReveal } from "@/hooks/use-reveal";
 import { StandingsTable } from "@/components/football/standings-table";
@@ -14,7 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useAppStore } from "@/store/app-store";
 import { fmtNum } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Trophy, Goal, Zap, ChevronRight } from "lucide-react";
+import { Trophy, Goal, Zap, ChevronRight, TrendingUp, BarChart3, Users } from "lucide-react";
 
 /* ════════════════════════════════════════════════════════════════
    Standings — league tables hub.
@@ -111,9 +112,32 @@ function formLeaders(entries: FormEntry[], count = 5): FormEntry[] {
     .slice(0, count);
 }
 
+/* ── Zone legend colours ───────────────────────────────────────── */
+const ZONE_LEGEND = [
+  { label: "Champions League / Promotion", color: "#2563eb" },
+  { label: "Europa League / Play-off", color: "#16a34a" },
+  { label: "Conference League", color: "#ca8a04" },
+  { label: "Relegation", color: "#dc2626" },
+];
+
+/* ── Animation variants ───────────────────────────────────────── */
+const tableRowVariants: any = {
+  hidden: { opacity: 0, x: -12 },
+  visible: (i: number) => ({
+    opacity: 1,
+    x: 0,
+    transition: { delay: i * 0.03, duration: 0.3, ease: "easeOut" },
+  }),
+};
+
+const staggerContainer: any = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.04 } },
+};
+
 /* ── Shared blocks ─────────────────────────────────────────────── */
 
-function CompChip({
+function CompTab({
   active,
   label,
   color,
@@ -125,32 +149,55 @@ function CompChip({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
       aria-pressed={active}
+      whileTap={{ scale: 0.96 }}
       className={cn(
-        "flex h-8 shrink-0 items-center gap-2 rounded-full border px-3.5 text-[12px] font-semibold transition-colors",
+        "relative flex h-9 shrink-0 items-center gap-2 rounded-full border px-4 text-[13px] sm:text-[13.5px] font-semibold transition-all duration-200",
         active
-          ? "border-primary/50 bg-primary/10 text-primary"
+          ? "border-primary/50 bg-primary/10 text-primary shadow-[0_0_12px_rgba(255,30,70,0.15)]"
           : "border-border bg-card text-foreground/75 hover:border-white/20 hover:text-foreground"
       )}
     >
-      <span aria-hidden className="h-[7px] w-[7px] rounded-[2px]" style={{ backgroundColor: color }} />
+      <span
+        aria-hidden
+        className="h-[7px] w-[7px] shrink-0 rounded-[2px] transition-transform"
+        style={{ backgroundColor: active ? color : undefined }}
+      />
       {label}
-    </button>
+      {active && (
+        <motion.span
+          layoutId="tab-indicator"
+          className="absolute inset-0 rounded-full border border-primary/40 bg-primary/5"
+          transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+        />
+      )}
+    </motion.button>
   );
 }
 
 function ScorerRow({ scorer, rank }: { scorer: Scorer; rank: number }) {
   const navigate = useAppStore((s) => s.navigate);
   return (
-    <button
+    <motion.button
       onClick={() => navigate({ name: "player-detail", id: scorer.id })}
-      className="row-hover group flex w-full items-center gap-3 px-4 py-2.5 text-left"
+      className="group relative flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+      variants={tableRowVariants}
+      custom={rank}
+      whileHover={{ x: 2 }}
     >
+      {/* Left accent bar */}
       <span
         className={cn(
-          "score-num w-5 shrink-0 text-center text-[16px] font-bold leading-none",
+          "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full opacity-0 transition-opacity group-hover:opacity-100",
+          rank <= 3 ? "bg-primary" : "bg-white/20"
+        )}
+        aria-hidden
+      />
+      <span
+        className={cn(
+          "score-num w-5 shrink-0 text-center text-[17px] font-bold leading-none",
           rank <= 3 ? "text-primary" : "text-muted-foreground/60"
         )}
       >
@@ -158,32 +205,42 @@ function ScorerRow({ scorer, rank }: { scorer: Scorer; rank: number }) {
       </span>
       {scorer.team && <TeamCrest team={scorer.team} size="xs" />}
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[13px] font-semibold text-foreground transition-colors group-hover:text-primary">
+        <span className="block truncate text-[14px] sm:text-[14.5px] font-semibold text-foreground transition-colors group-hover:text-primary">
           {scorer.name}
         </span>
-        <span className="mt-0.5 block truncate text-[10.5px] text-muted-foreground">
+        <span className="mt-0.5 block truncate text-[11.5px] sm:text-[12px] text-muted-foreground">
           {scorer.team?.name ?? "Unattached"}
         </span>
       </span>
       <span className="flex shrink-0 items-baseline gap-1">
-        <span className="tabular text-[15px] font-bold leading-none text-foreground">{fmtNum(scorer.goals)}</span>
-        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/70">G</span>
-        <span className="tabular ml-1.5 text-[12.5px] font-medium leading-none text-muted-foreground">
+        <span className="tabular text-[16px] font-bold leading-none text-foreground">{fmtNum(scorer.goals)}</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">G</span>
+        <span className="tabular ml-1.5 text-[13.5px] font-medium leading-none text-muted-foreground">
           {fmtNum(scorer.assists)}
         </span>
-        <span className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground/70">A</span>
+        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground/70">A</span>
       </span>
-    </button>
+    </motion.button>
   );
 }
 
 function FormLeaderRow({ entry, rank }: { entry: FormEntry; rank: number }) {
   const navigate = useAppStore((s) => s.navigate);
   return (
-    <button
+    <motion.button
       onClick={() => navigate({ name: "team-detail", id: entry.standing.team.id })}
-      className="row-hover group flex w-full items-center gap-3 px-4 py-2.5 text-left"
+      className="group relative flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.03]"
+      variants={tableRowVariants}
+      custom={rank}
+      whileHover={{ x: 2 }}
     >
+      <span
+        className={cn(
+          "absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full opacity-0 transition-opacity group-hover:opacity-100",
+          rank <= 3 ? "bg-primary" : "bg-white/20"
+        )}
+        aria-hidden
+      />
       <span
         className={cn(
           "score-num w-5 shrink-0 text-center text-[16px] font-bold leading-none",
@@ -194,24 +251,148 @@ function FormLeaderRow({ entry, rank }: { entry: FormEntry; rank: number }) {
       </span>
       <TeamCrest team={entry.standing.team} size="xs" />
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-[12.5px] font-semibold text-foreground transition-colors group-hover:text-primary">
+        <span className="block truncate text-[14px] sm:text-[14.5px] font-semibold text-foreground transition-colors group-hover:text-primary">
           {entry.standing.team.name}
         </span>
-        <span className="mt-0.5 block truncate text-[10px] text-muted-foreground">{entry.compLabel}</span>
+        <span className="mt-0.5 block truncate text-[11.5px] sm:text-[12px] text-muted-foreground">{entry.compLabel}</span>
       </span>
       <FormDots form={entry.standing.form?.slice(-5)} />
-    </button>
+    </motion.button>
   );
 }
 
 function MetaRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-2.5">
-      <dt className="shrink-0 text-[11px] text-muted-foreground">{label}</dt>
-      <dd className="truncate text-[12px] font-semibold text-foreground" title={value}>
+      <dt className="shrink-0 text-[12.5px] text-muted-foreground">{label}</dt>
+      <dd className="truncate text-[13.5px] font-semibold text-foreground" title={value}>
         {value}
       </dd>
     </div>
+  );
+}
+
+/* ── Zone Legend ──────────────────────────────────────────────── */
+function ZoneLegend() {
+  return (
+    <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 rounded-lg border border-border/60 bg-card/60 px-4 py-3">
+      {ZONE_LEGEND.map((z) => (
+        <span key={z.label} className="flex items-center gap-1.5 text-[10.5px] text-muted-foreground">
+          <span
+            className="inline-block h-2.5 w-[3px] shrink-0 rounded-full"
+            style={{ backgroundColor: z.color }}
+            aria-hidden
+          />
+          {z.label}
+        </span>
+      ))}
+    </div>
+  );
+}
+
+/* ── Season Stats Mini Section ────────────────────────────────── */
+function SeasonStatsMini({
+  standings,
+  compName,
+}: {
+  standings: Standing[];
+  compName: string;
+}) {
+  if (standings.length === 0) return null;
+
+  const totalGoals = standings.reduce((s, r) => s + r.goalsFor, 0);
+  const totalMatches = standings.reduce((s, r) => s + r.played, 0) / 2;
+  const topTeam = [...standings].sort((a, b) => b.points - a.points)[0];
+  const mostGoals = [...standings].sort((a, b) => b.goalsFor - a.goalsFor)[0];
+
+  const stats = [
+    {
+      icon: <BarChart3 className="h-3.5 w-3.5" aria-hidden />,
+      label: "Matches Played",
+      value: fmtNum(Math.round(totalMatches)),
+    },
+    {
+      icon: <Goal className="h-3.5 w-3.5" aria-hidden />,
+      label: "Total Goals",
+      value: fmtNum(totalGoals),
+    },
+    {
+      icon: <TrendingUp className="h-3.5 w-3.5" aria-hidden />,
+      label: "Goals / Game",
+      value: totalMatches > 0 ? (totalGoals / totalMatches).toFixed(2) : "—",
+    },
+    {
+      icon: <Users className="h-3.5 w-3.5" aria-hidden />,
+      label: "Teams",
+      value: fmtNum(standings.length),
+    },
+  ];
+
+  return (
+    <motion.section
+      className="mt-6"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay: 0.2 }}
+      aria-label="Season stats summary"
+    >
+      <div className="mb-3 flex items-center gap-2">
+        <BarChart3 className="h-3.5 w-3.5 text-primary" aria-hidden />
+        <span className="label-cond text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+          {compName} · Season Stats
+        </span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {stats.map((s) => (
+          <div
+            key={s.label}
+            className="flex flex-col gap-1 rounded-lg border border-border/60 bg-card/60 px-3.5 py-3 backdrop-blur-sm"
+          >
+            <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <span className="text-primary/70">{s.icon}</span>
+              {s.label}
+            </span>
+            <span className="tabular text-[20px] font-bold leading-none text-foreground">{s.value}</span>
+          </div>
+        ))}
+      </div>
+      {(topTeam || mostGoals) && (
+        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {topTeam && (
+            <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card/60 px-3.5 py-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] bg-primary/10 text-primary">
+                <Trophy className="h-3.5 w-3.5" aria-hidden />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[9.5px] font-bold uppercase tracking-wider text-muted-foreground">
+                  League Leader
+                </span>
+                <span className="block truncate text-[12.5px] font-semibold text-foreground">
+                  {topTeam.team.name}
+                  <span className="ml-1.5 text-primary">{fmtNum(topTeam.points)} pts</span>
+                </span>
+              </span>
+            </div>
+          )}
+          {mostGoals && (
+            <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card/60 px-3.5 py-3">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-[6px] bg-primary/10 text-primary">
+                <Goal className="h-3.5 w-3.5" aria-hidden />
+              </span>
+              <span className="min-w-0">
+                <span className="block text-[9.5px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Most Goals Scored
+                </span>
+                <span className="block truncate text-[12.5px] font-semibold text-foreground">
+                  {mostGoals.team.name}
+                  <span className="ml-1.5 text-primary">{fmtNum(mostGoals.goalsFor)} gls</span>
+                </span>
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </motion.section>
   );
 }
 
@@ -312,11 +493,16 @@ export function StandingsView() {
 
       {leaders.length > 0 && (
         <RailCard title="Form Leaders">
-          <div className="divide-y divide-border/40">
+          <motion.div
+            className="divide-y divide-border/40"
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+          >
             {leaders.map((e, i) => (
               <FormLeaderRow key={e.standing.id} entry={e} rank={i + 1} />
             ))}
-          </div>
+          </motion.div>
         </RailCard>
       )}
 
@@ -324,7 +510,7 @@ export function StandingsView() {
     </>
   );
 
-  /* ── Chip rail ── */
+  /* ── Tab rail ── */
   const chipsLoading = compsLoading && comps.length === 0;
 
   return (
@@ -336,19 +522,24 @@ export function StandingsView() {
         subtitle="Every competition table on FHB — domestic leagues and international tournaments, updated after every matchday."
       />
 
-      <div className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1" role="group" aria-label="Competition selector">
+      {/* ── Competition tabs ── */}
+      <div
+        className="no-scrollbar -mx-1 flex gap-2 overflow-x-auto px-1 pb-1"
+        role="tablist"
+        aria-label="Competition selector"
+      >
         {chipsLoading ? (
-          [...Array(6)].map((_, i) => <Skeleton key={i} className="h-8 w-28 shrink-0 rounded-full" />)
+          [...Array(6)].map((_, i) => <Skeleton key={i} className="h-9 w-28 shrink-0 rounded-full" />)
         ) : (
           <>
-            <CompChip
+            <CompTab
               active={isAll}
               label="All"
               color="var(--primary)"
               onClick={() => setSelected("ALL")}
             />
             {comps.map((c) => (
-              <CompChip
+              <CompTab
                 key={c.id}
                 active={selected === c.id}
                 label={c.shortName || c.name}
@@ -361,67 +552,111 @@ export function StandingsView() {
       </div>
 
       {/* ── Tables ── */}
-      {isAll ? (
-        compsLoading || !allFirstLoaded ? (
-          <div className="mt-5 space-y-3" aria-hidden>
+      <AnimatePresence mode="wait">
+        {isAll ? (
+          compsLoading || !allFirstLoaded ? (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="mt-5 space-y-3"
+              aria-hidden
+            >
+              <Skeleton className="h-5 w-48" />
+              <Skeleton className="h-[420px] rounded-lg" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="all-tables"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {allTables.map((t, i) => (
+                <section
+                  key={t.comp.id}
+                  className={i === 0 ? "reveal mt-5" : "reveal mt-10"}
+                  aria-label={`${t.comp.name} table`}
+                >
+                  <SectionHeader
+                    title={t.comp.name}
+                    kicker={`${TYPE_LABELS[t.comp.type] ?? t.comp.type} · ${t.comp.country} · season ${t.comp.season}`}
+                    actionLabel="Hub"
+                    actionView={{ name: "competition-detail", id: t.comp.id }}
+                  />
+                  <StandingsTable standings={t.data.standings} />
+                  <ZoneLegend />
+                  <SeasonStatsMini standings={t.data.standings} compName={t.comp.shortName ?? t.comp.name} />
+                  {/* In-feed ad after the second table group */}
+                  {i === 1 && allTables.length > 2 && (
+                    <div className="mt-6">
+                      <AdSlot placement="IN_FEED" />
+                    </div>
+                  )}
+                </section>
+              ))}
+            </motion.div>
+          )
+        ) : singleQuery.isLoading || !singleComp ? (
+          <motion.div
+            key="single-loading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="mt-5 space-y-3"
+            aria-hidden
+          >
             <Skeleton className="h-5 w-48" />
             <Skeleton className="h-[420px] rounded-lg" />
-          </div>
-        ) : (
-          <div>
-            {allTables.map((t, i) => (
-              <section key={t.comp.id} className={i === 0 ? "reveal mt-5" : "reveal mt-10"} aria-label={`${t.comp.name} table`}>
-                <SectionHeader
-                  title={t.comp.name}
-                  kicker={`${TYPE_LABELS[t.comp.type] ?? t.comp.type} · ${t.comp.country} · season ${t.comp.season}`}
-                  actionLabel="Hub"
-                  actionView={{ name: "competition-detail", id: t.comp.id }}
-                />
-                <StandingsTable standings={t.data.standings} />
-                {/* In-feed ad after the second table group */}
-                {i === 1 && allTables.length > 2 && (
-                  <div className="mt-6">
-                    <AdSlot placement="IN_FEED" />
-                  </div>
-                )}
-              </section>
-            ))}
-          </div>
-        )
-      ) : singleQuery.isLoading || !singleComp ? (
-        <div className="mt-5 space-y-3" aria-hidden>
-          <Skeleton className="h-5 w-48" />
-          <Skeleton className="h-[420px] rounded-lg" />
-        </div>
-      ) : singleStandings.length > 0 ? (
-        <section className="reveal mt-5" aria-label={`${singleComp.name} standings table`}>
-          <SectionHeader
-            title={singleComp.name}
-            kicker={`${TYPE_LABELS[singleComp.type] ?? singleComp.type} · ${singleComp.country} · season ${singleComp.season}`}
-            actionLabel="Hub"
-            actionView={{ name: "competition-detail", id: singleComp.id }}
-          />
-          <StandingsTable standings={singleStandings} />
-        </section>
-      ) : (
-        <div className="reveal mt-5 rounded-lg border border-border bg-card px-4 py-12 text-center">
-          <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
-            <Trophy className="h-5 w-5" aria-hidden />
-          </span>
-          <p className="text-sm font-semibold text-foreground">No league table for the {singleComp.name}</p>
-          <p className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-muted-foreground">
-            This competition runs as a knockout — follow every tie live on the scores page instead.
-          </p>
-          <button
-            onClick={() => navigate({ name: "scores" })}
-            className="mt-5 inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-border bg-card px-3.5 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/25"
+          </motion.div>
+        ) : singleStandings.length > 0 ? (
+          <motion.section
+            key={`single-${selected}`}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="reveal mt-5"
+            aria-label={`${singleComp.name} standings table`}
           >
-            <Zap className="h-3.5 w-3.5" aria-hidden />
-            Live Scores
-            <ChevronRight className="h-3.5 w-3.5" aria-hidden />
-          </button>
-        </div>
-      )}
+            <SectionHeader
+              title={singleComp.name}
+              kicker={`${TYPE_LABELS[singleComp.type] ?? singleComp.type} · ${singleComp.country} · season ${singleComp.season}`}
+              actionLabel="Hub"
+              actionView={{ name: "competition-detail", id: singleComp.id }}
+            />
+            <StandingsTable standings={singleStandings} />
+            <ZoneLegend />
+            <SeasonStatsMini standings={singleStandings} compName={singleComp.shortName ?? singleComp.name} />
+          </motion.section>
+        ) : (
+          <motion.div
+            key="empty"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="reveal mt-5 rounded-lg border border-border bg-card px-4 py-12 text-center"
+          >
+            <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
+              <Trophy className="h-5 w-5" aria-hidden />
+            </span>
+            <p className="text-sm font-semibold text-foreground">No league table for the {singleComp.name}</p>
+            <p className="mx-auto mt-1.5 max-w-md text-xs leading-relaxed text-muted-foreground">
+              This competition runs as a knockout — follow every tie live on the scores page instead.
+            </p>
+            <button
+              onClick={() => navigate({ name: "scores" })}
+              className="mt-5 inline-flex h-8 items-center gap-1.5 rounded-[6px] border border-border bg-card px-3.5 text-[11px] font-bold uppercase tracking-wider text-foreground/80 transition-colors hover:border-white/25"
+            >
+              <Zap className="h-3.5 w-3.5" aria-hidden />
+              Live Scores
+              <ChevronRight className="h-3.5 w-3.5" aria-hidden />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Top scorers ── */}
       {scorers.length > 0 && (
@@ -432,11 +667,16 @@ export function StandingsView() {
             icon={<Goal className="h-3.5 w-3.5" aria-hidden />}
           />
           <div className="overflow-hidden rounded-lg border border-border bg-card">
-            <div className="divide-y divide-border/40">
+            <motion.div
+              className="divide-y divide-border/40"
+              variants={staggerContainer}
+              initial="hidden"
+              animate="visible"
+            >
               {scorers.map((p, i) => (
                 <ScorerRow key={`${p.id}-${i}`} scorer={p} rank={i + 1} />
               ))}
-            </div>
+            </motion.div>
           </div>
         </section>
       )}

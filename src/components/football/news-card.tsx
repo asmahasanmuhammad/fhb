@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { useAppStore } from "@/store/app-store";
 import type { NewsArticle } from "@/lib/types";
@@ -44,37 +44,26 @@ function FadeImg({
   sizes,
   className,
   priority = false,
+  quality = 90,
 }: {
   src: string;
   alt: string;
   sizes: string;
   className?: string;
   priority?: boolean;
+  quality?: number;
 }) {
-  const [loaded, setLoaded] = useState(false);
   return (
-    <>
-      {!loaded && (
-        <span
-          aria-hidden
-          className="absolute inset-0 flex items-center justify-center bg-elevated"
-        >
-          <span className="label-cond select-none text-[11px] font-bold tracking-[0.22em] text-muted-foreground/25">
-            FHB
-          </span>
-        </span>
-      )}
-      <Image
-        src={src}
-        alt={alt}
-        fill
-        sizes={sizes}
-        priority={priority}
-        loading="eager"
-        onLoad={() => setLoaded(true)}
-        className={cn("object-cover transition-opacity duration-500", loaded ? "opacity-100" : "opacity-0", className)}
-      />
-    </>
+    <Image
+      src={src}
+      alt={alt}
+      fill
+      sizes={sizes}
+      quality={quality}
+      priority={priority}
+      loading="eager"
+      className={cn("object-cover", className)}
+    />
   );
 }
 
@@ -116,7 +105,8 @@ export function NewsCard({
           <FadeImg
             src={article.coverUrl}
             alt=""
-            sizes="(max-width: 1024px) 100vw, 720px"
+            sizes="(max-width: 1024px) 100vw, 1200px"
+            quality={92}
             className="img-zoom"
             priority
           />
@@ -124,20 +114,20 @@ export function NewsCard({
           <span className="stadium-panel absolute inset-0" aria-hidden />
         )}
         <span className="photo-scrim absolute inset-0" aria-hidden />
-        <span className="relative z-10 flex flex-col gap-2.5 p-5 sm:p-6">
+        <span className="relative z-10 flex flex-col gap-3 p-5 sm:p-7">
           <span className="flex flex-wrap items-center gap-2">
-            <span className={cn("rounded-[4px] px-2 py-1 text-[10px] font-bold uppercase tracking-[0.08em]", catStyle)}>
+            <span className={cn("rounded-[5px] px-2.5 py-1 text-[11.5px] sm:text-[12px] font-bold uppercase tracking-[0.08em]", catStyle)}>
               {catLabel}
             </span>
           </span>
-          <h3 className="max-w-2xl text-[22px] font-bold leading-[1.15] tracking-[-0.015em] text-white sm:text-[28px]">
+          <h3 className="max-w-2xl text-[24px] font-extrabold leading-[1.2] tracking-[-0.015em] text-white sm:text-[30px] lg:text-[34px]">
             {article.title}
           </h3>
-          <p className="line-clamp-2 max-w-2xl text-[13px] leading-relaxed text-white/70">{article.excerpt}</p>
-          <span className="mt-1 flex items-center gap-3 text-[11px] font-medium text-white/55">
-            <span className="font-semibold text-white/85">{article.author.name}</span>
+          <p className="line-clamp-2 max-w-2xl text-[14.5px] sm:text-[16px] leading-relaxed text-white/80">{article.excerpt}</p>
+          <span className="mt-1 flex items-center gap-3 text-[12px] sm:text-[13px] font-medium text-white/70">
+            <span className="font-semibold text-white/95">{article.author.name}</span>
             <span className="flex items-center gap-1">
-              <Clock className="h-3 w-3" aria-hidden /> {timeAgo(article.createdAt)}
+              <Clock className="h-3.5 w-3.5" aria-hidden /> {timeAgo(article.createdAt)}
             </span>
             <span>{fmtCompact(article.views)} reads</span>
           </span>
@@ -151,23 +141,23 @@ export function NewsCard({
     return (
       <button
         onClick={open}
-        className={cn("row-hover group flex w-full items-start gap-3.5 px-4 py-3 text-left", className)}
+        className={cn("row-hover group flex w-full items-start gap-3.5 px-4 py-3.5 text-left", className)}
         aria-label={`Read: ${article.title}`}
       >
-        <span className="relative h-16 w-[96px] shrink-0 overflow-hidden rounded-[6px] bg-elevated">
-          {article.coverUrl && <FadeImg src={article.coverUrl} alt="" sizes="96px" />}
+        <span className="relative h-18 w-[104px] shrink-0 overflow-hidden rounded-[8px] bg-elevated">
+          {article.coverUrl && <FadeImg src={article.coverUrl} alt="" sizes="208px" quality={90} />}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="mb-1.5 flex items-center gap-1.5">
-            <span className={cn("h-[7px] w-[7px] rounded-[2px]", catDot)} aria-hidden />
-            <span className="text-[9.5px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+          <span className="mb-1 flex items-center gap-1.5">
+            <span className={cn("h-[8px] w-[8px] rounded-[2px]", catDot)} aria-hidden />
+            <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-muted-foreground">
               {catLabel}
             </span>
           </span>
-          <span title={article.title} className="line-clamp-2 text-[13px] font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+          <span title={article.title} className="line-clamp-2 text-[14.5px] sm:text-[15.5px] font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
             {article.title}
           </span>
-          <span className="mt-1 flex items-center gap-2 text-[10.5px] text-muted-foreground">
+          <span className="mt-1.5 flex items-center gap-2 text-[12px] text-muted-foreground">
             {timeAgo(article.createdAt)}
             <span aria-hidden>·</span>
             <span>{fmtCompact(article.views)} reads</span>
@@ -182,7 +172,7 @@ export function NewsCard({
     <button
       onClick={open}
       className={cn(
-        "card-lift group flex w-full flex-col overflow-hidden rounded-lg border border-border bg-card text-left",
+        "card-lift group flex w-full flex-col overflow-hidden rounded-xl border border-border bg-card text-left transition-all duration-200",
         className
       )}
       aria-label={`Read: ${article.title}`}
@@ -192,7 +182,8 @@ export function NewsCard({
           <FadeImg
             src={article.coverUrl}
             alt=""
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 720px"
+            quality={90}
             className="img-zoom"
           />
         ) : (
@@ -200,22 +191,22 @@ export function NewsCard({
         )}
         <span
           className={cn(
-            "label-cond absolute left-3 top-3 rounded-[4px] px-2 py-1 text-[9.5px] font-bold tracking-[0.08em] backdrop-blur-sm",
+            "label-cond absolute left-3 top-3 rounded-[5px] px-2.5 py-1 text-[11px] font-bold tracking-[0.08em] backdrop-blur-sm shadow-md",
             catStyle
           )}
         >
           {catLabel}
         </span>
       </span>
-      <span className="flex flex-1 flex-col gap-2 p-4">
-        <h3 className="line-clamp-3 text-[15px] font-semibold leading-[1.25] tracking-[-0.005em] text-foreground transition-colors group-hover:text-primary">
+      <span className="flex flex-1 flex-col gap-2.5 p-4 sm:p-5">
+        <h3 className="line-clamp-3 text-[16.5px] sm:text-[18px] font-bold leading-[1.3] tracking-[-0.01em] text-foreground transition-colors group-hover:text-primary">
           {article.title}
         </h3>
-        <p className="line-clamp-2 text-[12.5px] leading-relaxed text-muted-foreground">{article.excerpt}</p>
-        <span className="mt-auto flex items-center gap-2 pt-1 text-[10.5px] text-muted-foreground">
-          <span className="font-semibold text-foreground/60">{article.author.name}</span>
+        <p className="line-clamp-2 text-[13.5px] sm:text-[14.5px] leading-relaxed text-muted-foreground">{article.excerpt}</p>
+        <span className="mt-auto flex items-center gap-2 pt-2 text-[12px] text-muted-foreground">
+          <span className="font-semibold text-foreground/80">{article.author.name}</span>
           <span className="flex items-center gap-1">
-            <Clock className="h-3 w-3" aria-hidden /> {timeAgo(article.createdAt)}
+            <Clock className="h-3.5 w-3.5" aria-hidden /> {timeAgo(article.createdAt)}
           </span>
         </span>
       </span>

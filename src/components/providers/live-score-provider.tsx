@@ -1,10 +1,9 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { createContext, useContext, useEffect, useState } from "react";
 import type { LiveMatchUpdate } from "@/lib/types";
 
-type LiveEvent = { id: string; text: string; ts: number };
+type LiveEvent = { id: string; text: string; ts: number; minute?: number; type?: string };
 
 type LiveState = {
   connected: boolean;
@@ -18,37 +17,41 @@ const LiveScoreContext = createContext<LiveState>({
   events: [],
 });
 
+/**
+ * LiveScoreProvider — polls /api/matches/live every 5s.
+ * NO socket.io, NO port 3003, NO external bun process.
+ * 100% real data from the database via REST API only.
+ */
 export function LiveScoreProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<LiveState>({ connected: false, matches: [], events: [] });
-  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
-    // Connect through the gateway — NEVER use a port in the URL
-    const socket = io("/?XTransformPort=3003", {
-      transports: ["websocket", "polling"],
-      reconnection: true,
-      reconnectionAttempts: 12,
-      reconnectionDelay: 2000,
-      timeout: 12000,
-    });
-    socketRef.current = socket;
+    let mounted = true;
 
-    socket.on("connect", () => {
-      setState((s) => ({ ...s, connected: true }));
-    });
-    socket.on("disconnect", () => {
-      setState((s) => ({ ...s, connected: false }));
-    });
-    socket.on("live:update", (payload: { matches: LiveMatchUpdate[]; events: LiveEvent[] }) => {
-      setState({
-        connected: true,
-        matches: payload.matches ?? [],
-        events: payload.events ?? [],
-      });
-    });
+    const fetchLiveUpdates = async () => {
+      try {
+        const res = await fetch("/api/matches/live", { cache: "no-store" });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data && mounted) {
+            setState({
+              connected: true,
+              matches: json.data.matches || [],
+              events: json.data.events || [],
+            });
+          }
+        }
+      } catch {
+        // offline — stay silent
+      }
+    };
+
+    fetchLiveUpdates();
+    const pollInterval = setInterval(fetchLiveUpdates, 5000);
 
     return () => {
-      socket.disconnect();
+      mounted = false;
+      clearInterval(pollInterval);
     };
   }, []);
 

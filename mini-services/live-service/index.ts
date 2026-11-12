@@ -1,280 +1,177 @@
 /**
- * FHB Live Score Service — socket.io real-time match simulation
- * Port 3003. Reads/writes the shared SQLite database (WAL mode).
- *
- * - Simulates minute progression for LIVE matches
- * - Generates random events (goals, cards) using real squad names
- * - Persists score/event changes to DB
- * - Broadcasts `live:update` to all connected clients
- * - Picks up matches set to LIVE by the admin dashboard
+ * FHB Live Score Service — Socket.io + HTTP Real-time Broadcast
+ * Port 3003. Reads from the shared SQLite database (populated by real sync engine).
+ * Strictly mirrors real match data — NO FAKE SIMULATION, NO RANDOM GOALS.
  */
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { Database } from "bun:sqlite";
+import path from "path";
 
-const DB_PATH = "/home/z/my-project/db/custom.db";
+const DB_PATH = path.resolve(__dirname, "../../db/custom.db");
 const PORT = 3003;
-const TICK_MS = 15000; // simulation tick (≈1 match-minute per tick → a full match ≈ 22 min real time)
-const DISCOVER_MS = 15000; // DB re-scan interval
+const DISCOVER_MS = 5000; // DB re-scan interval
 
+console.log(`[live] Connecting to SQLite DB at: ${DB_PATH}`);
 const db = new Database(DB_PATH, { create: true });
 db.exec("PRAGMA journal_mode=WAL;");
 db.exec("PRAGMA busy_timeout=5000;");
 
-type SimMatch = {
+type LiveMatchData = {
   id: string;
-  minute: number;
-  period: "1H" | "HT" | "2H" | "FT";
-  homeScore: number;
-  awayScore: number;
-  homeTeam: { id: string; name: string; initials: string; color: string };
-  awayTeam: { id: string; name: string; initials: string; color: string };
-  players: Array<{ teamSide: "home" | "away"; name: string }>;
-  updatedAt: number;
+  minute: number | null;
+  period: string | null;
+  homeScore: number | null;
+  awayScore: number | null;
+  homeTeam: { id: string; name: string; initials: string; color: string; logoUrl?: string };
+  awayTeam: { id: string; name: string; initials: string; color: string; logoUrl?: string };
+  competition?: { id: string; name: string; shortName: string; accentColor?: string };
+  status: "LIVE";
 };
 
-const simulations = new Map<string, SimMatch>();
-const recentEvents: Array<{ id: string; text: string; ts: number }> = [];
+let currentLiveMatches: LiveMatchData[] = [];
+let recentEvents: Array<{ id: string; text: string; ts: number; minute?: number; type?: string }> = [];
 
-function rowToTeam(row: any, side: "home" | "away") {
-  if (!row) return { id: "", name: "—", initials: "—", color: "#10B981" };
-  return {
-    id: side === "home" ? row.homeTeamId : row.awayTeamId,
-    name: side === "home" ? row.homeName : row.awayName,
-    initials: side === "home" ? row.homeInitials : row.awayInitials,
-    color: side === "home" ? row.homeColor : row.awayColor,
-  };
-}
+function loadFromDb() {
+  try {
+    const rows = db
+      .query(
+        `SELECT m.id, m.homeScore, m.awayScore, m.minute, m.period,
+                m.homeTeamId, m.awayTeamId,
+                h.name AS homeName, h.initials AS homeInitials, h.color AS homeColor, h.logoUrl AS homeLogo,
+                a.name AS awayName, a.initials AS awayInitials, a.color AS awayColor, a.logoUrl AS awayLogo,
+                c.id AS compId, c.name AS compName, c.shortName AS compShortName, c.accentColor AS compColor
+         FROM Match m
+         JOIN Team h ON h.id = m.homeTeamId
+         JOIN Team a ON a.id = m.awayTeamId
+         JOIN Competition c ON c.id = m.competitionId
+         WHERE m.status = 'LIVE'
+         ORDER BY m.kickoff ASC`
+      )
+      .all() as any[];
 
-function loadLiveMatchesFromDb() {
-  const rows = db
-    .query(
-      `SELECT m.id, m.homeScore, m.awayScore, m.minute, m.period,
-              m.homeTeamId, m.awayTeamId,
-              h.name AS homeName, h.initials AS homeInitials, h.color AS homeColor,
-              a.name AS awayName, a.initials AS awayInitials, a.color AS awayColor
-       FROM Match m
-       JOIN Team h ON h.id = m.homeTeamId
-       JOIN Team a ON a.id = m.awayTeamId
-       WHERE m.status = 'LIVE'`
-    )
-    .all() as any[];
+    currentLiveMatches = rows.map((r) => ({
+      id: r.id,
+      minute: r.minute,
+      period: r.period,
+      homeScore: r.homeScore,
+      awayScore: r.awayScore,
+      homeTeam: {
+        id: r.homeTeamId,
+        name: r.homeName,
+        initials: r.homeInitials,
+        color: r.homeColor || "#10B981",
+        logoUrl: r.homeLogo || undefined,
+      },
+      awayTeam: {
+        id: r.awayTeamId,
+        name: r.awayName,
+        initials: r.awayInitials,
+        color: r.awayColor || "#3B82F6",
+        logoUrl: r.awayLogo || undefined,
+      },
+      competition: {
+        id: r.compId,
+        name: r.compName,
+        shortName: r.compShortName,
+        accentColor: r.compColor,
+      },
+      status: "LIVE" as const,
+    }));
 
-  const seen = new Set<string>();
-  for (const row of rows) {
-    seen.add(row.id);
-    if (!simulations.has(row.id)) {
-      const players = db
+    // Read real recent events only for matches that are currently LIVE
+    if (currentLiveMatches.length === 0) {
+      recentEvents = [];
+    } else {
+      const eventRows = db
         .query(
-          `SELECT p.name, p.teamId, p.position FROM Player p WHERE p.teamId IN (?, ?) AND p.position != 'GK'`
+          `SELECT e.id, e.minute, e.type, e.playerName, e.detail, e.createdAt
+           FROM MatchEvent e
+           JOIN Match m ON m.id = e.matchId
+           WHERE m.status = 'LIVE'
+           ORDER BY e.createdAt DESC
+           LIMIT 15`
         )
-        .all(row.homeTeamId, row.awayTeamId) as any[];
-      const sim: SimMatch = {
-        id: row.id,
-        minute: row.minute ?? 1,
-        period: (row.period as SimMatch["period"]) || "1H",
-        homeScore: row.homeScore ?? 0,
-        awayScore: row.awayScore ?? 0,
-        homeTeam: rowToTeam(row, "home"),
-        awayTeam: rowToTeam(row, "away"),
-        players: players.map((p) => ({
-          teamSide: p.teamId === row.homeTeamId ? ("home" as const) : ("away" as const),
-          name: p.name,
-        })),
-        updatedAt: Date.now(),
-      };
-      simulations.set(row.id, sim);
-      console.log(`[live] Now simulating: ${sim.homeTeam.name} ${sim.homeScore}-${sim.awayScore} ${sim.awayTeam.name} (${sim.minute}')`);
+        .all() as any[];
+
+      recentEvents = eventRows.map((e) => ({
+        id: e.id,
+        text: `${e.type === "GOAL" ? "⚽ GOAL" : e.type === "YELLOW" ? "🟨 Yellow Card" : e.type} (${e.minute}') ${e.playerName ? `: ${e.playerName}` : ""}`,
+        minute: e.minute,
+        type: e.type,
+        ts: new Date(e.createdAt).getTime(),
+      }));
     }
-  }
-  // drop simulations for matches no longer LIVE in DB
-  for (const id of [...simulations.keys()]) {
-    if (!seen.has(id)) simulations.delete(id);
-  }
-}
-
-function persistScore(sim: SimMatch) {
-  try {
-    db.query(`UPDATE Match SET homeScore = ?, awayScore = ?, minute = ?, period = ? WHERE id = ?`).run(
-      sim.homeScore,
-      sim.awayScore,
-      sim.minute,
-      sim.period,
-      sim.id
-    );
   } catch (e) {
-    console.error("[live] persistScore error:", e);
+    console.error("[live] loadFromDb error:", e);
   }
 }
 
-function insertEvent(sim: SimMatch, minute: number, type: string, teamSide: string, teamId: string, playerName: string | null, detail: string) {
-  try {
-    db.query(
-      `INSERT INTO MatchEvent (id, matchId, minute, type, teamId, teamSide, playerName, detail, createdAt)
-       VALUES (lower(hex(randomblob(16))), ?, ?, ?, ?, ?, ?, ?, datetime('now'))`
-    ).run(sim.id, minute, type, teamId, teamSide, playerName, detail);
-  } catch (e) {
-    console.error("[live] insertEvent error:", e);
-  }
-}
-
-function finishMatch(sim: SimMatch) {
-  sim.period = "FT";
-  sim.minute = 90;
-  try {
-    db.query(`UPDATE Match SET status = 'FINISHED', period = 'FT', minute = 90, homeScore = ?, awayScore = ? WHERE id = ?`).run(
-      sim.homeScore,
-      sim.awayScore,
-      sim.id
-    );
-    insertEvent(sim, 90, "FT", "", "", null, "Full-Time");
-  } catch (e) {
-    console.error("[live] finishMatch error:", e);
-  }
-  pushEvent(sim, `⚽ Full-Time: ${sim.homeTeam.name} ${sim.homeScore} - ${sim.awayScore} ${sim.awayTeam.name}`);
-  simulations.delete(sim.id);
-  // Demo continuity: arm the next scheduled fixture of the same competition
-  // so the platform always has live matches for the client demo.
-  const compId = (db.query(`SELECT competitionId FROM Match WHERE id = ?`).get(sim.id) as any)?.competitionId as string | undefined;
-  setTimeout(() => armNextLiveMatch(compId), 5000);
-  console.log(`[live] Finished: ${sim.homeTeam.name} ${sim.homeScore}-${sim.awayScore} ${sim.awayTeam.name}`);
-}
-
-function armNextLiveMatch(competitionId?: string) {
-  try {
-    const next = competitionId
-      ? (db.query(`SELECT id, homeTeamId, awayTeamId FROM Match WHERE competitionId = ? AND status = 'SCHEDULED' AND kickoff <= datetime('now', '+7 days') ORDER BY kickoff ASC LIMIT 1`).get(competitionId) as any)
-      : (db.query(`SELECT id, homeTeamId, awayTeamId FROM Match WHERE status = 'SCHEDULED' AND kickoff <= datetime('now', '+7 days') ORDER BY kickoff ASC LIMIT 1`).get() as any);
-    if (!next) return;
-    db.query(`UPDATE Match SET status = 'LIVE', minute = 1, period = '1H', homeScore = 0, awayScore = 0, kickoff = datetime('now', '-2 minutes') WHERE id = ?`).run(next.id);
-    console.log(`[live] Armed next live match: ${next.id}`);
-  } catch (e) {
-    console.error("[live] armNextLiveMatch error:", e);
-  }
-}
-
-function pickScorer(sim: SimMatch, side: "home" | "away"): string {
-  const pool = sim.players.filter((p) => p.teamSide === side);
-  return pool.length ? pool[Math.floor(Math.random() * pool.length)].name : "—";
-}
-
-function pushEvent(sim: SimMatch, text: string) {
-  recentEvents.unshift({ id: `${sim.id}-${Date.now()}`, text, ts: Date.now() });
-  if (recentEvents.length > 30) recentEvents.pop();
+function getLivePayload() {
+  return {
+    matches: currentLiveMatches,
+    events: recentEvents,
+    serverTime: Date.now(),
+  };
 }
 
 function broadcastState() {
-  const payload = {
-    matches: [...simulations.values()].map((s) => ({
-      id: s.id,
-      minute: s.minute,
-      period: s.period,
-      homeScore: s.homeScore,
-      awayScore: s.awayScore,
-      homeTeam: s.homeTeam,
-      awayTeam: s.awayTeam,
-      status: "LIVE" as const,
-    })),
-    events: recentEvents.slice(0, 12),
-    serverTime: Date.now(),
-  };
-  io.emit("live:update", payload);
+  io.emit("live:update", getLivePayload());
 }
 
-function tick() {
-  let changed = false;
-  for (const sim of [...simulations.values()]) {
-    if (sim.period === "FT") continue;
-    // advance clock (1 tick ≈ 1 minute)
-    sim.minute = Math.min(90, sim.minute + 1);
-    changed = true;
+// HTTP Server
+const httpServer = createServer((req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-    if (sim.minute >= 45 && sim.period === "1H") {
-      sim.period = "HT";
-      pushEvent(sim, `⏸️ Half-Time: ${sim.homeTeam.name} ${sim.homeScore} - ${sim.awayScore} ${sim.awayTeam.name}`);
-      insertEvent(sim, 45, "HT", "", "", null, "Half-Time");
-      persistScore(sim);
-      continue;
-    }
-    if (sim.period === "HT") {
-      // resume second half
-      sim.period = "2H";
-      sim.minute = 46;
-      persistScore(sim);
-      continue;
-    }
-    if (sim.minute >= 90) {
-      finishMatch(sim);
-      continue;
-    }
-
-    // random events
-    const r = Math.random();
-    if (r < 0.08) {
-      // GOAL!
-      const side: "home" | "away" = Math.random() < 0.53 ? "home" : "away";
-      const team = side === "home" ? sim.homeTeam : sim.awayTeam;
-      if (side === "home") sim.homeScore++;
-      else sim.awayScore++;
-      const scorer = pickScorer(sim, side);
-      insertEvent(sim, sim.minute, "GOAL", side, team.id, scorer, "Goal");
-      pushEvent(sim, `⚽ GOAL! ${scorer} (${team.name}) — ${sim.homeTeam.initials} ${sim.homeScore}-${sim.awayScore} ${sim.awayTeam.initials}`);
-      persistScore(sim);
-    } else if (r < 0.14) {
-      const side: "home" | "away" = Math.random() < 0.5 ? "home" : "away";
-      const team = side === "home" ? sim.homeTeam : sim.awayTeam;
-      const player = pickScorer(sim, side);
-      insertEvent(sim, sim.minute, "YELLOW", side, team.id, player, "Yellow Card");
-    } else if (r < 0.15) {
-      persistScore(sim);
-    }
+  if (req.method === "OPTIONS") {
+    res.writeHead(200);
+    res.end();
+    return;
   }
-  if (changed) broadcastState();
-}
 
-// ---- Socket.io setup ----
-const httpServer = createServer();
+  if (req.url === "/api/live" || req.url === "/live" || req.url?.startsWith("/?XTransformPort=3003")) {
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({ success: true, data: getLivePayload() }));
+    return;
+  }
+
+  res.writeHead(200, { "Content-Type": "application/json" });
+  res.end(JSON.stringify({ status: "ok", service: "FHB Real-time Live Score Engine", port: PORT, liveCount: currentLiveMatches.length }));
+});
+
 const io = new Server(httpServer, {
-  path: "/",
   cors: { origin: "*", methods: ["GET", "POST"] },
   pingTimeout: 60000,
   pingInterval: 25000,
 });
 
 io.on("connection", (socket) => {
-  console.log(`[ws] Client connected (${socket.id}) — ${io.engine.clientsCount} online`);
-  socket.emit("live:update", {
-    matches: [...simulations.values()].map((s) => ({
-      id: s.id,
-      minute: s.minute,
-      period: s.period,
-      homeScore: s.homeScore,
-      awayScore: s.awayScore,
-      homeTeam: s.homeTeam,
-      awayTeam: s.awayTeam,
-      status: "LIVE",
-    })),
-    events: recentEvents.slice(0, 12),
-    serverTime: Date.now(),
-  });
-  socket.on("disconnect", () => {
-    console.log(`[ws] Client disconnected (${socket.id})`);
-  });
+  socket.emit("live:update", getLivePayload());
 });
 
-// ---- Main loop ----
-loadLiveMatchesFromDb();
-setInterval(loadLiveMatchesFromDb, DISCOVER_MS);
-setInterval(tick, TICK_MS);
+// Periodic real DB sync scan and broadcast
+loadFromDb();
+setInterval(() => {
+  loadFromDb();
+  broadcastState();
+}, DISCOVER_MS);
+
+httpServer.on("error", (err: any) => {
+  console.error("[live] Server error:", err?.message || err);
+});
+
+process.on("uncaughtException", (err) => {
+  console.error("[live] Uncaught exception:", err?.message || err);
+});
+
+process.on("unhandledRejection", (reason) => {
+  console.error("[live] Unhandled rejection:", reason);
+});
 
 httpServer.listen(PORT, () => {
-  console.log(`🏟️  FHB Live Score Service running on port ${PORT}`);
-  console.log(`   DB: ${DB_PATH} | live matches: ${simulations.size}`);
-});
-
-process.on("SIGTERM", () => {
-  httpServer.close(() => process.exit(0));
-});
-process.on("SIGINT", () => {
-  httpServer.close(() => process.exit(0));
+  console.log(`🏟️  FHB Real Live Score Service running on port ${PORT}`);
+  console.log(`   Connected to SQLite at: ${DB_PATH}`);
+  console.log(`   Strict real-data mode: No fake simulations`);
 });

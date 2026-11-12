@@ -1,0 +1,173 @@
+[
+  {
+    "id": "sp_4_1_iio6",
+    "name": "Bangladesh vs Sri Lanka",
+    "url": "https://live05.wecile.app/live/99121525.m3u8",
+    "logo": "https://upload.kbhub.online/files/bangladesh-vs-sri-lanka-2026-11-11.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_2_9pxq",
+    "name": "Bangladesh vs Sri Lanka",
+    "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://upload.kbhub.online/files/bangladesh-vs-sri-lanka-2026-11-11.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_3_1u9g",
+    "name": "Barcelona vs Atletico Madrid",
+    "url": "https://tencent-cdn.tapmad.com/v1/01a145d823d515fc600b1e3e9683de/01a145dc15751ea540a81c2b41b754/ProdPK_export_clone_clone_clone_1080.m3u8",
+    "logo": "https://upload.kbhub.online/files/images%20(2).jpeg",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_4_rl0y",
+    "name": "Barcelona vs Atletico Madrid",
+    "url": "https://live2.jorvakstreamcache.com/live/channel1.m3u8",
+    "logo": "https://upload.kbhub.online/files/images%20(2).jpeg",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_5_i6gx",
+    "name": "Liverpool Match",
+    "url": "https://live05.wecile.app/live/08552895.m3u8",
+    "logo": "https://upload.kbhub.online/files/2ad380f5913ddba8380dfa399037c5fc.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_6_4513",
+    "name": "Chelsea Match",
+    "url": "https://live05.wecile.app/live/78905744.m3u8",
+    "logo": "https://upload.kbhub.online/files/e8ef20be639a11cecfa81fb045fe32a7.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_7_1bba",
+    "name": "Real Madrid vs Valencia",
+    "url": "https://tencent-cdn.tapmad.com/v1/01a145abfb3a1ea540a81c2b41b751/01a145ae0ac115fc600b1e3e9683da/ProdPK_export_clone_1080.m3u8",
+    "logo": "https://upload.kbhub.online/files/c5fa2e3175de077226aa931e03cf100e.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_8_lycv",
+    "name": "Real Madrid vs Valencia",
+    "url": "https://live05.wecile.app/live/08552895.m3u8",
+    "logo": "https://upload.kbhub.online/files/c5fa2e3175de077226aa931e03cf100e.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_9_mg4y",
+    "name": "Arsenal vs Hulk",
+    "url": "https://live05.wecile.app/live/08552895.m3u8",
+    "logo": "https://upload.kbhub.online/files/b62ede5c42e9892fe918b1397f34402e.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_10_9ion",
+    "name": "Arsenal vs Hulk",
+    "url": "https://live2.jorvakstreamcache.com/live/channel1.m3u8",
+    "logo": "https://upload.kbhub.online/files/b62ede5c42e9892fe918b1397f34402e.webp",
+    "group": "Live Match",
+    "category": "Sports",
+    "sportType": "Live Match"
+  },
+  {
+    "id": "sp_4_11_e4tq",
+    "name": "T Sports",
+    "url": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://pub-af15042317bd401aa6315e0df0b1a277.r2.dev/Sanjoy%20KB/Photo/Generisk_hero_9eb082ef-e320-4111-9628-9037085d201a.jpg",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  },
+  {
+    "id": "sp_4_12_w25a",
+    "name": "Unite Sports",
+    "url": "http://198.195.239.50:8095/UNITE8.1.HD/index.m3u8",
+    "logo": "https://pub-af15042317bd401aa6315e0df0b1a277.r2.dev/Sanjoy%20KB/Photo/Generisk_hero_9eb082ef-e320-4111-9628-9037085d201a.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_4_13_0w7t",
+    "name": "Willow TV",
+    "url": "https://tvsen7.aynaott.com/rEBp38Ax/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://pub-af15042317bd401aa6315e0df0b1a277.r2.dev/Sanjoy%20KB/Photo/Generisk_hero_9eb082ef-e320-4111-9628-9037085d201a.jpg",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_4_14_x0ql",
+    "name": "PTV",
+    "url": "https://tvsen5.aynaott.com/kP9vX2mZ7qL5wN3t/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://pub-af15042317bd401aa6315e0df0b1a277.r2.dev/Sanjoy%20KB/Photo/Generisk_hero_9eb082ef-e320-4111-9628-9037085d201a.jpg",
+    "group": "Sports Networks",
+    "category": "Sports",
+    "sportType": "Sports Networks"
+  },
+  {
+    "id": "sp_4_15_7nld",
+    "name": "Willow Tv",
+    "url": "https://tvsen7.aynaott.com/rEBp38Ax/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://imglink.cc/cdn/AZ5oBiFBRx.png",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_4_16_i685",
+    "name": "T Sports",
+    "url": "https://tvsen7.aynascope.net/Sports1/tracks-v1a1/mono.ts.m3u8",
+    "logo": "https://imglink.cc/cdn/c4WwwvlSm0.jpg",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  },
+  {
+    "id": "sp_4_17_jzeg",
+    "name": "Star Sports 1",
+    "url": "http://103.151.61.12/STAR_SPORTS_1/tracks-v1a1/mono.m3u8",
+    "logo": "https://imglink.cc/cdn/c4WwwvlSm0.jpg",
+    "group": "Cricket",
+    "category": "Sports",
+    "sportType": "Cricket"
+  },
+  {
+    "id": "sp_4_18_f1c1",
+    "name": "T Sports WiFi",
+    "url": "http://10.114.130.254:3255/TSportsHD_nk_nix/index.m3u8",
+    "logo": "https://imglink.cc/cdn/cW8wIk4N4w.jpg",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  },
+  {
+    "id": "sp_4_19_8xca",
+    "name": "BD| T SPORTS",
+    "url": "http://jiugvcta.icysmart.com/live/KS3PZD49/XQT4RR4X/1031351.ts",
+    "logo": "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
+    "group": "T Sports (BD)",
+    "category": "Sports",
+    "sportType": "T Sports (BD)"
+  }
+]

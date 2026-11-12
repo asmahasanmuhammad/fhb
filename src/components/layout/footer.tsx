@@ -6,6 +6,7 @@ import { LogoMark } from "@/components/layout/header";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { Facebook, Youtube, Twitter, Instagram, Send } from "lucide-react";
+import { ThemeSegmentControl } from "@/components/layout/theme-toggle";
 
 /**
  * FHB 4.0 — Institutional footer.
@@ -38,6 +39,7 @@ function FooterColumn({ title, links }: { title: string; links: Array<{ label: s
 
 export function Footer() {
   const { toast } = useToast();
+  const navigate = useAppStore((s) => s.navigate);
   const [email, setEmail] = useState("");
 
   const columns: Array<{ title: string; links: Array<{ label: string; view: View }> }> = [
@@ -81,21 +83,13 @@ export function Footer() {
   };
 
   return (
-    <footer className="mt-14 border-t border-border bg-[oklch(0.108_0.004_264)]">
-      <div className="mx-auto w-full max-w-[1280px] px-4 pb-10 pt-12 sm:px-6">
+    <footer className="mt-14 border-t border-border bg-card dark:bg-[#070a14] transition-colors duration-200">
+      <div className="mx-auto w-full max-w-[1720px] px-4 pb-10 pt-12 sm:px-6">
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4 lg:grid-cols-[minmax(0,1.4fr)_repeat(3,minmax(0,1fr))]">
           {/* Brand zone */}
           <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            <div className="flex items-center gap-2.5">
-              <LogoMark size={30} />
-              <span className="leading-none">
-                <span className="label-cond block text-[14px] font-bold tracking-[0.06em] text-foreground">
-                  FOOTBALL HUB
-                </span>
-                <span className="mt-[3px] block text-[8.5px] font-semibold uppercase tracking-[0.26em] text-muted-foreground">
-                  Bangladesh
-                </span>
-              </span>
+            <div className="flex items-center">
+              <LogoMark size={38} />
             </div>
             <p className="mt-5 max-w-sm text-[12.5px] leading-relaxed text-muted-foreground">
               The digital home of Bangladeshi football. Live scores, league tables, news,
@@ -113,7 +107,7 @@ export function Footer() {
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && submitNewsletter()}
                   placeholder="Your email address"
-                  className="h-9 min-w-0 flex-1 rounded-[7px] border border-input bg-white/[0.03] px-3 text-[12.5px] text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50"
+                  className="h-9 min-w-0 flex-1 rounded-[7px] border border-input bg-muted/40 dark:bg-white/[0.03] px-3 text-[12.5px] text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary/50"
                   aria-label="Newsletter email"
                 />
                 <button
@@ -187,23 +181,61 @@ export function Footer() {
 
         {/* Contact strip */}
         <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-2 border-t border-border pt-5 text-[11.5px] text-muted-foreground">
-          <span>contact@footballhub.com.bd</span>
+          <button
+            onClick={() => navigate({ name: "contact" })}
+            className="link-sweep text-left transition-colors hover:text-foreground"
+          >
+            contact@footballhub.com.bd
+          </button>
           <span className="text-muted-foreground/40" aria-hidden>·</span>
-          <span>Advertise with us</span>
+          <button
+            onClick={() => navigate({ name: "advertise" })}
+            className="link-sweep text-left transition-colors hover:text-foreground"
+          >
+            Advertise with us
+          </button>
           <span className="text-muted-foreground/40" aria-hidden>·</span>
-          <span>Press</span>
+          <button
+            onClick={() => navigate({ name: "press" })}
+            className="link-sweep text-left transition-colors hover:text-foreground"
+          >
+            Press
+          </button>
           <span className="text-muted-foreground/40" aria-hidden>·</span>
-          <span>Careers</span>
+          <button
+            onClick={() => navigate({ name: "careers" })}
+            className="link-sweep text-left transition-colors hover:text-foreground"
+          >
+            Careers
+          </button>
           <span className="ml-auto hidden text-muted-foreground/60 sm:block">Dhaka, Bangladesh</span>
         </div>
 
         {/* Legal bar */}
-        <div className="mt-5 flex flex-col items-center justify-between gap-2.5 border-t border-border pt-6 text-[11px] text-muted-foreground/70 sm:flex-row">
+        <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-[11px] text-muted-foreground/70 sm:flex-row">
           <p>© {new Date().getFullYear()} Football Hub Bangladesh. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <span className="link-sweep cursor-pointer transition-colors hover:text-foreground">Terms of Service</span>
-            <span className="link-sweep cursor-pointer transition-colors hover:text-foreground">Privacy Policy</span>
-            <span className="link-sweep cursor-pointer transition-colors hover:text-foreground">Cookies</span>
+          <div className="flex flex-wrap items-center gap-5">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate({ name: "terms" })}
+                className="link-sweep cursor-pointer transition-colors hover:text-foreground"
+              >
+                Terms of Service
+              </button>
+              <button
+                onClick={() => navigate({ name: "privacy" })}
+                className="link-sweep cursor-pointer transition-colors hover:text-foreground"
+              >
+                Privacy Policy
+              </button>
+              <button
+                onClick={() => navigate({ name: "cookies" })}
+                className="link-sweep cursor-pointer transition-colors hover:text-foreground"
+              >
+                Cookies
+              </button>
+            </div>
+            <ThemeSegmentControl className="w-44" />
           </div>
         </div>
       </div>

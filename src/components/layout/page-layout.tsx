@@ -27,14 +27,14 @@ export function PageLayout({
   className?: string;
 }) {
   const maxW =
-    width === "wide" ? "max-w-[1280px]" : width === "narrow" ? "max-w-[760px]" : "max-w-[1120px]";
+    width === "wide" ? "max-w-[1600px]" : width === "narrow" ? "max-w-[840px]" : "w-full";
 
   return (
     <div
       className={cn(
-        "mx-auto grid w-full grid-cols-1 gap-7 px-4 pb-16 pt-5 sm:px-6 lg:pt-7",
+        "grid w-full grid-cols-1 gap-7 px-4 pb-24 lg:pb-16 pt-5 sm:px-6 lg:pt-7",
         maxW,
-        rail && "xl:grid-cols-[minmax(0,1fr)_300px] xl:gap-6",
+        rail && "xl:grid-cols-[minmax(0,1fr)_320px] xl:gap-8",
         className
       )}
     >
@@ -65,8 +65,8 @@ export function RailCard({
   return (
     <section className={cn("overflow-hidden rounded-lg border border-border bg-card", className)}>
       {title && (
-        <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
-          <h3 className="label-cond text-[12px] font-bold tracking-[0.1em] text-foreground/85">
+        <header className="flex items-center justify-between gap-2 border-b border-border px-4 py-3 sm:py-3.5">
+          <h3 className="label-cond text-[13.5px] sm:text-[14.5px] font-bold tracking-[0.06em] text-foreground">
             {title}
           </h3>
           {action}

@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import fs from 'fs'
 import path from 'path'
+import { SQLITE_DB_B64 } from './sqlite-data'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
@@ -12,33 +13,17 @@ function resolveDbUrl(): string {
     return process.env.DATABASE_URL
   }
 
-  // On Vercel (or any read-only serverless environment), copy SQLite DB to /tmp
+  // On Vercel / serverless environment
   if (process.env.VERCEL) {
     const tmpDb = '/tmp/custom.db'
     if (!fs.existsSync(tmpDb)) {
-      const candidates = [
-        path.join(process.cwd(), 'prisma', 'custom.db'),
-        path.join(process.cwd(), 'db', 'custom.db'),
-        path.resolve('./prisma/custom.db'),
-        path.resolve('./db/custom.db'),
-        path.join(__dirname, '..', '..', '..', 'prisma', 'custom.db'),
-        path.join(__dirname, '..', '..', '..', 'db', 'custom.db'),
-      ]
-      let copied = false
-      for (const src of candidates) {
-        if (fs.existsSync(src)) {
-          console.log(`[db] Initializing /tmp/custom.db from ${src}`)
-          try {
-            fs.copyFileSync(src, tmpDb)
-            copied = true
-            break
-          } catch (e) {
-            console.error(`[db] Failed copying from ${src}:`, e)
-          }
-        }
-      }
-      if (!copied) {
-        console.warn('[db] No existing custom.db found among candidates:', candidates)
+      try {
+        console.log('[db] Unpacking bundled SQLite DB to /tmp/custom.db ...')
+        const buf = Buffer.from(SQLITE_DB_B64, 'base64')
+        fs.writeFileSync(tmpDb, buf)
+        console.log(`[db] Successfully unpacked ${buf.length} bytes to /tmp/custom.db`)
+      } catch (err) {
+        console.error('[db] Error unpacking sqlite db:', err)
       }
     }
     return `file:${tmpDb}?connection_limit=1`

@@ -69,7 +69,6 @@ verified_scores_*.png
 
 /*.png
 old_custom.*
-prisma/*.db
 check_crests.js
 inspect_db.js
 mini-services/live-service/index.js

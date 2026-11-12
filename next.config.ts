@@ -12,6 +12,9 @@ const nextConfig: NextConfig = {
     ],
   },
   /* config options here */
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./db/custom.db', './prisma/custom.db'],
+  },
   typescript: {
     ignoreBuildErrors: true,
   },

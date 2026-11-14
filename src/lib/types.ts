@@ -57,7 +57,7 @@ export type MatchEvent = {
   id: string;
   minute: number;
   type: "GOAL" | "YELLOW" | "RED" | "SUB" | "HT" | "FT" | "PENALTY" | string;
-  teamSide: "home" | "away" | null;
+  teamSide: "home" | "away" | "HOME" | "AWAY" | string | null;
   playerName: string | null;
   detail: string | null;
 };

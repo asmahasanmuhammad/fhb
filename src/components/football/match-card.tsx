@@ -394,14 +394,34 @@ export function MatchHeroCard({ match: raw, className }: { match: Match; classNa
    ──────────────────────────────────────────────────────────────── */
 function EventIcon({ type }: { type: string }) {
   if (type === "GOAL" || type === "PENALTY")
-    return <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/15 text-primary"><Goal className="h-3.5 w-3.5" aria-hidden /></span>;
+    return (
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary shadow-sm" title={type === "PENALTY" ? "Penalty Goal" : "Goal"}>
+        <Goal className="h-3.5 w-3.5" aria-hidden />
+      </span>
+    );
   if (type === "RED")
-    return <span className="flex h-6 w-6 items-center justify-center rounded-full bg-fhb-red/15"><Square className="h-3 w-3 fill-fhb-red text-fhb-red" aria-hidden /></span>;
+    return (
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-fhb-red/15" title="Red Card">
+        <Square className="h-3 w-3 fill-fhb-red text-fhb-red" aria-hidden />
+      </span>
+    );
   if (type === "YELLOW")
-    return <span className="flex h-6 w-6 items-center justify-center rounded-full bg-fhb-gold/15"><Square className="h-3 w-3 fill-fhb-gold text-fhb-gold" aria-hidden /></span>;
+    return (
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-fhb-gold/15" title="Yellow Card">
+        <Square className="h-3 w-3 fill-fhb-gold text-fhb-gold" aria-hidden />
+      </span>
+    );
   if (type === "SUB")
-    return <span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-muted-foreground"><Repeat className="h-3.5 w-3.5" aria-hidden /></span>;
-  return <span className="flex h-6 w-6 items-center justify-center rounded-full bg-secondary text-muted-foreground"><Clock className="h-3.5 w-3.5" aria-hidden /></span>;
+    return (
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground" title="Substitution">
+        <Repeat className="h-3.5 w-3.5" aria-hidden />
+      </span>
+    );
+  return (
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground">
+      <Clock className="h-3.5 w-3.5" aria-hidden />
+    </span>
+  );
 }
 
 export function MatchEventList({
@@ -420,56 +440,118 @@ export function MatchEventList({
       </p>
     );
   }
+
   const sorted = [...events].sort((a, b) => a.minute - b.minute);
+  const firstHalfEvents = sorted.filter((e) => e.minute <= 45);
+  const secondHalfEvents = sorted.filter((e) => e.minute > 45);
+  const hasBothHalves = firstHalfEvents.length > 0 && secondHalfEvents.length > 0;
+
+  const renderEventRow = (ev: MatchEvent) => {
+    const isHome = ev.teamSide?.toLowerCase() === "home";
+    const team = isHome ? homeTeam : awayTeam;
+
+    return (
+      <div
+        key={ev.id}
+        className="px-4 py-3 transition-colors hover:bg-white/[0.02]"
+      >
+        {/* Mobile Layout (< md) */}
+        <div className="flex items-center gap-3 md:hidden">
+          <span className="tabular flex h-7 w-11 shrink-0 items-center justify-center rounded-[5px] bg-secondary text-[11px] font-bold text-foreground">
+            {fmtNum(ev.minute)}′
+          </span>
+          <EventIcon type={ev.type} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-[13px] font-semibold text-foreground">
+              {ev.playerName}
+            </p>
+            {ev.detail && (
+              <p className="text-[11px] font-medium text-muted-foreground">
+                {ev.detail}
+              </p>
+            )}
+          </div>
+          <span
+            className="shrink-0 text-[10px] font-extrabold px-2 py-0.5 rounded-md border"
+            style={{
+              borderColor: `${team.color || "#10B981"}40`,
+              backgroundColor: `${team.color || "#10B981"}15`,
+              color: team.color || "var(--foreground)",
+            }}
+          >
+            {team.shortName || team.name}
+          </span>
+        </div>
+
+        {/* Desktop Centre-Spine Layout (>= md) */}
+        <div className="hidden md:grid md:grid-cols-[1fr_auto_1fr] items-center gap-x-4">
+          {/* Home Team (Left Column) */}
+          <div className={cn("flex min-w-0 items-center gap-3 justify-end", !isHome && "invisible")}>
+            {isHome && (
+              <>
+                <div className="truncate text-right">
+                  <p className="truncate text-[13px] font-semibold text-foreground">
+                    {ev.playerName}
+                  </p>
+                  {ev.detail && (
+                    <span className="block text-[11px] font-normal text-muted-foreground">
+                      {ev.detail}
+                    </span>
+                  )}
+                </div>
+                <EventIcon type={ev.type} />
+              </>
+            )}
+          </div>
+
+          {/* Center Minute Pill */}
+          <span className="tabular relative z-10 flex h-7 w-12 shrink-0 items-center justify-center rounded-[5px] border border-border bg-card shadow-sm text-[11px] font-bold text-foreground">
+            {fmtNum(ev.minute)}′
+          </span>
+
+          {/* Away Team (Right Column) */}
+          <div className={cn("flex min-w-0 items-center gap-3 justify-start", isHome && "invisible")}>
+            {!isHome && (
+              <>
+                <EventIcon type={ev.type} />
+                <div className="truncate text-left">
+                  <p className="truncate text-[13px] font-semibold text-foreground">
+                    {ev.playerName}
+                  </p>
+                  {ev.detail && (
+                    <span className="block text-[11px] font-normal text-muted-foreground">
+                      {ev.detail}
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="relative">
-      <span aria-hidden className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border md:block" />
+      {/* Center spine vertical line on desktop */}
+      <span
+        aria-hidden
+        className="absolute inset-y-0 left-1/2 hidden w-px -translate-x-1/2 bg-border md:block"
+      />
+
       <div className="divide-y divide-border/40">
-        {sorted.map((ev) => {
-          const isHome = ev.teamSide === "home";
-          return (
-            <div
-              key={ev.id}
-              className="grid grid-cols-[auto_1fr] items-center gap-x-3 gap-y-0.5 px-4 py-3 md:grid-cols-[1fr_auto_1fr]"
-            >
-              <div
-                className={cn(
-                  "flex min-w-0 items-center gap-2.5",
-                  isHome ? "md:col-start-1 md:justify-end" : "hidden md:col-start-1 md:flex"
-                )}
-              >
-                {isHome && (
-                  <>
-                    <p className="truncate text-right text-[13px] font-semibold text-foreground">
-                      {ev.playerName}
-                      {ev.detail && <span className="block text-[11px] font-normal text-muted-foreground">{ev.detail}</span>}
-                    </p>
-                    <EventIcon type={ev.type} />
-                  </>
-                )}
-              </div>
-              <span className="tabular relative z-10 order-first flex h-7 w-11 shrink-0 items-center justify-center rounded-[4px] bg-secondary text-[11px] font-bold text-foreground md:order-none md:col-start-2">
-                {fmtNum(ev.minute)}′
-              </span>
-              <div
-                className={cn(
-                  "flex min-w-0 items-center gap-2.5",
-                  !isHome ? "md:col-start-3 md:justify-start" : "hidden md:col-start-3 md:flex"
-                )}
-              >
-                {!isHome && (
-                  <>
-                    <EventIcon type={ev.type} />
-                    <p className="truncate text-[13px] font-semibold text-foreground">
-                      {ev.playerName}
-                      {ev.detail && <span className="block text-[11px] font-normal text-muted-foreground">{ev.detail}</span>}
-                    </p>
-                  </>
-                )}
-              </div>
+        {hasBothHalves ? (
+          <>
+            {firstHalfEvents.map(renderEventRow)}
+            <div className="relative z-10 flex items-center justify-center py-2 bg-secondary/40 text-[10px] font-black uppercase tracking-widest text-muted-foreground border-y border-border/50">
+              Half Time
             </div>
-          );
-        })}
+            {secondHalfEvents.map(renderEventRow)}
+          </>
+        ) : (
+          sorted.map(renderEventRow)
+        )}
       </div>
       <p className="sr-only">
         Key events for {homeTeam.name} versus {awayTeam.name}

@@ -25,7 +25,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
     // Map match events (goals, yellow/red cards) to player nodes
     const mapEventsToPlayers = (players: typeof homeLineup.players, teamSide: "home" | "away") => {
-      const teamEvents = match.events?.filter((e) => e.teamSide === teamSide) || [];
+      const teamEvents = match.events?.filter((e) => e.teamSide?.toLowerCase() === teamSide.toLowerCase()) || [];
       return players.map((p) => {
         const pLower = p.name.toLowerCase();
         const goalsScored = teamEvents.filter(

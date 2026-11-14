@@ -731,8 +731,8 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
   const awayColor = match.awayTeam.color || "#3B82F6";
 
   /* Stat rows — derived dynamically from actual score & events */
-  const homeGoals = match.homeScore ?? goals.filter((e) => e.teamSide === "home").length;
-  const awayGoals = match.awayScore ?? goals.filter((e) => e.teamSide === "away").length;
+  const homeGoals = match.homeScore ?? goals.filter((e) => e.teamSide?.toLowerCase() === "home").length;
+  const awayGoals = match.awayScore ?? goals.filter((e) => e.teamSide?.toLowerCase() === "away").length;
 
   let statHash = 0;
   for (let i = 0; i < match.id.length; i++) {
@@ -765,14 +765,14 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
   const awayFouls = 9 + (Math.abs(statHash >> 11) % 9);
 
   const homeYellows =
-    events.filter((e) => e.type === "YELLOW" && e.teamSide === "home").length ||
+    events.filter((e) => e.type === "YELLOW" && e.teamSide?.toLowerCase() === "home").length ||
     1 + (Math.abs(statHash) % 3);
   const awayYellows =
-    events.filter((e) => e.type === "YELLOW" && e.teamSide === "away").length ||
+    events.filter((e) => e.type === "YELLOW" && e.teamSide?.toLowerCase() === "away").length ||
     1 + ((Math.abs(statHash) >> 2) % 4);
 
-  const homeReds = events.filter((e) => e.type === "RED" && e.teamSide === "home").length;
-  const awayReds = events.filter((e) => e.type === "RED" && e.teamSide === "away").length;
+  const homeReds = events.filter((e) => e.type === "RED" && e.teamSide?.toLowerCase() === "home").length;
+  const awayReds = events.filter((e) => e.type === "RED" && e.teamSide?.toLowerCase() === "away").length;
 
   const homeSaves = Math.max(0, awayTargetShots - awayGoals);
   const awaySaves = Math.max(0, homeTargetShots - homeGoals);

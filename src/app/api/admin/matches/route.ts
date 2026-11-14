@@ -10,17 +10,19 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     await requireAdmin();
-    const matches = await db.match.findMany({
-      include: {
-        homeTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
-        awayTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
-        competition: { select: { id: true, name: true, shortName: true } },
-      },
-      orderBy: { kickoff: "desc" },
-      take: 60,
-    });
-    const competitions = await db.competition.findMany({ select: { id: true, name: true } });
-    const teams = await db.team.findMany({ select: { id: true, name: true, initials: true } });
+    const [matches, competitions, teams] = await Promise.all([
+      db.match.findMany({
+        include: {
+          homeTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
+          awayTeam: { select: { id: true, name: true, initials: true, color: true, logoUrl: true } },
+          competition: { select: { id: true, name: true, shortName: true } },
+        },
+        orderBy: { kickoff: "desc" },
+        take: 60,
+      }),
+      db.competition.findMany({ select: { id: true, name: true } }),
+      db.team.findMany({ select: { id: true, name: true, initials: true } }),
+    ]);
     return ok({ matches, competitions, teams });
   } catch (e) {
     return handleError(e);

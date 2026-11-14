@@ -1,48 +1,43 @@
 import { PrismaClient } from '@prisma/client'
-import fs from 'fs'
+import { PrismaLibSql } from '@prisma/adapter-libsql'
 import path from 'path'
-import { SQLITE_DB_B64 } from './sqlite-data'
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined
 }
 
-function resolveDbUrl(): string {
-  // If an external database URL is explicitly provided (Postgres/MySQL/etc), use it
-  if (process.env.DATABASE_URL && !process.env.DATABASE_URL.startsWith('file:')) {
-    return process.env.DATABASE_URL
+const DEFAULT_TURSO_URL = 'libsql://fhbsports-asmahasanmuhammad.aws-ap-southeast-1.turso.io'
+const DEFAULT_TURSO_TOKEN = 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTQ2NTE2MzIsImlkIjoiMDFhMWQ5ODctNjAwMS03NjFiLWEwMTktNDU1OWJiN2U0YzdiIiwia2lkIjoiZjcwSXQwSTd6SU5LOTdldGZYSmIzUzU3U3NNOEZCc1I4c3h3WkZIWW9xNCIsInJpZCI6ImIwZmE1NzA3LTQ0ZWEtNGFlMy1iNTdkLTQwNzg5NjY3NjI2YSJ9.ionW1-XeO2qMRMhuJPqKfI09ShRIgkkej69wR2Wyj8tde6HvO9Rkhb0jEph8z0MYnhMtYHnXeT-Hbhw0ZsyoBQ'
+
+function createPrismaClient(): PrismaClient {
+  const tursoUrl = process.env.TURSO_DATABASE_URL || DEFAULT_TURSO_URL
+  const tursoToken = process.env.TURSO_AUTH_TOKEN || DEFAULT_TURSO_TOKEN
+
+  if (tursoUrl && tursoToken) {
+    const adapter = new PrismaLibSql({
+      url: tursoUrl,
+      authToken: tursoToken,
+    })
+    return new PrismaClient({
+      adapter,
+      log: ['error', 'warn'],
+    })
   }
 
-  // On Vercel / serverless environment
-  if (process.env.VERCEL) {
-    const tmpDb = '/tmp/custom.db'
-    if (!fs.existsSync(tmpDb)) {
-      try {
-        console.log('[db] Unpacking bundled SQLite DB to /tmp/custom.db ...')
-        const buf = Buffer.from(SQLITE_DB_B64, 'base64')
-        fs.writeFileSync(tmpDb, buf)
-        console.log(`[db] Successfully unpacked ${buf.length} bytes to /tmp/custom.db`)
-      } catch (err) {
-        console.error('[db] Error unpacking sqlite db:', err)
-      }
-    }
-    return `file:${tmpDb}?connection_limit=1`
-  }
-
-  // Local development fallback
+  // Fallback for local development if Turso credentials are missing
   const localDb = path.join(process.cwd(), 'db', 'custom.db')
-  return `file:${localDb}?connection_limit=1`
-}
-
-export const db =
-  globalForPrisma.prisma ??
-  new PrismaClient({
+  return new PrismaClient({
     datasources: {
       db: {
-        url: resolveDbUrl(),
+        url: `file:${localDb}?connection_limit=1`,
       },
     },
     log: ['error', 'warn'],
   })
+}
 
-globalForPrisma.prisma = db
+export const db = globalForPrisma.prisma ?? createPrismaClient()
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = db
+}

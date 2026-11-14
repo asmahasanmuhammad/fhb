@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { AuthError } from "@/lib/auth";
 
 export function ok(data: unknown, init?: ResponseInit) {
-  return NextResponse.json({ success: true, data }, init);
+  const headers = new Headers(init?.headers);
+  if (!headers.has("Cache-Control")) {
+    headers.set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+  }
+  return NextResponse.json({ success: true, data }, { ...init, headers });
 }
 
 export function fail(message: string, status = 400, extra?: Record<string, unknown>) {

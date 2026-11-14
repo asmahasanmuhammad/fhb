@@ -260,6 +260,7 @@ export function HomeView() {
       const res = await fetch("/api/news?limit=14");
       return res.json().then((j) => j.data);
     },
+    refetchInterval: 30_000,
   });
   const { data: standingsData } = useQuery<{ standings: Standing[] }>({
     queryKey: ["standings", "home"],
@@ -313,9 +314,9 @@ export function HomeView() {
   const dayGroups = groupMatchesByDay(matches, resolvedOffset);
 
   const articles = newsData?.articles ?? [];
-  const leadStory = articles.find((a) => a.featured) ?? articles[0];
-  const secondaryNews = articles.filter((a) => a.id !== leadStory?.id).slice(0, 4);
-  const showcased = new Set([leadStory?.id, ...secondaryNews.map((a) => a.id)]);
+  const leadStory = articles[0];
+  const secondaryNews = articles.slice(1, 5);
+  const showcased = new Set([leadStory?.id, ...secondaryNews.map((a) => a.id)].filter(Boolean));
   const mostRead = articles
     .filter((a) => !showcased.has(a.id))
     .sort((a, b) => b.views - a.views)

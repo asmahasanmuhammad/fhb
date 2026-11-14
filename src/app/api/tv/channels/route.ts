@@ -85,10 +85,10 @@ function classifySport(name: string): string {
 
 function parseSportsM3U(data: string, serverId: number): TvChannel[] {
   const list: TvChannel[] = [];
-  const lines = data.split("\n");
+  const lines = data.split(/\r?\n/);
   for (let i = 0; i < lines.length; i++) {
-    if (lines[i].startsWith("#EXTINF")) {
-      const info = lines[i];
+    const info = lines[i].trim();
+    if (info.startsWith("#EXTINF")) {
       let url = "";
       for (let j = i + 1; j < lines.length; j++) {
         const next = lines[j].trim();
@@ -97,11 +97,11 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
           break;
         }
       }
-      const nameMatch = info.match(/,(.+)$/);
-      let name = nameMatch ? nameMatch[1].trim() : "";
-      const logoMatch = info.match(/tvg-logo="(.*?)"/);
+      const commaIdx = info.lastIndexOf(",");
+      let name = commaIdx !== -1 ? info.substring(commaIdx + 1).trim() : "";
+      const logoMatch = info.match(/tvg-logo="([^"]*)"/);
       let logo = logoMatch ? logoMatch[1] : "";
-      const groupMatch = info.match(/group-title="(.*?)"/i);
+      const groupMatch = info.match(/group-title="([^"]*)"/i);
       const group = groupMatch ? groupMatch[1] : "";
 
       name = name.replace(/^[0-9]+\.\s*/, "").trim();
@@ -113,6 +113,10 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
         logo = "/logos/channels/willow.png";
       }
 
+      let quality = "HD";
+      if (nLower.includes("1080p") || nLower.includes("fhd")) quality = "1080p FHD";
+      else if (nLower.includes("720p") || nLower.includes("hd")) quality = "720p HD";
+
       // CRITICAL: Reject insecure HTTP (browsers block mixed content on HTTPS)
       if (url && url.startsWith("https://") && isStrictlySports(name, group)) {
         list.push({
@@ -123,7 +127,7 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
           group: classifySport(name),
           category: "Sports",
           sportType: classifySport(name),
-          quality: "HD",
+          quality,
         });
       }
     }

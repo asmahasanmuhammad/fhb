@@ -20,10 +20,13 @@ function createPrismaClient(): PrismaClient {
 
   if (tursoUrl && tursoToken) {
     try {
-      const adapter = new PrismaLibSql({
-        url: tursoUrl,
-        authToken: tursoToken,
-      })
+      const adapter = new PrismaLibSql(
+        {
+          url: tursoUrl,
+          authToken: tursoToken,
+        },
+        { timestampFormat: 'unixepoch-ms' }
+      )
       return new PrismaClient({
         adapter,
         log: ['error', 'warn'],

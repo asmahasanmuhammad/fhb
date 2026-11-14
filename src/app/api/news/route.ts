@@ -1,12 +1,18 @@
 import { NextRequest } from "next/server";
 import { db } from "@/lib/db";
 import { ok, handleError } from "@/lib/api";
+import { autoSyncOneNewsArticle } from "@/lib/news-sync";
 
 // Real-time data — never cache route handlers
 export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
+    // Non-blocking background sync: publishes 1 new article if >30 minutes have elapsed
+    autoSyncOneNewsArticle().catch((err) => {
+      console.warn("[api/news] Background news auto-sync skipped/failed:", err?.message || err);
+    });
+
     const sp = req.nextUrl.searchParams;
     const category = sp.get("category");
     const featured = sp.get("featured");

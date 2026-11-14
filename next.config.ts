@@ -3,6 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
+      { protocol: "https", hostname: "**" },
+      { protocol: "http", hostname: "**" },
+      { protocol: "https", hostname: "assets.dhakapost.com" },
+      { protocol: "https", hostname: "a.espncdn.com" },
+      { protocol: "https", hostname: "ichef.bbci.co.uk" },
+      { protocol: "https", hostname: "cdn.jagonews24.com" },
       { protocol: "https", hostname: "z-cdn.chatglm.cn" },
       { protocol: "https", hostname: "images.pexels.com" },
       { protocol: "https", hostname: "cdn.pixabay.com" },

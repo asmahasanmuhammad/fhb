@@ -236,6 +236,31 @@ export function AdSlot({ placement, className }: { placement: string; className?
   const variant: Variant = isSidebar ? "sidebar" : isBanner || isMobileBanner ? "banner" : "in-feed";
 
   // ═════════════════════════════════════════════════════════════════
+  // DYNAMIC ADSENSE / EMBEDDED REAL AD SCRIPT RENDERING
+  // ═════════════════════════════════════════════════════════════════
+  if (ad.adCode && ad.adCode.trim().length > 0) {
+    return (
+      <div
+        className={cn(
+          "relative w-full overflow-hidden rounded-xl border border-border bg-card shadow-xl flex items-center justify-center p-1",
+          variant === "sidebar" && "w-full max-w-[360px] mx-auto min-h-[250px]",
+          variant === "banner" && "min-h-[90px] max-h-[140px]",
+          variant === "in-feed" && "min-h-[100px] max-h-[160px]",
+          className
+        )}
+        role="complementary"
+        aria-label={`Advertisement: ${ad.name}`}
+      >
+        <div
+          className="w-full flex justify-center items-center overflow-hidden"
+          dangerouslySetInnerHTML={{ __html: ad.adCode }}
+        />
+        <AdChoicesMark />
+      </div>
+    );
+  }
+
+  // ═════════════════════════════════════════════════════════════════
   // PURE GRAPHICAL BANNER CREATIVE (ZERO OVERLAID LAYERS)
   // ═════════════════════════════════════════════════════════════════
   return (
@@ -301,6 +326,31 @@ export function StickyMobileAd() {
   }, [ad]);
 
   if (!ad || user?.isPremium || dismissed) return null;
+
+  if (ad.adCode && ad.adCode.trim().length > 0) {
+    return (
+      <div className="fixed inset-x-0 bottom-[calc(56px+env(safe-area-inset-bottom))] z-[57] px-2 lg:hidden">
+        <div className="relative flex min-h-[60px] items-center justify-center overflow-hidden rounded-xl border border-border bg-card shadow-xl p-1">
+          <div
+            className="w-full flex justify-center items-center overflow-hidden"
+            dangerouslySetInnerHTML={{ __html: ad.adCode }}
+          />
+          <AdChoicesMark className="right-[38px] top-[6px]" />
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setDismissed(true);
+            }}
+            className="absolute right-1 top-1/2 -translate-y-1/2 z-20 flex h-7 w-7 items-center justify-center rounded-lg bg-black/60 text-slate-300 hover:text-white border border-white/10"
+            aria-label="Hide advertisement"
+          >
+            <X className="h-3.5 w-3.5" aria-hidden />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const bannerImg = ad.imageHint || getFallbackBannerImage(ad.name, "MOBILE_BANNER");
 
   const trackClick = () => {

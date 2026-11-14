@@ -273,7 +273,7 @@ export function CompetitionsView() {
         <div className="rounded-lg border border-border bg-card px-4 py-12 text-center">
           <p className="text-sm font-semibold text-foreground">No competitions tracked yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            The FHB desk is setting up coverage — check back soon.
+            The FHBD desk is setting up coverage — check back soon.
           </p>
         </div>
       ) : (
@@ -324,7 +324,7 @@ export function CompetitionsView() {
                   No {activeFilterLabel.toLowerCase()} competitions in coverage
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">
-                  Try another filter — the FHB desk tracks {fmtNum(comps.length)} competitions.
+                  Try another filter — the FHBD desk tracks {fmtNum(comps.length)} competitions.
                 </p>
               </div>
             ) : (
@@ -506,7 +506,7 @@ export function CompetitionDetailView({ competitionId }: { competitionId: string
         <div className="rounded-lg border border-border bg-card px-4 py-12 text-center">
           <p className="text-sm font-semibold text-foreground">Competition not found</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            This competition may have been retired by the FHB desk.
+            This competition may have been retired by the FHBD desk.
           </p>
         </div>
       </div>

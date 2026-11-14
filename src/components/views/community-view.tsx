@@ -1036,7 +1036,7 @@ export function CommunityView() {
   const rail = (
     <>
       {/* Trending topics — clicks filter the feed dynamically! */}
-      <RailCard title="Trending on FHB">
+      <RailCard title="Trending on FHBD">
         <ul className="divide-y divide-border/40">
           {TRENDING_TOPICS.map((topic, i) => {
             const isSelected = selectedTag === topic.tag;

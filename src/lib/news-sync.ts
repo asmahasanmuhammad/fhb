@@ -207,7 +207,7 @@ async function fetchFeedItems(feed: typeof FEEDS[0]): Promise<ParsedItem[]> {
   try {
     const res = await fetch(feed.url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) FHBNewsAggregator/2.0",
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) FHBDNewsAggregator/2.0",
       },
       next: { revalidate: 0 },
     });

@@ -69,7 +69,7 @@ export function CookieBanner() {
               <p className="font-bold text-foreground text-[13px] mb-0.5">
                 We value your privacy
               </p>
-              FHB uses cookies to personalize your football experience, provide real-time scores and live TV, and analyze platform traffic. You can customize your preferences or accept all cookies.
+              FHBD uses cookies to personalize your football experience, provide real-time scores and live TV, and analyze platform traffic. You can customize your preferences or accept all cookies.
             </div>
           </div>
 

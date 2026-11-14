@@ -519,7 +519,7 @@ export function StandingsView() {
         title="League Tables"
         kicker="standings"
         icon={<Trophy className="h-3.5 w-3.5" aria-hidden />}
-        subtitle="Every competition table on FHB — domestic leagues and international tournaments, updated after every matchday."
+        subtitle="Every competition table on FHBD — domestic leagues and international tournaments, updated after every matchday."
       />
 
       {/* ── Competition tabs ── */}

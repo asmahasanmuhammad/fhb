@@ -78,7 +78,7 @@ export function Footer() {
       toast({ title: "Enter a valid email", description: "Example: you@example.com" });
       return;
     }
-    toast({ title: "Subscribed!", description: "The FHB weekly football digest is on its way." });
+    toast({ title: "Subscribed!", description: "The FHBD weekly football digest is on its way." });
     setEmail("");
   };
 
@@ -135,7 +135,7 @@ export function Footer() {
                   <button
                     key={s.label}
                     className="flex h-9 w-9 items-center justify-center rounded-[7px] border border-border text-muted-foreground transition-colors hover:border-white/20 hover:text-foreground"
-                    aria-label={`FHB on ${s.label}`}
+                    aria-label={`FHBD on ${s.label}`}
                   >
                     <Icon className="h-4 w-4" aria-hidden />
                   </button>
@@ -185,7 +185,7 @@ export function Footer() {
             onClick={() => navigate({ name: "contact" })}
             className="link-sweep text-left transition-colors hover:text-foreground"
           >
-            contact@footballhub.com.bd
+            contact@fhbd.com
           </button>
           <span className="text-muted-foreground/40" aria-hidden>·</span>
           <button
@@ -213,7 +213,7 @@ export function Footer() {
 
         {/* Legal bar */}
         <div className="mt-5 flex flex-col items-center justify-between gap-4 border-t border-border pt-6 text-[11px] text-muted-foreground/70 sm:flex-row">
-          <p>© {new Date().getFullYear()} Football Hub Bangladesh. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} FHBD. All rights reserved.</p>
           <div className="flex flex-wrap items-center gap-5">
             <div className="flex items-center gap-4">
               <button

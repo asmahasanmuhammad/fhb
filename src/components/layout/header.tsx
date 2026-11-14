@@ -69,7 +69,7 @@ function useClock(): string {
   return display;
 }
 
-/* ── Brand mark — ESPN-Style Bold Red Slab with Transparent White Speed Letters ── */
+/* ── Brand mark — FHBD Bold Red Slab with White Speed Letters ── */
 /* hasLive triggers a subtle glow-pulse CSS animation   */
 export function LogoMark({
   size = 40,
@@ -83,17 +83,17 @@ export function LogoMark({
   return (
     <span
       className={cn(
-        "group relative inline-flex shrink-0 select-none items-center justify-center rounded-[7px] bg-[#DC0714] px-3.5 sm:px-4 py-1.5 shadow-md shadow-black/30 transition-all duration-200 hover:brightness-110 active:scale-95",
-        hasLive && "ring-2 ring-fhb-red/40",
+        "group relative inline-flex shrink-0 select-none items-center justify-center transition-all duration-200 hover:brightness-110 active:scale-95",
+        hasLive && "ring-2 ring-fhb-red/40 rounded-[7px]",
         className
       )}
       style={{ height: size }}
-      aria-label="Football Hub Bangladesh"
+      aria-label="FHBD"
     >
       <img
-        src="/logos/fhb-white.svg"
-        alt="Football Hub Bangladesh"
-        className="h-full w-auto object-contain transition-transform duration-200 group-hover:scale-[1.03]"
+        src="/logos/fhbd-badge.png"
+        alt="FHBD"
+        className="h-full w-auto object-contain rounded-[7px] shadow-md shadow-black/25 transition-transform duration-200 group-hover:scale-[1.03]"
       />
       {hasLive && (
         <span
@@ -101,7 +101,7 @@ export function LogoMark({
           title="Matches live right now"
         >
           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-90" />
-          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white ring-2 ring-[#DC0714]" />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-white ring-2 ring-[#e30206]" />
         </span>
       )}
     </span>
@@ -641,7 +641,7 @@ export function Header() {
         <button
           onClick={() => navigate({ name: "home" })}
           className="flex shrink-0 items-center"
-          aria-label="Football Hub Bangladesh — home"
+          aria-label="FHBD — home"
         >
           <Wordmark compact hasLive={hasLive} />
         </button>
@@ -703,12 +703,12 @@ export function Header() {
               <div className="flex items-center gap-2.5">
                 <LogoMark size={28} hasLive={hasLive} />
                 <span className="leading-none">
-                  <span className="font-display block text-[15px] font-extrabold tracking-[0.06em] text-foreground">
-                    FOOTBALL HUB
+                  <span className="font-display block text-[16px] font-extrabold tracking-[0.06em] text-foreground">
+                    FHBD
                   </span>
                   <span className="mt-[2.5px] flex items-center gap-1.5 text-[8.5px] font-bold uppercase tracking-[0.28em] text-muted-foreground">
                     <span className="inline-block h-1 w-1 rounded-full bg-fhb-red" />
-                    Bangladesh
+                    Football
                   </span>
                 </span>
               </div>
@@ -751,7 +751,7 @@ function MobileSheetFooter() {
         <span className="tabular-nums" aria-live="polite" aria-atomic>
           {clock}
         </span>
-        <span className="font-semibold">Football Hub BD</span>
+        <span className="font-semibold">FHBD</span>
       </div>
     </div>
   );

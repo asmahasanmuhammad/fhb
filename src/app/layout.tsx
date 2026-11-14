@@ -76,42 +76,42 @@ const barlowCondensed = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://8780-43-251-84-53.ngrok-free.app"),
-  title: "Football Hub Bangladesh (FHB) — Live Scores, News & Fan Community",
+  title: "FHBD — Live Scores, News & Fan Community",
   description:
-    "Live scores, fixtures, league tables, football news, transfer updates, short videos and a fan community — the complete platform for football in Bangladesh.",
+    "Live scores, fixtures, league tables, football news, transfer updates, short videos and a fan community — the complete platform for football.",
   keywords: [
+    "FHBD",
     "Football Hub Bangladesh",
-    "FHB",
     "Bangladesh Football",
     "BFL",
     "Bangladesh Football League",
     "Live Scores",
     "Football News",
   ],
-  authors: [{ name: "Football Hub Bangladesh" }],
+  authors: [{ name: "FHBD" }],
   icons: {
     icon: [
-      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/logos/fhbd-badge.png", type: "image/png" },
       { url: "/favicon.png", type: "image/png", sizes: "64x64" },
     ],
-    shortcut: "/logo.svg",
+    shortcut: "/logos/fhbd-badge.png",
     apple: [
       { url: "/apple-touch-icon.png", sizes: "180x180" },
-      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/logos/fhbd-badge.png", type: "image/png" },
     ],
   },
   openGraph: {
-    title: "Football Hub Bangladesh (FHB) — Live Scores, News & Fan Community",
+    title: "FHBD — Live Scores, News & Fan Community",
     description: "Live scores • News • Shorts • Community — Bangladesh's football hub",
-    siteName: "Football Hub Bangladesh",
-    images: [{ url: "/logo.svg", width: 400, height: 472, alt: "Football Hub Bangladesh Official Crest" }],
+    siteName: "FHBD",
+    images: [{ url: "/logos/fhbd-badge.png", width: 935, height: 215, alt: "FHBD Official Logo" }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Football Hub Bangladesh (FHB)",
+    title: "FHBD",
     description: "Live scores • News • Shorts • Community — Bangladesh's football hub",
-    images: ["/logo.svg"],
+    images: ["/logos/fhbd-badge.png"],
   },
 };
 

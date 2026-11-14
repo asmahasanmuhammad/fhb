@@ -1606,7 +1606,7 @@ export function LiveTvView() {
       {/* Footer Note */}
       <p className="reveal mt-6 flex items-start gap-2 text-[11px] text-muted-foreground">
         <ShieldCheck className="h-3.5 w-3.5 shrink-0 text-primary mt-0.5" />
-        FHB Live Sports TV brings cricket, football, and championship events from verified broadcast feeds with custom bandwidth and quality controls.
+        FHBD Live Football TV brings live matches, tournaments, and championship events from verified broadcast feeds with custom bandwidth and quality controls.
       </p>
     </PageLayout>
   );

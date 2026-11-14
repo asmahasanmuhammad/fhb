@@ -1088,7 +1088,7 @@ function NewsManager() {
           <DialogHeader>
             <DialogTitle className="label-cond text-lg font-bold">{editing ? "Edit article" : "New article"}</DialogTitle>
             <DialogDescription className="text-xs">
-              {editing ? "Update the story and save — changes go live immediately." : "Publish a new story to the FHB news feed."}
+              {editing ? "Update the story and save — changes go live immediately." : "Publish a new story to the FHBD news feed."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">

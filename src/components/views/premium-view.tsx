@@ -104,7 +104,7 @@ const TESTIMONIALS = [
     handle: "@sumaiya_fc",
     avatar: "SC",
     rating: 5,
-    text: "The Legend tier is unreal. I joined a live Q&A with Jamal Bhuyan last month — something I never thought was possible as a fan. FHB has redefined what a football platform can be.",
+    text: "The Legend tier is unreal. I joined a live Q&A with Jamal Bhuyan last month — something I never thought was possible as a fan. FHBD has redefined what a football platform can be.",
     plan: "LEGEND",
   },
   {
@@ -120,7 +120,7 @@ const TESTIMONIALS = [
 const FAQ_ITEMS: Array<{ q: string; a: string }> = [
   {
     q: "Does Premium remove all ads?",
-    a: "Yes. Premium members never see header, in-feed, sidebar or mobile banner ads anywhere on FHB — the slots are removed entirely, not just hidden.",
+    a: "Yes. Premium members never see header, in-feed, sidebar or mobile banner ads anywhere on FHBD — the slots are removed entirely, not just hidden.",
   },
   {
     q: "How do creators earn money?",
@@ -726,7 +726,7 @@ export function PremiumView() {
             transition={{ delay: 0.1, duration: 0.5 }}
             className="kicker mb-3 text-fhb-gold/80"
           >
-            Football Hub Bangladesh · Premium
+            FHBD · Premium
           </motion.p>
 
           {/* Headline */}
@@ -896,7 +896,7 @@ export function PremiumView() {
             Simple, transparent pricing
           </h2>
           <p className="mt-2 text-[13px] text-muted-foreground">
-            All plans include the core FHB experience. Upgrade for the full package.
+            All plans include the core FHBD experience. Upgrade for the full package.
           </p>
         </div>
 

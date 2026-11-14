@@ -33,7 +33,7 @@ type PwStrength = "weak" | "medium" | "strong";
 const BENEFITS = [
   { icon: Activity,     title: "Live scores",    body: "Minute-by-minute updates from every competition that matters." },
   { icon: Newspaper,    title: "News desk",       body: "Transfers, match reports and opinion — covered like a beat." },
-  { icon: Clapperboard, title: "Creator shorts",  body: "Highlights and fan videos from the FHB creator community." },
+  { icon: Clapperboard, title: "Creator shorts",  body: "Highlights and fan videos from the FHBD creator community." },
 ];
 
 const DEMO_ACCOUNTS = [
@@ -43,7 +43,7 @@ const DEMO_ACCOUNTS = [
 ];
 
 const TESTIMONIALS = [
-  { quote: "FHB is the only place I need on matchday. The live scores feel instant.", author: "Rafiqul Islam", role: "BPL Superfan · Dhaka" },
+  { quote: "FHBD is the only place I need on matchday. The live scores feel instant.", author: "Rafiqul Islam", role: "BPL Superfan · Dhaka" },
   { quote: "Following the national team has never been this fun. The community is incredible.", author: "Nasrin Akhter", role: "Bangladesh NT Fan · Chittagong" },
   { quote: "I upload my match clips here and the creator dashboard is clean. Love it.", author: "Tanvir Ahmed", role: "Football Creator · Sylhet" },
 ];
@@ -351,7 +351,7 @@ export function AuthView() {
       await refreshUser();
       toast({
         title: mode === "login" ? "Welcome back!" : "Account created!",
-        description: json.data.name ? `Welcome to FHB, ${json.data.name}!` : undefined,
+        description: json.data.name ? `Welcome to FHBD, ${json.data.name}!` : undefined,
       });
       navigate({ name: "home" });
     } catch (err) {
@@ -392,7 +392,7 @@ export function AuthView() {
         <section
           className="relative order-2 hidden flex-col overflow-hidden lg:order-1 lg:flex lg:w-[60%]"
           style={{ background: "linear-gradient(135deg, #06080f 0%, #0a0e1a 50%, #0d0611 100%)" }}
-          aria-label="About Football Hub Bangladesh"
+          aria-label="About FHBD"
         >
           <GradientMesh />
 
@@ -799,7 +799,7 @@ export function AuthView() {
                           required
                         />
                         <span className="text-[12px] leading-relaxed text-muted-foreground">
-                          I agree to FHB&apos;s{" "}
+                          I agree to FHBD&apos;s{" "}
                           <button
                             type="button"
                             className="font-semibold text-fhb-red underline underline-offset-2 hover:no-underline"

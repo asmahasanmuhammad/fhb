@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    // 0. Auto-cleanup any legacy non-English / cricket / Bengali articles
+    // 0. Auto-cleanup any legacy non-English / cricket / Bengali articles & update brand
     try {
       await db.newsArticle.deleteMany({
         where: {
@@ -22,6 +22,10 @@ export async function GET(req: NextRequest) {
             { content: { contains: "প্রতিবেদনটি" } },
           ],
         },
+      });
+      await db.user.updateMany({
+        where: { name: { contains: "FHB" } },
+        data: { name: "FHBD Newsroom Chief" },
       });
     } catch {
       // ignore

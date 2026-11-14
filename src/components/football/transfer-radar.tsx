@@ -33,7 +33,7 @@ const TRANSFER_DEALS: TransferDeal[] = [
     feeEUR: "€1.10M",
     status: "advanced_talks",
     tier: 1,
-    source: "Fabrizio Romano & FHB Bureau",
+    source: "Fabrizio Romano & FHBD Bureau",
     probability: 92,
     contractUntil: "June 2028",
     summary: "European scouting breakthrough: Belgium Pro League side Antwerp has initiated direct contract negotiations with Kings.",
@@ -131,7 +131,7 @@ export function TransferRadar() {
           <div>
             <div className="flex items-center gap-2 text-primary text-xs font-black uppercase tracking-wider mb-1">
               <TrendingUp className="w-4 h-4" />
-              <span>FHB Transfer Desk &amp; Reliability Meter</span>
+              <span>FHBD Transfer Desk &amp; Reliability Meter</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-black text-foreground uppercase tracking-tight">
               Domestic &amp; Global Transfer Radar

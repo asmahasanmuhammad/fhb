@@ -193,7 +193,7 @@ export function ScoreTicker() {
       {/* Right meta */}
       <div className="hidden shrink-0 items-center gap-3 border-l border-border px-4 lg:flex">
         <span className="label-cond text-[11px] font-semibold tracking-[0.08em] text-muted-foreground/80">
-          Football Hub Bangladesh
+          FHBD
         </span>
       </div>
     </div>

@@ -20,6 +20,10 @@ async function cleanupLegacyArticles() {
         ],
       },
     });
+    await db.user.updateMany({
+      where: { name: { contains: "FHB" } },
+      data: { name: "FHBD Newsroom Chief" },
+    });
   } catch {
     // ignore
   }

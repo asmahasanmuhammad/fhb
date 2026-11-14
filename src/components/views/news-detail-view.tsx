@@ -659,7 +659,7 @@ function RelatedCard({ article }: { article: NewsArticle }) {
         ) : (
           <span className="flex h-full w-full items-center justify-center">
             <span className="label-cond text-[11px] font-bold tracking-[0.2em] text-muted-foreground/25">
-              FHB
+              FHBD
             </span>
           </span>
         )}
@@ -881,7 +881,7 @@ export function NewsDetailView({ articleId }: { articleId: string }) {
             ) : (
               <span className="flex h-full w-full items-center justify-center">
                 <span className="label-cond text-sm tracking-[0.2em] text-muted-foreground/40">
-                  FHB News
+                  FHBD News
                 </span>
               </span>
             )}

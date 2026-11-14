@@ -848,7 +848,7 @@ export function UploadView() {
           </span>
           <h2 className="mt-4 text-[17px] font-bold text-foreground">Sign in to upload</h2>
           <p className="mx-auto mt-2 max-w-sm text-[13px] leading-relaxed text-muted-foreground">
-            Creator accounts publish vertical video to the FHB shorts feed. Sign in to continue
+            Creator accounts publish vertical video to the FHBD shorts feed. Sign in to continue
             to the studio.
           </p>
           <button
@@ -908,7 +908,7 @@ export function UploadView() {
         back
         kicker="creator studio"
         title="Upload Content"
-        subtitle="Publish vertical video to the FHB shorts feed — uploads go live instantly."
+        subtitle="Publish vertical video to the FHBD shorts feed — uploads go live instantly."
         icon={<Upload className="h-3.5 w-3.5" aria-hidden />}
       />
 

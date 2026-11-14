@@ -87,7 +87,7 @@ export function NewsView() {
         title="Football News"
         kicker="editorial"
         icon={<Newspaper className="h-3.5 w-3.5" aria-hidden />}
-        subtitle="Transfers, match reports and analysis from the FHB desk."
+        subtitle="Transfers, match reports and analysis from the FHBD desk."
       />
 
       {/* Category chips */}
@@ -127,7 +127,7 @@ export function NewsView() {
           <p className="text-sm font-semibold text-foreground">Nothing here yet</p>
           <p className="mt-1 text-xs text-muted-foreground">
             No published stories in {activeLabel} right now — check back soon for updates from
-            the FHB newsdesk.
+            the FHBD newsdesk.
           </p>
           {category !== "ALL" && (
             <button

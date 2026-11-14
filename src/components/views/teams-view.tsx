@@ -235,7 +235,7 @@ export function TeamsView() {
         title="Teams"
         kicker="clubs & national sides"
         icon={<Shield className="h-3.5 w-3.5" aria-hidden />}
-        subtitle="Every club and national side covered by FHB — domestic leagues and international squads."
+        subtitle="Every club and national side covered by FHBD — domestic leagues and international squads."
       />
 
       {/* ── Controls: search + filter chips ── */}

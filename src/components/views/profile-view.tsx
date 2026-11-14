@@ -54,7 +54,7 @@ function ShareSheet({ username }: { username: string }) {
   };
   const nativeShare = () => {
     if (typeof navigator !== "undefined" && navigator.share) {
-      void navigator.share({ title: `@${username} on FHB`, url });
+      void navigator.share({ title: `@${username} on FHBD`, url });
     }
   };
   return (
@@ -174,7 +174,7 @@ export function ProfileView({ username }: { username?: string }) {
           <div>
             <p className="label-cond text-[16px] font-bold tracking-[0.05em] text-foreground">Profile not found</p>
             <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-              {targetUsername ? `No FHB member goes by "@${targetUsername}".` : "This profile is unavailable."}
+              {targetUsername ? `No FHBD member goes by "@${targetUsername}".` : "This profile is unavailable."}
             </p>
           </div>
           <Button

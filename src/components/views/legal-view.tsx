@@ -150,7 +150,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
       setContactForm({ name: "", email: "", topic: "general", subject: "", message: "" });
       toast({
         title: "Inquiry Sent Successfully",
-        description: "Thank you for reaching out to Football Hub Bangladesh. Our team will get back to you within 24–48 hours.",
+        description: "Thank you for reaching out to FHBD. Our team will get back to you within 24–48 hours.",
       });
     }, 900);
   };
@@ -208,7 +208,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
               <div className="flex items-start gap-2.5">
                 <Building2 className="h-4 w-4 shrink-0 text-foreground/70 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-foreground">Football Hub Bangladesh Ltd.</p>
+                  <p className="font-semibold text-foreground">FHBD Ltd.</p>
                   <p className="text-[11px]">Incorporated in Dhaka, Bangladesh</p>
                 </div>
               </div>
@@ -272,18 +272,18 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
             : currentTab === "contact"
             ? "Contact & Support"
             : currentTab === "advertise"
-            ? "Advertise with Football Hub Bangladesh"
+            ? "Advertise with FHBD"
             : currentTab === "press"
             ? "Press Room & Media Kit"
-            : "Careers at Football Hub Bangladesh"
+            : "Careers at FHBD"
         }
         subtitle={
           currentTab === "terms"
-            ? "Last revised: November 12, 2026 · Version 4.2 · Applies to all FHB platforms, APIs, and digital broadcasts"
+            ? "Last revised: November 12, 2026 · Version 4.2 · Applies to all FHBD platforms, APIs, and digital broadcasts"
             : currentTab === "privacy"
-            ? "Effective date: November 12, 2026 · How FHB safeguards, processes, and respects fan & creator data"
+            ? "Effective date: November 12, 2026 · How FHBD safeguards, processes, and respects fan & creator data"
             : currentTab === "cookies"
-            ? "Transparency regarding how we use cookies, tracking pixels, and local storage on FHB"
+            ? "Transparency regarding how we use cookies, tracking pixels, and local storage on FHBD"
             : currentTab === "contact"
             ? "Get in touch with our editorial desk, partnership team, and technical support"
             : currentTab === "advertise"
@@ -347,7 +347,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
                   Official Terms of Service Summary
                 </h4>
                 <p className="mt-1 text-[12.5px] leading-relaxed text-muted-foreground">
-                  By accessing or using Football Hub Bangladesh (FHB), including our web portal,
+                  By accessing or using FHBD, including our web portal,
                   mobile progressive web application, live score services, video shorts platform,
                   and digital TV streaming, you acknowledge that you have read, understood, and agreed
                   to be bound by these Terms of Service and our Privacy Policy.
@@ -366,11 +366,11 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
             </div>
             <p className="text-[13.5px] leading-relaxed text-muted-foreground">
               These Terms of Service constitute a legally binding agreement between you (the &ldquo;User&rdquo;)
-              and Football Hub Bangladesh Ltd. (&ldquo;FHB&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;),
+              and FHBD Ltd. (&ldquo;FHBD&rdquo;, &ldquo;we&rdquo;, &ldquo;us&rdquo;, or &ldquo;our&rdquo;),
               governing your access to and use of footballhub.com.bd and all associated digital products.
             </p>
             <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-              You must be at least 13 years of age to register an account or interact with the FHB fan community.
+              You must be at least 13 years of age to register an account or interact with the FHBD fan community.
               If you are under 18 years old, you represent that you have received parental or legal guardian consent
               to use our services and participate in any creator earnings or subscription programs.
             </p>
@@ -385,13 +385,13 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
               <h3 className="text-lg font-bold tracking-tight">User Accounts & Authentication</h3>
             </div>
             <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-              When registering an account with FHB, you agree to provide truthful, accurate, and current information.
+              When registering an account with FHBD, you agree to provide truthful, accurate, and current information.
               You are entirely responsible for safeguarding your password and account credentials.
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-[13px] text-muted-foreground">
               <li>You may not share or transfer your account credentials to any third party.</li>
               <li>You must notify us immediately at <span className="text-foreground font-mono">support@footballhub.com.bd</span> if you suspect unauthorized access.</li>
-              <li>FHB reserves the right to reclaim or suspend usernames that infringe on trademarks, club identifiers, or impersonate verified players or journalists.</li>
+              <li>FHBD reserves the right to reclaim or suspend usernames that infringe on trademarks, club identifiers, or impersonate verified players or journalists.</li>
             </ul>
           </section>
 
@@ -404,7 +404,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
               <h3 className="text-lg font-bold tracking-tight">Fan Community Standards & Fair Play</h3>
             </div>
             <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-              Football Hub Bangladesh thrives on passionate, constructive football discourse covering the
+              FHBD thrives on passionate, constructive football discourse covering the
               Bangladesh Premier League (BFL), national teams, European leagues, and grassroots tournaments.
               We maintain a strict zero-tolerance policy against:
             </p>
@@ -458,12 +458,12 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
             </div>
             <p className="text-[13.5px] leading-relaxed text-muted-foreground">
               Qualified creators who upload original shorts, analysis videos, and tactical reels may earn revenue
-              share according to FHB&apos;s verified creator program.
+              share according to FHBD&apos;s verified creator program.
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-[13px] text-muted-foreground">
               <li>Revenue calculations are based on valid view metrics and advertising RPMs settled monthly.</li>
               <li>Payouts are disbursed via verified bKash, Nagad, or Bangladeshi bank accounts with minimum withdrawal thresholds of ৳500.</li>
-              <li>FHB reserves the right to withhold earnings derived from automated bot views, stolen broadcast clips, or copyright strikes.</li>
+              <li>FHBD reserves the right to withhold earnings derived from automated bot views, stolen broadcast clips, or copyright strikes.</li>
             </ul>
           </section>
 
@@ -476,7 +476,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
               <h3 className="text-lg font-bold tracking-tight">Premium Subscriptions & Billing</h3>
             </div>
             <p className="text-[13.5px] leading-relaxed text-muted-foreground">
-              FHB Pro and FHB Legend subscription tiers provide ad-free browsing, full-HD digital streams, and exclusive
+              FHBD Pro and FHBD Legend subscription tiers provide ad-free browsing, full-HD digital streams, and exclusive
               scouting reports. Subscriptions are billed in Bangladeshi Taka (BDT) via official payment gateways.
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-[13px] text-muted-foreground">
@@ -514,7 +514,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
                   Our Privacy Promise to Bangladeshi Football Fans
                 </h4>
                 <p className="mt-1 text-[12.5px] leading-relaxed text-muted-foreground">
-                  Football Hub Bangladesh is committed to safeguarding your personal data. We adhere to
+                  FHBD is committed to safeguarding your personal data. We adhere to
                   international privacy standards and relevant data protection laws of Bangladesh. We never
                   sell your personal information or contact details to third-party data brokers.
                 </p>
@@ -630,7 +630,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
               For any questions, requests, or grievances regarding your personal information, please write directly to:
             </p>
             <div className="rounded-lg bg-muted/40 p-3.5 border border-border text-[12.5px] text-muted-foreground">
-              <p className="font-semibold text-foreground">Data Privacy Desk — Football Hub Bangladesh</p>
+              <p className="font-semibold text-foreground">Data Privacy Desk — FHBD</p>
               <p>Email: <a href="mailto:privacy@footballhub.com.bd" className="text-primary hover:underline">privacy@footballhub.com.bd</a></p>
               <p>Address: Level 8, Plot 14, Road 11, Banani C/A, Dhaka 1213, Bangladesh</p>
             </div>
@@ -650,7 +650,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
                   <h3 className="text-lg font-bold tracking-tight">Cookie Consent Manager</h3>
                 </div>
                 <p className="mt-1 text-[12.5px] text-muted-foreground">
-                  Customize which cookies and local storage tokens FHB may activate on your browser.
+                  Customize which cookies and local storage tokens FHBD may activate on your browser.
                 </p>
               </div>
               <div className="flex items-center gap-2 shrink-0">
@@ -765,7 +765,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
           <section className="rounded-xl border border-border bg-card p-6 sm:p-7 space-y-4">
             <h3 className="text-lg font-bold tracking-tight">Active Cookies & Storage Matrix</h3>
             <p className="text-[13px] text-muted-foreground">
-              The table below summarizes the key cookies and local storage tokens deployed on FHB:
+              The table below summarizes the key cookies and local storage tokens deployed on FHBD:
             </p>
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -1058,16 +1058,16 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
               <div className="py-4 space-y-1">
                 <p className="text-xs font-mono text-muted-foreground">October 28, 2026 · Dhaka</p>
                 <h4 className="text-sm font-bold text-foreground">
-                  Football Hub Bangladesh Unveils FHB 4.0 Architecture with Sub-Second Live BFL Scores
+                  FHBD Unveils FHBD 4.0 Architecture with Sub-Second Live BFL Scores
                 </h4>
                 <p className="text-xs text-muted-foreground">
-                  FHB announced its upgraded real-time sports telemetry platform, reducing live score latency to under 300ms across Bangladesh.
+                  FHBD announced its upgraded real-time sports telemetry platform, reducing live score latency to under 300ms across Bangladesh.
                 </p>
               </div>
               <div className="py-4 space-y-1">
                 <p className="text-xs font-mono text-muted-foreground">August 15, 2026 · Dhaka</p>
                 <h4 className="text-sm font-bold text-foreground">
-                  FHB Launches Creator Monetization Program for Bangladeshi Sports Journalists & Video Creators
+                  FHBD Launches Creator Monetization Program for Bangladeshi Sports Journalists & Video Creators
                 </h4>
                 <p className="text-xs text-muted-foreground">
                   Over 150 local football analysts onboarded to create original tactical reels with instant bKash revenue payouts.
@@ -1099,7 +1099,7 @@ export function LegalView({ currentTab = "terms" }: { currentTab?: LegalTab }) {
       {currentTab === "careers" && (
         <div className="space-y-8 text-foreground">
           <div className="rounded-xl border border-border bg-card p-6 sm:p-7 space-y-3">
-            <h3 className="text-lg font-bold tracking-tight">Join the Pitch at FHB</h3>
+            <h3 className="text-lg font-bold tracking-tight">Join the Pitch at FHBD</h3>
             <p className="text-xs leading-relaxed text-muted-foreground">
               We are a passionate squad of engineers, football purists, and multimedia storytellers in Dhaka building
               the definitive digital stadium for Bangladeshi football. We offer competitive BDT compensation,

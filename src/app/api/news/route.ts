@@ -8,6 +8,25 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
+    // 0. Auto-cleanup any legacy non-English / cricket / Bengali articles
+    try {
+      await db.newsArticle.deleteMany({
+        where: {
+          OR: [
+            { id: "cmwg37yvf0001ljncyzuj90cw" },
+            { id: "cmwg498nn0001jv08t7z3jol0" },
+            { id: "cmwg51c1q0001l5076n7bdpnw" },
+            { title: { contains: "সূর্যবংশী" } },
+            { title: { contains: "ফুটবল" } },
+            { title: { contains: "টস" } },
+            { content: { contains: "প্রতিবেদনটি" } },
+          ],
+        },
+      });
+    } catch {
+      // ignore
+    }
+
     // Check if 30 minutes have passed since last published article
     try {
       const latest = await db.newsArticle.findFirst({
@@ -44,7 +63,12 @@ export async function GET(req: NextRequest) {
       db.newsArticle.count({ where }),
     ]);
 
-    return ok({ articles, total });
+    // Strict 100% English filter: exclude any Bengali content
+    const englishArticles = articles.filter(
+      (a) => !/[\u0980-\u09FF]/.test(a.title) && !/[\u0980-\u09FF]/.test(a.content)
+    );
+
+    return ok({ articles: englishArticles, total: Math.min(total, englishArticles.length + offset) });
   } catch (e) {
     return handleError(e);
   }

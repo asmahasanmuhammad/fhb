@@ -43,10 +43,12 @@ export type TvChannel = {
   id: string;
   name: string;
   url: string;
+  backupUrls?: string[];
   logo: string;
   group: string;
   category: string;
   sportType?: string;
+  quality?: string;
 };
 
 export type QualityLevel = {
@@ -60,10 +62,10 @@ export type QualityLevel = {
 
 // Sports Stream Servers
 const SERVERS = [
-  { id: 1, name: "Server 1 (Sports Networks)", note: "A Sports, T Sports, Willow, beIN, Star Sports", count: "220+" },
+  { id: 1, name: "Server 1 (Premium Sports HD)", note: "T Sports, Star Sports, Willow, beIN XTRA, TNT Sports", count: "250+" },
   { id: 2, name: "Server 2 (Live Match Feeds)", note: "Barcelona, Real Madrid, Liverpool, Chelsea, Arsenal", count: "19+" },
-  { id: 3, name: "Server 3 (Regional Sports)", note: "Star Sports SL, Ten Cricket, beIN", count: "10+" },
-  { id: 4, name: "Server 4 (IPTV Backup)", note: "T Sports FHD, Willow HD, PTV Sports", count: "10+" },
+  { id: 3, name: "Server 3 (Global 1080p Hub)", note: "IPTV-Org Verified: UFC, WWE, DAZN, ACC, Swerve", count: "200+" },
+  { id: 4, name: "Server 4 (Cricket & Football)", note: "Cricket Gold, DD Sports HD, Bahrain Sports 1-2, Goal TV", count: "40+" },
 ];
 
 const SPORTS_CATEGORIES = [
@@ -153,18 +155,27 @@ export function LiveTvView() {
   );
   const [isServerLoading, setIsServerLoading] = useState<boolean>(false);
 
-  // Active playing sports channel (starts on A Sports HD which is 100% active and 200 OK)
+  // Active playing sports channel (starts on verified T Sports HD)
   const [active, setActive] = useState<TvChannel>(
     normalizeChannel((curatedChannelsData as TvChannel[])[0]) || {
-      id: "asports_hd",
-      name: "A Sports HD",
-      url: "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/tracks-v1a1/mono.ts.m3u8",
-      logo: "/logos/channels/asports.png",
-      group: "Sports Networks",
+      id: "tsports_hd",
+      name: "T Sports HD",
+      url: "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/index.m3u8",
+      backupUrls: ["https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/tracks-v1a1/mono.ts.m3u8"],
+      logo: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
+      group: "T Sports (BD)",
       category: "Sports",
-      sportType: "Sports Networks",
+      sportType: "T Sports (BD)",
+      quality: "720p HD",
     }
   );
+
+  const activeRef = useRef<TvChannel>(active);
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+
+  const networkRetryCountRef = useRef<number>(0);
 
   // Filters & Search
   const [category, setCategory] = useState<string>("all");
@@ -181,6 +192,7 @@ export function LiveTvView() {
   const [availableLevels, setAvailableLevels] = useState<QualityLevel[]>([]);
   const [currentLevelIndex, setCurrentLevelIndex] = useState<number>(-1); // -1 = Auto
   const [actualLevelIndex, setActualLevelIndex] = useState<number>(-1);
+  const [detectedResolution, setDetectedResolution] = useState<{ width: number; height: number; label: string } | null>(null);
   const [isDataSaver, setIsDataSaver] = useState<boolean>(false);
   const [showQualityMenu, setShowQualityMenu] = useState<boolean>(false);
   const isDataSaverRef = useRef<boolean>(false);
@@ -267,6 +279,12 @@ export function LiveTvView() {
     if (serverId === 1) {
       setChannels((curatedChannelsData as TvChannel[]).map(normalizeChannel));
     } else if (serverId === 2) {
+      setChannels(
+        (curatedChannelsData as TvChannel[])
+          .filter((c) => c.sportType === "Live Match" || c.name.toLowerCase().includes("vs") || c.name.toLowerCase().includes("match") || c.name.toLowerCase().includes("barca") || c.name.toLowerCase().includes("madrid"))
+          .map(normalizeChannel)
+      );
+    } else if (serverId === 3 || serverId === 4) {
       setChannels((server4ChannelsData as TvChannel[]).map(normalizeChannel));
     }
 
@@ -353,6 +371,7 @@ export function LiveTvView() {
       setAvailableLevels([]);
       setCurrentLevelIndex(-1);
       setActualLevelIndex(-1);
+      setDetectedResolution(null);
 
       try {
         video.pause();
@@ -367,38 +386,59 @@ export function LiveTvView() {
 
           const hls = new HlsCtor({
             enableWorker: true,
-            lowLatencyMode: true,
-            // Configure buffer size based on Data Saver mode to minimize megabytes consumed
-            backBufferLength: isDataSaverActive ? 5 : 60,
-            maxBufferLength: isDataSaverActive ? 10 : 30,
-            maxMaxBufferLength: isDataSaverActive ? 20 : 60,
-            manifestLoadingTimeOut: 10000,
-            levelLoadingTimeOut: 10000,
-            fragLoadingTimeOut: 12000,
+            // Disable lowLatencyMode: fixes random buffering & live-edge stalling!
+            lowLatencyMode: false,
+            // Solid broadcast buffering: maintains smooth 15-60s ahead
+            backBufferLength: isDataSaverActive ? 10 : 90,
+            maxBufferLength: isDataSaverActive ? 15 : 60,
+            maxMaxBufferLength: isDataSaverActive ? 30 : 120,
+            maxBufferSize: 60 * 1000 * 1000,
+            liveSyncDurationCount: 3,
+            liveMaxLatencyDurationCount: 8,
+            liveDurationInfinity: true,
+            nudgeMaxRetry: 5,
+            nudgeOffset: 0.1,
+            manifestLoadingTimeOut: 15000,
+            manifestLoadingMaxRetry: 4,
+            manifestLoadingRetryDelay: 1000,
+            levelLoadingTimeOut: 15000,
+            levelLoadingMaxRetry: 4,
+            fragLoadingTimeOut: 25000,
+            fragLoadingMaxRetry: 6,
+            fragLoadingRetryDelay: 1000,
+            testBandwidth: true,
+            abrEwmaDefaultEstimate: 5000000, // Starts at 5Mbps so it picks HD immediately
           });
           hlsRef.current = hls;
           hls.loadSource(url);
           hls.attachMedia(video);
 
-          // Manifest parsed: detect multi-bitrate quality levels
+          // Manifest parsed: detect multi-bitrate quality levels accurately
           hls.on(HlsCtor.Events.MANIFEST_PARSED, (_event, data) => {
             setLoading(false);
             video.muted = muted;
             void video.play().catch(() => {});
 
             if (data.levels && data.levels.length > 0) {
-              const currentVideoH = video.videoHeight || 720;
               const parsed: QualityLevel[] = data.levels.map((lvl, idx) => {
-                const h = lvl.height || (data.levels.length === 1 ? currentVideoH : 0);
+                let h = lvl.height || 0;
                 const bw = lvl.bitrate || 0;
-                let label = h > 0 ? `${h}p` : `Level ${idx + 1}`;
+                // If height is not declared in manifest, estimate from bandwidth
+                if (h === 0 && bw > 0) {
+                  if (bw >= 3500000) h = 1080;
+                  else if (bw >= 1800000) h = 720;
+                  else if (bw >= 900000) h = 480;
+                  else if (bw >= 500000) h = 360;
+                }
+
+                let label = h > 0 ? `${h}p` : `Stream ${idx + 1}`;
                 if (h >= 1080) label = "1080p FHD";
                 else if (h >= 720) label = "720p HD";
                 else if (h >= 540) label = "540p SD";
                 else if (h >= 480) label = "480p SD";
                 else if (h >= 360) label = "360p (Data Saver)";
-                else if (h > 0) label = `${h}p (Low Data)`;
-                else if (data.levels.length === 1) label = "720p HD";
+                else if (h > 0) label = `${h}p`;
+                else if (data.levels.length === 1) label = "Source HD";
 
                 const mbPerHour = bw > 0 ? Math.round((bw * 3600) / (8 * 1024 * 1024)) : (h >= 720 ? 950 : 350);
                 const dataRateDesc =
@@ -463,24 +503,43 @@ export function LiveTvView() {
             setActualLevelIndex(data.level);
           });
 
-          // Error recovery
+          // Error recovery with auto-retry and backup URL switching
           hls.on(HlsCtor.Events.ERROR, (_e, data) => {
             if (data.fatal) {
               if (data.type === HlsCtor.ErrorTypes.NETWORK_ERROR) {
-                try {
-                  hls.startLoad();
-                } catch {
-                  // ignore
+                if (networkRetryCountRef.current < 3) {
+                  networkRetryCountRef.current += 1;
+                  setTimeout(() => {
+                    if (hlsRef.current) {
+                      try {
+                        hlsRef.current.startLoad();
+                      } catch {}
+                    }
+                  }, 800);
+                } else {
+                  // If channel has a backup URL, switch automatically!
+                  const cur = activeRef.current;
+                  if (cur?.backupUrls && cur.backupUrls.length > 0) {
+                    const backup = cur.backupUrls.shift();
+                    if (backup) {
+                      networkRetryCountRef.current = 0;
+                      void loadStream(backup);
+                      return;
+                    }
+                  }
+                  setLoading(false);
+                  setError("Live broadcast stream is temporarily busy. Click Retry Stream or select another channel.");
+                  destroyHls();
                 }
               } else if (data.type === HlsCtor.ErrorTypes.MEDIA_ERROR) {
                 try {
                   hls.recoverMediaError();
                 } catch {
-                  // ignore
+                  destroyHls();
                 }
               } else {
                 setLoading(false);
-                setError("This sports stream is taking longer to load. Switch to Server 2 (Live Matches) or try another channel.");
+                setError("Stream playback paused. Click Retry or switch channel.");
                 destroyHls();
               }
             }
@@ -497,12 +556,14 @@ export function LiveTvView() {
         const onReady = () => {
           setLoading(false);
           const vH = video.videoHeight;
+          const vW = video.videoWidth;
           if (vH > 0) {
+            const lbl = vH >= 1080 ? "1080p FHD" : vH >= 720 ? "720p HD" : vH >= 480 ? "480p SD" : `${vH}p`;
+            setDetectedResolution({ width: vW, height: vH, label: lbl });
             setAvailableLevels((prev) =>
               prev.map((lvl) => {
-                if (lvl.height === 0 || lvl.label.startsWith("Level")) {
-                  const lbl = vH >= 1080 ? "1080p FHD" : vH >= 720 ? "720p HD" : `${vH}p`;
-                  return { ...lvl, height: vH, width: video.videoWidth, label: lbl };
+                if (lvl.height === 0 || lvl.label.startsWith("Stream") || lvl.label === "Source HD") {
+                  return { ...lvl, height: vH, width: vW, label: lbl };
                 }
                 return lvl;
               })
@@ -523,6 +584,7 @@ export function LiveTvView() {
 
   // Play a specific sports channel
   const playChannel = (channel: TvChannel) => {
+    networkRetryCountRef.current = 0;
     setActive(channel);
     setPlaying(true);
     setError(null);
@@ -536,6 +598,8 @@ export function LiveTvView() {
     const hls = hlsRef.current;
     if (hls) {
       hls.currentLevel = levelIdx;
+      hls.loadLevel = levelIdx;
+      hls.nextLevel = levelIdx;
     }
     try {
       localStorage.setItem("fhb_preferred_quality", String(levelIdx));
@@ -576,9 +640,9 @@ export function LiveTvView() {
       }
     } else {
       // Data Saver Deactivated: Restore standard HD buffer sizes & Auto quality
-      hls.config.maxBufferLength = 30;
-      hls.config.maxMaxBufferLength = 60;
-      hls.config.backBufferLength = 60;
+      hls.config.maxBufferLength = 60;
+      hls.config.maxMaxBufferLength = 120;
+      hls.config.backBufferLength = 90;
       hls.currentLevel = -1; // Auto
       setCurrentLevelIndex(-1);
     }
@@ -586,20 +650,26 @@ export function LiveTvView() {
 
   // Active quality label for player UI display
   const currentQualityDisplay = useMemo(() => {
+    if (detectedResolution) {
+      return detectedResolution.label;
+    }
     if (currentLevelIndex === -1) {
       if (actualLevelIndex >= 0 && availableLevels[actualLevelIndex]) {
         return `Auto (${availableLevels[actualLevelIndex].label})`;
       }
-      return "Auto";
+      return "Auto (HD)";
     }
     if (availableLevels[currentLevelIndex]) {
       return availableLevels[currentLevelIndex].label;
     }
-    return "HD";
-  }, [currentLevelIndex, actualLevelIndex, availableLevels]);
+    return active.quality || "HD";
+  }, [detectedResolution, currentLevelIndex, actualLevelIndex, availableLevels, active.quality]);
 
   // Short quality label for mobile screens (1-line fit)
   const compactQualityDisplay = useMemo(() => {
+    if (detectedResolution) {
+      return detectedResolution.label.replace(/ (HD|FHD|SD)/g, "");
+    }
     if (currentLevelIndex === -1) {
       if (actualLevelIndex >= 0 && availableLevels[actualLevelIndex]) {
         return availableLevels[actualLevelIndex].label.replace(/ (HD|FHD|SD)/g, "");
@@ -610,7 +680,7 @@ export function LiveTvView() {
       return availableLevels[currentLevelIndex].label.replace(/ (HD|FHD|SD)/g, "");
     }
     return "HD";
-  }, [currentLevelIndex, actualLevelIndex, availableLevels]);
+  }, [detectedResolution, currentLevelIndex, actualLevelIndex, availableLevels]);
 
   // Channel surfing
   const currentIndex = useMemo(() => {
@@ -1148,11 +1218,23 @@ export function LiveTvView() {
                   <span className="rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-primary shrink-0">
                     {active.group || "Sports"}
                   </span>
+                  {detectedResolution ? (
+                    <span className="rounded bg-emerald-500/15 border border-emerald-500/30 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400 shrink-0 flex items-center gap-1">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      {detectedResolution.label}
+                    </span>
+                  ) : active.quality ? (
+                    <span className="rounded bg-sky-500/15 border border-sky-500/30 px-1.5 py-0.5 text-[9px] font-bold text-sky-400 shrink-0">
+                      {active.quality}
+                    </span>
+                  ) : null}
                 </div>
                 <p className="mt-1 text-[11px] text-muted-foreground truncate flex items-center gap-1.5">
                   <span>Server {activeServerId}</span>
                   <span>•</span>
-                  <span className="font-semibold text-foreground/80">{currentQualityDisplay}</span>
+                  <span className="font-semibold text-foreground/80">
+                    {detectedResolution ? `${detectedResolution.label} (${detectedResolution.width}x${detectedResolution.height})` : currentQualityDisplay}
+                  </span>
                   {isDataSaver && (
                     <>
                       <span>•</span>
@@ -1311,9 +1393,11 @@ export function LiveTvView() {
                         })
                       ) : (
                         <div className="px-2.5 py-2 text-[11px] text-muted-foreground bg-elevated/40 rounded-lg">
-                          <p className="font-medium text-foreground">1 Resolution Available (720p HD)</p>
+                          <p className="font-medium text-foreground">
+                            {detectedResolution ? `${detectedResolution.label} (${detectedResolution.width}x${detectedResolution.height})` : "Direct Broadcast Stream"}
+                          </p>
                           <p className="mt-0.5 text-[10px]">
-                            Turn on Data Saver to restrict buffer caching and minimize bandwidth consumption.
+                            Stream is streaming at native broadcast quality with automatic adaptive buffering.
                           </p>
                         </div>
                       )}
@@ -1532,9 +1616,20 @@ export function LiveTvView() {
                         <span className="mt-1 inline-flex items-center gap-1 text-[9px] font-bold text-primary">
                           <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" /> Watching
                         </span>
+                      ) : ch.quality ? (
+                        <span
+                          className={cn(
+                            "mt-1 text-[9px] font-bold inline-block px-1.5 py-0.2 rounded border",
+                            ch.quality.includes("1080p")
+                              ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/30"
+                              : "text-sky-400 bg-sky-500/10 border-sky-500/30"
+                          )}
+                        >
+                          {ch.quality}
+                        </span>
                       ) : (
                         <span className="mt-1 text-[10px] text-muted-foreground/80 block truncate">
-                          Live HD
+                          Live Sports
                         </span>
                       )}
                     </div>

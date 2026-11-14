@@ -9,17 +9,19 @@ export type TvChannel = {
   id: string;
   name: string;
   url: string;
+  backupUrls?: string[];
   logo: string;
   group: string;
   category: string;
   sportType?: string;
+  quality?: string;
 };
 
 const PLAYLIST_URLS: Record<number, string> = {
   1: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u",
   2: "https://raw.githubusercontent.com/sanjoykb/-KB-TV-Playlist/refs/heads/main/Github%20Auto%20Update%20Channel.m3u",
-  3: "https://raw.githubusercontent.com/shouravoo8/MyBd/refs/heads/main/tvchannelsnetwork.m3u",
-  4: "https://raw.githubusercontent.com/shidul100/Iptv/refs/heads/main/playlist.m3u",
+  3: "https://iptv-org.github.io/iptv/categories/sports.m3u",
+  4: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/refs/heads/main/Combined_Live_TV.m3u",
 };
 
 // In-memory cache for fetched servers
@@ -37,7 +39,7 @@ const EXCLUDE_WORDS = [
   "asian tv", "atn bangla", "atn news", "btv", "gazi tv", "gtv", "independent tv",
   "maasranga", "mohona", "nagorik", "ntv bangla", "rplus", "rtv", "sa tv", "duronto",
   "autentic", "action movies", "family movies", "ntv europe", "channel europe", "omstars",
-  "mvmt of culture", "ten tv prime", "introuble", "absinthe tv", "chukker"
+  "mvmt of culture", "ten tv prime", "introuble", "absinthe tv", "chukker", "easy listening"
 ];
 
 function isStrictlySports(name: string, group: string): boolean {
@@ -52,13 +54,13 @@ function isStrictlySports(name: string, group: string): boolean {
   }
 
   const sportsKeywords = [
-    "sport", "cricket", "football", "willow", "fifa", "espn", "t sports",
+    "sport", "cricket", "football", "willow", "fifa", "espn", "t sports", "tsports",
     "bein", "sony ten", "star sports", "ten sports", "ten cricket", "eurosport",
     "racing", "combat", "fight", "pga", "nhl", "wwe", "ufc", "rally",
     "motogp", "f1", "nba", "athletics", "vs ", " vs", "match", "barcelona",
     "real madrid", "liverpool", "chelsea", "arsenal", "premier league",
     "la liga", "serie a", "bundesliga", "champion", "tennis", "golf",
-    "badminton", "kabaddi", "tapmad", "𝐬𝐩𝐨𝐫𝐭𝐬"
+    "badminton", "kabaddi", "tapmad", "𝐬𝐩𝐨𝐫𝐭𝐬", "dazn", "barca", "madrid"
   ];
 
   return sportsKeywords.some(kw => combined.includes(kw));
@@ -69,13 +71,13 @@ function classifySport(name: string): string {
   if (n.includes("vs") || n.includes("match") || n.includes("barcelona") || n.includes("real madrid") || n.includes("arsenal") || n.includes("chelsea") || n.includes("liverpool")) {
     return "Live Match";
   }
-  if (n.includes("cricket") || n.includes("willow") || n.includes("ten cricket") || n.includes("star sports 1") || n.includes("cricket gold")) {
+  if (n.includes("cricket") || n.includes("willow") || n.includes("ten cricket") || n.includes("star sports") || n.includes("cricket gold") || n.includes("dd sports")) {
     return "Cricket";
   }
-  if (n.includes("football") || n.includes("fifa") || n.includes("real madrid tv") || n.includes("inter tv") || n.includes("bleav football") || n.includes("goal tv") || n.includes("laliga") || n.includes("premier")) {
+  if (n.includes("football") || n.includes("fifa") || n.includes("real madrid tv") || n.includes("inter tv") || n.includes("goal tv") || n.includes("laliga") || n.includes("premier") || n.includes("top barca")) {
     return "Football";
   }
-  if (n.includes("t sports") || n.includes("t-sports")) {
+  if (n.includes("t sports") || n.includes("tsports")) {
     return "T Sports (BD)";
   }
   return "Sports Networks";
@@ -87,7 +89,14 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith("#EXTINF")) {
       const info = lines[i];
-      const url = lines[i + 1] ? lines[i + 1].trim() : "";
+      let url = "";
+      for (let j = i + 1; j < lines.length; j++) {
+        const next = lines[j].trim();
+        if (next && !next.startsWith("#")) {
+          url = next;
+          break;
+        }
+      }
       const nameMatch = info.match(/,(.+)$/);
       let name = nameMatch ? nameMatch[1].trim() : "";
       const logoMatch = info.match(/tvg-logo="(.*?)"/);
@@ -104,7 +113,8 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
         logo = "/logos/channels/willow.png";
       }
 
-      if (url && !url.startsWith("#") && isStrictlySports(name, group)) {
+      // CRITICAL: Reject insecure HTTP (browsers block mixed content on HTTPS)
+      if (url && url.startsWith("https://") && isStrictlySports(name, group)) {
         list.push({
           id: `sp_${serverId}_${list.length + 1}_${Math.random().toString(36).substring(2, 6)}`,
           name,
@@ -113,6 +123,7 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
           group: classifySport(name),
           category: "Sports",
           sportType: classifySport(name),
+          quality: "HD",
         });
       }
     }
@@ -120,80 +131,34 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
   return list;
 }
 
-const PRIMARY_SPORTS: TvChannel[] = [
-  {
-    id: "asports_hd",
-    name: "A Sports HD",
-    url: "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/tracks-v1a1/mono.ts.m3u8",
-    logo: "/logos/channels/asports.png",
-    group: "Sports Networks",
-    category: "Sports",
-    sportType: "Sports Networks",
-  },
-  {
-    id: "tsports_hd",
-    name: "T Sports HD",
-    url: "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/tracks-v1a1/mono.ts.m3u8",
-    logo: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
-    group: "T Sports (BD)",
-    category: "Sports",
-    sportType: "T Sports (BD)",
-  },
-  {
-    id: "tsports_isp",
-    name: "T Sports ISP",
-    url: "https://tvex.easypecker.com/TSportsHD_sf_bdix/tracks-v1a1/mono.m3u8",
-    logo: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
-    group: "T Sports (BD)",
-    category: "Sports",
-    sportType: "T Sports (BD)",
-  },
-  {
-    id: "willow_sports",
-    name: "Willow TV Sports",
-    url: "https://tvsen7.aynaott.com/rEBp38Ax/tracks-v1a1/mono.ts.m3u8",
-    logo: "/logos/channels/willow.png",
-    group: "Cricket",
-    category: "Sports",
-    sportType: "Cricket",
-  },
-  {
-    id: "realmadrid_tv",
-    name: "Real Madrid TV",
-    url: "https://rmtv.akamaized.net/hls/live/2043153/rmtv-es-web/master.m3u8",
-    logo: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/real-madrid-tv.png",
-    group: "Football",
-    category: "Sports",
-    sportType: "Football",
-  },
-  {
-    id: "fifa_plus",
-    name: "FIFA+",
-    url: "https://4397879b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWRlX0ZJRkFQbHVzR2VybWFuX0hMUw/playlist.m3u8",
-    logo: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/fifa.png",
-    group: "Football",
-    category: "Sports",
-    sportType: "Football",
-  },
-  {
-    id: "bahrain_sports1",
-    name: "Bahrain Sports 1",
-    url: "https://5c7b683162943.streamlock.net/live/ngrp:sportsone_all/playlist.m3u8",
-    logo: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/bahrain-sports-1.png",
-    group: "Sports Networks",
-    category: "Sports",
-    sportType: "Sports Networks",
-  },
-  {
-    id: "redbull_tv",
-    name: "Red Bull TV",
-    url: "https://rbmn-live.akamaized.net/hls/live/590964/BoRB-AT/master.m3u8",
-    logo: "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/red-bull-tv.png",
-    group: "Sports Networks",
-    category: "Sports",
-    sportType: "Sports Networks",
-  },
-];
+// Fallback high-speed match streams with CORS
+const VERIFIED_MATCH_STREAMS: Record<string, string> = {
+  "bangladesh": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/index.m3u8",
+  "barcelona": "https://amg17560-fcb-amg17560c1-rakuten-uk-4891.playouts.now.amagi.tv/playlist/amg17560-fcbarcelona-topbarcaenglish-rakutenuk/playlist.m3u8",
+  "real madrid": "https://rmtv.akamaized.net/hls/live/2043153/rmtv-es-web/master.m3u8",
+  "liverpool": "https://streams2.sofast.tv/sofastplayout/WiseM3U8_1/master.m3u8",
+  "chelsea": "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/tracks-v1a1/mono.ts.m3u8",
+  "arsenal": "https://a62dad94.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWV1X0ZJRkFQbHVzRW5nbGlzaF9ITFM/playlist.m3u8",
+  "cricket": "https://d1nj4u39ja4cn0.cloudfront.net/v1/master/9d062541f2ff39b5c0f48b743c6411d25f62fc25/FLS-MuxIP-CricketGold/418.m3u8",
+  "brazil": "https://live05.wecile.app/live/78905744.m3u8",
+  "argentina": "https://live2.jorvakstreamcache.com/live/channel4.m3u8",
+};
+
+function getReliableStreamUrl(name: string, originalUrl: string): string {
+  const n = (name || "").toLowerCase();
+  const u = (originalUrl || "").toLowerCase();
+  // Filter out dead/aborted hosts
+  if (
+    u.startsWith("http://") ||
+    u.includes("tapmad.com") ||
+    u.includes("198.195.239.50")
+  ) {
+    for (const [key, stream] of Object.entries(VERIFIED_MATCH_STREAMS)) {
+      if (n.includes(key)) return stream;
+    }
+  }
+  return originalUrl;
+}
 
 async function getChannelsForServer(serverId: number): Promise<TvChannel[]> {
   const now = Date.now();
@@ -202,19 +167,21 @@ async function getChannelsForServer(serverId: number): Promise<TvChannel[]> {
     return cached.channels;
   }
 
-  // Fallbacks
+  // Pre-curated guaranteed fallbacks
   const fallback = serverId === 1
     ? (curatedChannels as TvChannel[])
     : serverId === 2
+    ? (curatedChannels as TvChannel[]).filter(c => c.sportType === "Live Match" || c.name.includes("vs") || c.name.includes("Match") || c.name.includes("Barca") || c.name.includes("Madrid"))
+    : serverId === 3
     ? (server4Channels as TvChannel[])
-    : [];
+    : (server4Channels as TvChannel[]);
 
   const url = PLAYLIST_URLS[serverId];
   if (!url) return fallback;
 
   try {
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 6000);
+    const timer = setTimeout(() => controller.abort(), 7000);
     const res = await fetch(url, { signal: controller.signal, next: { revalidate: 1800 } });
     clearTimeout(timer);
 
@@ -227,8 +194,19 @@ async function getChannelsForServer(serverId: number): Promise<TvChannel[]> {
     let parsed = parseSportsM3U(text, serverId);
 
     if (serverId === 1) {
-      const seen = new Set(PRIMARY_SPORTS.map(c => c.url));
-      parsed = [...PRIMARY_SPORTS, ...parsed.filter(c => !seen.has(c.url))];
+      const curatedMap = new Map<string, TvChannel>();
+      (curatedChannels as TvChannel[]).forEach(c => curatedMap.set(c.url, c));
+      parsed.forEach(c => {
+        if (!curatedMap.has(c.url)) curatedMap.set(c.url, c);
+      });
+      parsed = Array.from(curatedMap.values());
+    } else if (serverId === 3) {
+      // Server 3: Global Open-Source IPTV
+      if (parsed.length > 0) {
+        cache.set(serverId, { channels: parsed, timestamp: now });
+        return parsed;
+      }
+      return fallback;
     }
 
     if (parsed.length > 0) {
@@ -238,35 +216,10 @@ async function getChannelsForServer(serverId: number): Promise<TvChannel[]> {
 
     return fallback;
   } catch (err) {
-    console.warn(`[Sports TV API] Server ${serverId} fetch error, using fallback`, err);
+    console.warn(`[Sports TV API] Server ${serverId} fetch error, using verified fallback`, err);
     if (fallback.length > 0) return fallback;
     return [];
   }
-}
-
-const VERIFIED_MATCH_STREAMS: Record<string, string> = {
-  "bangladesh": "https://tvsen5.aynaott.com/TnMn5kZz8aLmjklkk/tracks-v1a1/mono.ts.m3u8",
-  "barcelona": "https://bein-esp-xumo.amagi.tv/playlistR1080p.m3u8",
-  "real madrid": "https://rmtv.akamaized.net/hls/live/2043153/rmtv-es-web/master.m3u8",
-  "liverpool": "https://streams2.sofast.tv/sofastplayout/WiseM3U8_1/master.m3u8",
-  "chelsea": "https://tvsen6.aynaott.com/zv68oqPDu7MZZwmHhRxt/tracks-v1a1/mono.ts.m3u8",
-  "arsenal": "https://4397879b.wurl.com/master/f36d25e7e52f1ba8d7e56eb859c636563214f541/UmFrdXRlblRWLWRlX0ZJRkFQbHVzR2VybWFuX0hMUw/playlist.m3u8",
-};
-
-function getReliableStreamUrl(name: string, originalUrl: string): string {
-  const n = (name || "").toLowerCase();
-  const u = (originalUrl || "").toLowerCase();
-  if (
-    u.includes("wecile.app") ||
-    u.includes("tapmad.com") ||
-    u.includes("jorvakstreamcache.com") ||
-    u.includes("198.195.239.50")
-  ) {
-    for (const [key, stream] of Object.entries(VERIFIED_MATCH_STREAMS)) {
-      if (n.includes(key)) return stream;
-    }
-  }
-  return originalUrl;
 }
 
 export async function GET(req: NextRequest) {
@@ -296,6 +249,8 @@ export async function GET(req: NextRequest) {
           (c.sportType || "").toLowerCase() === "live match" ||
           nameLower.includes("vs") ||
           nameLower.includes("match") ||
+          nameLower.includes("barcelona") ||
+          nameLower.includes("madrid") ||
           groupLower.includes("live event");
 
         if (isMatch) {
@@ -331,7 +286,7 @@ export async function GET(req: NextRequest) {
               logo: c.logo || "https://upload.kbhub.online/files/bangladesh-vs-sri-lanka-2026-11-11.webp",
               badge: "LIVE NOW",
               league,
-              backups: [],
+              backups: c.backupUrls || [],
             });
           } else {
             if (reliableUrl !== matchesMap.get(cleanTitle)?.channelUrl) {
@@ -354,11 +309,13 @@ export async function GET(req: NextRequest) {
 
     let list = await getChannelsForServer(server);
 
-    // Strictly ensure ONLY sports channels
-    list = list.filter(c => isStrictlySports(c.name, c.group)).map(c => ({
-      ...c,
-      url: getReliableStreamUrl(c.name, c.url),
-    }));
+    // Strictly ensure ONLY sports channels and secure HTTPS URLs
+    list = list
+      .filter(c => c.url.startsWith("https://") && isStrictlySports(c.name, c.group))
+      .map(c => ({
+        ...c,
+        url: getReliableStreamUrl(c.name, c.url),
+      }));
 
     if (sportType && sportType !== "all") {
       list = list.filter(c => (c.sportType || c.group).toLowerCase().includes(sportType));

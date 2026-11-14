@@ -8,10 +8,20 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    // Non-blocking background sync: publishes 1 new article if >30 minutes have elapsed
-    autoSyncOneNewsArticle().catch((err) => {
-      console.warn("[api/news] Background news auto-sync skipped/failed:", err?.message || err);
-    });
+    // Check if 30 minutes have passed since last published article
+    try {
+      const latest = await db.newsArticle.findFirst({
+        orderBy: { createdAt: "desc" },
+        select: { createdAt: true },
+      });
+      const now = Date.now();
+      const THIRTY_MINS = 30 * 60 * 1000;
+      if (!latest || (now - new Date(latest.createdAt).getTime() >= THIRTY_MINS)) {
+        await autoSyncOneNewsArticle();
+      }
+    } catch (syncErr) {
+      console.warn("[api/news] Auto-sync attempt error:", syncErr);
+    }
 
     const sp = req.nextUrl.searchParams;
     const category = sp.get("category");

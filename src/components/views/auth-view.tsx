@@ -83,27 +83,46 @@ function GradientMesh() {
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {/* Orb 1 — top-left red */}
       <motion.div
-        className="absolute -left-24 -top-24 h-[420px] w-[420px] rounded-full bg-fhb-red/20 blur-[100px]"
+        className="absolute -left-24 -top-24 h-[420px] w-[420px] rounded-full bg-fhb-red/10 dark:bg-fhb-red/20 blur-[100px]"
         animate={{ x: [0, 30, 0], y: [0, -20, 0], scale: [1, 1.1, 1] }}
         transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
       />
       {/* Orb 2 — bottom-right sapphire */}
       <motion.div
-        className="absolute -bottom-32 -right-20 h-[380px] w-[380px] rounded-full bg-blue-700/15 blur-[90px]"
+        className="absolute -bottom-32 -right-20 h-[380px] w-[380px] rounded-full bg-sky-500/10 dark:bg-blue-700/15 blur-[90px]"
         animate={{ x: [0, -25, 0], y: [0, 20, 0], scale: [1, 1.08, 1] }}
         transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
       />
       {/* Orb 3 — center accent */}
       <motion.div
-        className="absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-fhb-red/8 blur-[80px]"
+        className="absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-fhb-red/5 dark:bg-fhb-red/8 blur-[80px]"
         animate={{ scale: [1, 1.15, 1], opacity: [0.5, 0.8, 0.5] }}
         transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
       />
-      {/* Noise grain overlay */}
-      <div
-        className="absolute inset-0 opacity-[0.03]"
-        style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")" }}
-      />
+      {/* Grid pattern overlay */}
+      <svg
+        className="absolute inset-0 h-full w-full opacity-[0.035] text-foreground"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <defs>
+          <pattern
+            id="auth-grid"
+            x="0"
+            y="0"
+            width="48"
+            height="48"
+            patternUnits="userSpaceOnUse"
+          >
+            <path
+              d="M 48 0 L 0 0 0 48"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="0.75"
+            />
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#auth-grid)" />
+      </svg>
     </div>
   );
 }
@@ -128,25 +147,25 @@ function TestimonialCarousel() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
-          className="relative rounded-xl border border-white/8 bg-white/[0.04] p-5 backdrop-blur-sm"
+          className="relative rounded-xl border border-border bg-card/85 p-5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.04]"
         >
           {/* Open-quote decoration */}
           <span
-            className="absolute -left-1 -top-3 font-serif text-6xl leading-none text-fhb-red/40 select-none"
+            className="absolute -left-1 -top-3 font-serif text-6xl leading-none text-fhb-red/30 select-none"
             aria-hidden
           >
             "
           </span>
-          <p className="relative text-[13px] leading-relaxed text-white/80 italic">
+          <p className="relative text-[13px] leading-relaxed text-foreground/85 italic">
             {t.quote}
           </p>
           <footer className="mt-3 flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-fhb-red/20 text-[11px] font-bold text-fhb-red">
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-fhb-red/15 text-[11px] font-bold text-fhb-red">
               {t.author.charAt(0)}
             </div>
             <div>
-              <p className="text-[11.5px] font-bold text-white">{t.author}</p>
-              <p className="text-[10.5px] text-white/50">{t.role}</p>
+              <p className="text-[11.5px] font-bold text-foreground">{t.author}</p>
+              <p className="text-[10.5px] text-muted-foreground">{t.role}</p>
             </div>
           </footer>
         </motion.blockquote>
@@ -162,7 +181,7 @@ function TestimonialCarousel() {
             onClick={() => setIdx(i)}
             className={cn(
               "h-1 rounded-full transition-all duration-300",
-              i === idx ? "w-6 bg-fhb-red" : "w-1.5 bg-white/20"
+              i === idx ? "w-6 bg-fhb-red" : "w-1.5 bg-muted-foreground/30 dark:bg-white/20"
             )}
           />
         ))}
@@ -460,22 +479,10 @@ export function AuthView() {
             LEFT PANEL — 60% — Brand / Visual
             ══════════════════════════════════════════════════ */}
         <section
-          className="relative order-2 hidden flex-col overflow-hidden lg:order-1 lg:flex lg:w-[60%]"
-          style={{ background: "linear-gradient(135deg, #06080f 0%, #0a0e1a 50%, #0d0611 100%)" }}
+          className="relative order-2 hidden flex-col overflow-hidden lg:order-1 lg:flex lg:w-[60%] border-r border-border bg-gradient-to-br from-card via-[#edf3fa] to-[#e4edf8] dark:from-[#06080f] dark:via-[#0a0e1a] dark:to-[#0d0611]"
           aria-label="About FHBD"
         >
           <GradientMesh />
-
-          {/* Grid pattern overlay */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.04]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px)",
-              backgroundSize: "48px 48px",
-            }}
-            aria-hidden
-          />
 
           {/* Content */}
           <div className="relative flex flex-1 flex-col p-10 xl:p-14">
@@ -490,7 +497,7 @@ export function AuthView() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1, duration: 0.6, ease: "easeOut" }}
-                className="text-[38px] font-bold leading-[1.08] tracking-[-0.025em] text-white xl:text-[46px]"
+                className="text-[38px] font-bold leading-[1.08] tracking-[-0.025em] text-foreground xl:text-[46px]"
               >
                 Every match.
                 <br />
@@ -502,7 +509,7 @@ export function AuthView() {
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2, duration: 0.6, ease: "easeOut" }}
-                className="mt-5 max-w-[46ch] text-[14px] leading-relaxed text-white/55"
+                className="mt-5 max-w-[46ch] text-[14px] leading-relaxed text-muted-foreground"
               >
                 Live scores, breaking news, fan shorts and the best football community
                 in Bangladesh — all in one free account.
@@ -525,14 +532,14 @@ export function AuthView() {
                   className="flex items-start gap-4"
                 >
                   <span
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] bg-fhb-red/15 text-fhb-red ring-1 ring-fhb-red/20"
+                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[9px] bg-fhb-red/10 text-fhb-red ring-1 ring-fhb-red/20 shadow-xs"
                     aria-hidden
                   >
                     <b.icon className="h-4 w-4" />
                   </span>
                   <div>
-                    <p className="label-cond text-[12.5px] font-bold tracking-[0.06em] text-white">{b.title}</p>
-                    <p className="mt-0.5 text-[12px] leading-relaxed text-white/50">{b.body}</p>
+                    <p className="label-cond text-[12.5px] font-bold tracking-[0.06em] text-foreground">{b.title}</p>
+                    <p className="mt-0.5 text-[12px] leading-relaxed text-muted-foreground">{b.body}</p>
                   </div>
                 </motion.li>
               ))}
@@ -545,7 +552,7 @@ export function AuthView() {
                   <button
                     key={m.id}
                     onClick={() => navigate({ name: "match-detail", id: m.id })}
-                    className="flex h-8 items-center gap-2 rounded-full border border-fhb-red/30 bg-fhb-red/8 px-3 text-[11px] font-bold text-white/90 backdrop-blur-sm transition-colors hover:border-fhb-red/60 hover:bg-fhb-red/15"
+                    className="flex h-8 items-center gap-2 rounded-full border border-fhb-red/30 bg-fhb-red/10 px-3 text-[11px] font-bold text-foreground backdrop-blur-sm transition-colors hover:border-fhb-red/60 hover:bg-fhb-red/20 shadow-xs"
                     aria-label={`${m.homeTeam.name} vs ${m.awayTeam.name}`}
                   >
                     <span className="live-dot h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden />
@@ -557,10 +564,10 @@ export function AuthView() {
                 ))
               ) : (
                 <>
-                  <span className="flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 text-[11px] font-semibold text-white/60">
+                  <span className="flex h-8 items-center gap-2 rounded-full border border-border bg-card/80 px-3 text-[11px] font-semibold text-muted-foreground shadow-xs dark:border-white/10 dark:bg-white/[0.04]">
                     <span className="h-1.5 w-1.5 rounded-[2px] bg-fhb-red" aria-hidden /> Fixtures every matchday
                   </span>
-                  <span className="flex h-8 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 text-[11px] font-semibold text-white/60">
+                  <span className="flex h-8 items-center gap-2 rounded-full border border-border bg-card/80 px-3 text-[11px] font-semibold text-muted-foreground shadow-xs dark:border-white/10 dark:bg-white/[0.04]">
                     <span className="h-1.5 w-1.5 rounded-[2px] bg-emerald-500" aria-hidden /> Free forever
                   </span>
                 </>
@@ -579,13 +586,13 @@ export function AuthView() {
                   <div
                     key={i}
                     aria-hidden
-                    className="h-7 w-7 rounded-full border-2 border-[#06080f] ring-0"
-                    style={{ backgroundColor: c + "33", borderColor: "#06080f" }}
+                    className="h-7 w-7 rounded-full border-2 border-card dark:border-[#06080f] shadow-xs"
+                    style={{ backgroundColor: c + "33" }}
                   />
                 ))}
               </div>
-              <p className="text-[12px] text-white/50">
-                <span className="font-bold text-white">{FAN_COUNT}</span> fans already on board
+              <p className="text-[12px] text-muted-foreground">
+                <span className="font-bold text-foreground">{FAN_COUNT}</span> fans already on board
               </p>
             </motion.div>
 
@@ -956,7 +963,7 @@ export function AuthView() {
                               type="checkbox"
                               checked={rememberMe}
                               onChange={(e) => setRememberMe(e.target.checked)}
-                              className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/[0.04] accent-fhb-red"
+                              className="h-4 w-4 cursor-pointer rounded border-border bg-muted/40 accent-fhb-red"
                             />
                             <span className="text-[12px] text-muted-foreground">Remember me for 30 days</span>
                           </label>
@@ -969,7 +976,7 @@ export function AuthView() {
                               type="checkbox"
                               checked={acceptTerms}
                               onChange={(e) => setAcceptTerms(e.target.checked)}
-                              className="mt-0.5 h-4 w-4 cursor-pointer rounded border-white/20 bg-white/[0.04] accent-fhb-red"
+                              className="mt-0.5 h-4 w-4 cursor-pointer rounded border-border bg-muted/40 accent-fhb-red"
                               required
                             />
                             <span className="text-[12px] leading-relaxed text-muted-foreground">
@@ -1071,15 +1078,15 @@ export function AuthView() {
                 Demo access for reviewers
                 <ChevronRight className="h-3.5 w-3.5 transition-transform group-open:rotate-90" aria-hidden />
               </summary>
-              <div className="mt-3 divide-y divide-white/5 overflow-hidden rounded-[10px] border border-white/8 bg-white/[0.02]">
+              <div className="mt-3 divide-y divide-border/60 overflow-hidden rounded-[10px] border border-border bg-card shadow-sm dark:divide-white/5 dark:border-white/8 dark:bg-white/[0.02]">
                 {DEMO_ACCOUNTS.map((d) => (
                   <button
                     key={d.email}
                     onClick={() => quickLogin(d.email, d.pass)}
-                    className="group/acc flex w-full items-center justify-between gap-2.5 px-3.5 py-2.5 text-left transition-colors hover:bg-white/[0.04]"
+                    className="group/acc flex w-full items-center justify-between gap-2.5 px-3.5 py-2.5 text-left transition-colors hover:bg-secondary/60 dark:hover:bg-white/[0.04]"
                   >
                     <span className="flex min-w-0 items-center gap-3">
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] bg-white/[0.06]" aria-hidden>
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[7px] bg-secondary dark:bg-white/[0.06]" aria-hidden>
                         {d.icon}
                       </span>
                       <span className="min-w-0">

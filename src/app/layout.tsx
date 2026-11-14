@@ -6,6 +6,7 @@ import { PwaRegister } from "@/components/pwa/pwa-register";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { LiveScoreProvider } from "@/components/providers/live-score-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { Analytics } from "@vercel/analytics/next";
 
 /* ═══ Antipasto Pro — Geometric Modern Rounded Sans Serif (Primary Brand Font) ═══ */
 const antipasto = localFont({
@@ -149,6 +150,7 @@ export default function RootLayout({
           </QueryProvider>
           <Toaster />
           <PwaRegister />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

@@ -1,11 +1,14 @@
 import { db } from "@/lib/db";
 
 export const TARGET_LEAGUES = [
+  // ── National Team Competitions (All countries included, big or small) ──
   { id: "uefa.nations", name: "UEFA Nations League", shortName: "Nations League", country: "Europe", color: "#002F6C", type: "INTERNATIONAL" },
   { id: "concacaf.nations.league", name: "Concacaf Nations League", shortName: "Concacaf NL", country: "Americas", color: "#005596", type: "INTERNATIONAL" },
   { id: "caf.nations_qual", name: "Africa Cup of Nations Qualifying", shortName: "AFCON Qual", country: "Africa", color: "#D97706", type: "INTERNATIONAL" },
   { id: "fifa.friendly", name: "International Friendlies", shortName: "Friendlies", country: "International", color: "#10B981", type: "INTERNATIONAL" },
-  { id: "esp.copa_del_rey", name: "Copa del Rey", shortName: "Copa del Rey", country: "Spain", color: "#C026D3", type: "CUP" },
+  { id: "fifa.world", name: "FIFA World Cup 2026", shortName: "World Cup", country: "World", color: "#4F9D4A", type: "INTERNATIONAL" },
+
+  // ── Elite Famous Club Competitions ONLY ──
   { id: "eng.1", name: "Premier League", shortName: "EPL", country: "England", color: "#3D195B", type: "LEAGUE" },
   { id: "esp.1", name: "LaLiga EA Sports", shortName: "LaLiga", country: "Spain", color: "#E5322D", type: "LEAGUE" },
   { id: "ita.1", name: "Serie A", shortName: "Serie A", country: "Italy", color: "#0B1560", type: "LEAGUE" },
@@ -13,8 +16,6 @@ export const TARGET_LEAGUES = [
   { id: "fra.1", name: "Ligue 1", shortName: "Ligue 1", country: "France", color: "#091C3E", type: "LEAGUE" },
   { id: "uefa.champions", name: "UEFA Champions League", shortName: "UCL", country: "Europe", color: "#0B1560", type: "INTERNATIONAL" },
   { id: "uefa.europa", name: "UEFA Europa League", shortName: "Europa League", country: "Europe", color: "#F68E1E", type: "INTERNATIONAL" },
-  { id: "eng.fa", name: "English FA Cup", shortName: "FA Cup", country: "England", color: "#D20515", type: "CUP" },
-  { id: "fifa.world", name: "FIFA World Cup 2026", shortName: "World Cup", country: "World", color: "#4F9D4A", type: "INTERNATIONAL" },
 ];
 
 function formatDateParam(d: Date) {

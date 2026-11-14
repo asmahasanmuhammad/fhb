@@ -99,6 +99,44 @@ function DateStrip({
   );
 }
 
+const LEAGUE_RANK: Record<string, number> = {
+  "saff": 100,
+  "saff championship": 100,
+  "bfl": 95,
+  "bangladesh football league": 95,
+  "fed cup": 90,
+  "federation cup": 90,
+  "fifa world cup": 85,
+  "world cup": 85,
+  "uefa nations league": 80,
+  "nations league": 80,
+  "uefa champions league": 78,
+  "ucl": 78,
+  "premier league": 75,
+  "epl": 75,
+  "laliga": 72,
+  "laliga ea sports": 72,
+  "uefa europa league": 70,
+  "europa league": 70,
+  "serie a": 65,
+  "bundesliga": 60,
+  "ligue 1": 55,
+  "afcon": 50,
+  "afcon qual": 50,
+  "africa cup of nations qualifying": 50,
+  "concacaf": 45,
+  "concacaf nl": 45,
+  "concacaf nations league": 45,
+  "international friendlies": 40,
+  "friendlies": 40,
+};
+
+function getLeagueScore(compName: string, shortName?: string) {
+  const k1 = (shortName || "").toLowerCase().trim();
+  const k2 = (compName || "").toLowerCase().trim();
+  return LEAGUE_RANK[k1] ?? LEAGUE_RANK[k2] ?? 10;
+}
+
 export function ScoresView() {
   useReveal();
   const [dayOffset, setDayOffset] = useState(0);
@@ -179,7 +217,9 @@ export function ScoresView() {
       const existing = map.get(key);
       map.set(key, existing ? { ...existing, matches: existing.matches.concat(m) } : { competition: m.competition, matches: [m] });
     }
-    return Array.from(map.values());
+    return Array.from(map.values()).sort((a, b) => {
+      return getLeagueScore(b.competition.name, b.competition.shortName) - getLeagueScore(a.competition.name, a.competition.shortName);
+    });
   }, [dayMatches, leagueFilter]);
 
   const leagues = useMemo(() => {
@@ -188,7 +228,9 @@ export function ScoresView() {
     for (const m of pool) {
       if (!map.has(m.competition.id)) map.set(m.competition.id, m.competition);
     }
-    return Array.from(map.values());
+    return Array.from(map.values()).sort((a, b) => {
+      return getLeagueScore(b.name, b.shortName) - getLeagueScore(a.name, a.shortName);
+    });
   }, [dayMatches, liveMatches, dayOffset]);
 
   const rail = (

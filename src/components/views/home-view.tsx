@@ -47,8 +47,53 @@ const scaleIn: any = {
 };
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Helper: group one day's matches by competition
+   Helper: group one day's matches by competition (ranked by prestige/popularity)
 ───────────────────────────────────────────────────────────────────────────── */
+const LEAGUE_RANK: Record<string, number> = {
+  // 1. Bangladesh & South Asian Championship (Top Priority for BD fans!)
+  "saff": 100,
+  "saff championship": 100,
+  "bfl": 95,
+  "bangladesh football league": 95,
+  "fed cup": 90,
+  "federation cup": 90,
+
+  // 2. Global National Team Tournaments (All countries)
+  "fifa world cup": 85,
+  "world cup": 85,
+  "uefa nations league": 80,
+  "nations league": 80,
+
+  // 3. Famous European Club Tournaments
+  "uefa champions league": 78,
+  "ucl": 78,
+  "premier league": 75,
+  "epl": 75,
+  "laliga": 72,
+  "laliga ea sports": 72,
+  "uefa europa league": 70,
+  "europa league": 70,
+  "serie a": 65,
+  "bundesliga": 60,
+  "ligue 1": 55,
+
+  // 4. Other National Team Tournaments
+  "afcon": 50,
+  "afcon qual": 50,
+  "africa cup of nations qualifying": 50,
+  "concacaf": 45,
+  "concacaf nl": 45,
+  "concacaf nations league": 45,
+  "international friendlies": 40,
+  "friendlies": 40,
+};
+
+function getLeagueScore(compName: string, shortName?: string) {
+  const k1 = (shortName || "").toLowerCase().trim();
+  const k2 = (compName || "").toLowerCase().trim();
+  return LEAGUE_RANK[k1] ?? LEAGUE_RANK[k2] ?? 10;
+}
+
 function getUtcDateForOffset(offset: number) {
   const now = new Date();
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + offset));
@@ -71,7 +116,9 @@ function groupMatchesByDay(matches: Match[], dayOffset: number) {
         : { competition: m.competition, matches: [m] }
     );
   }
-  return Array.from(groups.values());
+  return Array.from(groups.values()).sort((a, b) => {
+    return getLeagueScore(b.competition.name, b.competition.shortName) - getLeagueScore(a.competition.name, a.competition.shortName);
+  });
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -542,7 +589,7 @@ export function HomeView() {
                 transition={{ duration: 0.28, ease: "easeOut" }}
                 className="divide-y divide-border/40"
               >
-                {dayGroups.slice(0, 2).map((g) => (
+                {dayGroups.slice(0, 6).map((g) => (
                   <div key={g.competition.id}>
                     <LeagueGroupHeader
                       name={g.competition.name}

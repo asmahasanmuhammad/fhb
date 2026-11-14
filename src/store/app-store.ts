@@ -1,6 +1,7 @@
 "use client";
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import type { SafeUser } from "@/lib/types";
 
 export type View =
@@ -74,53 +75,67 @@ function syncBrowserUrl(view: View) {
   }
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
-  view: { name: "home" },
-  history: [],
-  user: null,
-  authLoading: true,
+export const useAppStore = create<AppState>()(
+  persist(
+    (set, get) => ({
+      view: { name: "home" },
+      history: [],
+      user: null,
+      authLoading: true,
 
-  navigate: (view, syncHistory = true) => {
-    const { view: current, history } = get();
-    if (JSON.stringify(current) === JSON.stringify(view)) return;
-    set({ view, history: [...history, current].slice(-15) });
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
-      if (syncHistory) syncBrowserUrl(view);
+      navigate: (view, syncHistory = true) => {
+        const { view: current, history } = get();
+        if (JSON.stringify(current) === JSON.stringify(view)) return;
+        set({ view, history: [...history, current].slice(-15) });
+        if (typeof window !== "undefined") {
+          window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior });
+          if (syncHistory) syncBrowserUrl(view);
+        }
+      },
+
+      back: () => {
+        const { history } = get();
+        if (history.length > 0) {
+          const prev = history[history.length - 1];
+          set({ view: prev, history: history.slice(0, -1) });
+          syncBrowserUrl(prev);
+        } else {
+          set({ view: { name: "home" }, history: [] });
+          syncBrowserUrl({ name: "home" });
+        }
+      },
+
+      setUser: (user) => set({ user }),
+      setAuthLoading: (authLoading) => set({ authLoading }),
+
+      refreshUser: async () => {
+        try {
+          const res = await fetch("/api/auth/me");
+          const json = await res.json();
+          if (json?.success && json?.data?.user) {
+            set({ user: json.data.user, authLoading: false });
+          } else if (res.status === 401 || (json?.success && !json?.data?.user)) {
+            set({ user: null, authLoading: false });
+          } else {
+            set({ authLoading: false });
+          }
+        } catch {
+          set({ authLoading: false });
+        }
+      },
+
+      logout: async () => {
+        try {
+          await fetch("/api/auth/logout", { method: "POST" });
+        } catch {
+          // ignore
+        }
+        set({ user: null });
+      },
+    }),
+    {
+      name: "fhbd_auth_store",
+      partialize: (state) => ({ user: state.user } as unknown as AppState),
     }
-  },
-
-  back: () => {
-    const { history } = get();
-    if (history.length > 0) {
-      const prev = history[history.length - 1];
-      set({ view: prev, history: history.slice(0, -1) });
-      syncBrowserUrl(prev);
-    } else {
-      set({ view: { name: "home" }, history: [] });
-      syncBrowserUrl({ name: "home" });
-    }
-  },
-
-  setUser: (user) => set({ user }),
-  setAuthLoading: (authLoading) => set({ authLoading }),
-
-  refreshUser: async () => {
-    try {
-      const res = await fetch("/api/auth/me");
-      const json = await res.json();
-      set({ user: json?.data?.user ?? null, authLoading: false });
-    } catch {
-      set({ user: null, authLoading: false });
-    }
-  },
-
-  logout: async () => {
-    try {
-      await fetch("/api/auth/logout", { method: "POST" });
-    } catch {
-      // ignore
-    }
-    set({ user: null });
-  },
-}));
+  )
+);

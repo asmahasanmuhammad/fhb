@@ -27,8 +27,9 @@ import { TeamCrest } from "@/components/football/team-badge";
 import { AdBrandLogo } from "@/components/football/ad-slot";
 import {
   LayoutDashboard, Newspaper, Zap, Users, Megaphone, Wallet, Plus, Pencil, Trash2,
-  Eye, Clapperboard, MessageSquare, PenLine, Crown, Ban, RotateCcw,
+  Eye, EyeOff, Clapperboard, MessageSquare, PenLine, Crown, Ban, RotateCcw,
   ShieldCheck, Info, Star, CheckCircle2, XCircle, Inbox, Search, Shirt, LogIn,
+  Lock, Mail, AlertTriangle, KeyRound, Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PlayerManager } from "@/components/admin/player-manager";
@@ -269,9 +270,15 @@ function InfoBanner({ children }: { children: React.ReactNode }) {
    ═══════════════════════════════════════════════════════════════════ */
 export function AdminView() {
   const user = useAppStore((s) => s.user);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   useReveal();
   const [section, setSection] = useState<SectionId>("overview");
   const [loggingIn, setLoggingIn] = useState(false);
+  const [adminEmail, setAdminEmail] = useState("admin@fhb.com.bd");
+  const [adminPassword, setAdminPassword] = useState("Admin@2025");
+  const [showAdminPass, setShowAdminPass] = useState(false);
+  const [adminError, setAdminError] = useState<string | null>(null);
 
   const { data, isLoading } = useQuery<AdminStats>({
     queryKey: ["admin", "stats"],
@@ -286,21 +293,54 @@ export function AdminView() {
     refetchInterval: 30_000,
   });
 
-  const handleAdminSignIn = async () => {
+  const handleAdminSignIn = async (emailOverride?: string, passOverride?: string) => {
     setLoggingIn(true);
+    setAdminError(null);
+    const targetEmail = (emailOverride ?? adminEmail).trim();
+    const targetPass = passOverride ?? adminPassword;
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "admin@fhb.com.bd", password: "Admin@2025" }),
+        body: JSON.stringify({ email: targetEmail, password: targetPass }),
       });
       const json = await res.json();
       if (json.success && json.data) {
+        if (json.data.role !== "ADMIN") {
+          const err = `Access denied: this account has role '${json.data.role}', but 'ADMIN' is required.`;
+          setAdminError(err);
+          toast({
+            title: "Access Denied",
+            description: err,
+            variant: "destructive",
+          });
+          return;
+        }
         useAppStore.getState().setUser(json.data);
-        window.location.reload();
+        await useAppStore.getState().refreshUser();
+        queryClient.invalidateQueries({ queryKey: ["admin"] });
+        toast({
+          title: "Admin Console Unlocked",
+          description: `Signed in successfully as ${json.data.name || "Administrator"}.`,
+        });
+      } else {
+        const err = json.error || "Incorrect email or password";
+        setAdminError(err);
+        toast({
+          title: "Sign In Failed",
+          description: err,
+          variant: "destructive",
+        });
       }
     } catch (e) {
       console.error(e);
+      const err = "Network connection error. Please try again.";
+      setAdminError(err);
+      toast({
+        title: "Connection Error",
+        description: err,
+        variant: "destructive",
+      });
     } finally {
       setLoggingIn(false);
     }
@@ -308,34 +348,118 @@ export function AdminView() {
 
   if (!user || user.role !== "ADMIN") {
     return (
-      <div className="mx-auto flex min-h-[50vh] max-w-md flex-col items-center justify-center gap-4 px-4 py-16 text-center">
-        <span className="flex h-14 w-14 items-center justify-center rounded-xl border border-primary/30 bg-primary/10 text-primary shadow-sm">
-          <ShieldCheck className="h-7 w-7" aria-hidden />
-        </span>
-        <div>
-          <p className="label-cond text-[20px] font-bold text-foreground">Admin Console Access</p>
-          <p className="text-xs leading-relaxed text-muted-foreground mt-1.5">
-            This management control center requires administrator privileges. You can quickly sign in using the official demo admin account.
-          </p>
-        </div>
-        <div className="w-full rounded-lg border border-border bg-card p-3.5 text-left text-xs">
-          <div className="flex justify-between items-center py-1">
-            <span className="text-muted-foreground">Demo Email:</span>
-            <span className="font-mono font-semibold text-foreground">admin@fhb.com.bd</span>
+      <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-4 py-12 text-center">
+        <div className="w-full rounded-2xl border border-border bg-card p-6 sm:p-8 shadow-xl text-left">
+          <div className="flex flex-col items-center text-center mb-6">
+            <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/30 bg-primary/10 text-primary shadow-sm mb-3">
+              <ShieldCheck className="h-7 w-7" aria-hidden />
+            </span>
+            <h2 className="label-cond text-[22px] font-bold text-foreground">Admin Console Access</h2>
+            <p className="text-xs leading-relaxed text-muted-foreground mt-1 max-w-xs">
+              FHBD Content Management, Match Engine, User Moderation & Revenue Controls.
+            </p>
           </div>
-          <div className="flex justify-between items-center py-1 border-t border-border/50">
-            <span className="text-muted-foreground">Demo Password:</span>
-            <span className="font-mono font-semibold text-foreground">Admin@2025</span>
+
+          {user && user.role !== "ADMIN" && (
+            <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-400">
+              <p className="font-semibold">Logged in as {user.name} ({user.email})</p>
+              <p className="text-[11px] text-amber-300/80 mt-0.5">
+                Role: <span className="font-mono uppercase">{user.role}</span>. Administrator privileges are required to access this console.
+              </p>
+            </div>
+          )}
+
+          {adminError && (
+            <div className="mb-4 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-400">
+              <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" aria-hidden />
+              <span>{adminError}</span>
+            </div>
+          )}
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAdminSignIn();
+            }}
+            className="space-y-3.5"
+          >
+            <div>
+              <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Admin Email <span className="text-primary">*</span>
+              </label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                <input
+                  type="email"
+                  value={adminEmail}
+                  onChange={(e) => setAdminEmail(e.target.value)}
+                  placeholder="admin@fhb.com.bd"
+                  className={cn(inputCls, "pl-9 text-xs")}
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                Admin Password <span className="text-primary">*</span>
+              </label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                <input
+                  type={showAdminPass ? "text" : "password"}
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className={cn(inputCls, "pl-9 pr-9 text-xs")}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowAdminPass((v) => !v)}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  aria-label={showAdminPass ? "Hide password" : "Show password"}
+                >
+                  {showAdminPass ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loggingIn}
+              className="w-full gap-2 bg-primary font-bold shadow-md h-10 text-xs cursor-pointer hover:brightness-110"
+            >
+              {loggingIn ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Authenticating…
+                </>
+              ) : (
+                <>
+                  <LogIn className="h-4 w-4" />
+                  Sign In to Admin Console
+                </>
+              )}
+            </Button>
+          </form>
+
+          <div className="mt-4 pt-4 border-t border-border/60">
+            <Button
+              type="button"
+              variant="outline"
+              disabled={loggingIn}
+              onClick={() => handleAdminSignIn("admin@fhb.com.bd", "Admin@2025")}
+              className="w-full gap-2 border-primary/30 text-xs font-semibold hover:bg-primary/10 cursor-pointer"
+            >
+              <KeyRound className="h-3.5 w-3.5 text-primary" />
+              ⚡ One-Click Demo Admin Login
+            </Button>
+            <p className="mt-2 text-center text-[10.5px] text-muted-foreground">
+              Official Demo: <code className="font-mono text-foreground">admin@fhb.com.bd</code> / <code className="font-mono text-foreground">Admin@2025</code>
+            </p>
           </div>
         </div>
-        <Button
-          onClick={handleAdminSignIn}
-          disabled={loggingIn}
-          className="w-full gap-2 bg-primary font-bold shadow-md h-9 text-xs cursor-pointer"
-        >
-          <LogIn className="h-4 w-4" />
-          {loggingIn ? "Signing In…" : "One-Click Admin Sign In"}
-        </Button>
       </div>
     );
   }

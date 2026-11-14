@@ -9,9 +9,9 @@ import { LogoMark } from "@/components/layout/header";
 import { useToast } from "@/hooks/use-toast";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Eye, EyeOff, AlertTriangle, AtSign, Mail, Lock, User, ArrowRight,
+  Eye, EyeOff, AlertTriangle, AtSign, Mail, Lock, User, ArrowRight, ArrowLeft,
   Activity, Newspaper, Clapperboard, ShieldCheck, Heart, ChevronRight,
-  CheckCircle2, XCircle, ImageIcon, Loader2, Users,
+  CheckCircle2, XCircle, ImageIcon, Loader2, Users, KeyRound,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
    ════════════════════════════════════════════════════════════════ */
 
 /* ── Types ── */
-type Mode = "login" | "register";
+type Mode = "login" | "register" | "forgot" | "reset";
 type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid";
 type PwStrength = "weak" | "medium" | "strong";
 
@@ -276,6 +276,12 @@ export function AuthView() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [error, setError]         = useState<string | null>(null);
 
+  /* ── Password reset state ── */
+  const [resetToken, setResetToken] = useState("");
+  const [resetEmail, setResetEmail] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
   /* ── Form state ── */
   const [form, setForm] = useState({
     name: "", username: "", email: "", password: "", avatarUrl: "",
@@ -326,9 +332,73 @@ export function AuthView() {
     setUnStatus("idle");
   };
 
-  /* ── Submit (preserves ALL original API calls) ── */
+  /* ── Submit (handles login, register, forgot, and reset) ── */
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (mode === "forgot") {
+      if (!form.email || !form.email.includes("@")) {
+        setError("Please enter a valid email address.");
+        return;
+      }
+      setBusy(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/auth/forgot-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email: form.email }),
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error ?? "Failed to verify account");
+        setResetToken(json.data.token);
+        setResetEmail(json.data.email);
+        setMode("reset");
+        toast({
+          title: "Account Verified",
+          description: "Enter your new password below.",
+        });
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+
+    if (mode === "reset") {
+      if (newPassword.length < 6) {
+        setError("New password must be at least 6 characters.");
+        return;
+      }
+      if (newPassword !== confirmPassword) {
+        setError("Passwords do not match. Please verify.");
+        return;
+      }
+      setBusy(true);
+      setError(null);
+      try {
+        const res = await fetch("/api/auth/reset-password", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ token: resetToken, password: newPassword }),
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.error ?? "Failed to update password");
+        await refreshUser();
+        toast({
+          title: "Password Updated!",
+          description: "Your password has been changed. You are now logged in.",
+        });
+        navigate({ name: "home" });
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setBusy(false);
+      }
+      return;
+    }
+
     if (mode === "register" && !acceptTerms) {
       setError("Please accept the terms of service to continue.");
       return;
@@ -551,46 +621,65 @@ export function AuthView() {
                   transition={{ duration: 0.25 }}
                 >
                   <h2 className="text-[21px] font-bold leading-none tracking-[-0.01em] text-foreground">
-                    {mode === "login" ? "Welcome back" : "Create your account"}
+                    {mode === "login" && "Welcome back"}
+                    {mode === "register" && "Create your account"}
+                    {mode === "forgot" && "Reset your password"}
+                    {mode === "reset" && "Set new password"}
                   </h2>
                   <p className="mt-1.5 text-[12.5px] text-muted-foreground">
-                    {mode === "login"
-                      ? "Sign in to follow your clubs and join matchday talk."
-                      : "Free forever — no card needed. 30 seconds to set up."}
+                    {mode === "login" && "Sign in to follow your clubs and join matchday talk."}
+                    {mode === "register" && "Free forever — no card needed. 30 seconds to set up."}
+                    {mode === "forgot" && "Enter your registered email to verify and reset your password."}
+                    {mode === "reset" && `Create a strong new password for ${resetEmail || "your account"}.`}
                   </p>
                 </motion.div>
               </AnimatePresence>
 
-              {/* Tab switcher */}
-              <div
-                className="mt-5 grid grid-cols-2 rounded-[9px] border border-border bg-muted/60 p-1"
-                role="tablist"
-                aria-label="Authentication mode"
-              >
-                {(["login", "register"] as const).map((t) => {
-                  const active = mode === t;
-                  return (
-                    <button
-                      key={t}
-                      role="tab"
-                      aria-selected={active}
-                      onClick={() => switchMode(t)}
-                      className="relative rounded-[7px] py-2 text-[12.5px] font-semibold transition-colors"
-                    >
-                      {active && (
-                        <motion.span
-                          layoutId="tab-bg"
-                          className="absolute inset-0 rounded-[7px] bg-fhb-red/15 ring-1 ring-fhb-red/30"
-                          transition={{ type: "spring", stiffness: 350, damping: 30 }}
-                        />
-                      )}
-                      <span className={cn("relative", active ? "text-fhb-red" : "text-muted-foreground hover:text-foreground")}>
-                        {t === "login" ? "Sign In" : "Register"}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
+              {/* Tab switcher or Back to Sign In */}
+              {mode === "login" || mode === "register" ? (
+                <div
+                  className="mt-5 grid grid-cols-2 rounded-[9px] border border-border bg-muted/60 p-1"
+                  role="tablist"
+                  aria-label="Authentication mode"
+                >
+                  {(["login", "register"] as const).map((t) => {
+                    const active = mode === t;
+                    return (
+                      <button
+                        key={t}
+                        role="tab"
+                        aria-selected={active}
+                        onClick={() => switchMode(t)}
+                        className="relative rounded-[7px] py-2 text-[12.5px] font-semibold transition-colors"
+                      >
+                        {active && (
+                          <motion.span
+                            layoutId="tab-bg"
+                            className="absolute inset-0 rounded-[7px] bg-fhb-red/15 ring-1 ring-fhb-red/30"
+                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                          />
+                        )}
+                        <span className={cn("relative", active ? "text-fhb-red" : "text-muted-foreground hover:text-foreground")}>
+                          {t === "login" ? "Sign In" : "Register"}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="mt-5 flex items-center justify-between border-b border-border/60 pb-3">
+                  <button
+                    type="button"
+                    onClick={() => switchMode("login")}
+                    className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  >
+                    <ArrowLeft className="h-3.5 w-3.5" /> Back to Sign In
+                  </button>
+                  <span className="flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-fhb-red">
+                    <KeyRound className="h-3 w-3" /> Security
+                  </span>
+                </div>
+              )}
 
               {/* Form */}
               <form onSubmit={submit} className="mt-5" noValidate>
@@ -603,6 +692,88 @@ export function AuthView() {
                     exit="exit"
                     className="space-y-3.5"
                   >
+                    {/* ── FORGOT PASSWORD MODE ── */}
+                    {mode === "forgot" && (
+                      <div>
+                        <label htmlFor="auth-email" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                          Registered Email <span className="text-fhb-red">*</span>
+                        </label>
+                        <FieldWrap>
+                          <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                          <input
+                            id="auth-email"
+                            type="email"
+                            value={form.email}
+                            onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                            placeholder="you@example.com"
+                            className={inputCls}
+                            required
+                            autoComplete="email"
+                          />
+                        </FieldWrap>
+                        <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+                          Enter the email address associated with your FHBD account to authorize a password reset.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* ── RESET PASSWORD MODE ── */}
+                    {mode === "reset" && (
+                      <div className="space-y-3.5">
+                        <div className="rounded-lg border border-border/70 bg-muted/40 p-3 text-xs">
+                          <span className="text-muted-foreground">Resetting password for: </span>
+                          <span className="font-semibold text-foreground">{resetEmail}</span>
+                        </div>
+                        <div>
+                          <label htmlFor="new-password" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                            New Password <span className="text-fhb-red">*</span>
+                          </label>
+                          <FieldWrap>
+                            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                            <input
+                              id="new-password"
+                              type={showPass ? "text" : "password"}
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              placeholder="At least 6 characters"
+                              className={cn(inputCls, "pr-11")}
+                              required
+                              minLength={6}
+                              autoComplete="new-password"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPass((v) => !v)}
+                              className="tap-target absolute right-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-[5px] text-muted-foreground transition-colors hover:text-foreground"
+                              aria-label={showPass ? "Hide password" : "Show password"}
+                            >
+                              {showPass ? <EyeOff className="h-4 w-4" aria-hidden /> : <Eye className="h-4 w-4" aria-hidden />}
+                            </button>
+                          </FieldWrap>
+                          {newPassword.length > 0 && <StrengthMeter password={newPassword} />}
+                        </div>
+                        <div>
+                          <label htmlFor="confirm-password" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                            Confirm New Password <span className="text-fhb-red">*</span>
+                          </label>
+                          <FieldWrap>
+                            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                            <input
+                              id="confirm-password"
+                              type={showPass ? "text" : "password"}
+                              value={confirmPassword}
+                              onChange={(e) => setConfirmPassword(e.target.value)}
+                              placeholder="Repeat new password"
+                              className={inputCls}
+                              required
+                              minLength={6}
+                              autoComplete="new-password"
+                            />
+                          </FieldWrap>
+                        </div>
+                      </div>
+                    )}
+
                     {/* ── REGISTER-ONLY fields ── */}
                     {mode === "register" && (
                       <>
@@ -703,120 +874,125 @@ export function AuthView() {
                       </>
                     )}
 
-                    {/* Email / Username */}
-                    <div>
-                      <label htmlFor="auth-email" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                        {mode === "login" ? "Email / Username" : "Email"} <span className="text-fhb-red">*</span>
-                      </label>
-                      <FieldWrap>
-                        <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-                        <input
-                          id="auth-email"
-                          type={mode === "login" ? "text" : "email"}
-                          value={form.email}
-                          onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                          placeholder="you@example.com"
-                          className={inputCls}
-                          required
-                          autoComplete={mode === "login" ? "username" : "email"}
-                        />
-                      </FieldWrap>
-                    </div>
+                    {/* ── LOGIN & REGISTER SHARED FIELDS ── */}
+                    {(mode === "login" || mode === "register") && (
+                      <>
+                        {/* Email / Username */}
+                        <div>
+                          <label htmlFor="auth-email" className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                            {mode === "login" ? "Email / Username" : "Email"} <span className="text-fhb-red">*</span>
+                          </label>
+                          <FieldWrap>
+                            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                            <input
+                              id="auth-email"
+                              type={mode === "login" ? "text" : "email"}
+                              value={form.email}
+                              onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
+                              placeholder="you@example.com"
+                              className={inputCls}
+                              required
+                              autoComplete={mode === "login" ? "username" : "email"}
+                            />
+                          </FieldWrap>
+                        </div>
 
-                    {/* Password */}
-                    <div>
-                      <div className="mb-1.5 flex items-center justify-between">
-                        <label htmlFor="auth-password" className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
-                          Password <span className="text-fhb-red">*</span>
-                        </label>
-                        {mode === "login" && (
-                          <button
-                            type="button"
-                            className="text-[11px] font-semibold text-muted-foreground transition-colors hover:text-fhb-red"
-                            onClick={() => toast({ title: "Coming soon", description: "Password reset will be available shortly." })}
-                          >
-                            Forgot password?
-                          </button>
-                        )}
-                      </div>
-                      <FieldWrap>
-                        <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-                        <input
-                          id="auth-password"
-                          type={showPass ? "text" : "password"}
-                          value={form.password}
-                          onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
-                          placeholder="••••••••"
-                          className={cn(inputCls, "pr-11")}
-                          required
-                          minLength={6}
-                          autoComplete={mode === "login" ? "current-password" : "new-password"}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPass((v) => !v)}
-                          className="tap-target absolute right-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-[5px] text-muted-foreground transition-colors hover:text-foreground"
-                          aria-label={showPass ? "Hide password" : "Show password"}
-                        >
-                          {showPass
-                            ? <EyeOff className="h-4 w-4" aria-hidden />
-                            : <Eye    className="h-4 w-4" aria-hidden />
-                          }
-                        </button>
-                      </FieldWrap>
+                        {/* Password */}
+                        <div>
+                          <div className="mb-1.5 flex items-center justify-between">
+                            <label htmlFor="auth-password" className="text-[11px] font-bold uppercase tracking-[0.06em] text-muted-foreground">
+                              Password <span className="text-fhb-red">*</span>
+                            </label>
+                            {mode === "login" && (
+                              <button
+                                type="button"
+                                className="text-[11px] font-semibold text-muted-foreground transition-colors hover:text-fhb-red cursor-pointer"
+                                onClick={() => switchMode("forgot")}
+                              >
+                                Forgot password?
+                              </button>
+                            )}
+                          </div>
+                          <FieldWrap>
+                            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+                            <input
+                              id="auth-password"
+                              type={showPass ? "text" : "password"}
+                              value={form.password}
+                              onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                              placeholder="••••••••"
+                              className={cn(inputCls, "pr-11")}
+                              required
+                              minLength={6}
+                              autoComplete={mode === "login" ? "current-password" : "new-password"}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPass((v) => !v)}
+                              className="tap-target absolute right-2.5 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-[5px] text-muted-foreground transition-colors hover:text-foreground"
+                              aria-label={showPass ? "Hide password" : "Show password"}
+                            >
+                              {showPass
+                                ? <EyeOff className="h-4 w-4" aria-hidden />
+                                : <Eye    className="h-4 w-4" aria-hidden />
+                              }
+                            </button>
+                          </FieldWrap>
 
-                      {/* Strength meter (register only) */}
-                      {mode === "register" && (
-                        <AnimatePresence>
-                          {form.password.length > 0 && (
-                            <StrengthMeter password={form.password} />
+                          {/* Strength meter (register only) */}
+                          {mode === "register" && (
+                            <AnimatePresence>
+                              {form.password.length > 0 && (
+                                <StrengthMeter password={form.password} />
+                              )}
+                            </AnimatePresence>
                           )}
-                        </AnimatePresence>
-                      )}
-                    </div>
+                        </div>
 
-                    {/* Remember me (login) */}
-                    {mode === "login" && (
-                      <label className="flex cursor-pointer items-center gap-2.5">
-                        <input
-                          type="checkbox"
-                          checked={rememberMe}
-                          onChange={(e) => setRememberMe(e.target.checked)}
-                          className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/[0.04] accent-fhb-red"
-                        />
-                        <span className="text-[12px] text-muted-foreground">Remember me for 30 days</span>
-                      </label>
-                    )}
+                        {/* Remember me (login) */}
+                        {mode === "login" && (
+                          <label className="flex cursor-pointer items-center gap-2.5">
+                            <input
+                              type="checkbox"
+                              checked={rememberMe}
+                              onChange={(e) => setRememberMe(e.target.checked)}
+                              className="h-4 w-4 cursor-pointer rounded border-white/20 bg-white/[0.04] accent-fhb-red"
+                            />
+                            <span className="text-[12px] text-muted-foreground">Remember me for 30 days</span>
+                          </label>
+                        )}
 
-                    {/* Accept terms (register) */}
-                    {mode === "register" && (
-                      <label className="flex cursor-pointer items-start gap-2.5">
-                        <input
-                          type="checkbox"
-                          checked={acceptTerms}
-                          onChange={(e) => setAcceptTerms(e.target.checked)}
-                          className="mt-0.5 h-4 w-4 cursor-pointer rounded border-white/20 bg-white/[0.04] accent-fhb-red"
-                          required
-                        />
-                        <span className="text-[12px] leading-relaxed text-muted-foreground">
-                          I agree to FHBD&apos;s{" "}
-                          <button
-                            type="button"
-                            className="font-semibold text-fhb-red underline underline-offset-2 hover:no-underline"
-                            onClick={() => navigate({ name: "terms" })}
-                          >
-                            Terms of Service
-                          </button>{" "}
-                          and{" "}
-                          <button
-                            type="button"
-                            className="font-semibold text-fhb-red underline underline-offset-2 hover:no-underline"
-                            onClick={() => navigate({ name: "privacy" })}
-                          >
-                            Privacy Policy
-                          </button>
-                        </span>
-                      </label>
+                        {/* Accept terms (register) */}
+                        {mode === "register" && (
+                          <label className="flex cursor-pointer items-start gap-2.5">
+                            <input
+                              type="checkbox"
+                              checked={acceptTerms}
+                              onChange={(e) => setAcceptTerms(e.target.checked)}
+                              className="mt-0.5 h-4 w-4 cursor-pointer rounded border-white/20 bg-white/[0.04] accent-fhb-red"
+                              required
+                            />
+                            <span className="text-[12px] leading-relaxed text-muted-foreground">
+                              I agree to FHBD&apos;s{" "}
+                              <button
+                                type="button"
+                                className="font-semibold text-fhb-red underline underline-offset-2 hover:no-underline"
+                                onClick={() => navigate({ name: "terms" })}
+                              >
+                                Terms of Service
+                              </button>{" "}
+                              and{" "}
+                              <button
+                                type="button"
+                                className="font-semibold text-fhb-red underline underline-offset-2 hover:no-underline"
+                                onClick={() => navigate({ name: "privacy" })}
+                              >
+                                Privacy Policy
+                              </button>
+                            </span>
+                          </label>
+                        )}
+                      </>
                     )}
 
                     {/* Inline error */}
@@ -859,7 +1035,12 @@ export function AuthView() {
                           <span>Please wait…</span>
                         </>
                       ) : (
-                        <span>{mode === "login" ? "Sign In" : "Create Account"}</span>
+                        <span>
+                          {mode === "login" && "Sign In"}
+                          {mode === "register" && "Create Account"}
+                          {mode === "forgot" && "Verify & Continue"}
+                          {mode === "reset" && "Update Password & Sign In"}
+                        </span>
                       )}
                     </motion.button>
                   </motion.div>

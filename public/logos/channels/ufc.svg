@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <rect width="400" height="120" rx="16" fill="#0A0A0A"/>
+    <!-- Octagon outline -->
+    <polygon points="45,20 85,20 110,45 110,75 85,100 45,100 20,75 20,45" fill="#D50000" stroke="#FFFFFF" stroke-width="2"/>
+    <!-- UFC text -->
+    <text x="25" y="72" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="34" fill="#FFFFFF" letter-spacing="1">UFC</text>
+    <!-- FIGHT NETWORK -->
+    <text x="135" y="58" font-family="Arial Black, sans-serif" font-weight="900" font-size="38" fill="#FFFFFF" letter-spacing="2">UFC TV</text>
+    <text x="135" y="90" font-family="Arial Black, sans-serif" font-weight="900" font-size="22" fill="#D50000" letter-spacing="4">ULTIMATE FIGHTING</text>
+  </svg>

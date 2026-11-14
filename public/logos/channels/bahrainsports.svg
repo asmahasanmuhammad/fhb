@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <defs>
+      <linearGradient id="bahRed" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#E53935"/>
+        <stop offset="100%" stop-color="#B71C1C"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="120" rx="16" fill="#131418"/>
+    <!-- Bahrain Shield with zig-zag serration -->
+    <rect x="25" y="25" width="70" height="70" rx="10" fill="url(#bahRed)"/>
+    <polygon points="25,25 50,25 40,39 50,53 40,67 50,81 40,95 25,95" fill="#FFFFFF"/>
+    <!-- Text -->
+    <text x="115" y="56" font-family="Arial Black, sans-serif" font-weight="900" font-size="30" fill="#FFFFFF" letter-spacing="2">BAHRAIN</text>
+    <text x="115" y="92" font-family="Arial Black, sans-serif" font-weight="900" font-size="32" fill="url(#bahRed)" letter-spacing="3">SPORTS HD</text>
+  </svg>

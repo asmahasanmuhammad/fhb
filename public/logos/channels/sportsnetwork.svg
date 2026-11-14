@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <defs>
+      <linearGradient id="snGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00E5FF"/>
+        <stop offset="100%" stop-color="#0077C2"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="120" rx="16" fill="#0D1117"/>
+    <!-- Globe / Trophy Icon -->
+    <circle cx="65" cy="60" r="35" stroke="url(#snGrad)" stroke-width="4" fill="none"/>
+    <ellipse cx="65" cy="60" rx="18" ry="35" stroke="url(#snGrad)" stroke-width="2" fill="none"/>
+    <line x1="30" y1="60" x2="100" y2="60" stroke="url(#snGrad)" stroke-width="2"/>
+    <!-- Text -->
+    <text x="125" y="56" font-family="Arial Black, sans-serif" font-weight="900" font-size="34" fill="#FFFFFF" letter-spacing="2">SPORTS</text>
+    <text x="125" y="92" font-family="Arial Black, sans-serif" font-weight="900" font-size="28" fill="url(#snGrad)" letter-spacing="3">NETWORK HD</text>
+  </svg>

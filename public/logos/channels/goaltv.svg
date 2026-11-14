@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <defs>
+      <linearGradient id="goalGreen" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#00C853"/>
+        <stop offset="100%" stop-color="#1B5E20"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="120" rx="16" fill="#0C140E"/>
+    <!-- Soccer Goal Ball -->
+    <circle cx="65" cy="60" r="38" fill="url(#goalGreen)"/>
+    <!-- Pentagon ball center -->
+    <polygon points="65,45 77,54 73,69 57,69 53,54" fill="#FFFFFF"/>
+    <!-- GOAL TV text -->
+    <text x="125" y="70" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="52" fill="#FFFFFF" letter-spacing="2">GOAL</text>
+    <rect x="295" y="36" width="60" height="42" rx="8" fill="url(#goalGreen)"/>
+    <text x="310" y="67" font-family="Arial Black, sans-serif" font-weight="900" font-size="26" fill="#FFFFFF">TV</text>
+  </svg>

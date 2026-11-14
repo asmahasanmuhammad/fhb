@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <defs>
+      <linearGradient id="ddIndia" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF6F00"/>
+        <stop offset="100%" stop-color="#E65100"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="120" rx="16" fill="#0B132B"/>
+    <!-- DD Eye Logo -->
+    <circle cx="65" cy="60" r="38" fill="url(#ddIndia)"/>
+    <circle cx="65" cy="60" r="22" fill="#0B132B"/>
+    <circle cx="65" cy="60" r="10" fill="#2E7D32"/>
+    <!-- Text -->
+    <text x="125" y="60" font-family="Arial Black, sans-serif" font-weight="900" font-size="44" fill="#FF8F00" letter-spacing="2">DD</text>
+    <text x="205" y="60" font-family="Arial Black, sans-serif" font-weight="900" font-size="44" fill="#FFFFFF" letter-spacing="2">SPORTS</text>
+    <text x="125" y="92" font-family="Arial, sans-serif" font-weight="700" font-size="18" fill="#81C784" letter-spacing="3">NATIONAL BROADCAST</text>
+  </svg>

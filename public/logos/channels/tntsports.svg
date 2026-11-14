@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <defs>
+      <linearGradient id="tntPink" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF007A"/>
+        <stop offset="100%" stop-color="#CC0062"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="120" rx="16" fill="#0E0E12"/>
+    <!-- Round Pink Emblem -->
+    <circle cx="65" cy="60" r="45" fill="url(#tntPink)"/>
+    <text x="32" y="72" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="34" fill="#FFFFFF">TNT</text>
+    <!-- SPORTS -->
+    <text x="125" y="72" font-family="Arial Black, sans-serif" font-weight="900" font-size="44" fill="#FFFFFF" letter-spacing="3">SPORTS</text>
+    <!-- 1 Badge -->
+    <rect x="335" y="36" width="45" height="46" rx="8" fill="url(#tntPink)"/>
+    <text x="348" y="70" font-family="Arial Black, sans-serif" font-weight="900" font-size="30" fill="#FFFFFF">1</text>
+  </svg>

@@ -32,6 +32,7 @@ import { cn } from "@/lib/utils";
 import { fmtNum } from "@/lib/format";
 import curatedChannelsData from "@/data/curated_channels.json";
 import server4ChannelsData from "@/data/server4_channels.json";
+import { resolveChannelLogo } from "@/lib/tv-logos";
 import {
   Tv, Radio, Play, Pause, Server, Link2, ShieldCheck, ChevronRight,
   RefreshCw, AlertTriangle, Heart, Search, SkipBack, SkipForward, Maximize2,
@@ -120,7 +121,7 @@ function getInitialLiveMatches(): DynamicLiveMatch[] {
           sport: isCricket ? "Cricket" : "Football",
           icon: isCricket ? "🏏" : "⚽",
           channelUrl: c.url,
-          logo: c.logo || "https://upload.kbhub.online/files/bangladesh-vs-sri-lanka-2026-11-11.webp",
+          logo: resolveChannelLogo(cleanTitle, c.logo),
           badge: "LIVE NOW",
           league,
           backups: [],
@@ -135,14 +136,78 @@ function getInitialLiveMatches(): DynamicLiveMatch[] {
 
 function normalizeChannel(ch: TvChannel): TvChannel {
   if (!ch) return ch;
-  const n = (ch.name || "").toLowerCase();
-  let logo = ch.logo || "";
-  if (n.includes("a sports")) {
-    logo = "/logos/channels/asports.png";
-  } else if (n.includes("willow")) {
-    logo = "/logos/channels/willow.png";
+  return { ...ch, logo: resolveChannelLogo(ch.name, ch.logo) };
+}
+
+export function ChannelLogo({
+  name,
+  logo,
+  className,
+  fallbackClassName,
+}: {
+  name: string;
+  logo?: string;
+  className?: string;
+  fallbackClassName?: string;
+}) {
+  const [hasError, setHasError] = useState(false);
+  const resolved = useMemo(() => resolveChannelLogo(name, logo), [name, logo]);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [resolved, name]);
+
+  if (!hasError && resolved) {
+    return (
+      <img
+        src={resolved}
+        alt={name}
+        loading="lazy"
+        className={cn("h-full w-full object-contain transition-all", className)}
+        onError={() => setHasError(true)}
+      />
+    );
   }
-  return { ...ch, logo };
+
+  // Graceful, polished fallback badge
+  const nLower = (name || "").toLowerCase();
+  let bgGradient = "from-primary/20 to-primary/40 text-primary border-primary/30";
+  let icon = "🏆";
+  if (nLower.includes("cricket") || nLower.includes("willow") || nLower.includes("star sports")) {
+    bgGradient = "from-amber-500/20 to-amber-600/40 text-amber-400 border-amber-500/30";
+    icon = "🏏";
+  } else if (nLower.includes("football") || nLower.includes("fifa") || nLower.includes("barca") || nLower.includes("madrid") || nLower.includes("goal")) {
+    bgGradient = "from-emerald-500/20 to-emerald-600/40 text-emerald-400 border-emerald-500/30";
+    icon = "⚽";
+  } else if (nLower.includes("fight") || nLower.includes("combat") || nLower.includes("ufc") || nLower.includes("wwe") || nLower.includes("dazn")) {
+    bgGradient = "from-rose-500/20 to-rose-600/40 text-rose-400 border-rose-500/30";
+    icon = "🥊";
+  } else if (nLower.includes("tennis")) {
+    bgGradient = "from-lime-500/20 to-lime-600/40 text-lime-400 border-lime-500/30";
+    icon = "🎾";
+  } else if (nLower.includes("racing") || nLower.includes("f1") || nLower.includes("motogp")) {
+    bgGradient = "from-orange-500/20 to-orange-600/40 text-orange-400 border-orange-500/30";
+    icon = "🏎️";
+  }
+
+  const words = name.replace(/[^a-zA-Z0-9 ]/g, "").split(/\s+/).filter(Boolean);
+  const initials = words.length > 1
+    ? words.slice(0, 3).map((w) => w[0]).join("").toUpperCase()
+    : name.slice(0, 3).toUpperCase();
+
+  return (
+    <div
+      className={cn(
+        "flex h-full w-full items-center justify-center rounded-md bg-gradient-to-br border font-bold text-xs select-none shadow-xs px-1",
+        bgGradient,
+        fallbackClassName
+      )}
+      title={name}
+    >
+      <span className="mr-0.5 text-xs">{icon}</span>
+      <span className="font-mono tracking-wider text-[11px] font-black">{initials}</span>
+    </div>
+  );
 }
 
 export function LiveTvView() {
@@ -819,26 +884,8 @@ export function LiveTvView() {
                 )}
                 aria-label={`Watch ${ch.name}`}
               >
-                <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-white overflow-hidden p-0.5">
-                  {ch.logo ? (
-                    <img
-                      src={ch.logo}
-                      alt={ch.name}
-                      className="h-full w-full object-contain"
-                      onError={(e) => {
-                        const n = ch.name.toLowerCase();
-                        if (n.includes("a sports") && !e.currentTarget.src.includes("a-sports-65a3e1d8fd")) {
-                          e.currentTarget.src = "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/a-sports-65a3e1d8fd.png";
-                        } else if (n.includes("willow") && !e.currentTarget.src.includes("playmist_willow")) {
-                          e.currentTarget.src = "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_1bb4b50bd8e39a63808ed6fa38beb0df_playmist_willow_hd_tv_400x400.jpg";
-                        } else {
-                          e.currentTarget.style.display = "none";
-                        }
-                      }}
-                    />
-                  ) : (
-                    <Trophy className="h-4 w-4 text-primary" />
-                  )}
+                <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border/60 bg-white/5 overflow-hidden p-0.5">
+                  <ChannelLogo name={ch.name} logo={ch.logo} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <span className="block truncate text-[12px] font-bold text-foreground">
@@ -963,19 +1010,8 @@ export function LiveTvView() {
                   )}
                 >
                   {/* Match Logo / Icon */}
-                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-elevated overflow-hidden p-1">
-                    {m.logo ? (
-                      <img
-                        src={m.logo}
-                        alt={m.title}
-                        className="h-full w-full object-contain"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <span className="text-xl">{m.icon}</span>
-                    )}
+                  <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-white/5 overflow-hidden p-1">
+                    <ChannelLogo name={m.title} logo={m.logo} />
                     <span className="absolute bottom-0 right-0 rounded-tl-md bg-fhb-red px-1 text-[8px] font-black text-white">
                       LIVE
                     </span>
@@ -1093,17 +1129,9 @@ export function LiveTvView() {
                 className="group absolute inset-0 flex flex-col items-center justify-center gap-3.5 bg-black/85 px-6 text-center"
                 aria-label={`Play ${active.name}`}
               >
-                {active.logo ? (
-                  <img
-                    src={active.logo}
-                    alt={active.name}
-                    className="h-16 w-16 object-contain rounded-xl p-1 bg-white/10 ring-1 ring-white/20"
-                  />
-                ) : (
-                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/20 text-primary ring-1 ring-primary/40 font-bold text-xl">
-                    <Trophy className="h-8 w-8" />
-                  </div>
-                )}
+                <div className="h-16 w-36 flex items-center justify-center rounded-xl p-1 bg-white/10 ring-1 ring-white/20 overflow-hidden">
+                  <ChannelLogo name={active.name} logo={active.logo} className="h-14 w-auto max-w-full" />
+                </div>
                 <div>
                   <h3 className="text-xl font-bold text-white flex items-center justify-center gap-2">
                     {active.name}
@@ -1191,24 +1219,8 @@ export function LiveTvView() {
           <div className="border-t border-border p-3 sm:px-4 sm:py-2.5 bg-card flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-3">
             {/* Channel Info Row */}
             <div className="flex min-w-0 items-center gap-2 sm:gap-3 pb-2.5 border-b border-border/40 lg:border-b-0 lg:pb-0 shrink-0">
-              <div className="relative flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-white overflow-hidden p-0.5">
-                {active.logo ? (
-                  <img
-                    src={active.logo}
-                    alt={active.name}
-                    className="h-full w-full object-contain"
-                    onError={(e) => {
-                      const n = active.name.toLowerCase();
-                      if (n.includes("a sports") && !e.currentTarget.src.includes("a-sports-65a3e1d8fd")) {
-                        e.currentTarget.src = "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/a-sports-65a3e1d8fd.png";
-                      } else if (n.includes("willow") && !e.currentTarget.src.includes("playmist_willow")) {
-                        e.currentTarget.src = "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_1bb4b50bd8e39a63808ed6fa38beb0df_playmist_willow_hd_tv_400x400.jpg";
-                      }
-                    }}
-                  />
-                ) : (
-                  <Trophy className="h-5 w-5 text-primary" />
-                )}
+              <div className="relative flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-white/5 overflow-hidden p-0.5">
+                <ChannelLogo name={active.name} logo={active.logo} />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-1.5 sm:gap-2">
@@ -1577,29 +1589,8 @@ export function LiveTvView() {
                     </div>
 
                     {/* Logo */}
-                    <div className="flex h-14 w-full items-center justify-center p-1 rounded-md bg-white/5">
-                      {ch.logo ? (
-                        <img
-                          src={ch.logo}
-                          alt={ch.name}
-                          loading="lazy"
-                          className="h-full max-h-12 w-auto object-contain transition-transform group-hover:scale-105"
-                          onError={(e) => {
-                            const n = ch.name.toLowerCase();
-                            if (n.includes("a sports") && !e.currentTarget.src.includes("a-sports-65a3e1d8fd")) {
-                              e.currentTarget.src = "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/a-sports-65a3e1d8fd.png";
-                            } else if (n.includes("willow") && !e.currentTarget.src.includes("playmist_willow")) {
-                              e.currentTarget.src = "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/images_1bb4b50bd8e39a63808ed6fa38beb0df_playmist_willow_hd_tv_400x400.jpg";
-                            } else {
-                              e.currentTarget.style.display = "none";
-                            }
-                          }}
-                        />
-                      ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-md bg-elevated font-display font-bold text-xs text-foreground border border-border/60">
-                          {ch.name.slice(0, 2).toUpperCase()}
-                        </div>
-                      )}
+                    <div className="flex h-14 w-full items-center justify-center p-1 rounded-md bg-white/5 overflow-hidden">
+                      <ChannelLogo name={ch.name} logo={ch.logo} className="max-h-12 w-auto" />
                     </div>
 
                     {/* Channel Name & Playing Indicator */}

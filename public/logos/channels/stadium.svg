@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <defs>
+      <linearGradient id="stadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF3366"/>
+        <stop offset="100%" stop-color="#BA0033"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="120" rx="16" fill="#12131C"/>
+    <!-- Stadium Arena Oval -->
+    <ellipse cx="65" cy="60" rx="38" ry="24" stroke="url(#stadGrad)" stroke-width="6" fill="none"/>
+    <ellipse cx="65" cy="60" rx="20" ry="12" fill="url(#stadGrad)"/>
+    <!-- Text -->
+    <text x="125" y="74" font-family="Arial Black, Impact, sans-serif" font-weight="900" font-size="44" fill="#FFFFFF" letter-spacing="4">STADIUM</text>
+  </svg>

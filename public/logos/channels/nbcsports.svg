@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <rect width="400" height="120" rx="16" fill="#0F141C"/>
+    <!-- Peacock feathers -->
+    <ellipse cx="45" cy="45" rx="8" ry="18" fill="#FFCC00" transform="rotate(-40 45 45)"/>
+    <ellipse cx="56" cy="38" rx="8" ry="18" fill="#FF6600" transform="rotate(-20 56 38)"/>
+    <ellipse cx="68" cy="36" rx="8" ry="18" fill="#CC0000"/>
+    <ellipse cx="80" cy="38" rx="8" ry="18" fill="#660099" transform="rotate(20 80 38)"/>
+    <ellipse cx="91" cy="45" rx="8" ry="18" fill="#0066CC" transform="rotate(40 91 45)"/>
+    <!-- NBC SPORTS Text -->
+    <text x="125" y="56" font-family="Arial Black, sans-serif" font-weight="900" font-size="34" fill="#FFFFFF" letter-spacing="2">NBC</text>
+    <text x="215" y="56" font-family="Arial Black, sans-serif" font-weight="900" font-size="34" fill="#00A2FF" letter-spacing="2">SPORTS</text>
+    <text x="125" y="90" font-family="Arial, sans-serif" font-weight="700" font-size="20" fill="#90A4AE" letter-spacing="4">NOW LIVE HD</text>
+  </svg>

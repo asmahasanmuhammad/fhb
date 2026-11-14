@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="100%" height="100%">
+    <defs>
+      <linearGradient id="rbYellow" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FFDD00"/>
+        <stop offset="100%" stop-color="#FFAA00"/>
+      </linearGradient>
+    </defs>
+    <rect width="400" height="120" rx="16" fill="#001830"/>
+    <!-- Sun Circle -->
+    <circle cx="65" cy="60" r="35" fill="url(#rbYellow)"/>
+    <!-- Bull silhouette approximation in red -->
+    <path d="M40 68 Q50 48 70 52 Q85 45 92 60 Q75 62 65 75 Q52 72 40 68 Z" fill="#D50000"/>
+    <!-- Text -->
+    <text x="120" y="56" font-family="Arial Black, sans-serif" font-weight="900" font-size="34" fill="#FFFFFF" letter-spacing="1">RED BULL</text>
+    <text x="120" y="92" font-family="Arial Black, sans-serif" font-weight="900" font-size="30" fill="url(#rbYellow)" letter-spacing="4">TELEVISION</text>
+  </svg>

@@ -2,6 +2,7 @@ import { NextRequest } from "next/server";
 import { ok, handleError } from "@/lib/api";
 import curatedChannels from "@/data/curated_channels.json";
 import server4Channels from "@/data/server4_channels.json";
+import { resolveChannelLogo } from "@/lib/tv-logos";
 
 export const dynamic = "force-dynamic";
 
@@ -107,15 +108,11 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
       name = name.replace(/^[0-9]+\.\s*/, "").trim();
 
       const nLower = name.toLowerCase();
-      if (nLower.includes("a sports")) {
-        logo = "/logos/channels/asports.png";
-      } else if (nLower.includes("willow")) {
-        logo = "/logos/channels/willow.png";
-      }
-
       let quality = "HD";
       if (nLower.includes("1080p") || nLower.includes("fhd")) quality = "1080p FHD";
       else if (nLower.includes("720p") || nLower.includes("hd")) quality = "720p HD";
+
+      logo = resolveChannelLogo(name, logo);
 
       // CRITICAL: Reject insecure HTTP (browsers block mixed content on HTTPS)
       if (url && url.startsWith("https://") && isStrictlySports(name, group)) {
@@ -123,7 +120,7 @@ function parseSportsM3U(data: string, serverId: number): TvChannel[] {
           id: `sp_${serverId}_${list.length + 1}_${Math.random().toString(36).substring(2, 6)}`,
           name,
           url,
-          logo: logo || "https://raw.githubusercontent.com/sm-monirulislam/SM-IPTV/main/images/t-sports.png",
+          logo: logo || "/logos/channels/sportsnetwork.svg",
           group: classifySport(name),
           category: "Sports",
           sportType: classifySport(name),
@@ -287,7 +284,7 @@ export async function GET(req: NextRequest) {
               sport: isCricket ? "Cricket" : "Football",
               icon: isCricket ? "🏏" : "⚽",
               channelUrl: reliableUrl,
-              logo: c.logo || "https://upload.kbhub.online/files/bangladesh-vs-sri-lanka-2026-11-11.webp",
+              logo: resolveChannelLogo(cleanTitle, c.logo),
               badge: "LIVE NOW",
               league,
               backups: c.backupUrls || [],

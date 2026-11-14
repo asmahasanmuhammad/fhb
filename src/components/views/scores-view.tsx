@@ -22,6 +22,7 @@ import {
   Tv, Trophy, Flame, Award, TrendingUp, Clock,
 } from "lucide-react";
 import { TacticalPitch } from "@/components/football/tactical-pitch";
+import type { MatchAiAnalysis } from "@/lib/gemini";
 
 /* ════════════════════════════════════════════════════════════════
    ScoresView — the day's football. 7-day date strip, league
@@ -602,7 +603,138 @@ function PreMatchStatsView({ match }: { match: Match }) {
   );
 }
 
-function ScheduledSummaryView({ match }: { match: Match }) {
+function AIMatchInsightsCard({
+  analysis,
+  isLoading,
+  isScheduled,
+}: {
+  analysis?: MatchAiAnalysis;
+  isLoading?: boolean;
+  isScheduled?: boolean;
+}) {
+  if (isLoading) {
+    return (
+      <div className="rounded-xl border border-primary/20 bg-card/60 p-4 space-y-3 animate-pulse">
+        <div className="flex items-center gap-2">
+          <div className="h-4 w-4 rounded-full bg-primary/40" />
+          <div className="h-4 w-36 rounded bg-primary/20" />
+        </div>
+        <div className="h-12 w-full rounded bg-secondary/50" />
+      </div>
+    );
+  }
+
+  if (!analysis) return null;
+
+  return (
+    <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.07] via-card to-card p-4 sm:p-5 shadow-sm">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 pb-3 border-b border-border/50">
+        <div className="flex items-center gap-2">
+          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/15 text-primary">
+            <Sparkles className="h-3.5 w-3.5" />
+          </span>
+          <div>
+            <h4 className="text-xs sm:text-sm font-black text-foreground tracking-tight">
+              FHBD এআই ম্যাচ অ্যানালাইসিস
+            </h4>
+            <p className="text-[10px] text-muted-foreground font-medium">
+              ট্যাকটিক্যাল ইনসাইট ও স্মার্ট ম্যাচ বিশ্লেষণ
+            </p>
+          </div>
+        </div>
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-primary">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
+          Gemini AI
+        </span>
+      </div>
+
+      {/* Summary */}
+      <p className="mt-3 text-[12.5px] sm:text-[13px] leading-relaxed text-foreground/90 font-medium">
+        {analysis.summary}
+      </p>
+
+      {/* Dynamic Key Insights Grid */}
+      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+        {analysis.tactics && (
+          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
+              🛡️ কৌশলগত লড়াই
+            </span>
+            <p className="text-[11.5px] text-muted-foreground leading-snug">
+              {analysis.tactics}
+            </p>
+          </div>
+        )}
+
+        {analysis.keyPlayer && (
+          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">
+              ⭐ নজরে থাকবেন
+            </span>
+            <p className="text-[11.5px] text-muted-foreground leading-snug">
+              {analysis.keyPlayer}
+            </p>
+          </div>
+        )}
+
+        {analysis.turningPoint && (
+          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-1">
+              ⚡ টার্নিং পয়েন্ট
+            </span>
+            <p className="text-[11.5px] text-muted-foreground leading-snug">
+              {analysis.turningPoint}
+            </p>
+          </div>
+        )}
+
+        {analysis.playerOfTheMatch && (
+          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-1">
+              🌟 ম্যাচ সেরা
+            </span>
+            <p className="text-[11.5px] text-muted-foreground leading-snug">
+              {analysis.playerOfTheMatch}
+            </p>
+          </div>
+        )}
+
+        {analysis.prediction && (
+          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 sm:col-span-2 lg:col-span-1">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-sky-400 mb-1">
+              🎯 এআই প্রেডিকশন
+            </span>
+            <p className="text-[11.5px] font-semibold text-foreground/90 leading-snug">
+              {analysis.prediction}
+            </p>
+          </div>
+        )}
+
+        {analysis.finalVerdict && (
+          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 sm:col-span-2 lg:col-span-1">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1">
+              🏆 ফলাফল পর্যালোচনা
+            </span>
+            <p className="text-[11.5px] text-muted-foreground leading-snug">
+              {analysis.finalVerdict}
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function ScheduledSummaryView({
+  match,
+  aiAnalysis,
+  isAiLoading,
+}: {
+  match: Match;
+  aiAnalysis?: MatchAiAnalysis;
+  isAiLoading?: boolean;
+}) {
   const { time, date, relative } = formatKickoff(match.kickoff);
 
   return (
@@ -645,6 +777,9 @@ function ScheduledSummaryView({ match }: { match: Match }) {
         </div>
       </div>
 
+      {/* AI Tactical Preview */}
+      <AIMatchInsightsCard analysis={aiAnalysis} isLoading={isAiLoading} isScheduled />
+
       <div className="rounded-xl border border-border bg-elevated/40 p-4 text-center">
         <p className="text-sm font-semibold text-foreground">
           Live Events & Commentary Timeline
@@ -681,6 +816,17 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
       return res.json().then((j) => j.data);
     },
   });
+
+  const { data: aiData, isLoading: isAiLoading } = useQuery<{ analysis: MatchAiAnalysis }>({
+    queryKey: ["match-ai", matchId],
+    queryFn: async () => {
+      const res = await fetch(`/api/matches/${matchId}/ai-analysis`);
+      const json = await res.json();
+      return json.success ? json.data : null;
+    },
+    staleTime: 60 * 60 * 1000,
+  });
+  const aiAnalysis = aiData?.analysis;
 
   const raw = data?.match;
   const lm = raw ? live.matches.find((x) => x.id === raw.id) : undefined;
@@ -925,21 +1071,36 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
       <div className="mt-5 overflow-hidden rounded-xl border border-border bg-card">
         {tab === "summary" ? (
           isScheduled && events.length === 0 ? (
-            <ScheduledSummaryView match={match} />
-          ) : events.length === 0 ? (
-            <div className="p-8 text-center space-y-2">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-muted-foreground">
-                Match Concluded
-              </span>
-              <p className="text-base font-bold text-foreground">
-                {match.homeTeam.name} {fmtNum(match.homeScore ?? 0)} – {fmtNum(match.awayScore ?? 0)} {match.awayTeam.name}
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Official final score at {match.venue || "Stadium"}.
-              </p>
-            </div>
+            <ScheduledSummaryView match={match} aiAnalysis={aiAnalysis} isAiLoading={isAiLoading} />
           ) : (
-            <MatchEventList events={events} homeTeam={match.homeTeam} awayTeam={match.awayTeam} />
+            <div className="space-y-4 p-4 sm:p-5">
+              <AIMatchInsightsCard analysis={aiAnalysis} isLoading={isAiLoading} />
+              {events.length === 0 ? (
+                <div className="p-8 text-center space-y-2 rounded-xl border border-border bg-card/40">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-muted-foreground">
+                    Match Concluded
+                  </span>
+                  <p className="text-base font-bold text-foreground">
+                    {match.homeTeam.name} {fmtNum(match.homeScore ?? 0)} – {fmtNum(match.awayScore ?? 0)} {match.awayTeam.name}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Official final score at {match.venue || "Stadium"}.
+                  </p>
+                </div>
+              ) : (
+                <div className="overflow-hidden rounded-xl border border-border bg-card">
+                  <div className="px-5 py-3 border-b border-border bg-secondary/20 flex items-center justify-between">
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      Match Milestone Timeline
+                    </span>
+                    <span className="text-[11px] font-semibold text-muted-foreground">
+                      {match.status === "FINISHED" ? "Full Time" : "Live Events"}
+                    </span>
+                  </div>
+                  <MatchEventList events={events} homeTeam={match.homeTeam} awayTeam={match.awayTeam} />
+                </div>
+              )}
+            </div>
           )
         ) : tab === "stats" ? (
           isScheduled ? (

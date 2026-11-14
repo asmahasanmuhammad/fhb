@@ -23,9 +23,43 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     const homeLineup = getTeamStartingXI(match.homeTeam, match.homeTeam.players);
     const awayLineup = getTeamStartingXI(match.awayTeam, match.awayTeam.players);
 
-    // Map any match events to player nodes
-    const goals = match.events?.filter((e) => e.type === "GOAL" || e.type === "PENALTY") || [];
-    const yellows = match.events?.filter((e) => e.type === "YELLOW") || [];
+    // Map match events (goals, yellow/red cards) to player nodes
+    const mapEventsToPlayers = (players: typeof homeLineup.players, teamSide: "home" | "away") => {
+      const teamEvents = match.events?.filter((e) => e.teamSide === teamSide) || [];
+      return players.map((p) => {
+        const pLower = p.name.toLowerCase();
+        const goalsScored = teamEvents.filter(
+          (e) =>
+            (e.type === "GOAL" || e.type === "PENALTY") &&
+            e.playerName &&
+            (pLower.includes(e.playerName.toLowerCase()) || e.playerName.toLowerCase().includes(pLower))
+        ).length;
+        const hasYellow = teamEvents.some(
+          (e) =>
+            e.type === "YELLOW" &&
+            e.playerName &&
+            (pLower.includes(e.playerName.toLowerCase()) || e.playerName.toLowerCase().includes(pLower))
+        );
+        const hasRed = teamEvents.some(
+          (e) =>
+            e.type === "RED" &&
+            e.playerName &&
+            (pLower.includes(e.playerName.toLowerCase()) || e.playerName.toLowerCase().includes(pLower))
+        );
+
+        return {
+          ...p,
+          goals: goalsScored > 0 ? goalsScored : p.goals,
+          yellowCard: hasYellow || p.yellowCard,
+          redCard: hasRed || p.redCard,
+        };
+      });
+    };
+
+    const homeMappedLineup = mapEventsToPlayers(homeLineup.players, "home");
+    const homeMappedSubs = mapEventsToPlayers(homeLineup.subs, "home");
+    const awayMappedLineup = mapEventsToPlayers(awayLineup.players, "away");
+    const awayMappedSubs = mapEventsToPlayers(awayLineup.subs, "away");
 
     return ok({
       matchId: match.id,
@@ -34,15 +68,15 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         team: match.homeTeam,
         formation: homeLineup.formation,
         manager: homeLineup.manager,
-        lineup: homeLineup.players,
-        subs: homeLineup.subs,
+        lineup: homeMappedLineup,
+        subs: homeMappedSubs,
       },
       away: {
         team: match.awayTeam,
         formation: awayLineup.formation,
         manager: awayLineup.manager,
-        lineup: awayLineup.players,
-        subs: awayLineup.subs,
+        lineup: awayMappedLineup,
+        subs: awayMappedSubs,
       },
     });
   } catch (e) {

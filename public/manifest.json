@@ -1,0 +1,62 @@
+{
+  "name": "FHBD — Football Hub Bangladesh",
+  "short_name": "FHBD",
+  "description": "Live scores, fixtures, standings, football news, transfers, and fan community.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#06080F",
+  "theme_color": "#e30206",
+  "categories": ["sports", "news"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/maskable-icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Live Scores",
+      "short_name": "Scores",
+      "description": "Live match updates & scores",
+      "url": "/?view=scores",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Football News",
+      "short_name": "News",
+      "description": "Latest breaking football news",
+      "url": "/?view=news",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Standings",
+      "short_name": "Tables",
+      "description": "League tables and standings",
+      "url": "/?view=standings",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Live TV",
+      "short_name": "Live TV",
+      "description": "Watch live football streams",
+      "url": "/?view=live-tv",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
+import { PwaRegister } from "@/components/pwa/pwa-register";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { LiveScoreProvider } from "@/components/providers/live-score-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -89,6 +90,12 @@ export const metadata: Metadata = {
     "Football News",
   ],
   authors: [{ name: "FHBD" }],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "FHBD",
+  },
   icons: {
     icon: [
       { url: "/logos/fhbd-badge.png", type: "image/png" },
@@ -141,6 +148,7 @@ export default function RootLayout({
             <LiveScoreProvider>{children}</LiveScoreProvider>
           </QueryProvider>
           <Toaster />
+          <PwaRegister />
         </ThemeProvider>
       </body>
     </html>

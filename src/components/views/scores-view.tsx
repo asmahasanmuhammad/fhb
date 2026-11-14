@@ -603,56 +603,22 @@ function PreMatchStatsView({ match }: { match: Match }) {
   );
 }
 
-function InsightBlock({
-  icon: Icon,
-  iconColor,
-  iconBg,
-  label,
-  value,
-  isScore,
-}: {
-  icon: React.ElementType;
-  iconColor: string;
-  iconBg: string;
-  label: string;
-  value: string;
-  isScore?: boolean;
-}) {
-  return (
-    <div className="flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-4 transition-all duration-200 hover:border-border hover:bg-card/90">
-      <div>
-        <div className="flex items-center gap-2 mb-2.5">
-          <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md border", iconBg, iconColor)}>
-            <Icon className="h-3.5 w-3.5" aria-hidden />
-          </span>
-          <span className="text-[10.5px] font-bold uppercase tracking-wider text-muted-foreground">
-            {label}
-          </span>
-        </div>
-        {!isScore && (
-          <p className="text-[12px] sm:text-[12.5px] leading-relaxed text-foreground/90 font-medium">
-            {value}
-          </p>
-        )}
-      </div>
-
-      {isScore && (
-        <div className="mt-1 flex items-center justify-between rounded-lg border border-sky-500/20 bg-sky-500/[0.06] px-3.5 py-3">
-          <span className="text-xs font-semibold text-muted-foreground">Projected Score</span>
-          <span className="text-sm sm:text-base font-black text-sky-400 tracking-tight">
-            {value}
-          </span>
-        </div>
-      )}
-    </div>
-  );
+function parseScore(pred?: string): { home: string; away: string; text: string } {
+  if (!pred) return { home: "–", away: "–", text: "Match Projection" };
+  const m = pred.match(/(\d+)\s*[-:]\s*(\d+)/);
+  if (m) {
+    return { home: m[1], away: m[2], text: pred };
+  }
+  return { home: "–", away: "–", text: pred };
 }
 
 function AIMatchInsightsCard({
+  match,
   analysis,
   isLoading,
   isScheduled,
 }: {
+  match: Match;
   analysis?: MatchAiAnalysis;
   isLoading?: boolean;
   isScheduled?: boolean;
@@ -668,16 +634,17 @@ function AIMatchInsightsCard({
           <div className="h-5 w-20 rounded-full bg-secondary" />
         </div>
         <div className="h-14 w-full rounded-lg bg-secondary/40" />
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div className="h-24 rounded-xl bg-secondary/30" />
-          <div className="h-24 rounded-xl bg-secondary/30" />
-          <div className="h-24 rounded-xl bg-secondary/30" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="h-28 rounded-xl bg-secondary/30" />
+          <div className="h-28 rounded-xl bg-secondary/30" />
         </div>
       </div>
     );
   }
 
   if (!analysis) return null;
+
+  const parsed = parseScore(analysis.prediction);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b from-card via-card to-elevated/40 p-5 sm:p-6 shadow-md transition-all">
@@ -715,68 +682,145 @@ function AIMatchInsightsCard({
         </p>
       </div>
 
-      {/* 3 Balanced Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-        {analysis.tactics && (
-          <InsightBlock
-            icon={Shield}
-            iconColor="text-emerald-400"
-            iconBg="bg-emerald-500/10 border-emerald-500/20"
-            label="Tactical Setup"
-            value={analysis.tactics}
-          />
-        )}
+      {/* 2-Column Split: Tactical Content (Left) + Visual Projection Scoreboard (Right) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5">
+        {/* Left Column: Tactical & Player Highlights (7 cols) */}
+        <div className="lg:col-span-7 flex flex-col gap-3">
+          {analysis.tactics && (
+            <div className="flex-1 rounded-xl border border-border/70 bg-card/70 p-4 transition-all hover:border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-emerald-500/25 bg-emerald-500/10 text-emerald-400">
+                  <Shield className="h-3.5 w-3.5" aria-hidden />
+                </span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Tactical Setup & Strategy
+                </span>
+              </div>
+              <p className="text-[12.5px] leading-relaxed text-foreground/90 font-normal">
+                {analysis.tactics}
+              </p>
+            </div>
+          )}
 
-        {analysis.keyPlayer && (
-          <InsightBlock
-            icon={Star}
-            iconColor="text-amber-400"
-            iconBg="bg-amber-500/10 border-amber-500/20"
-            label="Key Player to Watch"
-            value={analysis.keyPlayer}
-          />
-        )}
+          {analysis.keyPlayer && (
+            <div className="flex-1 rounded-xl border border-border/70 bg-card/70 p-4 transition-all hover:border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-amber-500/25 bg-amber-500/10 text-amber-400">
+                  <Star className="h-3.5 w-3.5" aria-hidden />
+                </span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Key Player to Watch
+                </span>
+              </div>
+              <p className="text-[12.5px] leading-relaxed text-foreground/90 font-normal">
+                {analysis.keyPlayer}
+              </p>
+            </div>
+          )}
 
-        {analysis.turningPoint && (
-          <InsightBlock
-            icon={Flame}
-            iconColor="text-rose-400"
-            iconBg="bg-rose-500/10 border-rose-500/20"
-            label="Turning Point"
-            value={analysis.turningPoint}
-          />
-        )}
+          {analysis.turningPoint && (
+            <div className="flex-1 rounded-xl border border-border/70 bg-card/70 p-4 transition-all hover:border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-rose-500/25 bg-rose-500/10 text-rose-400">
+                  <Flame className="h-3.5 w-3.5" aria-hidden />
+                </span>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                  Turning Point
+                </span>
+              </div>
+              <p className="text-[12.5px] leading-relaxed text-foreground/90 font-normal">
+                {analysis.turningPoint}
+              </p>
+            </div>
+          )}
+        </div>
 
-        {analysis.playerOfTheMatch && (
-          <InsightBlock
-            icon={Award}
-            iconColor="text-yellow-400"
-            iconBg="bg-yellow-500/10 border-yellow-500/20"
-            label="Player of the Match"
-            value={analysis.playerOfTheMatch}
-          />
-        )}
+        {/* Right Column: AI Projection / Result Card (5 cols) */}
+        <div className="lg:col-span-5 flex flex-col justify-between rounded-xl border border-border/70 bg-card/70 p-4 sm:p-5">
+          {isScheduled && analysis.prediction ? (
+            <div className="flex flex-col justify-between h-full space-y-4">
+              <div className="flex items-center justify-between border-b border-border/40 pb-2.5">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-sky-500/25 bg-sky-500/10 text-sky-400">
+                    <TrendingUp className="h-3.5 w-3.5" aria-hidden />
+                  </span>
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                    AI Match Projection
+                  </span>
+                </div>
+                <span className="rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 text-[10px] font-bold">
+                  Simulated
+                </span>
+              </div>
 
-        {analysis.prediction && (
-          <InsightBlock
-            icon={TrendingUp}
-            iconColor="text-sky-400"
-            iconBg="bg-sky-500/10 border-sky-500/20"
-            label="AI Projection"
-            value={analysis.prediction}
-            isScore
-          />
-        )}
+              {/* Scoreboard Widget */}
+              <div className="flex items-center justify-between gap-3 px-2 py-2">
+                <div className="flex flex-col items-center gap-2 min-w-0 flex-1 text-center">
+                  <TeamCrest team={match.homeTeam} size="md" />
+                  <span className="text-[12px] font-bold text-foreground line-clamp-1">
+                    {match.homeTeam.shortName || match.homeTeam.name}
+                  </span>
+                </div>
 
-        {analysis.finalVerdict && (
-          <InsightBlock
-            icon={Trophy}
-            iconColor="text-purple-400"
-            iconBg="bg-purple-500/10 border-purple-500/20"
-            label="Match Verdict"
-            value={analysis.finalVerdict}
-          />
-        )}
+                <div className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-secondary/60 border border-border/60 shadow-inner shrink-0">
+                  <span className="text-2xl sm:text-3xl font-black text-foreground tabular">{parsed.home}</span>
+                  <span className="text-base font-bold text-muted-foreground/60">–</span>
+                  <span className="text-2xl sm:text-3xl font-black text-foreground tabular">{parsed.away}</span>
+                </div>
+
+                <div className="flex flex-col items-center gap-2 min-w-0 flex-1 text-center">
+                  <TeamCrest team={match.awayTeam} size="md" />
+                  <span className="text-[12px] font-bold text-foreground line-clamp-1">
+                    {match.awayTeam.shortName || match.awayTeam.name}
+                  </span>
+                </div>
+              </div>
+
+              {/* Confidence / Description */}
+              <div className="rounded-lg border border-border/40 bg-secondary/30 p-2.5 text-center">
+                <p className="text-[11.5px] font-medium text-muted-foreground">
+                  {analysis.prediction}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col justify-between h-full space-y-3">
+              {analysis.playerOfTheMatch && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-yellow-500/25 bg-yellow-500/10 text-yellow-400">
+                      <Award className="h-3.5 w-3.5" aria-hidden />
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Player of the Match
+                    </span>
+                  </div>
+                  <div className="rounded-lg border border-yellow-500/20 bg-yellow-500/[0.05] p-3">
+                    <p className="text-[13px] font-bold text-foreground">
+                      {analysis.playerOfTheMatch}
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {analysis.finalVerdict && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-purple-500/25 bg-purple-500/10 text-purple-400">
+                      <Trophy className="h-3.5 w-3.5" aria-hidden />
+                    </span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                      Match Verdict
+                    </span>
+                  </div>
+                  <p className="text-[12px] leading-relaxed text-muted-foreground">
+                    {analysis.finalVerdict}
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -834,7 +878,7 @@ function ScheduledSummaryView({
       </div>
 
       {/* AI Tactical Preview */}
-      <AIMatchInsightsCard analysis={aiAnalysis} isLoading={isAiLoading} isScheduled />
+      <AIMatchInsightsCard match={match} analysis={aiAnalysis} isLoading={isAiLoading} isScheduled />
 
       <div className="rounded-xl border border-border bg-elevated/40 p-4 text-center">
         <p className="text-sm font-semibold text-foreground">
@@ -1130,7 +1174,7 @@ export function MatchDetailView({ matchId }: { matchId: string }) {
             <ScheduledSummaryView match={match} aiAnalysis={aiAnalysis} isAiLoading={isAiLoading} />
           ) : (
             <div className="space-y-4 p-4 sm:p-5">
-              <AIMatchInsightsCard analysis={aiAnalysis} isLoading={isAiLoading} />
+              <AIMatchInsightsCard match={match} analysis={aiAnalysis} isLoading={isAiLoading} />
               {events.length === 0 ? (
                 <div className="p-8 text-center space-y-2 rounded-xl border border-border bg-card/40">
                   <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary/80 px-3 py-1 text-xs font-bold text-muted-foreground">

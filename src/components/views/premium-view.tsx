@@ -156,7 +156,7 @@ const PLAN_META: Record<
   FREE: {
     icon: <Zap className="h-5 w-5" aria-hidden />,
     desc: "The starter experience for every fan",
-    gradient: "from-white/5 to-white/[0.02]",
+    gradient: "from-secondary/40 to-transparent",
     accentColor: "rgba(255,255,255,0.15)",
   },
   PRO: {
@@ -191,32 +191,32 @@ function HeroMeshBackground() {
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {/* Base gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#06080f] via-[#06080f] to-[#06080f]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-amber-500/[0.08] via-background/40 to-background dark:from-[#06080f] dark:via-[#080d1a] dark:to-[#06080f]" />
       {/* Stadium mesh radials */}
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(251,191,36,0.07) 0%, transparent 70%)",
+            "radial-gradient(ellipse 80% 50% at 50% 0%, rgba(245,158,11,0.12) 0%, transparent 70%)",
         }}
       />
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 60% 40% at 20% 60%, rgba(255,30,70,0.06) 0%, transparent 65%)",
+            "radial-gradient(ellipse 60% 40% at 20% 60%, rgba(255,30,70,0.05) 0%, transparent 65%)",
         }}
       />
       <div
         className="absolute inset-0"
         style={{
           background:
-            "radial-gradient(ellipse 50% 35% at 80% 70%, rgba(0,229,255,0.04) 0%, transparent 60%)",
+            "radial-gradient(ellipse 50% 35% at 80% 70%, rgba(2,132,199,0.04) 0%, transparent 60%)",
         }}
       />
       {/* Mesh grid lines — stadium stripes */}
       <svg
-        className="absolute inset-0 h-full w-full opacity-[0.025]"
+        className="absolute inset-0 h-full w-full opacity-[0.035] text-foreground"
         xmlns="http://www.w3.org/2000/svg"
       >
         <defs>
@@ -231,15 +231,15 @@ function HeroMeshBackground() {
             <path
               d="M 60 0 L 0 0 0 60"
               fill="none"
-              stroke="white"
-              strokeWidth="0.5"
+              stroke="currentColor"
+              strokeWidth="0.75"
             />
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="url(#hero-grid)" />
       </svg>
       {/* Bottom fade-out */}
-      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#06080f] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
     </div>
   );
 }
@@ -285,13 +285,12 @@ function GradientText({
 }) {
   return (
     <span
-      className={cn("inline-block", className)}
+      className={cn(
+        "inline-block bg-gradient-to-r from-amber-600 via-amber-500 to-yellow-500 dark:from-fhb-gold dark:via-[#f59e0b] dark:to-[#fff7e0] bg-clip-text text-transparent font-black",
+        className
+      )}
       style={{
-        background: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 35%, #fff7e0 55%, #fbbf24 100%)",
         backgroundSize: "200% auto",
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        backgroundClip: "text",
         animation: "gold-shimmer 4s linear infinite",
       }}
     >
@@ -373,7 +372,7 @@ function PlanCard({
     if (isPro) {
       return "bg-gradient-to-r from-fhb-gold to-[#f59e0b] text-[#06080f] font-extrabold hover:brightness-110 shadow-lg shadow-fhb-gold/30";
     }
-    return "border border-white/15 bg-white/5 text-foreground/85 hover:border-white/30 hover:bg-white/10";
+    return "border border-border bg-secondary/80 text-foreground hover:bg-secondary font-bold";
   })();
 
   return (
@@ -384,18 +383,18 @@ function PlanCard({
       whileHover={{
         y: -6,
         boxShadow: isPopular
-          ? "0 24px 60px rgba(251,191,36,0.18), 0 8px 24px rgba(0,0,0,0.5)"
+          ? "0 24px 60px rgba(251,191,36,0.18), 0 8px 24px rgba(0,0,0,0.15)"
           : isLegend
-          ? "0 24px 60px rgba(255,30,70,0.15), 0 8px 24px rgba(0,0,0,0.5)"
-          : "0 16px 40px rgba(0,0,0,0.5)",
+          ? "0 24px 60px rgba(255,30,70,0.15), 0 8px 24px rgba(0,0,0,0.15)"
+          : "0 16px 40px rgba(0,0,0,0.1)",
       }}
       className={cn(
-        "relative flex h-full flex-col rounded-2xl border bg-card p-6 overflow-hidden",
+        "relative flex h-full flex-col rounded-2xl border bg-card p-6 overflow-hidden shadow-sm",
         isPopular
-          ? "border-fhb-gold/50"
+          ? "border-fhb-gold/50 shadow-md shadow-fhb-gold/10"
           : isLegend
-          ? "border-primary/40"
-          : "border-white/10"
+          ? "border-primary/40 shadow-md shadow-primary/10"
+          : "border-border"
       )}
     >
       {/* Card inner gradient wash */}
@@ -431,7 +430,7 @@ function PlanCard({
                   ? "bg-fhb-gold/15 text-fhb-gold"
                   : isLegend
                   ? "bg-primary/15 text-primary"
-                  : "bg-white/8 text-muted-foreground"
+                  : "bg-secondary text-muted-foreground"
               )}
               aria-hidden
             >
@@ -448,7 +447,7 @@ function PlanCard({
       </div>
 
       {/* Price */}
-      <div className="relative mt-6 flex items-baseline gap-1.5 border-b border-white/8 pb-5">
+      <div className="relative mt-6 flex items-baseline gap-1.5 border-b border-border pb-5">
         {isFree ? (
           <span className="score-num text-[38px] leading-none text-foreground">Free</span>
         ) : (
@@ -488,7 +487,7 @@ function PlanCard({
                   ? "bg-fhb-gold/15 text-fhb-gold"
                   : isLegend
                   ? "bg-primary/15 text-primary"
-                  : "bg-white/8 text-white/60"
+                  : "bg-secondary text-foreground/80"
               )}
             >
               <Check className="h-3 w-3" strokeWidth={2.5} aria-hidden />
@@ -550,7 +549,7 @@ function StarRating({ rating }: { rating: number }) {
           key={i}
           className={cn(
             "h-3.5 w-3.5",
-            i < rating ? "fill-fhb-gold text-fhb-gold" : "fill-transparent text-white/20"
+            i < rating ? "fill-fhb-gold text-fhb-gold" : "fill-transparent text-muted-foreground/30"
           )}
         />
       ))}
@@ -572,7 +571,7 @@ function TestimonialCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -4 }}
-      className="flex flex-col gap-4 rounded-xl border border-white/10 bg-card p-5"
+      className="flex flex-col gap-4 rounded-xl border border-border bg-card p-5 shadow-sm"
     >
       {/* Avatar + meta */}
       <div className="flex items-center gap-3">
@@ -617,7 +616,7 @@ function PaymentPill({ label, icon }: { label: string; icon?: React.ReactNode })
   return (
     <motion.span
       whileHover={{ scale: 1.06, y: -2 }}
-      className="flex items-center gap-1.5 rounded-lg border border-white/12 bg-card px-3 py-2 text-[11px] font-bold text-foreground/80 shadow-sm"
+      className="flex items-center gap-1.5 rounded-lg border border-border bg-card px-3 py-2 text-[11px] font-bold text-foreground/80 shadow-sm"
     >
       {icon}
       {label}
@@ -773,7 +772,7 @@ export function PremiumView() {
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
               onClick={scrollToPlans}
-              className="flex h-11 items-center gap-2 rounded-[10px] border border-white/15 bg-white/5 px-6 text-[12px] font-bold uppercase tracking-wider text-foreground/85 backdrop-blur-sm transition-all hover:border-white/30"
+              className="flex h-11 items-center gap-2 rounded-[10px] border border-border bg-card/80 px-6 text-[12px] font-bold uppercase tracking-wider text-foreground shadow-sm backdrop-blur-sm transition-all hover:bg-card hover:border-border/80"
             >
               Learn More
             </motion.button>
@@ -793,7 +792,7 @@ export function PremiumView() {
               { icon: <ShieldCheck className="h-4 w-4" />, value: "0", label: "Ads shown" },
             ].map((stat) => (
               <div key={stat.label} className="flex items-center gap-2">
-                <span className="text-fhb-gold/70">{stat.icon}</span>
+                <span className="text-fhb-gold">{stat.icon}</span>
                 <span className="text-[13px] font-bold text-foreground">{stat.value}</span>
                 <span className="text-[11px] text-muted-foreground">{stat.label}</span>
               </div>
@@ -811,7 +810,7 @@ export function PremiumView() {
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
-            className="reveal mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-fhb-gold/40 bg-gradient-to-r from-fhb-gold/[0.07] to-fhb-gold/[0.03] p-5"
+            className="reveal mb-8 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-fhb-gold/30 bg-gradient-to-r from-fhb-gold/[0.08] to-fhb-gold/[0.03] p-5 shadow-sm"
             aria-label="Membership status"
           >
             <div className="flex min-w-0 items-center gap-3.5">
@@ -835,7 +834,7 @@ export function PremiumView() {
             <div className="flex flex-wrap items-center gap-2.5">
               <button
                 onClick={scrollToPlans}
-                className="flex h-8 items-center gap-1.5 rounded-[7px] border border-white/15 bg-white/5 px-3 text-[11px] font-bold uppercase tracking-wider text-foreground/85 transition-colors hover:border-white/30"
+                className="flex h-8 items-center gap-1.5 rounded-[7px] border border-border bg-card px-3 text-[11px] font-bold uppercase tracking-wider text-foreground shadow-sm transition-colors hover:bg-secondary/60"
               >
                 <RefreshCw className="h-3.5 w-3.5" aria-hidden />
                 Change plan
@@ -846,7 +845,7 @@ export function PremiumView() {
                   subscribe.mutate("FREE");
                 }}
                 disabled={subscribe.isPending && busy === "FREE"}
-                className="flex h-8 items-center rounded-[7px] border border-white/10 bg-transparent px-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:border-white/25 hover:text-foreground disabled:opacity-50"
+                className="flex h-8 items-center rounded-[7px] border border-border/60 bg-transparent px-3 text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:bg-secondary/40 hover:text-foreground disabled:opacity-50"
               >
                 {subscribe.isPending && busy === "FREE" ? "Processing…" : "Cancel membership"}
               </button>
@@ -866,7 +865,7 @@ export function PremiumView() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             whileHover={{ y: -3, borderColor: "rgba(251,191,36,0.3)" }}
-            className="flex items-start gap-3.5 rounded-xl border border-white/10 bg-card p-4 transition-colors"
+            className="flex items-start gap-3.5 rounded-xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-fhb-gold/40"
           >
             <span
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px] bg-fhb-gold/10 text-fhb-gold"
@@ -1015,10 +1014,10 @@ export function PremiumView() {
           </h2>
         </div>
 
-        <div className="overflow-x-auto rounded-xl border border-white/10">
+        <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-sm">
           <table className="w-full min-w-[520px] text-left">
             <thead>
-              <tr className="border-b border-white/10 bg-white/[0.02]">
+              <tr className="border-b border-border bg-secondary/40">
                 <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                   Feature
                 </th>
@@ -1039,14 +1038,14 @@ export function PremiumView() {
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.06]">
+            <tbody className="divide-y divide-border/60">
               {COMPARISON_FEATURES.map((feat, i) => (
                 <motion.tr
                   key={feat.label}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.03 }}
-                  className="transition-colors hover:bg-white/[0.02]"
+                  className="transition-colors hover:bg-secondary/40"
                 >
                   <td className="px-5 py-3 text-[12.5px] text-foreground/85">
                     {feat.label}
@@ -1071,7 +1070,7 @@ export function PremiumView() {
                       ) : (
                         <span className="inline-flex items-center justify-center">
                           <X
-                            className="h-3.5 w-3.5 text-white/20"
+                            className="h-3.5 w-3.5 text-muted-foreground/30"
                             aria-label="Not included"
                           />
                         </span>
@@ -1123,7 +1122,7 @@ export function PremiumView() {
               <AccordionItem
                 key={q}
                 value={`item-${i}`}
-                className="border-b border-white/10 last:border-b-0"
+                className="border-b border-border last:border-b-0"
               >
                 <AccordionTrigger
                   className={cn(
@@ -1149,7 +1148,7 @@ export function PremiumView() {
       <section className="reveal mt-16">
         <motion.div
           whileHover={{ scale: 1.005 }}
-          className="relative overflow-hidden rounded-2xl border border-fhb-gold/20 bg-gradient-to-br from-fhb-gold/[0.07] via-transparent to-primary/[0.05] p-10 text-center"
+          className="relative overflow-hidden rounded-2xl border border-fhb-gold/30 bg-card bg-gradient-to-br from-fhb-gold/[0.08] via-card to-primary/[0.04] p-10 text-center shadow-sm"
         >
           {/* Background mesh */}
           <div

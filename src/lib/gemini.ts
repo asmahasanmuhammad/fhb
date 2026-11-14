@@ -27,7 +27,8 @@ export async function getMatchAiAnalysis(match: {
   competition: { name: string };
   events?: Array<{ type: string; playerName?: string | null; minute: number; teamSide?: string | null }>;
 }): Promise<MatchAiAnalysis> {
-  const cached = cache.get(match.id);
+  const cacheKey = "en_v1_" + match.id;
+  const cached = cache.get(cacheKey);
   if (cached && cached.expiresAt > Date.now()) {
     return cached.data;
   }
@@ -119,7 +120,7 @@ Return ONLY valid JSON:
     const parsed: MatchAiAnalysis = JSON.parse(text);
     // Cache for 2 hours for finished/scheduled, 2 minutes for live
     const ttl = match.status === "LIVE" ? 2 * 60 * 1000 : 2 * 60 * 60 * 1000;
-    cache.set(match.id, { data: parsed, expiresAt: Date.now() + ttl });
+    cache.set(cacheKey, { data: parsed, expiresAt: Date.now() + ttl });
 
     return parsed;
   } catch (err) {

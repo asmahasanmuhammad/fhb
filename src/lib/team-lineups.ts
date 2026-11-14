@@ -434,11 +434,162 @@ export const TEAM_LINEUPS: Record<string, FullTeamLineup> = {
       { name: "Sumon Reza", number: 9, position: "FW", role: "ST", rating: 7.5 },
     ],
   },
+
+  // Pakistan National Team
+  pakistan: {
+    formation: "4-4-2",
+    manager: "Stephen Constantine",
+    players: [
+      { name: "Yousuf Butt", number: 1, position: "GK", role: "GK", rating: 7.6 },
+      { name: "Haseeb Khan", number: 2, position: "DF", role: "LB", rating: 7.2 },
+      { name: "Abdullah Iqbal", number: 4, position: "DF", role: "CB", rating: 7.9 },
+      { name: "Easah Suliman", number: 5, position: "DF", role: "CB", isCaptain: true, rating: 8.4 },
+      { name: "Mamoon Khan", number: 3, position: "DF", role: "RB", rating: 7.3 },
+      { name: "Rahis Nabi", number: 8, position: "MF", role: "LM", rating: 7.8 },
+      { name: "Alamgir Ghazi", number: 6, position: "MF", role: "CM", rating: 7.5 },
+      { name: "Harun Hamid", number: 10, position: "MF", role: "CM", rating: 8.1 },
+      { name: "Otis Khan", number: 7, position: "MF", role: "RM", rating: 8.2 },
+      { name: "Shayek Dost", number: 11, position: "FW", role: "ST", rating: 7.7 },
+      { name: "Abdul Arshad", number: 9, position: "FW", role: "ST", rating: 7.6 },
+    ],
+    subs: [
+      { name: "Saqib Hanif", number: 22, position: "GK", role: "GK", rating: 7.0 },
+      { name: "Umair Ali", number: 14, position: "DF", role: "CB", rating: 7.2 },
+      { name: "Ali Uzair", number: 16, position: "MF", role: "CM", rating: 7.3 },
+      { name: "Waleed Khan", number: 19, position: "FW", role: "ST", rating: 7.4 },
+    ],
+  },
+
+  // India National Team
+  india: {
+    formation: "4-2-3-1",
+    manager: "Manolo Márquez",
+    players: [
+      { name: "Gurpreet Sandhu", number: 1, position: "GK", role: "GK", rating: 8.4 },
+      { name: "Subhasish Bose", number: 3, position: "DF", role: "LB", rating: 7.8 },
+      { name: "Sandesh Jhingan", number: 5, position: "DF", role: "CB", isCaptain: true, rating: 8.5 },
+      { name: "Chinglensana", number: 4, position: "DF", role: "CB", rating: 8.1 },
+      { name: "Nikhil Poojary", number: 2, position: "DF", role: "RB", rating: 7.7 },
+      { name: "Suresh Singh", number: 6, position: "MF", role: "LDM", rating: 8.0 },
+      { name: "Apuia Ralte", number: 8, position: "MF", role: "RDM", rating: 8.2 },
+      { name: "Liston Colaco", number: 11, position: "MF", role: "CAM", rating: 8.3 },
+      { name: "Chhangte", number: 7, position: "FW", role: "RW", rating: 8.6 },
+      { name: "Vishnu PV", number: 9, position: "FW", role: "ST", rating: 8.5, goals: 1 },
+      { name: "Sahal Samad", number: 10, position: "FW", role: "LW", rating: 8.2 },
+    ],
+    subs: [
+      { name: "Amrinder Singh", number: 23, position: "GK", role: "GK", rating: 7.5 },
+      { name: "Rahul Bheke", number: 14, position: "DF", role: "CB", rating: 7.6 },
+      { name: "Anirudh Thapa", number: 18, position: "MF", role: "CM", rating: 7.9 },
+      { name: "Manvir Singh", number: 19, position: "FW", role: "ST", rating: 7.8 },
+    ],
+  },
+
+  // Bhutan National Team
+  bhutan: {
+    formation: "4-4-2",
+    manager: "Atsushi Nakamura",
+    players: [
+      { name: "Hari Gurung", number: 1, position: "GK", role: "GK", rating: 7.5 },
+      { name: "Tenzin Norbu", number: 3, position: "DF", role: "LB", rating: 7.2 },
+      { name: "Kinley Gyeltshen", number: 4, position: "DF", role: "CB", rating: 7.4 },
+      { name: "Karma Chetrim", number: 5, position: "DF", role: "CB", rating: 7.3 },
+      { name: "Chimi Dorji", number: 2, position: "DF", role: "RB", rating: 7.1 },
+      { name: "Lobzang Chogyal", number: 7, position: "MF", role: "LM", rating: 7.6 },
+      { name: "Dawa Tshering", number: 8, position: "MF", role: "CM", rating: 7.5 },
+      { name: "Kinga Wangchuk", number: 6, position: "MF", role: "CM", rating: 7.3 },
+      { name: "Kinzang Tashi", number: 11, position: "MF", role: "RM", rating: 7.9, goals: 1 },
+      { name: "Chencho Gyeltshen", number: 10, position: "FW", role: "ST", isCaptain: true, rating: 8.6 },
+      { name: "Yeshi Dorji", number: 9, position: "FW", role: "ST", rating: 7.4 },
+    ],
+    subs: [
+      { name: "Tobgay", number: 22, position: "GK", role: "GK", rating: 6.9 },
+      { name: "Phuntsho", number: 14, position: "DF", role: "CB", rating: 7.0 },
+      { name: "Jigme", number: 17, position: "MF", role: "CM", rating: 7.1 },
+    ],
+  },
+
+  // Argentina National Team
+  argentina: {
+    formation: "4-3-3",
+    manager: "Lionel Scaloni",
+    players: [
+      { name: "E. Martínez", number: 23, position: "GK", role: "GK", rating: 8.9, photoUrl: "/players/martinez.jpg" },
+      { name: "Tagliafico", number: 3, position: "DF", role: "LB", rating: 8.1 },
+      { name: "Otamendi", number: 19, position: "DF", role: "CB", rating: 8.3 },
+      { name: "C. Romero", number: 13, position: "DF", role: "CB", rating: 8.7 },
+      { name: "N. Molina", number: 26, position: "DF", role: "RB", rating: 8.2 },
+      { name: "Mac Allister", number: 20, position: "MF", role: "LCM", rating: 8.8 },
+      { name: "Enzo Fernández", number: 24, position: "MF", role: "CDM", rating: 8.6 },
+      { name: "De Paul", number: 7, position: "MF", role: "RCM", rating: 8.5 },
+      { name: "J. Álvarez", number: 9, position: "FW", role: "LW", rating: 8.9 },
+      { name: "Lautaro Martínez", number: 22, position: "FW", role: "ST", rating: 9.0 },
+      { name: "Lionel Messi", number: 10, position: "FW", role: "RW", isCaptain: true, rating: 9.7, photoUrl: "/players/messi.jpg" },
+    ],
+    subs: [
+      { name: "Rulli", number: 1, position: "GK", role: "GK", rating: 7.5 },
+      { name: "Lisandro Martínez", number: 25, position: "DF", role: "CB", rating: 8.5 },
+      { name: "Paredes", number: 5, position: "MF", role: "CDM", rating: 8.0 },
+      { name: "Garnacho", number: 17, position: "FW", role: "LW", rating: 8.3 },
+    ],
+  },
+
+  // Brazil National Team
+  brazil: {
+    formation: "4-2-3-1",
+    manager: "Dorival Júnior",
+    players: [
+      { name: "Alisson", number: 1, position: "GK", role: "GK", rating: 8.7 },
+      { name: "Wendell", number: 6, position: "DF", role: "LB", rating: 7.9 },
+      { name: "Gabriel M.", number: 14, position: "DF", role: "CB", rating: 8.6 },
+      { name: "Marquinhos", number: 4, position: "DF", role: "CB", isCaptain: true, rating: 8.6 },
+      { name: "Danilo", number: 2, position: "DF", role: "RB", rating: 8.0 },
+      { name: "Bruno Guimarães", number: 5, position: "MF", role: "LDM", rating: 8.6 },
+      { name: "João Gomes", number: 15, position: "MF", role: "RDM", rating: 8.1 },
+      { name: "Lucas Paquetá", number: 8, position: "MF", role: "CAM", rating: 8.4 },
+      { name: "Vinícius Jr", number: 7, position: "FW", role: "LW", rating: 9.3 },
+      { name: "Rodrygo", number: 10, position: "FW", role: "ST", rating: 8.8 },
+      { name: "Raphinha", number: 11, position: "FW", role: "RW", rating: 9.1 },
+    ],
+    subs: [
+      { name: "Ederson", number: 23, position: "GK", role: "GK", rating: 8.4 },
+      { name: "Beraldo", number: 17, position: "DF", role: "CB", rating: 7.6 },
+      { name: "Andreas Pereira", number: 19, position: "MF", role: "CAM", rating: 8.0 },
+      { name: "Endrick", number: 9, position: "FW", role: "ST", rating: 8.2 },
+    ],
+  },
+
+  // Portugal National Team
+  portugal: {
+    formation: "4-3-3",
+    manager: "Roberto Martínez",
+    players: [
+      { name: "Diogo Costa", number: 22, position: "GK", role: "GK", rating: 8.5 },
+      { name: "Nuno Mendes", number: 19, position: "DF", role: "LB", rating: 8.3 },
+      { name: "Rúben Dias", number: 4, position: "DF", role: "CB", rating: 8.7 },
+      { name: "António Silva", number: 3, position: "DF", role: "CB", rating: 8.1 },
+      { name: "Diogo Dalot", number: 5, position: "DF", role: "RB", rating: 8.2 },
+      { name: "Vitinha", number: 23, position: "MF", role: "LCM", rating: 8.6 },
+      { name: "João Palhinha", number: 6, position: "MF", role: "CDM", rating: 8.4 },
+      { name: "Bruno Fernandes", number: 8, position: "MF", role: "RCM", rating: 8.9 },
+      { name: "Rafael Leão", number: 17, position: "FW", role: "LW", rating: 8.7 },
+      { name: "Cristiano Ronaldo", number: 7, position: "FW", role: "ST", isCaptain: true, rating: 9.3 },
+      { name: "Bernardo Silva", number: 10, position: "FW", role: "RW", rating: 8.8 },
+    ],
+    subs: [
+      { name: "José Sá", number: 12, position: "GK", role: "GK", rating: 7.4 },
+      { name: "Gonçalo Inácio", number: 14, position: "DF", role: "CB", rating: 8.0 },
+      { name: "Rúben Neves", number: 18, position: "MF", role: "CDM", rating: 8.0 },
+      { name: "João Félix", number: 11, position: "FW", role: "LW", rating: 8.2 },
+      { name: "Gonçalo Ramos", number: 9, position: "FW", role: "ST", rating: 8.1 },
+    ],
+  },
 };
 
 /** Normalize string key for looking up known team lineups */
 export function getLineupKey(name: string): string | null {
   const n = name.toLowerCase();
+  if (n.includes("police")) return "police";
   if (n.includes("paris") || n.includes("psg")) return "psg";
   if (n.includes("havre")) return "lehavre";
   if (n.includes("real madrid")) return "realmadrid";
@@ -448,8 +599,13 @@ export function getLineupKey(name: string): string | null {
   if (n.includes("bashundhara") || n.includes("kings")) return "bashundhara";
   if (n.includes("mohammedan")) return "mohammedan";
   if (n.includes("abahani")) return "abahani";
-  if (n.includes("police")) return "police";
-  if (n.includes("bangladesh national") || n.includes("bangladesh nt")) return "bangladesh";
+  if (n.includes("bangladesh")) return "bangladesh";
+  if (n.includes("pakistan")) return "pakistan";
+  if (n.includes("india")) return "india";
+  if (n.includes("bhutan")) return "bhutan";
+  if (n.includes("argentina")) return "argentina";
+  if (n.includes("brazil")) return "brazil";
+  if (n.includes("portugal")) return "portugal";
   return null;
 }
 

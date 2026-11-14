@@ -49,58 +49,21 @@ const FALLBACK_COVERS = [
 ];
 
 /**
- * Strict Anti-Cricket and Non-Football Sports Blacklist
- * Cricket is strictly forbidden.
+ * Strict Anti-Cricket and Non-Football Sports Word Boundary Regex.
+ * Cricket is strictly forbidden. Word boundaries (\b) avoid false positives on words like "multiple".
  */
-const FORBIDDEN_TERMS = [
-  "cricket",
-  "ipl",
-  "bpl cricket",
-  "bcci",
-  "bcb",
-  "icc ",
-  "t20",
-  "odi",
-  "test match",
-  "wicket",
-  "batsman",
-  "batsmen",
-  "bowler",
-  "bowling",
-  "innings",
-  "century",
-  "half-century",
-  "cricketer",
-  "stumps",
-  "lbw",
-  "sixes",
-  "run-chase",
-  "runs in",
-  "batting",
-  "suryavanshi",
-  "ashwin",
-  "kohli",
-  "rohit sharma",
-  "bumrah",
-  "babar azam",
-  "cricinfo",
-  // Other non-football sports
-  "rugby",
-  "formula 1",
-  "formula one",
-  "tennis",
-  "wimbledon",
-  "grand slam",
-  "golf",
-  "basketball",
-  "nba",
-  "baseball",
-  "hockey",
-  "badminton",
-  "boxing",
-  "ufc",
-  "mma",
-];
+const FORBIDDEN_REGEX =
+  /\b(cricket|ipl|bcci|bcb|icc|t20|odi|test match|wicket|wickets|batsman|batsmen|bowler|bowlers|bowling|innings|century|half-century|cricketer|cricketers|stumps|lbw|sixes|run-chase|suryavanshi|cricinfo|rugby|formula 1|formula one|tennis|wimbledon|grand slam|golf|basketball|nba|baseball|hockey|badminton|boxing|ufc|mma)\b/i;
+
+function isForbiddenContent(text: string): boolean {
+  // 1. Absolutely NO Bengali script allowed — must be 100% English
+  if (/[\u0980-\u09FF]/.test(text)) return true;
+
+  // 2. Strict cricket and non-football blacklist
+  if (FORBIDDEN_REGEX.test(text)) return true;
+
+  return false;
+}
 
 const FOOTBALL_KEYWORDS = [
   "football",
@@ -108,6 +71,7 @@ const FOOTBALL_KEYWORDS = [
   "goal",
   "goals",
   "match",
+  "matches",
   "league",
   "cup",
   "club",
@@ -162,19 +126,6 @@ const FOOTBALL_KEYWORDS = [
   "morsalin",
   "bangladesh",
 ];
-
-function isForbiddenContent(text: string): boolean {
-  // 1. Absolutely NO Bengali script allowed — must be 100% English
-  if (/[\u0980-\u09FF]/.test(text)) return true;
-
-  // 2. Strict cricket and non-football blacklist
-  const lower = text.toLowerCase();
-  for (const term of FORBIDDEN_TERMS) {
-    if (lower.includes(term)) return true;
-  }
-
-  return false;
-}
 
 function isFootballRelated(title: string, desc: string): boolean {
   const combined = `${title} ${desc}`.toLowerCase();

@@ -10,18 +10,27 @@ const DEFAULT_TURSO_URL = 'libsql://fhbsports-asmahasanmuhammad.aws-ap-southeast
 const DEFAULT_TURSO_TOKEN = 'eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3OTQ2NTE2MzIsImlkIjoiMDFhMWQ5ODctNjAwMS03NjFiLWEwMTktNDU1OWJiN2U0YzdiIiwia2lkIjoiZjcwSXQwSTd6SU5LOTdldGZYSmIzUzU3U3NNOEZCc1I4c3h3WkZIWW9xNCIsInJpZCI6ImIwZmE1NzA3LTQ0ZWEtNGFlMy1iNTdkLTQwNzg5NjY3NjI2YSJ9.ionW1-XeO2qMRMhuJPqKfI09ShRIgkkej69wR2Wyj8tde6HvO9Rkhb0jEph8z0MYnhMtYHnXeT-Hbhw0ZsyoBQ'
 
 function createPrismaClient(): PrismaClient {
+  // Ensure DATABASE_URL is defined so Prisma engine validator doesn't throw URL_INVALID
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = 'file:./dev.db'
+  }
+
   const tursoUrl = process.env.TURSO_DATABASE_URL || DEFAULT_TURSO_URL
   const tursoToken = process.env.TURSO_AUTH_TOKEN || DEFAULT_TURSO_TOKEN
 
   if (tursoUrl && tursoToken) {
-    const adapter = new PrismaLibSql({
-      url: tursoUrl,
-      authToken: tursoToken,
-    })
-    return new PrismaClient({
-      adapter,
-      log: ['error', 'warn'],
-    })
+    try {
+      const adapter = new PrismaLibSql({
+        url: tursoUrl,
+        authToken: tursoToken,
+      })
+      return new PrismaClient({
+        adapter,
+        log: ['error', 'warn'],
+      })
+    } catch (err) {
+      console.error('[db] Error creating LibSQL adapter for Turso:', err)
+    }
   }
 
   // Fallback for local development if Turso credentials are missing

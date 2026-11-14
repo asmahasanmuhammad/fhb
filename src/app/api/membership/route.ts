@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { ok, fail, handleError } from "@/lib/api";
-import { requireUser } from "@/lib/auth";
+import { requireUser, createSession, setSessionCookie } from "@/lib/auth";
 
 // Real-time data — never cache route handlers
 export const dynamic = "force-dynamic";
@@ -54,6 +54,14 @@ export async function POST(req: NextRequest) {
         premiumUntil: plan.price > 0 ? expiresAt : null,
       },
     });
+
+    // Re-issue updated session token with new premium status
+    const newToken = await createSession(user.id, {
+      ...user,
+      isPremium: updated.isPremium,
+      premiumUntil: updated.premiumUntil,
+    });
+    await setSessionCookie(newToken);
 
     return ok({
       plan: plan.code,

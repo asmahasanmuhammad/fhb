@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     }
     if (user.isBanned) return fail("This account has been temporarily suspended", 403);
 
-    const token = await createSession(user.id);
+    const token = await createSession(user.id, user);
     await setSessionCookie(token);
 
     return ok({

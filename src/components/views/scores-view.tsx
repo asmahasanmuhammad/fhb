@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import {
   Zap, ChevronLeft, ChevronRight, MapPin, CalendarDays,
   Activity, ListOrdered, BarChart3, Shield, RefreshCw, Radio, Sparkles,
-  Tv, Trophy, Flame, Award, TrendingUp, Clock,
+  Tv, Trophy, Flame, Award, TrendingUp, Clock, Star, Target,
 } from "lucide-react";
 import { TacticalPitch } from "@/components/football/tactical-pitch";
 import type { MatchAiAnalysis } from "@/lib/gemini";
@@ -603,6 +603,51 @@ function PreMatchStatsView({ match }: { match: Match }) {
   );
 }
 
+function InsightBlock({
+  icon: Icon,
+  iconColor,
+  iconBg,
+  label,
+  value,
+  isScore,
+}: {
+  icon: React.ElementType;
+  iconColor: string;
+  iconBg: string;
+  label: string;
+  value: string;
+  isScore?: boolean;
+}) {
+  return (
+    <div className="flex flex-col justify-between rounded-xl border border-border/70 bg-card/60 p-4 transition-all duration-200 hover:border-border hover:bg-card/90">
+      <div>
+        <div className="flex items-center gap-2 mb-2.5">
+          <span className={cn("flex h-6 w-6 shrink-0 items-center justify-center rounded-md border", iconBg, iconColor)}>
+            <Icon className="h-3.5 w-3.5" aria-hidden />
+          </span>
+          <span className="text-[10.5px] font-bold uppercase tracking-wider text-muted-foreground">
+            {label}
+          </span>
+        </div>
+        {!isScore && (
+          <p className="text-[12px] sm:text-[12.5px] leading-relaxed text-foreground/90 font-medium">
+            {value}
+          </p>
+        )}
+      </div>
+
+      {isScore && (
+        <div className="mt-1 flex items-center justify-between rounded-lg border border-sky-500/20 bg-sky-500/[0.06] px-3.5 py-3">
+          <span className="text-xs font-semibold text-muted-foreground">Projected Score</span>
+          <span className="text-sm sm:text-base font-black text-sky-400 tracking-tight">
+            {value}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function AIMatchInsightsCard({
   analysis,
   isLoading,
@@ -614,12 +659,20 @@ function AIMatchInsightsCard({
 }) {
   if (isLoading) {
     return (
-      <div className="rounded-xl border border-primary/20 bg-card/60 p-4 space-y-3 animate-pulse">
-        <div className="flex items-center gap-2">
-          <div className="h-4 w-4 rounded-full bg-primary/40" />
-          <div className="h-4 w-36 rounded bg-primary/20" />
+      <div className="rounded-xl border border-border/60 bg-card/40 p-5 space-y-4 animate-pulse">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="h-7 w-7 rounded-lg bg-primary/20" />
+            <div className="h-4 w-40 rounded bg-primary/20" />
+          </div>
+          <div className="h-5 w-20 rounded-full bg-secondary" />
         </div>
-        <div className="h-12 w-full rounded bg-secondary/50" />
+        <div className="h-14 w-full rounded-lg bg-secondary/40" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="h-24 rounded-xl bg-secondary/30" />
+          <div className="h-24 rounded-xl bg-secondary/30" />
+          <div className="h-24 rounded-xl bg-secondary/30" />
+        </div>
       </div>
     );
   }
@@ -627,99 +680,102 @@ function AIMatchInsightsCard({
   if (!analysis) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-primary/30 bg-gradient-to-br from-primary/[0.07] via-card to-card p-4 sm:p-5 shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-border/80 bg-gradient-to-b from-card via-card to-elevated/40 p-5 sm:p-6 shadow-md transition-all">
       {/* Header */}
-      <div className="flex items-center justify-between gap-2 pb-3 border-b border-border/50">
-        <div className="flex items-center gap-2">
-          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-primary/15 text-primary">
-            <Sparkles className="h-3.5 w-3.5" />
-          </span>
+      <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-border/60">
+        <div className="flex items-center gap-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-primary/15 text-primary border border-primary/25 shadow-sm">
+            <Sparkles className="h-4 w-4" aria-hidden />
+          </div>
           <div>
-            <h4 className="text-xs sm:text-sm font-black text-foreground tracking-tight">
-              FHBD Match Intelligence
-            </h4>
-            <p className="text-[10px] text-muted-foreground font-medium">
-              Tactical insights & match breakdown
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm sm:text-[15px] font-bold text-foreground tracking-tight">
+                FHBD Match Intelligence
+              </h3>
+              <span className="rounded-[4px] bg-secondary px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+                Pro
+              </span>
+            </div>
+            <p className="text-[11px] text-muted-foreground">
+              {isScheduled ? "Pre-Match Tactical Insights & Projections" : "Post-Match Analysis & Performance Review"}
             </p>
           </div>
         </div>
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-2.5 py-0.5 text-[10px] font-bold text-primary">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-ping" />
-          Gemini AI
-        </span>
+
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-secondary/40 px-3 py-1 text-[10.5px] font-semibold text-muted-foreground">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>Powered by Gemini AI</span>
+        </div>
       </div>
 
-      {/* Summary */}
-      <p className="mt-3 text-[12.5px] sm:text-[13px] leading-relaxed text-foreground/90 font-medium">
-        {analysis.summary}
-      </p>
+      {/* Editorial Summary Box */}
+      <div className="my-4 rounded-xl border border-border/60 bg-secondary/20 p-4">
+        <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-foreground/90 font-medium">
+          {analysis.summary}
+        </p>
+      </div>
 
-      {/* Dynamic Key Insights Grid */}
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 text-xs">
+      {/* 3 Balanced Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
         {analysis.tactics && (
-          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
-              🛡️ Tactical Clash
-            </span>
-            <p className="text-[11.5px] text-muted-foreground leading-snug">
-              {analysis.tactics}
-            </p>
-          </div>
+          <InsightBlock
+            icon={Shield}
+            iconColor="text-emerald-400"
+            iconBg="bg-emerald-500/10 border-emerald-500/20"
+            label="Tactical Setup"
+            value={analysis.tactics}
+          />
         )}
 
         {analysis.keyPlayer && (
-          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">
-              ⭐ Key Player
-            </span>
-            <p className="text-[11.5px] text-muted-foreground leading-snug">
-              {analysis.keyPlayer}
-            </p>
-          </div>
+          <InsightBlock
+            icon={Star}
+            iconColor="text-amber-400"
+            iconBg="bg-amber-500/10 border-amber-500/20"
+            label="Key Player to Watch"
+            value={analysis.keyPlayer}
+          />
         )}
 
         {analysis.turningPoint && (
-          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-1">
-              ⚡ Turning Point
-            </span>
-            <p className="text-[11.5px] text-muted-foreground leading-snug">
-              {analysis.turningPoint}
-            </p>
-          </div>
+          <InsightBlock
+            icon={Flame}
+            iconColor="text-rose-400"
+            iconBg="bg-rose-500/10 border-rose-500/20"
+            label="Turning Point"
+            value={analysis.turningPoint}
+          />
         )}
 
         {analysis.playerOfTheMatch && (
-          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-1">
-              🌟 Player of the Match
-            </span>
-            <p className="text-[11.5px] text-muted-foreground leading-snug">
-              {analysis.playerOfTheMatch}
-            </p>
-          </div>
+          <InsightBlock
+            icon={Award}
+            iconColor="text-yellow-400"
+            iconBg="bg-yellow-500/10 border-yellow-500/20"
+            label="Player of the Match"
+            value={analysis.playerOfTheMatch}
+          />
         )}
 
         {analysis.prediction && (
-          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 sm:col-span-2 lg:col-span-1">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-sky-400 mb-1">
-              🎯 AI Prediction
-            </span>
-            <p className="text-[11.5px] font-semibold text-foreground/90 leading-snug">
-              {analysis.prediction}
-            </p>
-          </div>
+          <InsightBlock
+            icon={TrendingUp}
+            iconColor="text-sky-400"
+            iconBg="bg-sky-500/10 border-sky-500/20"
+            label="AI Projection"
+            value={analysis.prediction}
+            isScore
+          />
         )}
 
         {analysis.finalVerdict && (
-          <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 sm:col-span-2 lg:col-span-1">
-            <span className="block text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1">
-              🏆 Match Verdict
-            </span>
-            <p className="text-[11.5px] text-muted-foreground leading-snug">
-              {analysis.finalVerdict}
-            </p>
-          </div>
+          <InsightBlock
+            icon={Trophy}
+            iconColor="text-purple-400"
+            iconBg="bg-purple-500/10 border-purple-500/20"
+            label="Match Verdict"
+            value={analysis.finalVerdict}
+          />
         )}
       </div>
     </div>

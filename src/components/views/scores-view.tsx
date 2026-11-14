@@ -636,10 +636,10 @@ function AIMatchInsightsCard({
           </span>
           <div>
             <h4 className="text-xs sm:text-sm font-black text-foreground tracking-tight">
-              FHBD এআই ম্যাচ অ্যানালাইসিস
+              FHBD Match Intelligence
             </h4>
             <p className="text-[10px] text-muted-foreground font-medium">
-              ট্যাকটিক্যাল ইনসাইট ও স্মার্ট ম্যাচ বিশ্লেষণ
+              Tactical insights & match breakdown
             </p>
           </div>
         </div>
@@ -659,7 +659,7 @@ function AIMatchInsightsCard({
         {analysis.tactics && (
           <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-primary mb-1">
-              🛡️ কৌশলগত লড়াই
+              🛡️ Tactical Clash
             </span>
             <p className="text-[11.5px] text-muted-foreground leading-snug">
               {analysis.tactics}
@@ -670,7 +670,7 @@ function AIMatchInsightsCard({
         {analysis.keyPlayer && (
           <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-emerald-400 mb-1">
-              ⭐ নজরে থাকবেন
+              ⭐ Key Player
             </span>
             <p className="text-[11.5px] text-muted-foreground leading-snug">
               {analysis.keyPlayer}
@@ -681,7 +681,7 @@ function AIMatchInsightsCard({
         {analysis.turningPoint && (
           <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-amber-400 mb-1">
-              ⚡ টার্নিং পয়েন্ট
+              ⚡ Turning Point
             </span>
             <p className="text-[11.5px] text-muted-foreground leading-snug">
               {analysis.turningPoint}
@@ -692,7 +692,7 @@ function AIMatchInsightsCard({
         {analysis.playerOfTheMatch && (
           <div className="rounded-lg border border-border/60 bg-card/80 p-2.5">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-yellow-400 mb-1">
-              🌟 ম্যাচ সেরা
+              🌟 Player of the Match
             </span>
             <p className="text-[11.5px] text-muted-foreground leading-snug">
               {analysis.playerOfTheMatch}
@@ -703,7 +703,7 @@ function AIMatchInsightsCard({
         {analysis.prediction && (
           <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 sm:col-span-2 lg:col-span-1">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-sky-400 mb-1">
-              🎯 এআই প্রেডিকশন
+              🎯 AI Prediction
             </span>
             <p className="text-[11.5px] font-semibold text-foreground/90 leading-snug">
               {analysis.prediction}
@@ -714,7 +714,7 @@ function AIMatchInsightsCard({
         {analysis.finalVerdict && (
           <div className="rounded-lg border border-border/60 bg-card/80 p-2.5 sm:col-span-2 lg:col-span-1">
             <span className="block text-[10px] font-bold uppercase tracking-wider text-purple-400 mb-1">
-              🏆 ফলাফল পর্যালোচনা
+              🏆 Match Verdict
             </span>
             <p className="text-[11.5px] text-muted-foreground leading-snug">
               {analysis.finalVerdict}

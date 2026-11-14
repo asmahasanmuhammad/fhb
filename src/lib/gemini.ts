@@ -42,20 +42,20 @@ export async function getMatchAiAnalysis(match: {
 
   let prompt = "";
   if (isScheduled) {
-    prompt = `You are a high-IQ broadcast football analyst for FHBD (Football Hub Bangladesh).
+    prompt = `You are a premier broadcast football analyst for FHBD (Football Hub BD).
 Analyze this upcoming fixture:
 Tournament: ${match.competition.name}
 Home: ${match.homeTeam.name}
 Away: ${match.awayTeam.name}
 Venue: ${match.venue || "Official Stadium"}
 
-Write an engaging, exciting, high-accuracy analysis in natural, professional Bengali.
+Write an insightful, broadcast-grade tactical preview in 100% professional English.
 Return ONLY valid JSON matching this schema:
 {
-  "summary": "2-3 sentences of broadcast-grade preview in Bengali",
-  "tactics": "1-2 sentences on key tactical clash in Bengali",
-  "keyPlayer": "Key player to watch and why in Bengali",
-  "prediction": "Final predicted outcome or scoreline in Bengali"
+  "summary": "2-3 sentences of broadcast-quality pre-match preview in English",
+  "tactics": "1-2 sentences on key tactical battle and team setup in English",
+  "keyPlayer": "Key player to watch and their expected impact in English",
+  "prediction": "Final predicted outcome or scoreline in English"
 }`;
   } else if (isFinished) {
     const scorers = (match.events || [])
@@ -63,31 +63,31 @@ Return ONLY valid JSON matching this schema:
       .map((e) => `${e.playerName || "Player"} (${e.minute}')`)
       .join(", ");
 
-    prompt = `You are a high-IQ broadcast football analyst for FHBD (Football Hub Bangladesh).
-Analyze this completed match:
+    prompt = `You are a premier broadcast football analyst for FHBD (Football Hub BD).
+Analyze this completed fixture:
 Tournament: ${match.competition.name}
 Result: ${match.homeTeam.name} ${match.homeScore ?? 0} - ${match.awayScore ?? 0} ${match.awayTeam.name}
 Scorers: ${scorers || "None"}
 Venue: ${match.venue || "Official Stadium"}
 
-Write a sharp, professional post-match review in natural Bengali.
+Write a sharp, high-IQ post-match review in 100% professional English.
 Return ONLY valid JSON matching this schema:
 {
-  "summary": "2-3 sentences summing up the match outcome in Bengali",
-  "turningPoint": "Key moment or turning point of the match in Bengali",
-  "playerOfTheMatch": "Best player on the pitch and justification in Bengali",
-  "finalVerdict": "Impact of this result on both teams in Bengali"
+  "summary": "2-3 sentences summing up the match narrative and outcome in English",
+  "turningPoint": "Key moment or turning point of the fixture in English",
+  "playerOfTheMatch": "Best player on the pitch and justification in English",
+  "finalVerdict": "Impact of this result on both clubs or nations in English"
 }`;
   } else {
     // Live match
     prompt = `You are a live football commentator for FHBD.
 Current live match: ${match.homeTeam.name} ${match.homeScore ?? 0} - ${match.awayScore ?? 0} ${match.awayTeam.name} in ${match.competition.name}.
-Write a live 2-sentence tactical breakdown in fluent Bengali.
+Write a live 2-sentence tactical breakdown in 100% professional English.
 Return ONLY valid JSON:
 {
-  "summary": "Live match situation in Bengali",
-  "tactics": "Current tactical dynamics in Bengali",
-  "prediction": "Predicted full-time outcome in Bengali"
+  "summary": "Live match situation in English",
+  "tactics": "Current tactical momentum and dynamics in English",
+  "prediction": "Predicted full-time outcome in English"
 }`;
   }
 
@@ -138,16 +138,16 @@ function getFallbackAnalysis(match: {
 }): MatchAiAnalysis {
   if (match.status === "SCHEDULED") {
     return {
-      summary: `${match.competition.name}-এর মঞ্চে ${match.homeTeam.name} ও ${match.awayTeam.name}-এর মধ্যকার লড়াইয়ে রোমাঞ্চকর ফুটবল প্রত্যাশিত। উভয় দলই তাদের সেরা একাদশ নিয়ে মাঠে পূর্ণ পয়েন্ট অর্জনে মুখিয়ে থাকবে।`,
-      tactics: `${match.homeTeam.name} বল পজেশন ও পাসিং নির্ভর আক্রমণ সাজাবে, অন্যদিকে ${match.awayTeam.name} দ্রুত গতির কাউন্টার অ্যাটাকে মনোযোগী হবে।`,
-      keyPlayer: "উভয় দলের মিডফিল্ডাররা মাঝমাঠের নিয়ন্ত্রণ নিতে সবচেয়ে গুরুত্বপূর্ণ ভূমিকা পালন করবেন।",
-      prediction: "উত্তেজনাপূর্ণ এক প্রতিদ্বন্দ্বিতাপূর্ণ ম্যাচের আভাস মিলছে।",
+      summary: `A high-stakes clash awaits in the ${match.competition.name} as ${match.homeTeam.name} take on ${match.awayTeam.name}. Both sides are expected to deploy full-strength squads in pursuit of decisive points.`,
+      tactics: `${match.homeTeam.name} are likely to dictate tempo through possession and progressive passing, while ${match.awayTeam.name} will look to exploit transition opportunities on the counter.`,
+      keyPlayer: "Midfield orchestrators on both sides will play the pivotal role in controlling match tempo.",
+      prediction: "A closely fought contest with minimal margins separating both sides.",
     };
   }
 
   return {
-    summary: `${match.homeTeam.name} ও ${match.awayTeam.name}-এর মধ্যকার ম্যাচটি ${match.homeScore ?? 0}–${match.awayScore ?? 0} ব্যবধানে শেষ হয়েছে। দুই দলের লড়াইয়ে কৌশল ও দলগত পারফরম্যান্স ছিল লক্ষণীয়।`,
-    turningPoint: "ম্যাচের দ্বিতীয়ার্ধে ট্যাকটিক্যাল পরিবর্তন এবং মাঝমাঠের আধিপত্যই ফলাফলের পার্থক্য গড়ে দিয়েছে।",
-    finalVerdict: "এই ফলাফল টুর্নামেন্টের পয়েন্ট টেবিল ও দলের আত্মবিশ্বাসে বড় প্রভাব ফেলবে।",
+    summary: `The match between ${match.homeTeam.name} and ${match.awayTeam.name} concluded in a ${match.homeScore ?? 0}–${match.awayScore ?? 0} result. Strategic execution and collective discipline proved to be the deciding factors.`,
+    turningPoint: "Second-half tactical adjustments and midfield dominance ultimately swung momentum.",
+    finalVerdict: "A crucial outcome that carries significant implications for the tournament standings.",
   };
 }
